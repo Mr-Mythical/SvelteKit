@@ -194,7 +194,7 @@
 		</Table.Header>
 		<Table.Body>
 			{#each Array(dungeonCount) as _, i}
-				<Table.Row class="h-14">
+				<Table.Row class="h-12">
 					<Table.Cell class="py-0 text-xl">{i + 1}</Table.Cell>
 					<Table.Cell class="py-0 text-xl">
 						<div class="grid grid-cols-1 items-center">
