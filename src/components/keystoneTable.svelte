@@ -10,6 +10,11 @@
 	let edit = false;
 	let scoreGoal: number;
 	const dungeonCount = 8;
+	let totalScore: number;
+
+	$: totalScore =
+		dungeons.fortified.map((run) => run.score).reduce((sum, val) => sum + val, 0) +
+		dungeons.tyrannical.map((run) => run.score).reduce((sum, val) => sum + val, 0);
 
 	interface Run {
 		dungeon: string;
@@ -21,11 +26,16 @@
 	}
 
 	interface Dungeons {
-		fortified: Run[] | null;
-		tyrannical: Run[] | null;
+		fortified: Run[];
+		tyrannical: Run[];
+
+		// Index Signature
+		[key: string]: Run[] | undefined;
 	}
 
 	class Dungeons {
+		fortified: Run[];
+		tyrannical: Run[];
 		constructor() {
 			this.fortified = [];
 			this.tyrannical = [];
@@ -57,32 +67,32 @@
 	function resetRuns() {
 		for (var i = 0; i < dungeonCount; i++) {
 			let num = i + 1;
-			dungeons.fortified![i].dungeon = num.toString();
-			dungeons.fortified![i].score = 0;
-			dungeons.fortified![i].mythicLevel = 0;
-			dungeons.fortified![i].numKeystoneUpgrades = 1;
-			dungeons.tyrannical![i].dungeon = num.toString();
-			dungeons.tyrannical![i].score = 0;
-			dungeons.tyrannical![i].mythicLevel = 0;
-			dungeons.tyrannical![i].numKeystoneUpgrades = 1;
+			dungeons.fortified[i].dungeon = num.toString();
+			dungeons.fortified[i].score = 0;
+			dungeons.fortified[i].mythicLevel = 0;
+			dungeons.fortified[i].numKeystoneUpgrades = 1;
+			dungeons.tyrannical[i].dungeon = num.toString();
+			dungeons.tyrannical[i].score = 0;
+			dungeons.tyrannical[i].mythicLevel = 0;
+			dungeons.tyrannical[i].numKeystoneUpgrades = 1;
 		}
 	}
 
-	function scoreFormula(keyLevel: number, star: number): number {
-		star *= 20;
+	function scoreFormula(keyLevel: number, star: number = 1): number {
+		var time = 20 * (star - 1);
 
 		let baseScore: number;
 
 		if (keyLevel < 2) {
 			return 0;
 		} else if (keyLevel < 7) {
-			baseScore = (6 + keyLevel) * 5 + (star / 40) * 5;
+			baseScore = (6 + keyLevel) * 5 + (time / 40) * 5;
 		} else if (keyLevel < 11) {
-			baseScore = (8 + keyLevel) * 5 + (star / 40) * 5;
+			baseScore = (8 + keyLevel) * 5 + (time / 40) * 5;
 		} else if (keyLevel < 14) {
-			baseScore = (keyLevel - 10) * 7 + 90 + (star / 40) * 5;
+			baseScore = (keyLevel - 10) * 7 + 90 + (time / 40) * 5;
 		} else {
-			baseScore = (keyLevel - 10) * 7 + 100 + (star / 40) * 5;
+			baseScore = (keyLevel - 10) * 7 + 100 + (time / 40) * 5;
 		}
 		return Math.round(baseScore * 10) / 10;
 	}
@@ -94,53 +104,51 @@
 		let bestAndAlternate;
 		if (scoreGoal >= 640) {
 			for (let i = 0; i < 40; i++) {
-				bestAndAlternate = Math.round(scoreFormula(i, 0) * 1.5 + scoreFormula(i, 0) * 0.5);
+				bestAndAlternate = Math.round(scoreFormula(i) * 1.5 + scoreFormula(i) * 0.5);
 
 				if (scorePerDungeon === bestAndAlternate) {
 					for (let j = 0; j < dungeonCount; j++) {
-						dungeons.fortified![j].mythicLevel = i;
-						dungeons.tyrannical![j].mythicLevel = i;
+						dungeons.fortified[j].mythicLevel = i;
+						dungeons.tyrannical[j].mythicLevel = i;
 
-						dungeons.fortified![j].score = bestAndAlternate / 2;
-						dungeons.tyrannical![j].score = bestAndAlternate / 2;
+						dungeons.fortified[j].score = bestAndAlternate / 2;
+						dungeons.tyrannical[j].score = bestAndAlternate / 2;
 					}
 					break;
 				} else if (bestAndAlternate > scorePerDungeon) {
-					bestAndAlternate = Math.round(
-						scoreFormula(i - 1, 0) * 1.5 + scoreFormula(i - 1, 0) * 0.5
-					);
+					bestAndAlternate = Math.round(scoreFormula(i - 1) * 1.5 + scoreFormula(i - 1) * 0.5);
 					let scoreDifference = Math.round(scoreGoal - bestAndAlternate * dungeonCount);
 
 					for (let j = 0; j < dungeonCount; j++) {
 						if (scoreDifference > 0) {
-							scoreDifference -= scoreFormula(i, 0) * 1.5 - scoreFormula(i - 1, 0) * 1.5;
-							dungeons.fortified![j].mythicLevel = i;
-							dungeons.fortified![j].score = scoreFormula(i, 0) * 1.5;
+							scoreDifference -= scoreFormula(i) * 1.5 - scoreFormula(i - 1) * 1.5;
+							dungeons.fortified[j].mythicLevel = i;
+							dungeons.fortified[j].score = scoreFormula(i) * 1.5;
 						} else {
-							dungeons.fortified![j].mythicLevel = i - 1;
-							dungeons.fortified![j].score = scoreFormula(i - 1, 0) * 1.5;
+							dungeons.fortified[j].mythicLevel = i - 1;
+							dungeons.fortified[j].score = scoreFormula(i - 1) * 1.5;
 						}
 					}
 					for (let j = 0; j < dungeonCount; j++) {
 						if (scoreDifference > 0) {
-							scoreDifference -= scoreFormula(i, 0) * 0.5 - scoreFormula(i - 1, 0) * 0.5;
-							dungeons.tyrannical![j].mythicLevel = i;
-							dungeons.tyrannical![j].score = scoreFormula(i, 0) * 0.5;
+							scoreDifference -= scoreFormula(i) * 0.5 - scoreFormula(i - 1) * 0.5;
+							dungeons.tyrannical[j].mythicLevel = i;
+							dungeons.tyrannical[j].score = scoreFormula(i) * 0.5;
 						} else if (
-							scoreDifference / (scoreFormula(i, 0) * 0.5 - scoreFormula(i - 1, 0) * 0.5) <=
+							scoreDifference / (scoreFormula(i) * 0.5 - scoreFormula(i - 1) * 0.5) <=
 							j - dungeonCount
 						) {
 							if (i != 3) {
-								scoreDifference += scoreFormula(i, 0) * 0.5 - scoreFormula(i - 1, 0) * 0.5;
-								dungeons.tyrannical![j].mythicLevel = i - 2;
-								dungeons.tyrannical![j].score = scoreFormula(i - 2, 0) * 0.5;
+								scoreDifference += scoreFormula(i, 0) * 0.5 - scoreFormula(i - 1) * 0.5;
+								dungeons.tyrannical[j].mythicLevel = i - 2;
+								dungeons.tyrannical[j].score = scoreFormula(i - 2) * 0.5;
 							} else {
-								dungeons.tyrannical![j].mythicLevel = i - 1;
-								dungeons.tyrannical![j].score = scoreFormula(i - 1, 0) * 0.5;
+								dungeons.tyrannical[j].mythicLevel = i - 1;
+								dungeons.tyrannical[j].score = scoreFormula(i - 1) * 0.5;
 							}
 						} else {
-							dungeons.tyrannical![j].mythicLevel = i - 1;
-							dungeons.tyrannical![j].score = scoreFormula(i - 1, 0) * 0.5;
+							dungeons.tyrannical[j].mythicLevel = i - 1;
+							dungeons.tyrannical[j].score = scoreFormula(i - 1) * 0.5;
 						}
 					}
 					break;
@@ -151,18 +159,71 @@
 			for (let i = 0; i < dungeonCount; i++) {
 				if (tempScore > 0) {
 					tempScore -= 60;
-					dungeons.fortified![i].mythicLevel = 2;
-					dungeons.fortified![i].score += 60;
+					dungeons.fortified[i].mythicLevel = 2;
+					dungeons.fortified[i].score += 60;
 				}
 			}
 			for (let i = 0; i < dungeonCount; i++) {
 				if (tempScore > 0) {
 					tempScore -= 20;
-					dungeons.tyrannical![i].mythicLevel = 2;
-					dungeons.tyrannical![i].score += 20;
+					dungeons.tyrannical[i].mythicLevel = 2;
+					dungeons.tyrannical[i].score += 20;
 				}
 			}
 		}
+	}
+
+	function adjustScores(currentDungeon: Run, otherDungeon: Run) {
+		let currentScore = scoreFormula(currentDungeon.mythicLevel, currentDungeon.numKeystoneUpgrades);
+		let otherScore = scoreFormula(otherDungeon.mythicLevel, otherDungeon.numKeystoneUpgrades);
+
+		if (
+			currentDungeon.mythicLevel > otherDungeon.mythicLevel ||
+			(currentDungeon.mythicLevel === otherDungeon.mythicLevel &&
+				currentDungeon.numKeystoneUpgrades >= otherDungeon.numKeystoneUpgrades)
+		) {
+			currentDungeon.score = currentScore * 1.5;
+			otherDungeon.score = otherScore * 0.5;
+		} else {
+			currentDungeon.score = currentScore * 0.5;
+			otherDungeon.score = otherScore * 1.5;
+		}
+	}
+
+	function editKeyLevel(dungeon: number, affix: string, direction: string) {
+		let currentDungeon = dungeons[affix]![dungeon];
+		var otherAffix = affix === 'fortified' ? 'tyrannical' : 'fortified';
+		let otherDungeon = dungeons[otherAffix]![dungeon];
+
+		if (currentDungeon.mythicLevel < 2 && direction === 'up') {
+			currentDungeon.mythicLevel = 2;
+		} else if (currentDungeon.mythicLevel === 2 && direction === 'down') {
+			currentDungeon.mythicLevel = 0;
+			currentDungeon.score = 0;
+		} else if (currentDungeon.mythicLevel >= 2) {
+			if (direction === 'up') {
+				currentDungeon.mythicLevel++;
+			} else {
+				currentDungeon.mythicLevel--;
+			}
+		}
+
+		adjustScores(currentDungeon, otherDungeon);
+
+		dungeons[affix]![dungeon] = currentDungeon;
+		dungeons[otherAffix]![dungeon] = otherDungeon;
+	}
+
+	function editStars(dungeon: number, affix: string, star: number) {
+		var currentDungeon = dungeons[affix]![dungeon];
+		var otherAffix = affix === 'fortified' ? 'tyrannical' : 'fortified';
+		var otherDungeon = dungeons[otherAffix]![dungeon];
+		currentDungeon.numKeystoneUpgrades = star + 1;
+
+		adjustScores(currentDungeon, otherDungeon);
+
+		dungeons[affix]![dungeon] = currentDungeon;
+		dungeons[otherAffix]![dungeon] = otherDungeon;
 	}
 </script>
 
@@ -195,21 +256,45 @@
 		<Table.Body>
 			{#each Array(dungeonCount) as _, i}
 				<Table.Row class="h-12">
-					<Table.Cell class="py-0 text-xl">{i + 1}</Table.Cell>
+					<Table.Cell class="py-0 text-xl"
+						>{dungeons.fortified[i].dungeon}</Table.Cell
+					>
 					<Table.Cell class="py-0 text-xl">
 						<div class="grid grid-cols-1 items-center">
-							<Button class="h-6 w-6 {edit ? '' : 'hidden'}" variant="ghost" size="icon"
+							<Button
+								class="h-6 w-6 {edit ? '' : 'hidden'}"
+								variant="ghost"
+								size="icon"
+								on:click={() => editKeyLevel(i, 'fortified', 'up')}
 								><ArrowUp color="#E11D48" /></Button
 							>
 							<span
-								>{dungeons.fortified && dungeons.fortified[i]?.mythicLevel}
-								{#each Array(3) as _, i}
-									<Button class="h-5 w-5 {edit ? '' : 'hidden'}" variant="ghost" size="icon"
-										><Star color="#E11D48" /></Button
-									>
+								>{dungeons.fortified[i].mythicLevel}
+								{#each Array(3) as _, j}
+									{#if j < dungeons.fortified[i].numKeystoneUpgrades}
+										<Button
+											class="h-5 w-5"
+											variant="ghost"
+											size="icon"
+											on:click={() => editStars(i, 'fortified', j)}
+											><Star color="#E11D48" fill="#E11D48" /></Button
+										>
+									{:else if edit}
+										<Button
+											class="h-5 w-5"
+											variant="ghost"
+											size="icon"
+											on:click={() => editStars(i, 'fortified', j)}
+											><Star color="#E11D48" fill="None" /></Button
+										>
+									{/if}
 								{/each}</span
 							>
-							<Button class="h-6 w-6 {edit ? '' : 'hidden'}" variant="ghost" size="icon"
+							<Button
+								class="h-6 w-6 {edit ? '' : 'hidden'}"
+								variant="ghost"
+								size="icon"
+								on:click={() => editKeyLevel(i, 'fortified', 'down')}
 								><ArrowDown color="#E11D48" /></Button
 							>
 						</div>
@@ -217,28 +302,54 @@
 
 					<Table.Cell class="py-0 text-xl">
 						<div class="grid grid-cols-1 items-center">
-							<Button class="h-6 w-6 {edit ? '' : 'hidden'}" variant="ghost" size="icon"
+							<Button
+								class="h-6 w-6 {edit ? '' : 'hidden'}"
+								variant="ghost"
+								size="icon"
+								on:click={() => editKeyLevel(i, 'tyrannical', 'up')}
 								><ArrowUp color="#E11D48" /></Button
 							>
 							<span
-								>{dungeons.tyrannical && dungeons.tyrannical[i]?.mythicLevel}
-								{#each Array(3) as _, i}
-									<Button class="h-5 w-5 {edit ? '' : 'hidden'}" variant="ghost" size="icon"
-										><Star color="#E11D48" /></Button
-									>
+								>{dungeons.tyrannical[i].mythicLevel}
+								{#each Array(3) as _, j}
+									{#if j < dungeons.tyrannical[i].numKeystoneUpgrades}
+										<Button
+											class="h-5 w-5"
+											variant="ghost"
+											size="icon"
+											on:click={() => editStars(i, 'tyrannical', j)}
+											><Star color="#E11D48" fill="#E11D48" /></Button
+										>
+									{:else if edit}
+										<Button
+											class="h-5 w-5"
+											variant="ghost"
+											size="icon"
+											on:click={() => editStars(i, 'tyrannical', j)}
+											><Star color="#E11D48" fill="None" /></Button
+										>
+									{/if}
 								{/each}</span
 							>
-							<Button class="h-6 w-6 {edit ? '' : 'hidden'}" variant="ghost" size="icon"
+							<Button
+								class="h-6 w-6 {edit ? '' : 'hidden'}"
+								variant="ghost"
+								size="icon"
+								on:click={() => editKeyLevel(i, 'tyrannical', 'down')}
 								><ArrowDown color="#E11D48" /></Button
 							>
 						</div></Table.Cell
 					>
 					<Table.Cell class="py-0 text-right text-xl"
-						>{((dungeons.fortified && dungeons.fortified[i]?.score) ?? 0) +
-							((dungeons.tyrannical && dungeons.tyrannical[i]?.score) ?? 0)}</Table.Cell
+						>{((dungeons.fortified[i].score) ?? 0) +
+							((dungeons.tyrannical[i].score) ?? 0)}</Table.Cell
 					>
 				</Table.Row>
 			{/each}
+			<Table.Row>
+				<Table.Cell colspan={4} class="py-2 font-semibold text-right text-xl"> Total Score: {totalScore}
+				</Table.Cell> 
+			</Table.Row>
 		</Table.Body>
 	</Table.Root>
 </div>
