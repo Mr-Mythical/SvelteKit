@@ -6,61 +6,15 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button/';
+	import { Dungeons, type Run, dungeonCount } from '$lib/models/dungeons';
 
 	let edit = false;
 	let scoreGoal: number;
-	const dungeonCount = 8;
 	let totalScore: number;
 
 	$: totalScore =
 		dungeons.fortified.map((run) => run.score).reduce((sum, val) => sum + val, 0) +
 		dungeons.tyrannical.map((run) => run.score).reduce((sum, val) => sum + val, 0);
-
-	interface Run {
-		dungeon: string;
-		mythicLevel: number;
-		clearTime: number;
-		parTime: number;
-		numKeystoneUpgrades: number;
-		score: number;
-	}
-
-	interface Dungeons {
-		fortified: Run[];
-		tyrannical: Run[];
-
-		// Index Signature
-		[key: string]: Run[] | undefined;
-	}
-
-	class Dungeons {
-		fortified: Run[];
-		tyrannical: Run[];
-		constructor() {
-			this.fortified = [];
-			this.tyrannical = [];
-
-			for (let i = 0; i < dungeonCount; i++) {
-				this.fortified.push({
-					dungeon: String(i + 1),
-					mythicLevel: 0,
-					clearTime: 0,
-					parTime: 0,
-					numKeystoneUpgrades: 1,
-					score: 0
-				});
-
-				this.tyrannical.push({
-					dungeon: String(i + 1),
-					mythicLevel: 0,
-					clearTime: 0,
-					parTime: 0,
-					numKeystoneUpgrades: 1,
-					score: 0
-				});
-			}
-		}
-	}
 
 	const dungeons = new Dungeons();
 
