@@ -221,7 +221,8 @@
 	>
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Add Character</Card.Title>
+				<Card.Title>Import Character</Card.Title>
+				<p class="text-sm text-muted-foreground">Powered by Raider.io</p>
 			</Card.Header>
 			<Card.Content>
 				<Label for="region">Region:</Label>
@@ -235,7 +236,8 @@
 				<Input id="realm" bind:value={realm} type="text" />
 			</Card.Content>
 			<Card.Footer>
-				<Button on:click={fetchRuns}>Submit</Button>
+				<Button class="my-2 mr-5 w-48 text-lg" on:click={() => popupCard = false}>Close</Button>
+				<Button class="my-2 w-48 text-lg" on:click={fetchRuns}>Submit</Button>
 			</Card.Footer>
 		</Card.Root>
 	</div>

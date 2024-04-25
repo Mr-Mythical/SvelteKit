@@ -44,14 +44,6 @@
 			<ul class="flex space-x-3">
 				<li><Button variant="link"><a href="/" class="text-lg font-semibold">Home</a></Button></li>
 				<li>
-					<Button variant="link"><a href="/about" class="text-lg font-semibold">About</a></Button>
-				</li>
-				<li>
-					<Button variant="link"
-						><a href="/contact" class="text-lg font-semibold">Contact</a></Button
-					>
-				</li>
-				<li>
 					<Button on:click={toggleMode} variant="ghost" size="icon">
 						<Sun
 							class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
@@ -68,14 +60,6 @@
 		<div class={`md:hidden ${open ? 'block' : 'hidden'} mt-2 w-full`}>
 			<ul class="flex flex-col space-y-2">
 				<li><Button variant="link"><a href="/" class="text-lg font-semibold">Home</a></Button></li>
-				<li>
-					<Button variant="link"><a href="/about" class="text-lg font-semibold">About</a></Button>
-				</li>
-				<li>
-					<Button variant="link"
-						><a href="/contact" class="text-lg font-semibold">Contact</a></Button
-					>
-				</li>
 			</ul>
 		</div>
 	</div>
