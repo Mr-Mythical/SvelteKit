@@ -6,8 +6,18 @@ declare global {
 		// interface Locals {}
 		// interface PageData {}
 		// interface PageState {}
-		// interface Platform {}
+		interface Platform {
+			env: {
+				COUNTER: DurableObjectNamespace;
+			};
+			context: {
+				waitUntil: (promise: Promise<any>) => void;
+			};
+			caches: CacheStorage & { default: Cache };
+		}
 	}
 }
 
-export {};
+export async function post(context) {
+	const counter = context.platform.env.COUNTER.idFromName("A");
+  }
