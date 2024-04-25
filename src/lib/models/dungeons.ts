@@ -1,14 +1,17 @@
-// Purpose: Model for dungeons data.
-
 export const dungeonCount = 8;
 
 export interface Run {
+    affixes: Affix[];
     dungeon: string;
-    mythicLevel: number;
-    clearTime: number;
-    parTime: number;
-    numKeystoneUpgrades: number;
+    short_name: string;
+    mythic_level: number;
+    par_time_ms: number;
+    num_keystone_upgrades: number;
     score: number;
+}
+
+export interface Affix {
+    name: string;
 }
 
 export interface Dungeons {
@@ -28,20 +31,22 @@ export class Dungeons {
 
         for (let i = 0; i < dungeonCount; i++) {
             this.fortified.push({
+                affixes: [{ name: '' }],
                 dungeon: String(i + 1),
-                mythicLevel: 0,
-                clearTime: 0,
-                parTime: 0,
-                numKeystoneUpgrades: 1,
+                short_name: '',
+                mythic_level: 0,
+                par_time_ms: 0,
+                num_keystone_upgrades: 1,
                 score: 0
             });
 
             this.tyrannical.push({
+                affixes: [{ name: '' }],
                 dungeon: String(i + 1),
-                mythicLevel: 0,
-                clearTime: 0,
-                parTime: 0,
-                numKeystoneUpgrades: 1,
+                short_name: '',
+                mythic_level: 0,
+                par_time_ms: 0,
+                num_keystone_upgrades: 1,
                 score: 0
             });
         }
