@@ -231,7 +231,6 @@
 				<Label for="charName">Character Name:</Label>
 				<Input id="charName" bind:value={characterName} type="text" />
 
-
 				<Label for="realm">Realm:</Label>
 				<Input id="realm" bind:value={realm} type="text" />
 			</Card.Content>
