@@ -10,6 +10,7 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
 	import * as Select from '$lib/components/ui/select/index.js';
+	import { apiPopup} from '../stores.js';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
 
@@ -36,6 +37,8 @@
 		: undefined;
 </script>
 
+
+{#if $apiPopup}
 <form
 	method="POST"
 	action="/"
@@ -91,7 +94,7 @@
   </Form.Field>
     </Card.Content>
 		<Card.Footer>
-			<Button class="my-2 mr-5 w-44 text-lg">Close</Button>
+			<Button class="my-2 mr-5 w-44 text-lg" on:click={() => ($apiPopup = !$apiPopup)}>Close</Button>
 			<Form.Button class="my-2 w-44 text-lg">Submit</Form.Button>
 		</Card.Footer>
 		{#if browser}
@@ -99,3 +102,4 @@
 		{/if}
 	</Card.Root>
 </form>
+{/if}

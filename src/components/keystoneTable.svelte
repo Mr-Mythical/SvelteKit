@@ -10,8 +10,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Dungeons, type Run, dungeonCount } from '$lib/models/dungeons';
 	import Layout from '../routes/+layout.svelte';
-
-	let popupCard: boolean = false;
+	import { apiPopup } from '../stores.js';
 
 	let characterName: string;
 	let region: string;
@@ -44,7 +43,7 @@
 					dungeons.tyrannical[i] = data.tyrannical[i];				
 				}
 			}
-			popupCard = false;
+			$apiPopup = false;
 		} else {
 			console.error('Error fetching Raider.io data:', response.status);
 		}
@@ -215,33 +214,6 @@
 	}
 </script>
 
-{#if popupCard}
-	<div
-		class="fixed left-0 top-0 z-10 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
-	>
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Import Character</Card.Title>
-				<p class="text-sm text-muted-foreground">Powered by Raider.io</p>
-			</Card.Header>
-			<Card.Content>
-				<Label for="region">Region:</Label>
-				<Input id="region" bind:value={region} type="text"/>
-
-				<Label for="charName">Character Name:</Label>
-				<Input id="charName" bind:value={characterName} type="text" />
-
-				<Label for="realm">Realm:</Label>
-				<Input id="realm" bind:value={realm} type="text" />
-			</Card.Content>
-			<Card.Footer>
-				<Button class="my-2 mr-5 w-48 text-lg" on:click={() => popupCard = false}>Close</Button>
-				<Button class="my-2 w-48 text-lg" on:click={fetchRuns}>Submit</Button>
-			</Card.Footer>
-		</Card.Root>
-	</div>
-{/if}
-
 <div class="container mx-auto flex flex-col items-center justify-center p-0 md:px-16 lg:px-52">
 	<div class="mb-2 mt-6 flex flex-col items-center md:flex-row">
 		<Label class="mr-2 text-lg md:mb-0 md:mr-2" for="scoreTarget">Score Target:</Label>
@@ -258,7 +230,7 @@
 
 	<Button class="my-2 w-48 text-lg" on:click={() => (edit = !edit)}>Manual Edit</Button>
 
-	<Button class="my-2 w-48 text-lg" on:click={() => (popupCard = !popupCard)}
+	<Button class="my-2 w-48 text-lg" on:click={() => ($apiPopup = !$apiPopup)}
 		>Import Character</Button
 	>
 
