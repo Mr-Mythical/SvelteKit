@@ -1,9 +1,11 @@
 import { z } from "zod";
+
+const regionSchema = z.enum(['us', 'eu', 'tw', 'kr', 'cn']);
+
+  export const formSchema = z.object({
+    region: regionSchema,
+    characterName: z.string().min(1).max(20),
+    realm: z.string().min(1).max(20),
+  });
  
-export const formSchema = z.object({
-  email: z
-    .string({ required_error: "Please select an email to display" })
-    .email()
-});
- 
-export type FormSchema = typeof formSchema;
+  export type FormSchema = typeof formSchema;
