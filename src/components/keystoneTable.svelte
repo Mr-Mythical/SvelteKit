@@ -6,60 +6,29 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button/';
-	import * as Select from '$lib/components/ui/select';
-	import * as Card from '$lib/components/ui/card';
 	import { Dungeons, type Run, dungeonCount } from '$lib/models/dungeons';
-	import Layout from '../routes/+layout.svelte';
 	import { apiPopup } from '../stores.js';
-
-	let characterName: string;
-	let region: string;
-	let realm: string;
+	import { dungeonData } from '../stores.js';
 
 	let edit = false;
 	let scoreGoal: number;
 	let totalScore: number;
 
 	$: totalScore =
-		dungeons.fortified.map((run) => run.score).reduce((sum, val) => sum + val, 0) +
-		dungeons.tyrannical.map((run) => run.score).reduce((sum, val) => sum + val, 0);
-
-	const dungeons = new Dungeons();
-
-	async function fetchRuns() {
-		resetRuns();
-		const url = `/api/raiderio?name=${characterName}&region=${region}&realm=${realm}`;
-		const response = await fetch(url);
-
-		if (response.ok) {
-			let data = await response.json();
-			if (data.fortified.length != 0) {
-				for (let i = 0; i < data.fortified.length; i++) {
-					dungeons.fortified[i] = data.fortified[i];				
-				}
-			}
-			if (data.tyrannical.length != 0) {
-				for (let i = 0; i < data.tyrannical.length; i++) {
-					dungeons.tyrannical[i] = data.tyrannical[i];				
-				}
-			}
-			$apiPopup = false;
-		} else {
-			console.error('Error fetching Raider.io data:', response.status);
-		}
-	}
+		$dungeonData.fortified.map((run) => run.score).reduce((sum, val) => sum + val, 0) +
+		$dungeonData.tyrannical.map((run) => run.score).reduce((sum, val) => sum + val, 0);
 
 	function resetRuns() {
 		for (var i = 0; i < dungeonCount; i++) {
 			let num = i + 1;
-			dungeons.fortified[i].dungeon = num.toString();
-			dungeons.fortified[i].score = 0;
-			dungeons.fortified[i].mythic_level = 0;
-			dungeons.fortified[i].num_keystone_upgrades = 1;
-			dungeons.tyrannical[i].dungeon = num.toString();
-			dungeons.tyrannical[i].score = 0;
-			dungeons.tyrannical[i].mythic_level = 0;
-			dungeons.tyrannical[i].num_keystone_upgrades = 1;
+			$dungeonData.fortified[i].dungeon = num.toString();
+			$dungeonData.fortified[i].score = 0;
+			$dungeonData.fortified[i].mythic_level = 0;
+			$dungeonData.fortified[i].num_keystone_upgrades = 1;
+			$dungeonData.tyrannical[i].dungeon = num.toString();
+			$dungeonData.tyrannical[i].score = 0;
+			$dungeonData.tyrannical[i].mythic_level = 0;
+			$dungeonData.tyrannical[i].num_keystone_upgrades = 1;
 		}
 	}
 
@@ -71,12 +40,11 @@
 		if (keyLevel < 2) {
 			return 0;
 		} else if (keyLevel < 5) {
-			baseScore = 80 + (keyLevel * 7) + (time / 40) * 5;
-		}
-		else if (keyLevel < 10) {
-			baseScore = 90 + (keyLevel * 7) + (time / 40) * 5;
+			baseScore = 80 + keyLevel * 7 + (time / 40) * 5;
+		} else if (keyLevel < 10) {
+			baseScore = 90 + keyLevel * 7 + (time / 40) * 5;
 		} else {
-			baseScore = 100 + (keyLevel * 7) + (time / 40) * 5;
+			baseScore = 100 + keyLevel * 7 + (time / 40) * 5;
 		}
 		return Math.round(baseScore * 10) / 10;
 	}
@@ -92,11 +60,11 @@
 
 				if (scorePerDungeon === bestAndAlternate) {
 					for (let j = 0; j < dungeonCount; j++) {
-						dungeons.fortified[j].mythic_level = i;
-						dungeons.tyrannical[j].mythic_level = i;
+						$dungeonData.fortified[j].mythic_level = i;
+						$dungeonData.tyrannical[j].mythic_level = i;
 
-						dungeons.fortified[j].score = bestAndAlternate / 2;
-						dungeons.tyrannical[j].score = bestAndAlternate / 2;
+						$dungeonData.fortified[j].score = bestAndAlternate / 2;
+						$dungeonData.tyrannical[j].score = bestAndAlternate / 2;
 					}
 					break;
 				} else if (bestAndAlternate > scorePerDungeon) {
@@ -106,33 +74,33 @@
 					for (let j = 0; j < dungeonCount; j++) {
 						if (scoreDifference > 0) {
 							scoreDifference -= scoreFormula(i) * 1.5 - scoreFormula(i - 1) * 1.5;
-							dungeons.fortified[j].mythic_level = i;
-							dungeons.fortified[j].score = scoreFormula(i) * 1.5;
+							$dungeonData.fortified[j].mythic_level = i;
+							$dungeonData.fortified[j].score = scoreFormula(i) * 1.5;
 						} else {
-							dungeons.fortified[j].mythic_level = i - 1;
-							dungeons.fortified[j].score = scoreFormula(i - 1) * 1.5;
+							$dungeonData.fortified[j].mythic_level = i - 1;
+							$dungeonData.fortified[j].score = scoreFormula(i - 1) * 1.5;
 						}
 					}
 					for (let j = 0; j < dungeonCount; j++) {
 						if (scoreDifference > 0) {
 							scoreDifference -= scoreFormula(i) * 0.5 - scoreFormula(i - 1) * 0.5;
-							dungeons.tyrannical[j].mythic_level = i;
-							dungeons.tyrannical[j].score = scoreFormula(i) * 0.5;
+							$dungeonData.tyrannical[j].mythic_level = i;
+							$dungeonData.tyrannical[j].score = scoreFormula(i) * 0.5;
 						} else if (
 							scoreDifference / (scoreFormula(i) * 0.5 - scoreFormula(i - 1) * 0.5) <=
 							j - dungeonCount
 						) {
 							if (i != 3) {
 								scoreDifference += scoreFormula(i, 0) * 0.5 - scoreFormula(i - 1) * 0.5;
-								dungeons.tyrannical[j].mythic_level = i - 2;
-								dungeons.tyrannical[j].score = scoreFormula(i - 2) * 0.5;
+								$dungeonData.tyrannical[j].mythic_level = i - 2;
+								$dungeonData.tyrannical[j].score = scoreFormula(i - 2) * 0.5;
 							} else {
-								dungeons.tyrannical[j].mythic_level = i - 1;
-								dungeons.tyrannical[j].score = scoreFormula(i - 1) * 0.5;
+								$dungeonData.tyrannical[j].mythic_level = i - 1;
+								$dungeonData.tyrannical[j].score = scoreFormula(i - 1) * 0.5;
 							}
 						} else {
-							dungeons.tyrannical[j].mythic_level = i - 1;
-							dungeons.tyrannical[j].score = scoreFormula(i - 1) * 0.5;
+							$dungeonData.tyrannical[j].mythic_level = i - 1;
+							$dungeonData.tyrannical[j].score = scoreFormula(i - 1) * 0.5;
 						}
 					}
 					break;
@@ -143,15 +111,15 @@
 			for (let i = 0; i < dungeonCount; i++) {
 				if (tempScore > 0) {
 					tempScore -= 141;
-					dungeons.fortified[i].mythic_level = 2;
-					dungeons.fortified[i].score += 141;
+					$dungeonData.fortified[i].mythic_level = 2;
+					$dungeonData.fortified[i].score += 141;
 				}
 			}
 			for (let i = 0; i < dungeonCount; i++) {
 				if (tempScore > 0) {
 					tempScore -= 47;
-					dungeons.tyrannical[i].mythic_level = 2;
-					dungeons.tyrannical[i].score += 47;
+					$dungeonData.tyrannical[i].mythic_level = 2;
+					$dungeonData.tyrannical[i].score += 47;
 				}
 			}
 		}
@@ -178,9 +146,9 @@
 	}
 
 	function editKeyLevel(dungeon: number, affix: string, direction: string) {
-		let currentDungeon = dungeons[affix]![dungeon];
+		let currentDungeon = $dungeonData[affix]![dungeon];
 		var otherAffix = affix === 'fortified' ? 'tyrannical' : 'fortified';
-		let otherDungeon = dungeons[otherAffix]![dungeon];
+		let otherDungeon = $dungeonData[otherAffix]![dungeon];
 
 		if (currentDungeon.mythic_level < 2 && direction === 'up') {
 			currentDungeon.mythic_level = 2;
@@ -197,20 +165,20 @@
 
 		adjustScores(currentDungeon, otherDungeon);
 
-		dungeons[affix]![dungeon] = currentDungeon;
-		dungeons[otherAffix]![dungeon] = otherDungeon;
+		$dungeonData[affix]![dungeon] = currentDungeon;
+		$dungeonData[otherAffix]![dungeon] = otherDungeon;
 	}
 
 	function editStars(dungeon: number, affix: string, star: number) {
-		var currentDungeon = dungeons[affix]![dungeon];
+		var currentDungeon = $dungeonData[affix]![dungeon];
 		var otherAffix = affix === 'fortified' ? 'tyrannical' : 'fortified';
-		var otherDungeon = dungeons[otherAffix]![dungeon];
+		var otherDungeon = $dungeonData[otherAffix]![dungeon];
 		currentDungeon.num_keystone_upgrades = star + 1;
 
 		adjustScores(currentDungeon, otherDungeon);
 
-		dungeons[affix]![dungeon] = currentDungeon;
-		dungeons[otherAffix]![dungeon] = otherDungeon;
+		$dungeonData[affix]![dungeon] = currentDungeon;
+		$dungeonData[otherAffix]![dungeon] = otherDungeon;
 	}
 </script>
 
@@ -246,7 +214,7 @@
 		<Table.Body>
 			{#each Array(dungeonCount) as _, i}
 				<Table.Row class="h-12">
-					<Table.Cell class="py-0 text-xl">{dungeons.fortified[i].dungeon}</Table.Cell>
+					<Table.Cell class="py-0 text-xl">{$dungeonData.fortified[i].dungeon}</Table.Cell>
 					<Table.Cell class="py-0 text-xl">
 						<div class="grid grid-cols-1 items-center">
 							<Button
@@ -257,9 +225,9 @@
 								><ArrowUp color="#E11D48" /></Button
 							>
 							<span
-								>{dungeons.fortified[i].mythic_level}
+								>{$dungeonData.fortified[i].mythic_level}
 								{#each Array(3) as _, j}
-									{#if j < dungeons.fortified[i].num_keystone_upgrades}
+									{#if j < $dungeonData.fortified[i].num_keystone_upgrades}
 										<Button
 											class="h-5 w-5"
 											variant="ghost"
@@ -298,9 +266,9 @@
 								><ArrowUp color="#E11D48" /></Button
 							>
 							<span
-								>{dungeons.tyrannical[i].mythic_level}
+								>{$dungeonData.tyrannical[i].mythic_level}
 								{#each Array(3) as _, j}
-									{#if j < dungeons.tyrannical[i].num_keystone_upgrades}
+									{#if j < $dungeonData.tyrannical[i].num_keystone_upgrades}
 										<Button
 											class="h-5 w-5"
 											variant="ghost"
@@ -329,9 +297,9 @@
 						</div></Table.Cell
 					>
 					<Table.Cell class="py-0 text-right text-xl"
-						>{((dungeons.fortified[i].score ?? 0) + (dungeons.tyrannical[i].score ?? 0)).toFixed(
-							1
-						)}</Table.Cell
+						>{(
+							($dungeonData.fortified[i].score ?? 0) + ($dungeonData.tyrannical[i].score ?? 0)
+						).toFixed(1)}</Table.Cell
 					>
 				</Table.Row>
 			{/each}
