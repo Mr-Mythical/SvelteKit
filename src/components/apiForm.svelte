@@ -4,8 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button/';
 	import { formSchema, type FormSchema } from '../routes/schema';
-	import { browser } from '$app/environment';
-	import SuperDebug, { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
+	import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
 	import * as Select from '$lib/components/ui/select/index.js';
@@ -19,12 +18,10 @@
 		validators: zodClient(formSchema),
 		onUpdated: ({ form: f }) => {
 			if (f.valid) {
-				console.log('valid', f.data);
 				toast.success(`You submitted ${JSON.stringify(f.data, null, 2)}`);
 				const { region, realm, characterName } = f.data;
 				fetchRuns(characterName, region, realm);
 			} else {
-				console.log(f.errors);
 				toast.error('Please fix the errors in the form.');
 			}
 		}

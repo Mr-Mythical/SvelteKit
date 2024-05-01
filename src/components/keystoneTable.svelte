@@ -6,7 +6,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button/';
-	import { Dungeons, type Run, dungeonCount } from '$lib/models/dungeons';
+	import { type Run, dungeonCount } from '$lib/models/dungeons';
 	import { apiPopup } from '../stores.js';
 	import { dungeonData } from '../stores.js';
 
