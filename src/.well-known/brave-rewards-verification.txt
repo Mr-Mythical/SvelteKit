@@ -1,0 +1,4 @@
+This is a Brave Creators publisher verification file.
+
+Domain: mrmythical.com
+Token: a147278c611fe840c4ec28c2f8b239c329cd85ffe262f96e804a0703c759f4e5
