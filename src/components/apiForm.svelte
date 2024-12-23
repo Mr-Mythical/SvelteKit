@@ -38,38 +38,35 @@
 
 	async function fetchRuns(characterName: string, region: string, realm: string) {
 		resetRuns();
+
 		const url = `/api/raiderio?name=${characterName}&region=${region}&realm=${realm}`;
 		const response = await fetch(url);
 
 		if (response.ok) {
-			let data = await response.json();
-			if (data.fortified.length != 0) {
-				for (let i = 0; i < data.fortified.length; i++) {
-					$dungeonData.fortified[i] = data.fortified[i];
-				}
-			}
-			if (data.tyrannical.length != 0) {
-				for (let i = 0; i < data.tyrannical.length; i++) {
-					$dungeonData.tyrannical[i] = data.tyrannical[i];
-				}
+			const data = await response.json();
+
+			// data.runs is now a single array of runs
+			if (data.runs?.length) {
+				$dungeonData.runs = data.runs;
 			}
 			$apiPopup = false;
 		} else {
 			console.error('Error fetching Raider.io data:', response.status);
+			toast.error('Failed to fetch data from Raider.io');
 		}
 	}
 
 	function resetRuns() {
-		for (var i = 0; i < dungeonCount; i++) {
-			let num = i + 1;
-			$dungeonData.fortified[i].dungeon = num.toString();
-			$dungeonData.fortified[i].score = 0;
-			$dungeonData.fortified[i].mythic_level = 0;
-			$dungeonData.fortified[i].num_keystone_upgrades = 1;
-			$dungeonData.tyrannical[i].dungeon = num.toString();
-			$dungeonData.tyrannical[i].score = 0;
-			$dungeonData.tyrannical[i].mythic_level = 0;
-			$dungeonData.tyrannical[i].num_keystone_upgrades = 1;
+		// If your store is now a single array called `runs`, reset that
+		for (let i = 0; i < dungeonCount; i++) {
+			$dungeonData.runs[i] = {
+				dungeon: String(i + 1),
+				short_name: '',
+				mythic_level: 0,
+				par_time_ms: 0,
+				num_keystone_upgrades: 1,
+				score: 0
+			};
 		}
 	}
 </script>
@@ -84,7 +81,7 @@
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Import Character</Card.Title>
-				<p class="text-sm text-muted-foreground">
+				<p class="text-muted-foreground text-sm">
 					Powered by <a href="http://raider.io">Raider.io</a>
 				</p>
 			</Card.Header>
