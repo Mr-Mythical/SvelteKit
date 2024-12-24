@@ -14,6 +14,55 @@
 	let scoreGoal: number;
 	let totalScore: number;
 
+	// SINGLE text box for both export and import
+	let expImData = '';
+
+	// For the small "Copied!" popup
+	let showTooltip = false;
+	let tooltipX = 0;
+	let tooltipY = 0;
+
+	// Export → Base64-encode the runs, store in `expImData`, copy to clipboard, show tooltip
+	async function exportRuns(event: MouseEvent) {
+		const json = JSON.stringify($dungeonData.runs);
+		expImData = btoa(json);
+
+		try {
+			await navigator.clipboard.writeText(expImData);
+			console.log('Export data copied to clipboard:', expImData);
+
+			// Position the tooltip near the mouse cursor
+			tooltipX = event.clientX;
+			tooltipY = event.clientY;
+			showTooltip = true;
+
+			// Hide tooltip after 1 second
+			setTimeout(() => {
+				showTooltip = false;
+			}, 1000);
+		} catch (err) {
+			console.error('Failed to copy Export data:', err);
+			alert('Failed to copy Export data.');
+		}
+	}
+
+	// Import → Decode from `expImData` and overwrite $dungeonData.runs
+	function importRuns() {
+		if (!expImData) {
+			alert('No data to import');
+			return;
+		}
+		try {
+			const decodedJson = atob(expImData);
+			const parsed = JSON.parse(decodedJson);
+			$dungeonData.runs = parsed;
+			console.log('Imported runs:', parsed);
+		} catch (err) {
+			console.error('Failed to import runs:', err);
+			alert('Failed to import. Check your string.');
+		}
+	}
+
 	function incrementKeyLevel(i: number) {
 		if ($dungeonData.runs[i].mythic_level === 0) {
 			$dungeonData.runs[i].mythic_level = 2;
@@ -40,7 +89,6 @@
 	}
 
 	function recalcScore(i: number) {
-		// example: compute score for run[i] based on your formula
 		let run = $dungeonData.runs[i];
 		run.score = scoreFormula(run.mythic_level, run.num_keystone_upgrades);
 	}
@@ -61,19 +109,15 @@
 		}
 
 		const affixBreakpoints: Record<number, number> = {
-			4: 10, // +4 adds +10
-			7: 15, // +7 adds +15
-			10: 10, // +10 adds +10
-			12: 15 // +12 adds +15
+			4: 10,
+			7: 15,
+			10: 10,
+			12: 15
 		};
 
-		// Starting par score at +2
 		let parScore = 165;
-
 		for (let current = 2; current < keyLevel; current++) {
-			// Normal increment per level
 			parScore += 15;
-
 			const nextLevel = current + 1;
 			if (affixBreakpoints[nextLevel]) {
 				parScore += affixBreakpoints[nextLevel];
@@ -83,16 +127,15 @@
 		let timeAdjustment = 0;
 		switch (star) {
 			case 1:
-				timeAdjustment = 0; // par or slower
+				timeAdjustment = 0;
 				break;
 			case 2:
-				timeAdjustment = 7.5; // ~20% faster
+				timeAdjustment = 7.5;
 				break;
 			case 3:
-				timeAdjustment = 15; // ~40% faster
+				timeAdjustment = 15;
 				break;
 		}
-
 		return parScore + timeAdjustment;
 	}
 
@@ -104,11 +147,9 @@
 		if (scoreGoal >= 1320) {
 			for (let i = 0; i < 20; i++) {
 				runScore = Math.round(scoreFormula(i, 1));
-
 				if (scorePerDungeon === runScore) {
 					for (let j = 0; j < dungeonCount; j++) {
 						$dungeonData.runs[j].mythic_level = i;
-
 						$dungeonData.runs[j].score = runScore;
 					}
 					break;
@@ -142,87 +183,130 @@
 	}
 </script>
 
-<div
-	class="container mx-auto flex flex-col items-center justify-center p-0 md:px-16 lg:px-52 xl:px-80"
->
-	<div class="mb-2 mt-6 flex flex-col items-center md:flex-row">
-		<Label class="mr-2 text-lg md:mb-0 md:mr-2" for="scoreTarget">Score Target:</Label>
-		<Input
-			class="w-48 text-lg"
-			type="number"
-			id="scoreTarget"
-			placeholder="Score Target"
-			bind:value={scoreGoal}
-			min="0"
-			on:input={calculateScore}
-		/>
+<div class="container mx-auto flex flex-col gap-8 p-4 md:flex-row md:px-16 lg:px-52 xl:px-80">
+	<!-- LEFT COLUMN (fixed width on md+ screens) -->
+	<div class="flex w-full flex-col space-y-6 md:w-64">
+		<!-- Score Target -->
+		<div>
+			<Label class="mb-2 block text-lg" for="scoreTarget">Score Target:</Label>
+			<Input
+				class="w-full"
+				type="number"
+				id="scoreTarget"
+				placeholder="Score Target"
+				bind:value={scoreGoal}
+				min="0"
+				on:input={calculateScore}
+			/>
+		</div>
+
+		<!-- Buttons -->
+		<div class="flex flex-col space-y-2">
+			<Button class="w-full" on:click={() => (edit = !edit)}>Manual Edit</Button>
+			<Button class="w-full" on:click={() => ($apiPopup = !$apiPopup)}>Import Character</Button>
+		</div>
+
+		<!-- Export/Import Section (one text box) -->
+		<div class="border-t pt-4">
+			<div class="mb-2 flex space-x-2">
+				<!-- Pass the click event to exportRuns -->
+				<Button class="w-full" on:click={(e) => exportRuns(e)}>Export Runs</Button>
+				<Button class="w-full" on:click={importRuns}>Import Runs</Button>
+			</div>
+			<Label class="mb-2 block font-semibold">Export/Import Data:</Label>
+			<Input class="w-full" placeholder="Paste or view Base64 data..." bind:value={expImData} />
+			<small class="mt-1 block text-sm text-gray-500">
+				Click Export to copy data. Paste data here, then click Import to load.
+			</small>
+		</div>
 	</div>
 
-	<div class="flex items-center space-x-2">
-		<Button class="w-48 text-lg" on:click={() => (edit = !edit)}>Manual Edit</Button>
-		<Button class="w-48 text-lg" on:click={() => ($apiPopup = !$apiPopup)}>Import Character</Button>
-	</div>
+	<!-- RIGHT COLUMN (table) -->
+	<div class="relative flex w-full flex-col items-center">
+		<!-- We'll place the tooltip absolutely in here, so it floats above the table -->
 
-	<Table.Root>
-		<Table.Header>
-			<Table.Row>
-				<Table.Head class="text-semibold w-2/5 text-xl">Keystone</Table.Head>
-				<Table.Head class="text-semibold w-1/4 text-xl">Level</Table.Head>
-				<Table.Head class="w-1/10 text-semibold text-right text-xl">Score</Table.Head>
-			</Table.Row>
-		</Table.Header>
-		<Table.Body>
-			{#each Array(dungeonCount) as _, i}
-				<Table.Row class="h-12">
-					<Table.Cell class="py-0 text-xl">{$dungeonData.runs[i].dungeon}</Table.Cell>
-					<Table.Cell class="py-0 text-xl">
-						<div class="grid grid-cols-1 items-center">
-							<Button
-								class="h-6 w-6 {edit ? '' : 'hidden'}"
-								variant="ghost"
-								size="icon"
-								on:click={() => incrementKeyLevel(i)}><ArrowUp color="#E11D48" /></Button
-							>
-							<span
-								>{$dungeonData.runs[i].mythic_level}
-								{#each Array(3) as _, j}
-									{#if j < $dungeonData.runs[i].num_keystone_upgrades}
-										<Button
-											class="h-5 w-5"
-											variant="ghost"
-											size="icon"
-											on:click={() => setStars(i, j)}
-											><Star color="#E11D48" fill="#E11D48" /></Button
-										>
-									{:else if edit}
-										<Button
-											class="h-5 w-5"
-											variant="ghost"
-											size="icon"
-											on:click={() => setStars(i, j)}><Star color="#E11D48" fill="None" /></Button
-										>
-									{/if}
-								{/each}</span
-							>
-							<Button
-								class="h-6 w-6 {edit ? '' : 'hidden'}"
-								variant="ghost"
-								size="icon"
-								on:click={() => decrementKeyLevel(i)}><ArrowDown color="#E11D48" /></Button
-							>
-						</div>
-					</Table.Cell>
-
-					<Table.Cell class="py-0 text-right text-xl"
-						>{($dungeonData.runs[i].score ?? 0).toFixed(1)}</Table.Cell
-					>
+		<Table.Root>
+			<Table.Header>
+				<Table.Row>
+					<Table.Head class="text-semibold w-2/5 text-xl">Keystone</Table.Head>
+					<Table.Head class="text-semibold w-1/4 text-xl">Level</Table.Head>
+					<Table.Head class="w-1/10 text-semibold text-right text-xl">Score</Table.Head>
 				</Table.Row>
-			{/each}
-			<Table.Row>
-				<Table.Cell colspan={4} class="py-2 text-right text-xl font-semibold">
-					Total Score: {totalScore.toFixed(1)}
-				</Table.Cell>
-			</Table.Row>
-		</Table.Body>
-	</Table.Root>
+			</Table.Header>
+			<Table.Body>
+				{#each Array(dungeonCount) as _, i}
+					<Table.Row class="h-12">
+						<Table.Cell class="py-0 text-xl">{$dungeonData.runs[i].dungeon}</Table.Cell>
+						<Table.Cell class="py-0 text-xl">
+							<div class="grid grid-cols-1 items-center">
+								<Button
+									class="h-6 w-6 {edit ? '' : 'hidden'}"
+									variant="ghost"
+									size="icon"
+									on:click={() => incrementKeyLevel(i)}
+								>
+									<ArrowUp color="#E11D48" />
+								</Button>
+								<span>
+									{$dungeonData.runs[i].mythic_level}
+									{#each Array(3) as _, j}
+										{#if j < $dungeonData.runs[i].num_keystone_upgrades}
+											<Button
+												class="h-5 w-5"
+												variant="ghost"
+												size="icon"
+												on:click={() => setStars(i, j)}
+											>
+												<Star color="#E11D48" fill="#E11D48" />
+											</Button>
+										{:else if edit}
+											<Button
+												class="h-5 w-5"
+												variant="ghost"
+												size="icon"
+												on:click={() => setStars(i, j)}
+											>
+												<Star color="#E11D48" fill="none" />
+											</Button>
+										{/if}
+									{/each}
+								</span>
+								<Button
+									class="h-6 w-6 {edit ? '' : 'hidden'}"
+									variant="ghost"
+									size="icon"
+									on:click={() => decrementKeyLevel(i)}
+								>
+									<ArrowDown color="#E11D48" />
+								</Button>
+							</div>
+						</Table.Cell>
+						<Table.Cell class="py-0 text-right text-xl">
+							{($dungeonData.runs[i].score ?? 0).toFixed(1)}
+						</Table.Cell>
+					</Table.Row>
+				{/each}
+				<Table.Row>
+					<Table.Cell colspan={4} class="py-2 text-right text-xl font-semibold">
+						Total Score: {totalScore.toFixed(1)}
+					</Table.Cell>
+				</Table.Row>
+			</Table.Body>
+		</Table.Root>
+
+		<!-- Small Copied! Popup -->
+		{#if showTooltip}
+			<div
+				class="pointer-events-none z-50 rounded bg-muted px-2 py-1 text-sm"
+				style="
+		  position: fixed;   
+		  top: {tooltipY - 30}px;  /* 30px above the cursor */
+		  left: {tooltipX}px;
+		  transform: translateX(-50%);
+		"
+			>
+				Copied!
+			</div>
+		{/if}
+	</div>
 </div>
