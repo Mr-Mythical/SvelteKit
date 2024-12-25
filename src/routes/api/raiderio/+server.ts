@@ -5,9 +5,9 @@ interface RaiderIoResponse {
 	region: string;
 	realm: string;
 	mythic_plus_best_runs?: RaiderIoRun[];
-}
-
-interface RaiderIoRun {
+  }
+  
+  interface RaiderIoRun {
 	dungeon: string;
 	short_name: string;
 	mythic_level: number;
@@ -15,12 +15,13 @@ interface RaiderIoRun {
 	num_keystone_upgrades: number;
 	score: number;
 	affixes: Affix[];
-}
-
-interface Affix {
+  }
+  
+  interface Affix {
 	id: number;
 	name: string;
-}
+  }
+  
 
 export const GET: RequestHandler = async ({ url }) => {
 	const name = url.searchParams.get('name');

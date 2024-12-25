@@ -13,13 +13,24 @@ export interface Dungeons {
 	runs: Run[];
 }
 
+export const dungeons = [
+	{ value: 'The Dawnbreaker', label: 'The Dawnbreaker' },
+	{ value: 'Ara-Kara, City of Echoes', label: 'Ara-Kara, City of Echoes' },
+	{ value: 'Mists of Tirna Scithe', label: 'Mists of Tirna Scithe' },
+	{ value: 'The Necrotic Wake', label: 'The Necrotic Wake' },
+	{ value: 'The Stonevault', label: 'The Stonevault' },
+	{ value: 'Siege of Boralus', label: 'Siege of Boralus' },
+	{ value: 'Grim Batol', label: 'Grim Batol' },
+	{ value: 'City of Threads', label: 'City of Threads' }
+];
+
 export class Dungeons {
 	runs: Run[];
 	constructor() {
 		this.runs = [];
 		for (let i = 0; i < dungeonCount; i++) {
 			this.runs.push({
-				dungeon: String(i + 1),
+				dungeon: dungeons[i].value,
 				short_name: '',
 				mythic_level: 0,
 				par_time_ms: 0,

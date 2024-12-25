@@ -11,8 +11,18 @@
 	import { apiPopup } from '../stores.js';
 	import { dungeonData } from '../stores.js';
 	import { dungeonCount } from '$lib/models/dungeons';
+	import { writable } from 'svelte/store';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
+
+	interface RaiderIoRun {
+		dungeon: string;
+		short_name: string;
+		mythic_level: number;
+		par_time_ms: number;
+		num_keystone_upgrades: number;
+		score: number;
+	}
 
 	const form = superForm(data, {
 		validators: zodClient(formSchema),
@@ -45,9 +55,31 @@
 		if (response.ok) {
 			const data = await response.json();
 			if (data.runs?.length) {
-				$dungeonData.runs = data.runs;
+				const mappedRuns = data.runs.slice(0, dungeonCount).map((run: RaiderIoRun) => ({
+					dungeon: run.dungeon, // Ensure this matches a 'value' in dungeons array
+					short_name: run.short_name || '',
+					mythic_level: run.mythic_level || 0,
+					par_time_ms: run.par_time_ms || 0,
+					num_keystone_upgrades: run.num_keystone_upgrades || 1,
+					score: run.score || 0
+				}));
+				// Fill remaining runs if necessary
+				while (mappedRuns.length < dungeonCount) {
+					mappedRuns.push({
+						dungeon: '',
+						short_name: '',
+						mythic_level: 0,
+						par_time_ms: 0,
+						num_keystone_upgrades: 1,
+						score: 0
+					});
+				}
+				dungeonData.set({ runs: mappedRuns });
+				toast.success('Runs fetched successfully.');
+			} else {
+				toast.error('No runs found for this character.');
 			}
-			$apiPopup = false;
+			apiPopup.set(false);
 		} else {
 			console.error('Error fetching Raider.io data:', response.status);
 			toast.error('Failed to fetch data from Raider.io');
@@ -55,16 +87,15 @@
 	}
 
 	function resetRuns() {
-		for (let i = 0; i < dungeonCount; i++) {
-			$dungeonData.runs[i] = {
-				dungeon: String(i + 1),
-				short_name: '',
-				mythic_level: 0,
-				par_time_ms: 0,
-				num_keystone_upgrades: 1,
-				score: 0
-			};
-		}
+		const emptyRuns = Array.from({ length: dungeonCount }, () => ({
+			dungeon: '', // Default to empty or a specific value
+			short_name: '',
+			mythic_level: 0,
+			par_time_ms: 0,
+			num_keystone_upgrades: 1,
+			score: 0
+		}));
+		dungeonData.set({ runs: emptyRuns });
 	}
 </script>
 

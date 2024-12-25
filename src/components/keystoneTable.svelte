@@ -1,4 +1,5 @@
 <script lang="ts">
+	import DungeonCombobox from './dungeonCombobox.svelte';
 	import * as Table from '$lib/components/ui/table';
 	import ArrowUp from 'lucide-svelte/icons/chevron-up';
 	import ArrowDown from 'lucide-svelte/icons/chevron-down';
@@ -7,6 +8,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button/';
 	import { dungeonCount } from '$lib/models/dungeons';
+	import { dungeons } from '$lib/models/dungeons';
 	import { apiPopup } from '../stores.js';
 	import { dungeonData } from '../stores.js';
 
@@ -222,7 +224,19 @@
 			<Table.Body>
 				{#each Array(dungeonCount) as _, i}
 					<Table.Row class="h-12">
-						<Table.Cell class="py-0 text-xl">{$dungeonData.runs[i].dungeon}</Table.Cell>
+						<Table.Cell class="py-0 text-xl">
+							<DungeonCombobox
+								{dungeons}
+								selectedValue={$dungeonData.runs[i].dungeon}
+								triggerId={`dungeon-combobox-trigger-${i}`}
+								onSelect={(newValue) => {
+									dungeonData.update((data) => {
+										data.runs[i].dungeon = newValue;
+										return data;
+									});
+								}}
+							/>
+						</Table.Cell>
 						<Table.Cell class="py-0 text-xl">
 							<div class="grid grid-cols-1 items-center">
 								<Button
@@ -282,7 +296,7 @@
 
 		{#if showTooltip}
 			<div
-				class="pointer-events-none z-50 rounded bg-muted px-2 py-1 text-sm"
+				class="bg-muted pointer-events-none z-50 rounded px-2 py-1 text-sm"
 				style="
 		  position: fixed;   
 		  top: {tooltipY - 30}px;  /* 30px above the cursor */
