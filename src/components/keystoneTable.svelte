@@ -29,11 +29,9 @@
 		try {
 			await navigator.clipboard.writeText(expImData);
 			console.log('Export data copied to clipboard:', expImData);
-
 			tooltipX = event.clientX;
 			tooltipY = event.clientY;
 			showTooltip = true;
-
 			setTimeout(() => {
 				showTooltip = false;
 			}, 1000);
@@ -293,7 +291,6 @@
 				</Table.Row>
 			</Table.Body>
 		</Table.Root>
-
 		{#if showTooltip}
 			<div
 				class="bg-muted pointer-events-none z-50 rounded px-2 py-1 text-sm"
