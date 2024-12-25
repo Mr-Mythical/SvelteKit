@@ -1,7 +1,7 @@
 export const dungeonCount = 8;
 
 export interface Run {
-	dungeon: string; // dungeon name or ID
+	dungeon: string;
 	short_name: string;
 	mythic_level: number;
 	par_time_ms: number;

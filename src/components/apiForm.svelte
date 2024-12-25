@@ -44,8 +44,6 @@
 
 		if (response.ok) {
 			const data = await response.json();
-
-			// data.runs is now a single array of runs
 			if (data.runs?.length) {
 				$dungeonData.runs = data.runs;
 			}
@@ -57,7 +55,6 @@
 	}
 
 	function resetRuns() {
-		// If your store is now a single array called `runs`, reset that
 		for (let i = 0; i < dungeonCount; i++) {
 			$dungeonData.runs[i] = {
 				dungeon: String(i + 1),

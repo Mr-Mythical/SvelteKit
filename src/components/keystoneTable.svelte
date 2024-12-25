@@ -14,15 +14,12 @@
 	let scoreGoal: number;
 	let totalScore: number;
 
-	// SINGLE text box for both export and import
 	let expImData = '';
 
-	// For the small "Copied!" popup
 	let showTooltip = false;
 	let tooltipX = 0;
 	let tooltipY = 0;
 
-	// Export → Base64-encode the runs, store in `expImData`, copy to clipboard, show tooltip
 	async function exportRuns(event: MouseEvent) {
 		const json = JSON.stringify($dungeonData.runs);
 		expImData = btoa(json);
@@ -31,12 +28,10 @@
 			await navigator.clipboard.writeText(expImData);
 			console.log('Export data copied to clipboard:', expImData);
 
-			// Position the tooltip near the mouse cursor
 			tooltipX = event.clientX;
 			tooltipY = event.clientY;
 			showTooltip = true;
 
-			// Hide tooltip after 1 second
 			setTimeout(() => {
 				showTooltip = false;
 			}, 1000);
@@ -46,7 +41,6 @@
 		}
 	}
 
-	// Import → Decode from `expImData` and overwrite $dungeonData.runs
 	function importRuns() {
 		if (!expImData) {
 			alert('No data to import');
@@ -184,9 +178,7 @@
 </script>
 
 <div class="container mx-auto flex flex-col gap-8 p-4 md:flex-row md:px-16 lg:px-52 xl:px-80">
-	<!-- LEFT COLUMN (fixed width on md+ screens) -->
 	<div class="flex w-full flex-col space-y-6 md:w-64">
-		<!-- Score Target -->
 		<div>
 			<Label class="mb-2 block text-lg" for="scoreTarget">Score Target:</Label>
 			<Input
@@ -200,16 +192,13 @@
 			/>
 		</div>
 
-		<!-- Buttons -->
 		<div class="flex flex-col space-y-2">
 			<Button class="w-full" on:click={() => (edit = !edit)}>Manual Edit</Button>
 			<Button class="w-full" on:click={() => ($apiPopup = !$apiPopup)}>Import Character</Button>
 		</div>
 
-		<!-- Export/Import Section (one text box) -->
 		<div class="border-t pt-4">
 			<div class="mb-2 flex space-x-2">
-				<!-- Pass the click event to exportRuns -->
 				<Button class="w-full" on:click={(e) => exportRuns(e)}>Export Runs</Button>
 				<Button class="w-full" on:click={importRuns}>Import Runs</Button>
 			</div>
@@ -221,10 +210,7 @@
 		</div>
 	</div>
 
-	<!-- RIGHT COLUMN (table) -->
 	<div class="relative flex w-full flex-col items-center">
-		<!-- We'll place the tooltip absolutely in here, so it floats above the table -->
-
 		<Table.Root>
 			<Table.Header>
 				<Table.Row>
@@ -294,7 +280,6 @@
 			</Table.Body>
 		</Table.Root>
 
-		<!-- Small Copied! Popup -->
 		{#if showTooltip}
 			<div
 				class="pointer-events-none z-50 rounded bg-muted px-2 py-1 text-sm"
