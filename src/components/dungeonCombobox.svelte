@@ -34,31 +34,28 @@
 </script>
 
 <Popover.Root bind:open let:ids>
-	<!-- Trigger Button -->
 	<Popover.Trigger asChild let:builder>
-		<Button
-			builders={[builder]}
-			variant="outline"
-			role="combobox"
-			aria-expanded={open}
-			class="w-full justify-between"
-			id={triggerId}
-		>
-			{selectedLabel}
-			<ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
-			<span class="sr-only">Toggle dropdown</span>
-		</Button>
+    <Button
+      builders={[builder]}
+      variant="outline"
+      role="combobox"
+      aria-expanded={open}
+      aria-controls={ids.content}
+      aria-haspopup="listbox"
+      aria-labelledby={`${triggerId}-label`}
+      class="w-full justify-between"
+      id={triggerId}
+    >
+      <span id={`${triggerId}-label`}>{selectedLabel}</span>
+      <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
+      <span class="sr-only">Toggle dropdown</span>
+    </Button>
 	</Popover.Trigger>
 
-	<!-- Popover content (the dropdown) -->
 	<Popover.Content class="w-full p-0">
 		<Command.Root>
-			<!-- The input inside the dropdown for searching -->
 			<Command.Input placeholder="Search dungeon..." aria-label="Search dungeon" />
-
-			<!-- Shown if no dungeons match the query -->
 			<Command.Empty>No dungeon found.</Command.Empty>
-
 			<Command.Group>
 				{#each dungeons as dungeon}
 					<Command.Item
@@ -82,7 +79,6 @@
 </Popover.Root>
 
 <style>
-	/* Visually hidden class for accessibility */
 	.sr-only {
 		position: absolute;
 		width: 1px;
