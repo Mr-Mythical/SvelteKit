@@ -11,7 +11,14 @@
 	<div class="container flex flex-wrap items-center justify-between px-2 md:px-16">
 		<a href="/">
 			<div class="flex items-center">
-				<img src="../android-chrome-192x192.png" alt="Logo" class="size-10 md:size-16" />
+				<img 
+					src="../Logo64x64.webp" 
+					alt="Mr. Mythical Logo" 
+					class="w-10 h-10 md:w-16 md:h-16" 
+					srcset="../Logo40x40.webp 40w, ../Logo64x64.webp 64w, ../Logo128x128.webp 128w"
+					sizes="(max-width: 768px) 10vw, (min-width: 769px) 16vw"
+					loading="lazy"
+				/>
 				<h1 class="text-primary ml-3 text-2xl font-semibold md:text-3xl">Mr. Mythical</h1>
 			</div>
 		</a>
