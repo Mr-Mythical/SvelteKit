@@ -52,7 +52,7 @@
     </Button>
 	</Popover.Trigger>
 
-	<Popover.Content class="w-full p-0">
+	<Popover.Content class="p-0">
 		<Command.Root>
 			<Command.Input placeholder="Search dungeon..." aria-label="Search dungeon" />
 			<Command.Empty>No dungeon found.</Command.Empty>
@@ -63,7 +63,7 @@
 						onSelect={(selectedValue) => handleSelect(selectedValue)}
 						class={cn(
 							'flex cursor-pointer select-none items-center p-2',
-							selectedValue === dungeon.value ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'
+							selectedValue === dungeon.value ? 'bg-secondary' : ''
 						)}
 					>
 						<Check
