@@ -193,18 +193,29 @@
 		</div>
 
 		<div class="flex flex-col space-y-2">
-			<Button class="w-full" on:click={() => (edit = !edit)} aria-label="Toggle Manual Edit">Manual Edit</Button>
-			<Button class="w-full" on:click={() => ($apiPopup = !$apiPopup)} aria-label="Import Character">Import Character</Button>
+			<Button class="w-full" on:click={() => (edit = !edit)} aria-label="Toggle Manual Edit"
+				>Manual Edit</Button
+			>
+			<Button class="w-full" on:click={() => ($apiPopup = !$apiPopup)} aria-label="Import Character"
+				>Import Character</Button
+			>
 		</div>
 
 		<div class="border-t pt-4">
 			<div class="mb-2 flex space-x-2">
-				<Button class="w-full" on:click={(e) => exportRuns(e)} aria-label="Export Runs">Export Runs</Button>
+				<Button class="w-full" on:click={(e) => exportRuns(e)} aria-label="Export Runs"
+					>Export Runs</Button
+				>
 				<Button class="w-full" on:click={importRuns} aria-label="Import Runs">Import Runs</Button>
 			</div>
 			<Label class="mb-2 block font-semibold" for="dataInput">Export/Import Data:</Label>
-			<Input class="w-full" id="dataInput" placeholder="Paste or view Base64 data..." bind:value={expImData} />
-			<small class="mt-1 block text-sm text-gray-500">
+			<Input
+				class="w-full"
+				id="dataInput"
+				placeholder="Paste or view Base64 data..."
+				bind:value={expImData}
+			/>
+			<small class="text-muted-foreground mt-1 block text-sm">
 				Click Export to copy data. Paste data here, then click Import to load.
 			</small>
 		</div>
@@ -244,7 +255,7 @@
 									on:click={() => incrementKeyLevel(i)}
 									aria-label="Increase Mythic Level"
 								>
-									<ArrowUp color="#E11D48" />
+									<ArrowUp class="text-foreground" />
 								</Button>
 								<span>
 									{$dungeonData.runs[i].mythic_level}
@@ -257,7 +268,7 @@
 												on:click={() => setStars(i, j)}
 												aria-label="Set Stars"
 											>
-												<Star color="#E11D48" fill="#E11D48" />
+												<Star class="text-foreground fill-foreground" />
 											</Button>
 										{:else if edit}
 											<Button
@@ -267,7 +278,7 @@
 												on:click={() => setStars(i, j)}
 												aria-label="Set Stars"
 											>
-												<Star color="#E11D48" fill="none" />
+												<Star class="text-foreground" />
 											</Button>
 										{/if}
 									{/each}
@@ -279,7 +290,7 @@
 									on:click={() => decrementKeyLevel(i)}
 									aria-label="Decrease Mythic Level"
 								>
-									<ArrowDown color="#E11D48" />
+									<ArrowDown class="text-foreground" />
 								</Button>
 							</div>
 						</Table.Cell>
