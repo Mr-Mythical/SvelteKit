@@ -11,15 +11,15 @@
 	<div class="container flex flex-wrap items-center justify-between px-2 md:px-16">
 		<a href="/">
 			<div class="flex items-center">
-				<img 
-					src="../Logo64x64.webp" 
-					alt="Mr. Mythical Logo" 
-					class="w-10 h-10 md:w-16 md:h-16" 
+				<img
+					src="../Logo64x64.webp"
+					alt="Mr. Mythical Logo"
+					class="h-10 w-10 md:h-16 md:w-16"
 					srcset="../Logo40x40.webp 40w, ../Logo64x64.webp 64w, ../Logo128x128.webp 128w"
 					sizes="(max-width: 768px) 10vw, (min-width: 769px) 16vw"
 					loading="lazy"
 				/>
-				<h1 class="ml-3 font-heading text-2xl font-semibold md:text-3xl">Mr. Mythical</h1>
+				<h1 class="font-heading ml-3 text-2xl font-semibold md:text-3xl">Mr. Mythical</h1>
 			</div>
 		</a>
 		<div class="block md:hidden">
@@ -50,7 +50,22 @@
 
 		<div class="hidden w-auto md:block">
 			<ul class="flex space-x-3">
-				<li><Button variant="link"><a href="/" class="font-heading text-xl font-semibold text-foreground decoration-accent">Home</a></Button></li>
+				<li>
+					<Button variant="link"
+						><a
+							href="/"
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Home</a
+						></Button
+					>
+				</li>
+				<li>
+					<Button variant="link"
+						><a
+							href="/mana"
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Mana</a
+						></Button
+					>
+				</li>
 				<li>
 					<Button on:click={toggleMode} variant="ghost" size="icon">
 						<Sun
@@ -67,7 +82,22 @@
 
 		<div class={`md:hidden ${open ? 'block' : 'hidden'} mt-2 w-full`}>
 			<ul class="flex flex-col space-y-2">
-				<li><Button variant="link"><a href="/" class="font-heading text-xl font-semibold text-foreground decoration-accent">Home</a></Button></li>
+				<li>
+					<Button variant="link"
+						><a
+							href="/"
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Home</a
+						></Button
+					>
+				</li>
+				<li>
+					<Button variant="link"
+						><a
+							href="/mana"
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Mana</a
+						></Button
+					>
+				</li>
 			</ul>
 		</div>
 	</div>
