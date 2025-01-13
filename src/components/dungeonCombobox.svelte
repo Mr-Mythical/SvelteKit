@@ -35,21 +35,21 @@
 
 <Popover.Root bind:open let:ids>
 	<Popover.Trigger asChild let:builder>
-    <Button
-      builders={[builder]}
-      variant="outline"
-      role="combobox"
-      aria-expanded={open}
-      aria-controls={ids.content}
-      aria-haspopup="listbox"
-      aria-labelledby={`${triggerId}-label`}
-      class="w-full justify-between"
-      id={triggerId}
-    >
-      <span id={`${triggerId}-label`}>{selectedLabel}</span>
-      <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
-      <span class="sr-only">Toggle dropdown</span>
-    </Button>
+		<Button
+			builders={[builder]}
+			variant="outline"
+			role="combobox"
+			aria-expanded={open}
+			aria-controls={ids.content}
+			aria-haspopup="listbox"
+			aria-labelledby={`${triggerId}-label`}
+			class="w-full justify-between"
+			id={triggerId}
+		>
+			<span id={`${triggerId}-label`}>{selectedLabel}</span>
+			<ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
+			<span class="sr-only">Toggle dropdown</span>
+		</Button>
 	</Popover.Trigger>
 
 	<Popover.Content class="p-0">

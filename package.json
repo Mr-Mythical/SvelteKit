@@ -34,10 +34,11 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@gka/svelteplot": "^0.1.2-alpha.0",
+		"chart.js": "^4.4.7",
 		"clsx": "^2.1.0",
 		"formsnap": "^1.0.0",
 		"mode-watcher": "^0.2.2",
+		"svelte-chartjs": "^3.1.5",
 		"svelte-sonner": "^0.3.22",
 		"sveltekit-superforms": "^2.12.6",
 		"tailwind-merge": "^2.2.1",
