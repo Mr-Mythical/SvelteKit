@@ -139,7 +139,7 @@
 		let scorePerDungeon = scoreGoal / dungeonCount;
 		let runScore;
 		if (scoreGoal >= 1320) {
-			for (let i = 0; i < 20; i++) {
+			for (let i = 0; i < 30; i++) {
 				runScore = Math.round(scoreFormula(i, 1));
 				if (scorePerDungeon === runScore) {
 					for (let j = 0; j < dungeonCount; j++) {
