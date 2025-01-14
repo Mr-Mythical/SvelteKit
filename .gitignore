@@ -7,6 +7,9 @@
 /.cache
 /.env
 /.env.*.local
+/.toml
+/.dev.vars
+/.wrangler
 
 # Logs
 logs
@@ -26,4 +29,4 @@ yarn-error.log*
 
 # System files
 .DS_Store
-Thumbs.db
+Thumbs.db.dev.vars

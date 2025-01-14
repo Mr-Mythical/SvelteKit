@@ -1,4 +1,3 @@
-// src/lib/utils/oauth.ts
 import type { AccessToken } from '../types/types';
 
 /**
@@ -12,8 +11,9 @@ export async function requestBearerToken(clientId: string, clientSecret: string)
   const params = new URLSearchParams();
   params.append('grant_type', 'client_credentials');
 
+  // Encode credentials using btoa
   const credentials = `${clientId}:${clientSecret}`;
-  const encodedCredentials = Buffer.from(credentials).toString('base64');
+  const encodedCredentials = btoa(credentials);
 
   const response = await fetch(tokenUrl, {
     method: 'POST',
@@ -34,12 +34,13 @@ export async function requestBearerToken(clientId: string, clientSecret: string)
 
   const accessToken: AccessToken = {
     token: data.access_token,
-    expiresIn: data.expires_in, // Typically in seconds
+    expiresIn: data.expires_in,
     obtainedAt: Date.now()
   };
 
   return accessToken;
 }
+
 
 /**
  * Checks if the current Access Token is expired.

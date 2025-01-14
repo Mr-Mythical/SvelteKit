@@ -61,7 +61,7 @@
 				<li>
 					<Button variant="link"
 						><a
-							href="/mana"
+							href="/chart"
 							class="font-heading text-foreground decoration-accent text-xl font-semibold">Damage & Healing Chart</a
 						></Button
 					>
@@ -86,15 +86,15 @@
 					<Button variant="link"
 						><a
 							href="/"
-							class="font-heading text-foreground decoration-accent text-xl font-semibold">Home</a
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Mythic+ Score Calculator</a
 						></Button
 					>
 				</li>
 				<li>
 					<Button variant="link"
 						><a
-							href="/mana"
-							class="font-heading text-foreground decoration-accent text-xl font-semibold">Mana</a
+							href="/chart"
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Damage & Healing Chart</a
 						></Button
 					>
 				</li>
