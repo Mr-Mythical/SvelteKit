@@ -25,7 +25,7 @@
 	};
 
 	$: groupedFights = groupFightsByNameAndDifficulty(
-		killsOnly ? fights.filter(fight => fight.kill) : fights
+		killsOnly ? fights.filter((fight) => fight.kill) : fights
 	);
 
 	async function fetchFights() {
@@ -64,60 +64,59 @@
 	}
 
 	async function handleFightSelection(fight: Fight) {
-    selectedFight = fight;
-    resetEvents();
-    error = '';
-    loadingDamage = true;
-    showFightSelection = false;
+		selectedFight = fight;
+		resetEvents();
+		error = '';
+		loadingDamage = true;
+		showFightSelection = false;
 
-    try {
-        const [damageResponse, healingResponse] = await Promise.all([
-            fetch('/api/damage-events', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    fightID: fight.id,
-                    code: reportCode.trim(),
-                    startTime: fight.startTime,
-                    endTime: fight.endTime
-                })
-            }),
-            fetch('/api/healing-events', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    fightID: fight.id,
-                    code: reportCode.trim(),
-                    startTime: fight.startTime,
-                    endTime: fight.endTime
-                })
-            })
-        ]);
+		try {
+			const [damageResponse, healingResponse] = await Promise.all([
+				fetch('/api/damage-events', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						fightID: fight.id,
+						code: reportCode.trim(),
+						startTime: fight.startTime,
+						endTime: fight.endTime
+					})
+				}),
+				fetch('/api/healing-events', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						fightID: fight.id,
+						code: reportCode.trim(),
+						startTime: fight.startTime,
+						endTime: fight.endTime
+					})
+				})
+			]);
 
-        const damageData = await damageResponse.json();
-        const healingData = await healingResponse.json();
+			const damageData = await damageResponse.json();
+			const healingData = await healingResponse.json();
 
-        console.log('Fetched Damage Data:', damageData);
-        console.log('Fetched Healing Data:', healingData);
+			console.log('Fetched Damage Data:', damageData);
+			console.log('Fetched Healing Data:', healingData);
 
-        if (damageResponse.ok && healingResponse.ok) {
-            damageEvents = damageData.seriesData || []; // Ensure proper structure
-            healingEvents = healingData.seriesData || []; // Ensure proper structure
+			if (damageResponse.ok && healingResponse.ok) {
+				damageEvents = damageData.seriesData || [];
+				healingEvents = healingData.seriesData || [];
 
-            if (damageEvents.length === 0 && healingEvents.length === 0) {
-                error = 'No data found for the selected fight.';
-            }
-        } else {
-            error = 'Failed to fetch damage or healing events.';
-        }
-    } catch (err) {
-        console.error('Fetch Events Error:', err);
-        error = 'An unexpected error occurred.';
-    } finally {
-        loadingDamage = false;
-    }
-}
-
+				if (damageEvents.length === 0 && healingEvents.length === 0) {
+					error = 'No data found for the selected fight.';
+				}
+			} else {
+				error = 'Failed to fetch damage or healing events.';
+			}
+		} catch (err) {
+			console.error('Fetch Events Error:', err);
+			error = 'An unexpected error occurred.';
+		} finally {
+			loadingDamage = false;
+		}
+	}
 
 	function goBack() {
 		selectedFight = null;
@@ -125,12 +124,15 @@
 	}
 
 	function groupFightsByNameAndDifficulty(fights: Fight[]) {
-		return fights.reduce((grouped, fight) => {
-			grouped[fight.name] = grouped[fight.name] || {};
-			grouped[fight.name][fight.difficulty] = grouped[fight.name][fight.difficulty] || [];
-			grouped[fight.name][fight.difficulty].push(fight);
-			return grouped;
-		}, {} as Record<string, Record<number, Fight[]>>);
+		return fights.reduce(
+			(grouped, fight) => {
+				grouped[fight.name] = grouped[fight.name] || {};
+				grouped[fight.name][fight.difficulty] = grouped[fight.name][fight.difficulty] || [];
+				grouped[fight.name][fight.difficulty].push(fight);
+				return grouped;
+			},
+			{} as Record<string, Record<number, Fight[]>>
+		);
 	}
 
 	function formatDuration(start: number, end: number): string {
@@ -195,7 +197,7 @@
 							<div class="mt-2">
 								<h3 class="text-lg font-semibold">{difficultyMap[Number(difficulty)]}</h3>
 								<div class="space-y-2">
-									{#each fights.filter(fight => fight.kill) as fight}
+									{#each fights.filter((fight) => fight.kill) as fight}
 										<Button
 											on:click={() => handleFightSelection(fight)}
 											class="relative flex w-full items-center justify-between rounded-md shadow-md"
@@ -205,7 +207,7 @@
 											</span>
 											<div class="mx-2 flex h-1/4 w-1/4 flex-shrink-0 overflow-hidden rounded-md">
 												<div
-													class="bg-progress h-full"
+													class="h-full bg-progress"
 													style="width: {100 - fight.bossPercentage}%;"
 												></div>
 											</div>
@@ -213,7 +215,7 @@
 										</Button>
 									{/each}
 									<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-										{#each fights.filter(fight => !fight.kill) as fight, index (fight.id)}
+										{#each fights.filter((fight) => !fight.kill) as fight, index (fight.id)}
 											<Button
 												on:click={() => handleFightSelection(fight)}
 												class="relative flex w-full items-center justify-between rounded-md shadow-md"
@@ -223,11 +225,11 @@
 												</span>
 												<div class="mx-2 flex h-1/4 w-1/4 flex-shrink-0 overflow-hidden rounded-md">
 													<div
-														class="bg-destructive h-full"
+														class="h-full bg-destructive"
 														style="width: {100 - fight.bossPercentage}%;"
 													></div>
 													<div
-														class="bg-secondary h-full"
+														class="h-full bg-secondary"
 														style="width: {fight.bossPercentage}%;"
 													></div>
 												</div>
@@ -246,16 +248,19 @@
 		</div>
 	{:else}
 		<div>
-			<Button on:click={goBack} class="mb-4">Back</Button>
 			{#if selectedFight}
-				<h2>Selected Fight: {selectedFight.name}</h2>
+				<div class="text-center">
+					<h1 class="mb-4 text-2xl font-bold">
+						Selected Fight: {difficultyMap[Number(selectedFight.difficulty)]}
+						{selectedFight.name}
+						{selectedFight.kill ? ' - Kill' : ' - Wipe'}
+					</h1>
+					<Button on:click={goBack} class="mb-4">Back</Button>
+				</div>
 				{#if loadingDamage}
 					<p>Loading damage events...</p>
 				{:else if damageEvents.length > 0}
-					<DamageChart
-						{damageEvents}
-						{healingEvents}
-					/>
+					<DamageChart {damageEvents} {healingEvents} />
 				{/if}
 			{/if}
 		</div>
