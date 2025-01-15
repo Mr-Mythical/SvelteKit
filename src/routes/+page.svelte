@@ -34,7 +34,7 @@
   
 	  <!-- Raid Encounter Analysis -->
 	  <div class="bg-card shadow-md p-6 rounded-lg">
-		<h3 class="text-2xl font-semiboldmb-4">Raid Encounter Analysis</h3>
+		<h3 class="text-2xl font-semibold mb-4">Raid Encounter Analysis</h3>
 		<p class="mb-6">
 		  Visualize damage and healing graphs, overlay abilities, and analyze raid encounters using Warcraft Log Reports.
 		</p>
