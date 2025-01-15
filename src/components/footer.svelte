@@ -5,7 +5,7 @@
   <footer class="sticky top-[100vh] py-6 mt-auto">
     <div class="container mx-auto text-center">
   
-      <p class="text-sm mb-2">© {currentYear} Mr. Mythical. All Rights Reserved.</p>
+      <p class="text-sm mb-2">© {currentYear} Mr. Mythical</p>
       <p class="text-xs">
         World of Warcraft is a trademark of Blizzard Entertainment, Inc. This site is not affiliated with or endorsed by Blizzard Entertainment.
       </p>
