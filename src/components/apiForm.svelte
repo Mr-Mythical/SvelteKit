@@ -3,7 +3,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button/';
-	import { formSchema, type FormSchema } from '../routes/schema';
+	import { formSchema, type FormSchema } from '../routes/rating-calculator/schema';
 	import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
@@ -11,7 +11,6 @@
 	import { apiPopup } from '../stores.js';
 	import { dungeonData } from '../stores.js';
 	import { dungeonCount } from '$lib/models/dungeons';
-	import { writable } from 'svelte/store';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
 
@@ -56,14 +55,13 @@
 			const data = await response.json();
 			if (data.runs?.length) {
 				const mappedRuns = data.runs.slice(0, dungeonCount).map((run: RaiderIoRun) => ({
-					dungeon: run.dungeon, // Ensure this matches a 'value' in dungeons array
+					dungeon: run.dungeon,
 					short_name: run.short_name || '',
 					mythic_level: run.mythic_level || 0,
 					par_time_ms: run.par_time_ms || 0,
 					num_keystone_upgrades: run.num_keystone_upgrades || 1,
 					score: run.score || 0
 				}));
-				// Fill remaining runs if necessary
 				while (mappedRuns.length < dungeonCount) {
 					mappedRuns.push({
 						dungeon: '',
@@ -88,7 +86,7 @@
 
 	function resetRuns() {
 		const emptyRuns = Array.from({ length: dungeonCount }, () => ({
-			dungeon: '', // Default to empty or a specific value
+			dungeon: '',
 			short_name: '',
 			mythic_level: 0,
 			par_time_ms: 0,
@@ -102,7 +100,7 @@
 {#if $apiPopup}
 	<form
 		method="POST"
-		action="/"
+		action="/rating-calculator"
 		class="fixed left-0 top-0 z-10 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
 		use:enhance
 	>

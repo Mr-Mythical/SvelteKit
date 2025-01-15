@@ -5,6 +5,8 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
+	import SEO from '../../components/seo.svelte';
+	import Footer from '../../components/footer.svelte';
 
 	let reportCode: string = '';
 	let fights: Fight[] = [];
@@ -154,6 +156,13 @@
 	}
 </script>
 
+<SEO
+	title="Raid Encounter Analysis - Damage and Healing Graphs"
+	description="Analyze raid encounters with detailed damage and healing graphs. Import Warcraft Logs reports, overlay abilities, and gain deeper insights into raid performance."
+	image="https://mrmythical.com/Logo.png"
+	keywords="Raid analysis, Warcraft Logs, World of Warcraft, damage graphs, healing graphs, raid performance, encounter analysis, ability overlays, raid leading"
+/>
+
 <Header />
 <main>
 	{#if showFightSelection}
@@ -266,3 +275,4 @@
 		</div>
 	{/if}
 </main>
+<Footer />

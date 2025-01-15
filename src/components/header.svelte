@@ -7,6 +7,8 @@
 	import Menu from 'lucide-svelte/icons/menu';
 </script>
 
+<header>
+
 <nav class="m-auto border-b-2 py-4 shadow-lg">
 	<div class="container flex flex-wrap items-center justify-between px-2 md:px-16">
 		<a href="/">
@@ -54,15 +56,23 @@
 					<Button variant="link"
 						><a
 							href="/"
-							class="font-heading text-foreground decoration-accent text-xl font-semibold">Mythic+ Score Calculator</a
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Home</a
 						></Button
 					>
 				</li>
 				<li>
 					<Button variant="link"
 						><a
-							href="/chart"
-							class="font-heading text-foreground decoration-accent text-xl font-semibold">Damage & Healing Chart</a
+							href="/rating-calculator"
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Mythic+ Calculator</a
+						></Button
+					>
+				</li>
+				<li>
+					<Button variant="link"
+						><a
+							href="/raid-analysis"
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Raid Analysis</a
 						></Button
 					>
 				</li>
@@ -86,15 +96,23 @@
 					<Button variant="link"
 						><a
 							href="/"
-							class="font-heading text-foreground decoration-accent text-xl font-semibold">Mythic+ Score Calculator</a
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Home</a
 						></Button
 					>
 				</li>
 				<li>
 					<Button variant="link"
 						><a
-							href="/chart"
-							class="font-heading text-foreground decoration-accent text-xl font-semibold">Damage & Healing Chart</a
+							href="/rating-calculator"
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Mythic+ Calculator</a
+						></Button
+					>
+				</li>
+				<li>
+					<Button variant="link"
+						><a
+							href="/raid-analysis"
+							class="font-heading text-foreground decoration-accent text-xl font-semibold">Raid Analysis</a
 						></Button
 					>
 				</li>
@@ -102,3 +120,4 @@
 		</div>
 	</div>
 </nav>
+</header>
