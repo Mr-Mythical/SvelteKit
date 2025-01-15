@@ -1,5 +1,5 @@
 import { env } from '$env/dynamic/private';
-import type { AccessToken } from '$lib/types/types';
+import type { AccessToken } from '$lib/types/apiTypes';
 import { requestBearerToken, isTokenExpired } from './oauth';
 
 let cachedToken: AccessToken | null = null;

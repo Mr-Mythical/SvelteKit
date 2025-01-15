@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type { Fight, Series } from '$lib/types/types';
+	import type { Fight, Series } from '$lib/types/apiTypes';
 	import DamageChart from '../../components/damageChart.svelte';
 	import Header from '../../components/header.svelte';
+	import SEO from '../../components/seo.svelte';
+	import Footer from '../../components/footer.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
-	import SEO from '../../components/seo.svelte';
-	import Footer from '../../components/footer.svelte';
-
+	
 	let reportCode: string = '';
 	let fights: Fight[] = [];
 	let selectedFight: Fight | null = null;

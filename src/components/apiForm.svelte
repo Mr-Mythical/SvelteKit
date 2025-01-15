@@ -10,18 +10,10 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { apiPopup } from '../stores.js';
 	import { dungeonData } from '../stores.js';
-	import { dungeonCount } from '$lib/models/dungeons';
+	import { dungeonCount } from '$lib/types/dungeons';
+	import type { RaiderIoRun } from '$lib/types/apiTypes';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
-
-	interface RaiderIoRun {
-		dungeon: string;
-		short_name: string;
-		mythic_level: number;
-		par_time_ms: number;
-		num_keystone_upgrades: number;
-		score: number;
-	}
 
 	const form = superForm(data, {
 		validators: zodClient(formSchema),
@@ -108,7 +100,7 @@
 			<Card.Header>
 				<Card.Title>Import Character</Card.Title>
 				<p class="text-muted-foreground text-sm">
-					Powered by <a href="http://raider.io">Raider.io</a>
+					Powered by <a href="https://raider.io">Raider.io</a>
 				</p>
 			</Card.Header>
 			<Card.Content>

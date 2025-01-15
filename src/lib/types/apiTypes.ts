@@ -26,25 +26,25 @@ export interface AccessToken {
 	obtainedAt: number;
 }
 
-interface ReportData {
+export interface ReportData {
 	data: {
-	  reportData: {
-		report: {
-		  graph: {
-			data: GraphData;
-		  };
+		reportData: {
+			report: {
+				graph: {
+					data: GraphData;
+				};
+			};
 		};
-	  };
 	};
-  }
-  
-  interface GraphData {
+}
+
+export interface GraphData {
 	series: Series[];
 	startTime: number;
 	endTime: number;
-  }
-  
-  interface Series {
+}
+
+export interface Series {
 	name: string;
 	id: number | string;
 	guid?: number;
@@ -52,6 +52,13 @@ interface ReportData {
 	pointStart: number;
 	pointInterval: number;
 	data: number[];
-  }
-  
-  
+}
+
+export interface RaiderIoRun {
+	dungeon: string;
+	short_name: string;
+	mythic_level: number;
+	par_time_ms: number;
+	num_keystone_upgrades: number;
+	score: number;
+}

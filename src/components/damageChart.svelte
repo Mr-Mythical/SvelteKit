@@ -14,7 +14,7 @@
 		Filler
 	} from 'chart.js';
 	import type { ChartOptions, ChartData } from 'chart.js';
-	import type { Series } from '$lib/types/types';
+	import type { Series } from '$lib/types/apiTypes';
 	import { Label } from '$lib/components/ui/label/index.js';
 
 	ChartJS.register(

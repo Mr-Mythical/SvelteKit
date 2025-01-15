@@ -9,10 +9,6 @@ export interface Run {
 	score: number;
 }
 
-export interface Dungeons {
-	runs: Run[];
-}
-
 export const dungeons = [
 	{ value: 'The Dawnbreaker', label: 'The Dawnbreaker' },
 	{ value: 'Ara-Kara, City of Echoes', label: 'Ara-Kara, City of Echoes' },
