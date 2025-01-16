@@ -50,7 +50,8 @@ const config: Config = {
 				card: {
 					DEFAULT: 'hsl(var(--card) / <alpha-value>)',
 					foreground: 'hsl(var(--card-foreground) / <alpha-value>)'
-				}
+				},
+				chart: 'hsl(var(--chart) / <alpha-value>)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
