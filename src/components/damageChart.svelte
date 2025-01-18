@@ -17,7 +17,9 @@
 	import type { ChartOptions, ChartData } from 'chart.js';
 	import type { CastEvent, Series } from '$lib/types/apiTypes';
 	import { abilityColors } from '$lib/utils/classColors';
-	import { Label } from '$lib/components/ui/label/index.js';
+	import { Label } from '$lib/components/ui/label/index';
+	import * as RadioGroup from '$lib/components/ui/radio-group/index';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { classSpecAbilities } from '$lib/types/classData';
 
 	const backgroundColorPlugin = {
@@ -27,8 +29,8 @@
 			const borderRadius = 20;
 			const padding = 1;
 
-			const width = canvas.width
-			const height = canvas.height
+			const width = canvas.width;
+			const height = canvas.height;
 
 			ctx.save();
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -336,8 +338,8 @@
 							content: healIcon,
 							display: true,
 							position: 'end',
-							yAdjust: yOffset-12,
-							backgroundColor: 'transparent',
+							yAdjust: yOffset - 12,
+							backgroundColor: 'transparent'
 						}
 					};
 				})
@@ -348,27 +350,49 @@
 	$: options.plugins.annotation.annotations = annotations as any;
 </script>
 
-<div class="filters">
-	<Label>Show Annotations</Label>
-	<input type="checkbox" bind:checked={showAnnotations} />
+<div class="filters grid grid-rows-2 gap-1 items-center justify-center text-center">
+	<div>
+		<Label>Ability Type</Label>
+		<RadioGroup.Root bind:value={abilityTypeFilter}>
+			<div class="flex flex-wrap gap-4 items-center justify-center">
 
-	<Label>Ability Type</Label>
-	<select bind:value={abilityTypeFilter}>
-		<option value="All">All</option>
-		<option value="Major">Major</option>
-		<option value="Minor">Minor</option>
-	</select>
+				<div class="flex items-center space-x-2">
+					<RadioGroup.Item id="all" value="All" />
+					<Label for="all">All</Label>
+				</div>
+				<div class="flex items-center space-x-2">
+					<RadioGroup.Item id="major" value="Major" />
+					<Label for="major">Major</Label>
+				</div>
+				<div class="flex items-center space-x-2">
+					<RadioGroup.Item id="minor" value="Minor" />
+					<Label for="minor">Minor</Label>
+				</div>
+			</div>
+		</RadioGroup.Root>
+	</div>
 
-	<Label>Spec Filters</Label>
-	{#each Object.keys(specFilters) as spec}
-		<div>
-			<input type="checkbox" bind:checked={specFilters[spec]} />
-			<span>{spec}</span>
+	<div>
+		<Label>Spec Filters</Label>
+		<div class="flex flex-wrap gap-4 items-center justify-center">
+			{#each Object.keys(specFilters) as spec}
+				<div class="flex items-center space-x-2">
+					<Checkbox bind:checked={specFilters[spec]} />
+					<span>{spec}</span>
+				</div>
+			{/each}
 		</div>
-	{/each}
+	</div>
 </div>
-<div class="container mx-auto p-4 flex h-[32rem] w-full items-center justify-center xl:h-[40rem] 2xl:h-[50rem]">
+<div
+	class="container mx-auto flex h-[32rem] w-full items-center justify-center p-4 xl:h-[40rem] 2xl:h-[50rem]"
+>
 	<Chart type="line" data={chartData} {options} />
+</div>
+
+<div class="flex items-center justify-center space-x-2">
+	<Label for="anno check" class="mb-2 block text-lg">Show Annotations</Label>
+	<Checkbox id="anno check" bind:checked={showAnnotations} />
 </div>
 
 <div class="flex flex-col items-center space-y-2">
