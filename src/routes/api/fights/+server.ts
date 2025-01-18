@@ -1,6 +1,6 @@
 // src/routes/api/fights/+server.ts
 import type { RequestHandler } from '@sveltejs/kit';
-import type { FightsResponse, Fight } from '$lib/types/types';
+import type { FightsResponse, Fight } from '$lib/types/apiTypes';
 import { getValidAccessToken } from '../../../lib/utils/tokenCache';
 
 export const POST: RequestHandler = async ({ request }: { request: Request }) => {

@@ -10,7 +10,7 @@
 	export let dungeons: Array<{ value: string; label: string }> = [];
 	export let selectedValue: string = '';
 	export let onSelect: (value: string) => void;
-	export let triggerId: string = ''; // New prop for unique ID
+	export let triggerId: string = '';
 
 	let open = false;
 

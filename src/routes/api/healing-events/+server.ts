@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import type { Series } from '$lib/types/types';
+import type { Series } from '$lib/types/apiTypes';
 import { getValidAccessToken } from '$lib/utils/tokenCache';
 
 export const POST: RequestHandler = async ({ request }) => {

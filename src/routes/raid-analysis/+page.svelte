@@ -1,7 +1,9 @@
 <script lang="ts">
-	import type { Fight, Series } from '$lib/types/types';
+	import type { Fight, CastEvent, Series } from '$lib/types/apiTypes';
 	import DamageChart from '../../components/damageChart.svelte';
 	import Header from '../../components/header.svelte';
+	import SEO from '../../components/seo.svelte';
+	import Footer from '../../components/footer.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
@@ -11,8 +13,10 @@
 	let selectedFight: Fight | null = null;
 	let damageEvents: Series[] = [];
 	let healingEvents: Series[] = [];
+	let castEvents: CastEvent[] = [];
 	let error: string = '';
 	let loadingFights = false;
+	let loadingEvents = false;
 	let loadingDamage = false;
 	let killsOnly = false;
 	let showFightSelection = true;
@@ -71,7 +75,7 @@
 		showFightSelection = false;
 
 		try {
-			const [damageResponse, healingResponse] = await Promise.all([
+			const [damageResponse, healingResponse, castResponse] = await Promise.all([
 				fetch('/api/damage-events', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
@@ -91,24 +95,33 @@
 						startTime: fight.startTime,
 						endTime: fight.endTime
 					})
+				}),
+				fetch('/api/cast-events', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						fightID: fight.id,
+						code: reportCode.trim(),
+						startTime: fight.startTime,
+						endTime: fight.endTime
+					})
 				})
 			]);
 
 			const damageData = await damageResponse.json();
 			const healingData = await healingResponse.json();
+			const castData = await castResponse.json();
 
-			console.log('Fetched Damage Data:', damageData);
-			console.log('Fetched Healing Data:', healingData);
-
-			if (damageResponse.ok && healingResponse.ok) {
+			if (damageResponse.ok && healingResponse.ok && castResponse.ok) {
 				damageEvents = damageData.seriesData || [];
 				healingEvents = healingData.seriesData || [];
+				castEvents = castData.castEvents || [];
 
-				if (damageEvents.length === 0 && healingEvents.length === 0) {
+				if (damageEvents.length === 0 && healingEvents.length === 0 && castEvents.length === 0) {
 					error = 'No data found for the selected fight.';
 				}
 			} else {
-				error = 'Failed to fetch damage or healing events.';
+				error = 'Failed to fetch damage, healing, or cast events.';
 			}
 		} catch (err) {
 			console.error('Fetch Events Error:', err);
@@ -153,6 +166,13 @@
 		healingEvents = [];
 	}
 </script>
+
+<SEO
+	title="Raid Encounter Analysis - Damage and Healing Graphs"
+	description="Analyze raid encounters with detailed damage and healing graphs. Import Warcraft Logs reports, overlay abilities, and gain deeper insights into raid performance."
+	image="https://mrmythical.com/Logo.png"
+	keywords="Raid analysis, Warcraft Logs, World of Warcraft, damage graphs, healing graphs, raid performance, encounter analysis, ability overlays, raid leading"
+/>
 
 <Header />
 <main>
@@ -260,9 +280,11 @@
 				{#if loadingDamage}
 					<p>Loading damage events...</p>
 				{:else if damageEvents.length > 0}
-					<DamageChart {damageEvents} {healingEvents} />
+					
+						<DamageChart {damageEvents} {healingEvents} {castEvents} />
 				{/if}
 			{/if}
 		</div>
 	{/if}
 </main>
+<Footer />

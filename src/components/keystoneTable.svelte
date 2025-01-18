@@ -7,12 +7,12 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button/';
-	import { dungeonCount } from '$lib/models/dungeons';
-	import { dungeons } from '$lib/models/dungeons';
+	import { dungeonCount } from '$lib/types/dungeons';
+	import { dungeons } from '$lib/types/dungeons';
 	import { apiPopup } from '../stores.js';
 	import { dungeonData } from '../stores.js';
 
-	let edit = false;
+	let edit = true;
 	let scoreGoal: number;
 	let totalScore: number;
 
@@ -193,9 +193,6 @@
 		</div>
 
 		<div class="flex flex-col space-y-2">
-			<Button class="w-full" on:click={() => (edit = !edit)} aria-label="Toggle Manual Edit"
-				>Manual Edit</Button
-			>
 			<Button class="w-full" on:click={() => ($apiPopup = !$apiPopup)} aria-label="Import Character"
 				>Import Character</Button
 			>
@@ -215,7 +212,7 @@
 				placeholder="Paste or view Base64 data..."
 				bind:value={expImData}
 			/>
-			<small class="text-muted-foreground mt-1 block text-sm">
+			<small class="mt-1 block text-sm text-muted-foreground">
 				Click Export to copy data. Paste data here, then click Import to load.
 			</small>
 		</div>
@@ -249,7 +246,7 @@
 						<Table.Cell class="py-0 text-xl">
 							<div class="grid grid-cols-1 items-center">
 								<Button
-									class="h-6 w-6 {edit ? '' : 'hidden'}"
+									class="h-6 w-6"
 									variant="ghost"
 									size="icon"
 									on:click={() => incrementKeyLevel(i)}
@@ -268,7 +265,7 @@
 												on:click={() => setStars(i, j)}
 												aria-label="Set Stars"
 											>
-												<Star class="text-foreground fill-foreground" />
+												<Star class="fill-foreground text-foreground" />
 											</Button>
 										{:else if edit}
 											<Button
@@ -284,7 +281,7 @@
 									{/each}
 								</span>
 								<Button
-									class="h-6 w-6 {edit ? '' : 'hidden'}"
+									class="h-6 w-6"
 									variant="ghost"
 									size="icon"
 									on:click={() => decrementKeyLevel(i)}
@@ -308,7 +305,7 @@
 		</Table.Root>
 		{#if showTooltip}
 			<div
-				class="bg-muted pointer-events-none z-50 rounded px-2 py-1 text-sm"
+				class="pointer-events-none z-50 rounded bg-muted px-2 py-1 text-sm"
 				style="
 		  position: fixed;   
 		  top: {tooltipY - 30}px;  /* 30px above the cursor */

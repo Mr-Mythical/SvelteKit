@@ -1,4 +1,4 @@
-import type { AccessToken } from '../types/types';
+import type { AccessToken } from '../types/apiTypes';
 
 /**
  * Requests a Bearer Token using Client Credentials.
