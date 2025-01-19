@@ -17,11 +17,15 @@ export const POST: RequestHandler = async ({ request }) => {
 			);
 		}
 
-		const abilityIDs = Object.values(classSpecAbilities).flatMap((classSpecs) =>
-			Object.values(classSpecs).flatMap((spec) =>
-				(spec.Major as { name: string; id: number }[]).concat(spec.Minor as { name: string; id: number }[]).map((ability) => ability.id)
+		const abilityIDs = Object.values(classSpecAbilities)
+			.flatMap((classSpecs) =>
+				Object.values(classSpecs).flatMap((spec) =>
+					(spec.Major as { name: string; id: number }[])
+						.concat(spec.Minor as { name: string; id: number }[])
+						.map((ability) => ability.id)
+				)
 			)
-		).filter(id => id !== undefined && id !== null);
+			.filter((id) => id !== undefined && id !== null);
 
 		const filter = abilityIDs.length > 0 ? `ability.id IN (${abilityIDs.join(', ')})` : '';
 
@@ -67,7 +71,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			});
 		}
 
-		const castEvents: CastEvent[] = json.data.reportData.report.events.data.filter((event: any) => event.type === 'cast');
+		const castEvents: CastEvent[] = json.data.reportData.report.events.data.filter(
+			(event: any) => event.type === 'cast'
+		);
 
 		return new Response(JSON.stringify({ castEvents }), {
 			status: 200,

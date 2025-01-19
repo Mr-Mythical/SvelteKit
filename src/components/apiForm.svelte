@@ -99,7 +99,7 @@
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Import Character</Card.Title>
-				<p class="text-muted-foreground text-sm">
+				<p class="text-sm text-muted-foreground">
 					Powered by <a href="https://raider.io">Raider.io</a>
 				</p>
 			</Card.Header>
