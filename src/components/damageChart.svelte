@@ -104,6 +104,8 @@
 	let indexOffset = 0;
 	let lastXValue = 0;
 
+	const pointInterval = damageEvents[0]?.pointInterval || healingEvents[0]?.pointInterval;
+
 	Object.keys(classSpecAbilities).forEach((className) => {
 		Object.keys(classSpecAbilities[className as keyof typeof classSpecAbilities]).forEach(
 			(specName) => {
@@ -124,12 +126,19 @@
 				mode: 'index',
 				intersect: false,
 				callbacks: {
-					label: function (context) {
-						const label = context.dataset.label || '';
-						const value = context.raw as number;
-						return `${label}: ${value.toLocaleString()}`;
-					}
-				}
+                title: function (context) {
+                    const index = context[0].dataIndex;
+                    const totalSeconds = index * pointInterval / 1000;
+                    const minutes = Math.floor(totalSeconds / 60);
+                    const seconds = Math.floor(totalSeconds % 60);
+                    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                },
+                label: function (context) {
+                    const label = context.dataset.label || '';
+                    const value = context.raw as number;
+                    return `${label}: ${value.toLocaleString()}`;
+                }
+            }
 			},
 			legend: {
 				display: true,
@@ -144,18 +153,25 @@
 		},
 		scales: {
 			x: {
-				stacked: false,
 				title: {
 					display: true,
 					text: 'Time (seconds)',
 					color: 'black'
 				},
 				ticks: {
-					color: 'black'
+					color: 'black',
+					callback: function (tickValue: string | number) {
+						if (typeof tickValue === 'number') {
+							const totalSeconds = tickValue * pointInterval / 1000;
+							const minutes = Math.floor(totalSeconds / 60);
+							const seconds = Math.floor(totalSeconds % 60);
+							return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+						}
+						return tickValue;
+					}
 				}
 			},
 			y: {
-				stacked: false,
 				title: {
 					display: true,
 					text: 'Amount',
