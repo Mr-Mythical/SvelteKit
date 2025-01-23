@@ -13,10 +13,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			});
 		}
 
-		// Get a valid Access Token
 		const accessToken = await getValidAccessToken();
 
-		// Define the GraphQL query
 		const query = `
 			query FightsInReport($code: String!) {
 				reportData {
@@ -55,7 +53,6 @@ export const POST: RequestHandler = async ({ request }) => {
 			});
 		}
 
-		// Cast the JSON result to your new ApiResponse<FightsResponse> type
 		const json: ApiResponse<FightsResponse> = await response.json();
 
 		const fights = json.data.reportData.report.fights;
