@@ -280,8 +280,7 @@
 				{#if loadingDamage}
 					<p>Loading damage events...</p>
 				{:else if damageEvents.length > 0}
-					
-						<DamageChart {damageEvents} {healingEvents} {castEvents} />
+					<DamageChart {damageEvents} {healingEvents} {castEvents} />
 				{/if}
 			{/if}
 		</div>

@@ -17,13 +17,20 @@ export const POST: RequestHandler = async ({ request }) => {
 			);
 		}
 
-		const abilityIDs = Object.values(classSpecAbilities).flatMap((classSpecs) =>
-			Object.values(classSpecs).flatMap((spec) =>
-				(spec.Major as { name: string; id: number }[]).concat(spec.Minor as { name: string; id: number }[]).map((ability) => ability.id)
+		const abilityIDs = Object.values(classSpecAbilities)
+			.flatMap((classSpecs) =>
+				Object.values(classSpecs).flatMap((spec) =>
+					(spec.Major as { name: string; id: number }[])
+						.concat(spec.Minor as { name: string; id: number }[])
+						.map((ability) => ability.id)
+				)
 			)
-		).filter(id => id !== undefined && id !== null);
+			.filter((id) => id !== undefined && id !== null);
 
-		const filter = abilityIDs.length > 0 ? `ability.id IN (${abilityIDs.join(', ')})` : '';
+		const filter =
+			abilityIDs.length > 0
+				? `ability.id IN (${abilityIDs.join(', ')}) AND source.spec IN ("Holy", "Restoration", "Preservation", "Discipline", "Mistweaver")`
+				: '';
 
 		const query = `
 		  query ResourcesBySource($code: String!, $fightID: Int!, $start: Float!, $end: Float!, $filter: String!) {
@@ -67,7 +74,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			});
 		}
 
-		const castEvents: CastEvent[] = json.data.reportData.report.events.data.filter((event: any) => event.type === 'cast');
+		const castEvents: CastEvent[] = json.data.reportData.report.events.data.filter(
+			(event: any) => event.type === 'cast'
+		);
 
 		return new Response(JSON.stringify({ castEvents }), {
 			status: 200,
