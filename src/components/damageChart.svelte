@@ -378,12 +378,11 @@
 	$: options.plugins.annotation.annotations = annotations as any;
 </script>
 
-<div class="filters grid grid-rows-2 gap-1 items-center justify-center text-center">
+<div class="filters grid grid-rows-2 items-center justify-center gap-1 text-center">
 	<div>
 		<Label>Ability Type</Label>
 		<RadioGroup.Root bind:value={abilityTypeFilter}>
-			<div class="flex flex-wrap gap-4 items-center justify-center">
-
+			<div class="flex flex-wrap items-center justify-center gap-4">
 				<div class="flex items-center space-x-2">
 					<RadioGroup.Item id="all" value="All" />
 					<Label for="all">All</Label>
@@ -402,7 +401,7 @@
 
 	<div>
 		<Label>Spec Filters</Label>
-		<div class="flex flex-wrap gap-4 items-center justify-center">
+		<div class="flex flex-wrap items-center justify-center gap-4">
 			{#each Object.keys(specFilters) as spec}
 				<div class="flex items-center space-x-2">
 					<Checkbox bind:checked={specFilters[spec]} />

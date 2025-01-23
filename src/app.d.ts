@@ -19,5 +19,5 @@ declare global {
 }
 
 export async function post(context) {
-	const counter = context.platform.env.COUNTER.idFromName("A");
-  }
+	const counter = context.platform.env.COUNTER.idFromName('A');
+}

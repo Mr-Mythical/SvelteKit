@@ -9,22 +9,21 @@ let cachedToken: AccessToken | null = null;
  * @returns A promise that resolves to a valid Access Token.
  */
 export async function getValidAccessToken(): Promise<string> {
-  if (cachedToken && !isTokenExpired(cachedToken)) {
-    return cachedToken.token;
-  }
+	if (cachedToken && !isTokenExpired(cachedToken)) {
+		return cachedToken.token;
+	}
 
-  // Fetch a new token
-  const clientId = env.WCL_CLIENT_ID;
-  const clientSecret = env.WCL_CLIENT_SECRET;
+	// Fetch a new token
+	const clientId = env.WCL_CLIENT_ID;
+	const clientSecret = env.WCL_CLIENT_SECRET;
 
-  console.log('Client ID:', env.WCL_CLIENT_ID);
-  console.log('Client Secret:', env.WCL_CLIENT_SECRET ? 'Present' : 'Missing');
+	console.log('Client ID:', env.WCL_CLIENT_ID);
+	console.log('Client Secret:', env.WCL_CLIENT_SECRET ? 'Present' : 'Missing');
 
+	if (!clientId || !clientSecret) {
+		throw new Error('Client ID or Client Secret is not configured.');
+	}
 
-  if (!clientId || !clientSecret) {
-    throw new Error('Client ID or Client Secret is not configured.');
-  }
-
-  cachedToken = await requestBearerToken(clientId, clientSecret);
-  return cachedToken.token;
+	cachedToken = await requestBearerToken(clientId, clientSecret);
+	return cachedToken.token;
 }
