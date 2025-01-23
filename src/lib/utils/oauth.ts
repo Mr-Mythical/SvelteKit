@@ -29,7 +29,6 @@ export async function requestBearerToken(
 
 	if (!response.ok) {
 		const errorData = await response.json();
-		console.error('Error fetching Bearer Token:', errorData);
 		throw new Error('Failed to acquire Bearer Token.');
 	}
 

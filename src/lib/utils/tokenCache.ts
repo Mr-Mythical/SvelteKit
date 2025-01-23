@@ -13,12 +13,8 @@ export async function getValidAccessToken(): Promise<string> {
 		return cachedToken.token;
 	}
 
-	// Fetch a new token
 	const clientId = env.WCL_CLIENT_ID;
 	const clientSecret = env.WCL_CLIENT_SECRET;
-
-	console.log('Client ID:', env.WCL_CLIENT_ID);
-	console.log('Client Secret:', env.WCL_CLIENT_SECRET ? 'Present' : 'Missing');
 
 	if (!clientId || !clientSecret) {
 		throw new Error('Client ID or Client Secret is not configured.');

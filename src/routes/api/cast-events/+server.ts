@@ -27,7 +27,10 @@ export const POST: RequestHandler = async ({ request }) => {
 			)
 			.filter((id) => id !== undefined && id !== null);
 
-		const filter = abilityIDs.length > 0 ? `ability.id IN (${abilityIDs.join(', ')})` : '';
+		const filter =
+			abilityIDs.length > 0
+				? `ability.id IN (${abilityIDs.join(', ')}) AND source.spec IN ("Holy", "Restoration", "Preservation", "Discipline", "Mistweaver")`
+				: '';
 
 		const query = `
 		  query ResourcesBySource($code: String!, $fightID: Int!, $start: Float!, $end: Float!, $filter: String!) {
