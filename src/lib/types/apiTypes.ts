@@ -105,3 +105,13 @@ export interface RaiderIoRun {
 	num_keystone_upgrades: number;
 	score: number;
 }
+
+export interface AccessToken {
+
+	token: string;
+  
+	expiresIn: number;
+  
+	obtainedAt: number;
+  
+  }

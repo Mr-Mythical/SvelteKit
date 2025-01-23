@@ -22,6 +22,16 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { classSpecAbilities } from '$lib/types/classData';
 
+	let zoomPluginLoaded = false;
+
+	let zoomPlugin;
+    onMount(async () => {
+        const module = await import('chartjs-plugin-zoom');
+        zoomPlugin = module.default;
+        ChartJS.register(zoomPlugin);
+		zoomPluginLoaded = true;
+    });
+
 	const backgroundColorPlugin = {
 		id: 'customBackgroundColor',
 		beforeDraw: (chart: any) => {
@@ -171,6 +181,24 @@
 			}
 		}
 	};
+
+	$: if (zoomPluginLoaded) {
+        options.plugins.zoom = {
+            pan: {
+                enabled: true,
+                mode: 'x'
+            },
+            zoom: {
+                wheel: {
+                    enabled: true
+                },
+                pinch: {
+                    enabled: true
+                },
+                mode: 'x'
+            }
+        };
+    }
 
 	function calculateSuggestedMax(damageEvents: Series[], healingEvents: Series[]): number {
 		const maxDamage = Math.max(...damageEvents.flatMap((series) => series.data));
