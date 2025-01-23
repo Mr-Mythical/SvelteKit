@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { Chart } from 'svelte-chartjs';
 	import annotationPlugin from 'chartjs-plugin-annotation';
-	import annotationPlugin from 'chartjs-plugin-annotation';
 	import {
 		Chart as ChartJS,
 		LineElement,
