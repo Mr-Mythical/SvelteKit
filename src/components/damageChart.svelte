@@ -25,12 +25,12 @@
 	let zoomPluginLoaded = false;
 
 	let zoomPlugin;
-    onMount(async () => {
-        const module = await import('chartjs-plugin-zoom');
-        zoomPlugin = module.default;
-        ChartJS.register(zoomPlugin);
+	onMount(async () => {
+		const module = await import('chartjs-plugin-zoom');
+		zoomPlugin = module.default;
+		ChartJS.register(zoomPlugin);
 		zoomPluginLoaded = true;
-    });
+	});
 
 	const backgroundColorPlugin = {
 		id: 'customBackgroundColor',
@@ -126,19 +126,19 @@
 				mode: 'index',
 				intersect: false,
 				callbacks: {
-                title: function (context) {
-                    const index = context[0].dataIndex;
-                    const totalSeconds = index * pointInterval / 1000;
-                    const minutes = Math.floor(totalSeconds / 60);
-                    const seconds = Math.floor(totalSeconds % 60);
-                    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                },
-                label: function (context) {
-                    const label = context.dataset.label || '';
-                    const value = context.raw as number;
-                    return `${label}: ${value.toLocaleString()}`;
-                }
-            }
+					title: function (context) {
+						const index = context[0].dataIndex;
+						const totalSeconds = (index * pointInterval) / 1000;
+						const minutes = Math.floor(totalSeconds / 60);
+						const seconds = Math.floor(totalSeconds % 60);
+						return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+					},
+					label: function (context) {
+						const label = context.dataset.label || '';
+						const value = context.raw as number;
+						return `${label}: ${value.toLocaleString()}`;
+					}
+				}
 			},
 			legend: {
 				display: true,
@@ -155,14 +155,14 @@
 			x: {
 				title: {
 					display: true,
-					text: 'Time (seconds)',
+					text: 'Time (mm:ss)',
 					color: 'black'
 				},
 				ticks: {
 					color: 'black',
 					callback: function (tickValue: string | number) {
 						if (typeof tickValue === 'number') {
-							const totalSeconds = tickValue * pointInterval / 1000;
+							const totalSeconds = (tickValue * pointInterval) / 1000;
 							const minutes = Math.floor(totalSeconds / 60);
 							const seconds = Math.floor(totalSeconds % 60);
 							return `${minutes}:${seconds.toString().padStart(2, '0')}`;
@@ -199,22 +199,22 @@
 	};
 
 	$: if (zoomPluginLoaded) {
-        options.plugins.zoom = {
-            pan: {
-                enabled: true,
-                mode: 'x'
-            },
-            zoom: {
-                wheel: {
-                    enabled: true
-                },
-                pinch: {
-                    enabled: true
-                },
-                mode: 'x'
-            }
-        };
-    }
+		options.plugins.zoom = {
+			pan: {
+				enabled: true,
+				mode: 'x'
+			},
+			zoom: {
+				wheel: {
+					enabled: true
+				},
+				pinch: {
+					enabled: true
+				},
+				mode: 'x'
+			}
+		};
+	}
 
 	function calculateSuggestedMax(damageEvents: Series[], healingEvents: Series[]): number {
 		const maxDamage = Math.max(...damageEvents.flatMap((series) => series.data));
