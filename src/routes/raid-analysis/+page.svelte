@@ -32,9 +32,23 @@
 		killsOnly ? fights.filter((fight) => fight.kill) : fights
 	);
 
+	function extractReportCode(reportString: string): string {
+		try {
+			const url = new URL(reportString);
+			const pathParts = url.pathname.split('/').filter(Boolean); // e.g. ["reports", "MBRVTqz1aYdcLHC9"]
+			// Make sure the path is at least ["reports", "code"]
+			if (pathParts.length > 1 && pathParts[0] === 'reports') {
+				return pathParts[1];
+			}
+		} catch (err) {
+			// If it's not a valid URL, we'll just assume the user provided the code directly
+		}
+		return reportString;
+	}
+
 	async function fetchFights() {
 		if (!reportCode.trim()) {
-			error = 'Please enter a report code.';
+			error = 'Please enter a report code or URL.';
 			resetFights();
 			return;
 		}
@@ -44,10 +58,12 @@
 		error = '';
 
 		try {
+			const codeToFetch = extractReportCode(reportCode.trim());
+
 			const response = await fetch('/api/fights', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ code: reportCode.trim() })
+				body: JSON.stringify({ code: codeToFetch })
 			});
 			const data = await response.json();
 
@@ -177,14 +193,14 @@
 <Header />
 <main>
 	{#if showFightSelection}
-		<div class="container mx-auto flex flex-col gap-4 p-4 sm:w-80">
-			<Label class="block text-lg" for="reportCode">Enter Report Code:</Label>
+		<div class="container mx-auto flex flex-col gap-4 p-4 sm:w-96">
+			<Label class="block text-lg" for="reportCode">Enter WarcraftLogs link or Code:</Label>
 			<Input
 				class="w-full"
 				type="text"
 				id="reportCode"
 				bind:value={reportCode}
-				placeholder="e.g., LYNPrDcwVjC7zdWx"
+				placeholder="https://www.warcraftlogs.com/reports/<reportcode>"
 			/>
 
 			<Button class="w-full" on:click={fetchFights} disabled={loadingFights}>
