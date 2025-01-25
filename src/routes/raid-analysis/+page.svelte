@@ -8,7 +8,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
 
-	let reportCode: string = '';
+	let reportURL: string = '';
 	let fights: Fight[] = [];
 	let selectedFight: Fight | null = null;
 	let damageEvents: Series[] = [];
@@ -16,7 +16,6 @@
 	let castEvents: CastEvent[] = [];
 	let error: string = '';
 	let loadingFights = false;
-	let loadingEvents = false;
 	let loadingDamage = false;
 	let killsOnly = false;
 	let showFightSelection = true;
@@ -35,8 +34,7 @@
 	function extractReportCode(reportString: string): string {
 		try {
 			const url = new URL(reportString);
-			const pathParts = url.pathname.split('/').filter(Boolean); // e.g. ["reports", "MBRVTqz1aYdcLHC9"]
-			// Make sure the path is at least ["reports", "code"]
+			const pathParts = url.pathname.split('/').filter(Boolean);
 			if (pathParts.length > 1 && pathParts[0] === 'reports') {
 				return pathParts[1];
 			}
@@ -47,7 +45,7 @@
 	}
 
 	async function fetchFights() {
-		if (!reportCode.trim()) {
+		if (!reportURL.trim()) {
 			error = 'Please enter a report code or URL.';
 			resetFights();
 			return;
@@ -58,7 +56,7 @@
 		error = '';
 
 		try {
-			const codeToFetch = extractReportCode(reportCode.trim());
+			const codeToFetch = extractReportCode(reportURL.trim());
 
 			const response = await fetch('/api/fights', {
 				method: 'POST',
@@ -84,6 +82,7 @@
 	}
 
 	async function handleFightSelection(fight: Fight) {
+		const codeToFetch = extractReportCode(reportURL.trim());
 		selectedFight = fight;
 		resetEvents();
 		error = '';
@@ -97,7 +96,7 @@
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						fightID: fight.id,
-						code: reportCode.trim(),
+						code: codeToFetch,
 						startTime: fight.startTime,
 						endTime: fight.endTime
 					})
@@ -107,7 +106,7 @@
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						fightID: fight.id,
-						code: reportCode.trim(),
+						code: codeToFetch,
 						startTime: fight.startTime,
 						endTime: fight.endTime
 					})
@@ -117,7 +116,7 @@
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						fightID: fight.id,
-						code: reportCode.trim(),
+						code: codeToFetch,
 						startTime: fight.startTime,
 						endTime: fight.endTime
 					})
@@ -199,7 +198,7 @@
 				class="w-full"
 				type="text"
 				id="reportCode"
-				bind:value={reportCode}
+				bind:value={reportURL}
 				placeholder="https://www.warcraftlogs.com/reports/<reportcode>"
 			/>
 

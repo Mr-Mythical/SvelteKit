@@ -107,11 +107,7 @@ export interface RaiderIoRun {
 }
 
 export interface AccessToken {
-
 	token: string;
-  
 	expiresIn: number;
-  
 	obtainedAt: number;
-  
   }
