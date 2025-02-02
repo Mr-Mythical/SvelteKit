@@ -16,6 +16,7 @@
 	} from 'chart.js';
 	import type { ChartOptions, ChartData } from 'chart.js';
 	import type { CastEvent, Series } from '$lib/types/apiTypes';
+	import { backgroundColorPlugin } from '$lib/utils/chartCanvasPlugin'; 
 	import { abilityColors } from '$lib/utils/classColors';
 	import { Label } from '$lib/components/ui/label/index';
 	import * as RadioGroup from '$lib/components/ui/radio-group/index';
@@ -31,47 +32,6 @@
 		ChartJS.register(zoomPlugin);
 		zoomPluginLoaded = true;
 	});
-
-	const backgroundColorPlugin = {
-		id: 'customBackgroundColor',
-		beforeDraw: (chart: any) => {
-			const { ctx, canvas } = chart;
-			const borderRadius = 20;
-			const padding = 1;
-
-			const width = canvas.width;
-			const height = canvas.height;
-
-			ctx.save();
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-			ctx.fillStyle = '#696969';
-			ctx.strokeStyle = '#696969';
-			ctx.lineWidth = 3;
-
-			ctx.beginPath();
-			ctx.moveTo(padding + borderRadius, padding);
-			ctx.lineTo(padding + width - borderRadius, padding);
-			ctx.quadraticCurveTo(padding + width, padding, padding + width, padding + borderRadius);
-			ctx.lineTo(padding + width, padding + height - borderRadius);
-			ctx.quadraticCurveTo(
-				padding + width,
-				padding + height,
-				padding + width - borderRadius,
-				padding + height
-			);
-			ctx.lineTo(padding + borderRadius, padding + height);
-			ctx.quadraticCurveTo(padding, padding + height, padding, padding + height - borderRadius);
-			ctx.lineTo(padding, padding + borderRadius);
-			ctx.quadraticCurveTo(padding, padding, padding + borderRadius, padding);
-			ctx.closePath();
-
-			ctx.fill();
-			ctx.stroke();
-
-			ctx.restore();
-		}
-	};
 
 	ChartJS.register(
 		LineElement,
@@ -96,8 +56,6 @@
 		datasets: []
 	};
 
-	let smoothingWindowSize = 2;
-
 	let showAnnotations = true;
 	let specFilters: Record<string, boolean> = {};
 	let abilityTypeFilter: 'Major' | 'Minor' | 'All' = 'All';
@@ -120,7 +78,7 @@
 			title: {
 				display: true,
 				text: 'Damage Taken and Healing Done Over Time',
-				color: 'black'
+				color: '#FFF9F5'
 			},
 			tooltip: {
 				mode: 'index',
@@ -144,7 +102,7 @@
 				display: true,
 				position: 'top',
 				labels: {
-					color: 'black'
+					color: '#FFF9F5'
 				}
 			},
 			annotation: {
@@ -156,10 +114,10 @@
 				title: {
 					display: true,
 					text: 'Time (mm:ss)',
-					color: 'black'
+					color: '#FFF9F5'
 				},
 				ticks: {
-					color: 'black',
+					color: '#FFF9F5',
 					callback: function (tickValue: string | number) {
 						if (typeof tickValue === 'number') {
 							const totalSeconds = (tickValue * pointInterval) / 1000;
@@ -169,16 +127,19 @@
 						}
 						return tickValue;
 					}
+				},
+				grid: {
+					color: '#444444'
 				}
 			},
 			y: {
 				title: {
 					display: true,
 					text: 'Amount',
-					color: 'black'
+					color: '#FFF9F5'
 				},
 				ticks: {
-					color: 'black',
+					color: '#FFF9F5',
 					callback: function (tickValue: string | number) {
 						if (typeof tickValue === 'number') {
 							if (tickValue >= 1000000) {
@@ -191,7 +152,7 @@
 					}
 				},
 				grid: {
-					color: 'black'
+					color: '#555555'
 				},
 				max: calculateSuggestedMax(damageEvents, healingEvents)
 			}
@@ -217,44 +178,27 @@
 	}
 
 	function calculateSuggestedMax(damageEvents: Series[], healingEvents: Series[]): number {
-		const maxDamage = Math.max(...damageEvents.flatMap((series) => series.data));
-		const maxHealing = Math.max(...healingEvents.flatMap((series) => series.data));
+		const maxDamage = Math.max(...damageEvents[0].data);
+		const maxHealing = Math.max(...healingEvents[0].data);
 
 		const maxValue = Math.max(maxDamage, maxHealing);
 
-		return maxValue * 2.5;
-	}
-
-	function calculateRollingAverage(data: number[], windowSize: number): number[] {
-		return data.map((_, index, arr) => {
-			const window = arr.slice(Math.max(0, index - windowSize + 1), index + 1);
-			return window.reduce((sum, value) => sum + value, 0) / window.length;
-		});
+		return maxValue * 1.5;
 	}
 
 	function processSeriesData(series: Series[]) {
-		if (!series || series.length === 0 || !series[0].data) {
+		if (!series || !series[0].data) {
 			return { timestamps: [], values: [] };
 		}
 
-		const firstSeries = series[0];
 		const timestamps = Array.from(
-			{ length: firstSeries.data.length },
-			(_, i) => (i * firstSeries.pointInterval) / 1000 // Normalize to seconds
+			{ length: series[0].data.length },
+			(_, i) => (i * series[0].pointInterval) / 1000 // Normalize to seconds
 		);
-
-		const aggregatedValues = series.reduce((acc, curr) => {
-			if (curr.data && Array.isArray(curr.data)) {
-				curr.data.forEach((value, index) => {
-					acc[index] = (acc[index] || 0) + value;
-				});
-			}
-			return acc;
-		}, [] as number[]);
 
 		return {
 			timestamps,
-			values: aggregatedValues
+			values: series[0].data
 		};
 	}
 
@@ -264,8 +208,8 @@
 
 		return {
 			labels: damageData.timestamps.map((ts) => ts.toFixed(1)), // Use normalized seconds
-			damagetakenData: calculateRollingAverage(damageData.values, smoothingWindowSize),
-			effectiveHealingData: calculateRollingAverage(healingData.values, smoothingWindowSize)
+			damagetakenData: damageData.values,
+			effectiveHealingData: healingData.values
 		};
 	}
 
@@ -283,7 +227,8 @@
 					backgroundColor: 'rgba(255, 99, 132, 0.2)',
 					borderColor: 'rgba(255, 99, 132, 1)',
 					fill: true,
-					pointRadius: 0
+					pointRadius: 0,
+					tension: 0.2
 				},
 				{
 					label: 'Effective Healing',
@@ -291,7 +236,8 @@
 					backgroundColor: 'rgba(54, 162, 235, 0.2)',
 					borderColor: 'rgba(54, 162, 235, 1)',
 					fill: true,
-					pointRadius: 0
+					pointRadius: 0,
+					tension: 0.2
 				}
 			]
 		};
@@ -437,50 +383,3 @@
 	<Label for="anno check" class="mb-2 block text-lg">Show Annotations</Label>
 	<Checkbox id="anno check" bind:checked={showAnnotations} />
 </div>
-
-<div class="flex flex-col items-center space-y-2">
-	<Label for="smoothing" class="mb-2 block text-lg">Smoothing Window Size</Label>
-	<input
-		id="smoothing"
-		type="range"
-		min="1"
-		max="3"
-		bind:value={smoothingWindowSize}
-		step="1"
-		class="range-thumb h-2 w-48 cursor-pointer appearance-none rounded-lg bg-accent text-primary focus:outline-none focus:ring-1 focus:ring-ring focus:ring-opacity-50"
-		on:input={() => {
-			const processedData = processData(damageEvents, healingEvents);
-			updateChartData(processedData);
-		}}
-	/>
-	<span class="text-sm">Value: {smoothingWindowSize}</span>
-</div>
-
-<style>
-	:global(input[type='range'].range-thumb::-webkit-slider-thumb) {
-		appearance: none;
-		width: 16px;
-		height: 16px;
-		background-color: hsl(348 75% 81%);
-		border-radius: 9999px;
-		cursor: pointer;
-		box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-	}
-
-	:global(input[type='range'].range-thumb::-moz-range-thumb) {
-		width: 16px;
-		height: 16px;
-		background-color: hsl(348 75% 81%);
-		border-radius: 9999px;
-		cursor: pointer;
-		box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-	}
-
-	:global(html.dark input[type='range'].range-thumb::-webkit-slider-thumb) {
-		background-color: hsl(348 75% 19%);
-	}
-
-	:global(html.dark input[type='range'].range-thumb::-moz-range-thumb) {
-		background-color: hsl(348 75% 19%);
-	}
-</style>

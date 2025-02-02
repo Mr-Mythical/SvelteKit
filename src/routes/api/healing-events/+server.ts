@@ -54,7 +54,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			});
 		}
 
-		const seriesData: Series[] = json.data.reportData.report.graph.data.series;
+		let seriesData: Series[] = json.data.reportData.report.graph.data.series;
+		seriesData = seriesData.filter(series => series.name == 'Total');
 
 		return new Response(JSON.stringify({ seriesData }), {
 			status: 200,

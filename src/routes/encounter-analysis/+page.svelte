@@ -127,6 +127,9 @@
 			const healingData = await healingResponse.json();
 			const castData = await castResponse.json();
 
+			console.log(damageData)
+			console.log(healingData)
+
 			if (damageResponse.ok && healingResponse.ok && castResponse.ok) {
 				damageEvents = damageData.seriesData || [];
 				healingEvents = healingData.seriesData || [];
@@ -183,10 +186,10 @@
 </script>
 
 <SEO
-	title="Raid Encounter Analysis - Damage and Healing Graphs"
+	title="Raid Encounter Analysis - Mr. Mythical"
 	description="Analyze raid encounters with detailed damage and healing graphs. Import Warcraft Logs reports, overlay abilities, and gain deeper insights into raid performance."
 	image="https://mrmythical.com/Logo.png"
-	keywords="Raid analysis, Warcraft Logs, World of Warcraft, damage graphs, healing graphs, raid performance, encounter analysis, ability overlays, raid leading"
+	keywords="Raid analysis, Encounter analysis, Warcraft Logs, World of Warcraft, damage graphs, healing graphs, raid performance, encounter analysis, ability overlays, raid leading"
 />
 
 <Header />
@@ -214,6 +217,8 @@
 		{#if error && !loadingFights}
 			<p class="error">{error}</p>
 		{/if}
+
+
 
 		<div class="container mx-auto flex flex-col gap-8 p-4 md:px-16 lg:px-52 xl:px-80">
 			{#if Object.keys(groupedFights).length > 0}

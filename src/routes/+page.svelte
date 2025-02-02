@@ -19,23 +19,31 @@
 		<div class="flex justify-center gap-4"></div>
 	</section>
 
-	<section class="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2">
+	<section class="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
 		<div class="rounded-lg bg-card p-6 shadow-md">
-			<h3 class="mb-4 text-2xl font-semibold">Mythic+ Rating Calculator</h3>
+			<h3 class="mb-4 text-2xl font-semibold">Mythic+ Calculator</h3>
 			<p class="mb-6">
 				Calculate required dungeon levels for your desired Mythic+ score. Import characters, edit
 				plans, and share combinations.
 			</p>
-			<Button><a href="/rating-calculator" class="btn rounded-lg px-6 py-3">Learn More</a></Button>
+			<Button><a href="/rating-calculator" class="btn rounded-lg px-6 py-3">Get Started</a></Button>
 		</div>
-
+	
 		<div class="rounded-lg bg-card p-6 shadow-md">
-			<h3 class="mb-4 text-2xl font-semibold">Raid Encounter Analysis</h3>
+			<h3 class="mb-4 text-2xl font-semibold">Encounter Analysis</h3>
 			<p class="mb-6">
 				Visualize damage and healing graphs, overlay abilities, and analyze raid encounters using
 				Warcraft Log Reports.
 			</p>
-			<Button><a href="/raid-analysis" class="btn rounded-lg px-6 py-3">Learn More</a></Button>
+			<Button><a href="/encounter-analysis" class="btn rounded-lg px-6 py-3">Import Report</a></Button>
+		</div>
+	
+		<div class="rounded-lg bg-card p-6 shadow-md">
+			<h3 class="mb-4 text-2xl font-semibold">Damage Pattern Analysis</h3>
+			<p class="mb-6">
+				Identify critical raid moments through average damage taken and deviation visualization of progression logs.
+			</p>
+			<Button><a href="/average-damage-taken" class="btn rounded-lg px-6 py-3">View Damage Patterns</a></Button>
 		</div>
 	</section>
 
