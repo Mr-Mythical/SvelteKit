@@ -200,7 +200,7 @@
 			const rawData: AverageRecord[] = await response.json();
 			const filteredData = rawData.filter((d) => d.n >= 5);
 
-			const windowSize = 15;
+			const windowSize = 10;
 
 			const avgArray = filteredData.map((d) => d.avg);
 			const stdArray = filteredData.map((d) => d.std);
@@ -224,7 +224,7 @@
 					},
 					{
 						label: 'Standard Deviation',
-						data: smoothedAvg.map((avg, index) => avg + smoothedStd[index]),
+						data: smoothedAvg.map((avg, index) => Math.max(0, avg + smoothedStd[index])),
 						borderColor: 'transparent',
 						backgroundColor: 'rgba(66, 153, 225, 0.4)',
 						fill: {
@@ -236,7 +236,7 @@
 						tension: 0.4
 					},
 					{
-						data: smoothedAvg.map((avg, index) => avg - smoothedStd[index]),
+						data: smoothedAvg.map((avg, index) => Math.max(0, avg - smoothedStd[index])),
 						borderColor: 'transparent',
 						backgroundColor: 'rgba(66, 153, 225, 0.1)',
 						fill: false,
@@ -245,7 +245,7 @@
 					},
 					{
 						label: 'Confidence Interval',
-						data: smoothedAvg.map((avg, index) => avg + smoothedCi[index]),
+						data: smoothedAvg.map((avg, index) => Math.max(0, avg + smoothedCi[index])),
 						borderColor: 'transparent',
 						backgroundColor: 'rgba(245, 101, 101, 0.6)',
 						fill: {
@@ -257,7 +257,7 @@
 						tension: 0.4
 					},
 					{
-						data: smoothedAvg.map((avg, index) => avg - smoothedCi[index]),
+						data: smoothedAvg.map((avg, index) => Math.max(0, avg - smoothedCi[index])),
 						borderColor: 'transparent',
 						backgroundColor: 'rgba(245, 101, 101, 0.1)',
 						fill: false,
