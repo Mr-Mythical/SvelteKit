@@ -5,6 +5,7 @@
 	import Moon from 'lucide-svelte/icons/moon';
 	import { toggleMode } from 'mode-watcher';
 	import Menu from 'lucide-svelte/icons/menu';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 </script>
 
 <header>
@@ -69,13 +70,27 @@
 						>
 					</li>
 					<li>
-						<Button variant="link"
-							><a
-								href="/raid-analysis"
-								class="font-heading text-xl font-semibold text-foreground decoration-accent"
-								>Raid Analysis</a
-							></Button
-						>
+						<DropdownMenu.Root>
+							<DropdownMenu.Trigger asChild let:builder>
+								<Button builders={[builder]} variant="link" class="font-heading text-xl font-semibold text-foreground decoration-accent">
+									Raid Tools
+								</Button>
+							</DropdownMenu.Trigger>
+							<DropdownMenu.Content>
+								<DropdownMenu.Group asChild let:builder>
+									<DropdownMenu.Item>
+										<Button builders={[builder]} variant="link" class="font-heading text-xl font-semibold text-foreground decoration-accent">
+											<a href="/encounter-analysis" class="w-full">Encounter Analysis</a>
+										</Button>
+									</DropdownMenu.Item>
+									<DropdownMenu.Item>
+										<Button builders={[builder]} variant="link" class="font-heading text-xl font-semibold text-foreground decoration-accent">
+											<a href="/average-damage-taken" class="w-full">Average Damage Taken</a>
+										</Button>
+									</DropdownMenu.Item>
+								</DropdownMenu.Group>
+							</DropdownMenu.Content>
+						</DropdownMenu.Root>
 					</li>
 					<li>
 						<Button on:click={toggleMode} variant="ghost" size="icon">
@@ -111,13 +126,18 @@
 						>
 					</li>
 					<li>
-						<Button variant="link"
-							><a
-								href="/raid-analysis"
-								class="font-heading text-xl font-semibold text-foreground decoration-accent"
-								>Raid Analysis</a
-							></Button
-						>
+						<Button variant="link">
+							<a href="/encounter-analysis" class="font-heading text-xl font-semibold text-foreground decoration-accent">
+								Encounter Analysis
+							</a>
+						</Button>
+					</li>
+					<li>
+						<Button variant="link">
+							<a href="/average-damage-taken" class="font-heading text-xl font-semibold text-foreground decoration-accent">
+								Damage Taken Analysis
+							</a>
+						</Button>
 					</li>
 				</ul>
 			</div>
