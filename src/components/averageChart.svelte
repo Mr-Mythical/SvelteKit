@@ -223,7 +223,7 @@
 						tension: 0.4
 					},
 					{
-						label: 'Standard Deviation (Upper)',
+						label: 'Standard Deviation',
 						data: smoothedAvg.map((avg, index) => avg + smoothedStd[index]),
 						borderColor: 'transparent',
 						backgroundColor: 'rgba(66, 153, 225, 0.4)',
@@ -244,7 +244,7 @@
 						tension: 0.4
 					},
 					{
-						label: 'Confidence Interval (Upper)',
+						label: 'Confidence Interval',
 						data: smoothedAvg.map((avg, index) => avg + smoothedCi[index]),
 						borderColor: 'transparent',
 						backgroundColor: 'rgba(245, 101, 101, 0.6)',
