@@ -24,6 +24,7 @@
 					<h1 class="ml-3 font-heading text-2xl font-semibold md:text-3xl">Mr. Mythical</h1>
 				</div>
 			</a>
+
 			<div class="block md:hidden">
 				<Button
 					variant="ghost"
@@ -36,7 +37,6 @@
 				>
 					<Menu />
 				</Button>
-
 				<div class={`md:hidden ${open ? 'block' : 'hidden'} mt-2 w-full`} id="mobile-nav"></div>
 
 				<Button on:click={toggleMode} variant="ghost" size="icon" aria-label="Toggle theme">
@@ -53,38 +53,53 @@
 			<div class="hidden w-auto md:block">
 				<ul class="flex space-x-3">
 					<li>
-						<Button variant="link"
-							><a
+						<Button variant="link">
+							<a
 								href="/"
-								class="font-heading text-xl font-semibold text-foreground decoration-accent">Home</a
-							></Button
-						>
+								class="font-heading text-xl font-semibold text-foreground decoration-accent"
+							>
+								Home
+							</a>
+						</Button>
 					</li>
 					<li>
-						<Button variant="link"
-							><a
+						<Button variant="link">
+							<a
 								href="/rating-calculator"
 								class="font-heading text-xl font-semibold text-foreground decoration-accent"
-								>Mythic+ Calculator</a
-							></Button
-						>
+							>
+								Mythic+ Calculator
+							</a>
+						</Button>
 					</li>
 					<li>
 						<DropdownMenu.Root>
 							<DropdownMenu.Trigger asChild let:builder>
-								<Button builders={[builder]} variant="link" class="font-heading text-xl font-semibold text-foreground decoration-accent">
+								<Button
+									builders={[builder]}
+									variant="link"
+									class="font-heading text-xl font-semibold text-foreground decoration-accent"
+								>
 									Raid Tools
 								</Button>
 							</DropdownMenu.Trigger>
 							<DropdownMenu.Content>
 								<DropdownMenu.Group asChild let:builder>
 									<DropdownMenu.Item>
-										<Button builders={[builder]} variant="link" class="font-heading text-xl font-semibold text-foreground decoration-accent">
+										<Button
+											builders={[builder]}
+											variant="link"
+											class="font-heading text-xl font-semibold text-foreground decoration-accent"
+										>
 											<a href="/encounter-analysis" class="w-full">Encounter Analysis</a>
 										</Button>
 									</DropdownMenu.Item>
 									<DropdownMenu.Item>
-										<Button builders={[builder]} variant="link" class="font-heading text-xl font-semibold text-foreground decoration-accent">
+										<Button
+											builders={[builder]}
+											variant="link"
+											class="font-heading text-xl font-semibold text-foreground decoration-accent"
+										>
 											<a href="/average-damage-taken" class="w-full">Average Damage Taken</a>
 										</Button>
 									</DropdownMenu.Item>
@@ -92,6 +107,18 @@
 							</DropdownMenu.Content>
 						</DropdownMenu.Root>
 					</li>
+
+					<li>
+						<Button variant="link">
+							<a
+								href="/blog"
+								class="font-heading text-xl font-semibold text-foreground decoration-accent"
+							>
+								Blog
+							</a>
+						</Button>
+					</li>
+
 					<li>
 						<Button on:click={toggleMode} variant="ghost" size="icon">
 							<Sun
@@ -109,33 +136,53 @@
 			<div class={`md:hidden ${open ? 'block' : 'hidden'} mt-2 w-full`}>
 				<ul class="flex flex-col space-y-2">
 					<li>
-						<Button variant="link"
-							><a
+						<Button variant="link">
+							<a
 								href="/"
-								class="font-heading text-xl font-semibold text-foreground decoration-accent">Home</a
-							></Button
-						>
-					</li>
-					<li>
-						<Button variant="link"
-							><a
-								href="/rating-calculator"
 								class="font-heading text-xl font-semibold text-foreground decoration-accent"
-								>Mythic+ Calculator</a
-							></Button
-						>
+							>
+								Home
+							</a>
+						</Button>
 					</li>
 					<li>
 						<Button variant="link">
-							<a href="/encounter-analysis" class="font-heading text-xl font-semibold text-foreground decoration-accent">
+							<a
+								href="/rating-calculator"
+								class="font-heading text-xl font-semibold text-foreground decoration-accent"
+							>
+								Mythic+ Calculator
+							</a>
+						</Button>
+					</li>
+					<li>
+						<Button variant="link">
+							<a
+								href="/encounter-analysis"
+								class="font-heading text-xl font-semibold text-foreground decoration-accent"
+							>
 								Encounter Analysis
 							</a>
 						</Button>
 					</li>
 					<li>
 						<Button variant="link">
-							<a href="/average-damage-taken" class="font-heading text-xl font-semibold text-foreground decoration-accent">
+							<a
+								href="/average-damage-taken"
+								class="font-heading text-xl font-semibold text-foreground decoration-accent"
+							>
 								Damage Taken Analysis
+							</a>
+						</Button>
+					</li>
+
+					<li>
+						<Button variant="link">
+							<a
+								href="/blog"
+								class="font-heading text-xl font-semibold text-foreground decoration-accent"
+							>
+								Blog
 							</a>
 						</Button>
 					</li>
