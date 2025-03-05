@@ -10,14 +10,14 @@ export interface Run {
 }
 
 export const dungeons = [
-	{ value: 'The Dawnbreaker', label: 'The Dawnbreaker' },
-	{ value: 'Ara-Kara, City of Echoes', label: 'Ara-Kara, City of Echoes' },
-	{ value: 'Mists of Tirna Scithe', label: 'Mists of Tirna Scithe' },
-	{ value: 'The Necrotic Wake', label: 'The Necrotic Wake' },
-	{ value: 'The Stonevault', label: 'The Stonevault' },
-	{ value: 'Siege of Boralus', label: 'Siege of Boralus' },
-	{ value: 'Grim Batol', label: 'Grim Batol' },
-	{ value: 'City of Threads', label: 'City of Threads' }
+	{ value: 'Cinderbrew Meadery', label: 'Cinderbrew Meadery' },
+	{ value: 'Darkflame Cleft', label: 'Darkflame Cleft' },
+	{ value: 'Mechagon Workshop', label: 'Mechagon Workshop' },
+	{ value: 'Operation: Floodgate', label: 'Operation: Floodgate' },
+	{ value: 'Priory of the Sacred Flame', label: 'Priory of the Sacred Flame' },
+	{ value: 'The MOTHERLODE!!', label: 'The MOTHERLODE!!' },
+	{ value: 'The Rookery', label: 'The Rookery' },
+	{ value: 'Theater of Pain', label: 'Theater of Pain' }
 ];
 
 export class Dungeons {

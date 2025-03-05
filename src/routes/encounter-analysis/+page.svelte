@@ -14,6 +14,7 @@
 	let damageEvents: Series[] = [];
 	let healingEvents: Series[] = [];
 	let castEvents: CastEvent[] = [];
+	let bossEvents: CastEvent[] = [];
 	let error: string = '';
 	let loadingFights = false;
 	let loadingDamage = false;
@@ -90,7 +91,7 @@
 		showFightSelection = false;
 
 		try {
-			const [damageResponse, healingResponse, castResponse] = await Promise.all([
+			const [damageResponse, healingResponse, castResponse, bossResponse] = await Promise.all([
 				fetch('/api/damage-events', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
@@ -120,22 +121,31 @@
 						startTime: fight.startTime,
 						endTime: fight.endTime
 					})
+				}),
+				fetch('/api/boss-events', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						fightID: fight.id,
+						code: codeToFetch,
+						startTime: fight.startTime,
+						endTime: fight.endTime
+					})
 				})
 			]);
 
 			const damageData = await damageResponse.json();
 			const healingData = await healingResponse.json();
 			const castData = await castResponse.json();
+			const bossData = await bossResponse.json();
 
-			console.log(damageData)
-			console.log(healingData)
-
-			if (damageResponse.ok && healingResponse.ok && castResponse.ok) {
+			if (damageResponse.ok && healingResponse.ok && castResponse.ok && bossResponse.ok) {
 				damageEvents = damageData.seriesData || [];
 				healingEvents = healingData.seriesData || [];
 				castEvents = castData.castEvents || [];
+				bossEvents = bossData.castEvents || [];
 
-				if (damageEvents.length === 0 && healingEvents.length === 0 && castEvents.length === 0) {
+				if (damageEvents.length === 0 && healingEvents.length === 0 && castEvents.length === 0 && bossEvents.length === 0) {
 					error = 'No data found for the selected fight.';
 				}
 			} else {
@@ -300,7 +310,7 @@
 				{#if loadingDamage}
 					<p>Loading damage events...</p>
 				{:else if damageEvents.length > 0}
-					<DamageChart {damageEvents} {healingEvents} {castEvents} />
+					<DamageChart {damageEvents} {healingEvents} {castEvents} {bossEvents} encounterId={selectedFight.encounterID} />
 				{/if}
 			{/if}
 		</div>

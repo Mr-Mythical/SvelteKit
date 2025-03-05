@@ -16,15 +16,24 @@
 	} from 'chart.js';
 	import type { ChartOptions, ChartData } from 'chart.js';
 	import type { CastEvent, Series } from '$lib/types/apiTypes';
-	import { backgroundColorPlugin } from '$lib/utils/chartCanvasPlugin'; 
+	import { backgroundColorPlugin } from '$lib/utils/chartCanvasPlugin';
 	import { abilityColors } from '$lib/utils/classColors';
 	import { Label } from '$lib/components/ui/label/index';
 	import * as RadioGroup from '$lib/components/ui/radio-group/index';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { classSpecAbilities } from '$lib/types/classData';
+	// Import the new flat boss data structure.
+	import { bosses } from '$lib/types/bossData';
+
+	// Props
+	export let damageEvents: Series[] = [];
+	export let healingEvents: Series[] = [];
+	export let castEvents: CastEvent[] = [];
+	export let bossEvents: CastEvent[] = [];
+	// The encounter id passed from the fight page – this should match a boss id.
+	export let encounterId: number;
 
 	let zoomPluginLoaded = false;
-
 	let zoomPlugin;
 	onMount(async () => {
 		const module = await import('chartjs-plugin-zoom');
@@ -47,10 +56,6 @@
 		backgroundColorPlugin
 	);
 
-	export let damageEvents: Series[] = [];
-	export let healingEvents: Series[] = [];
-	export let castEvents: CastEvent[] = [];
-
 	let chartData: ChartData<'line', number[], string> = {
 		labels: [],
 		datasets: []
@@ -59,11 +64,8 @@
 	let showAnnotations = true;
 	let specFilters: Record<string, boolean> = {};
 	let abilityTypeFilter: 'Major' | 'Minor' | 'All' = 'All';
-	let indexOffset = 0;
-	let lastXValue = 0;
 
-	const pointInterval = damageEvents[0]?.pointInterval || healingEvents[0]?.pointInterval;
-
+	// Populate spec filters (for your regular cast events)
 	Object.keys(classSpecAbilities).forEach((className) => {
 		Object.keys(classSpecAbilities[className as keyof typeof classSpecAbilities]).forEach(
 			(specName) => {
@@ -71,6 +73,58 @@
 			}
 		);
 	});
+
+	// Use the encounterId to find the matching boss.
+	$: currentBoss = bosses.find((boss) => boss.id === encounterId);
+
+	// Initialize boss ability filters only when the boss changes.
+	let bossAbilityFilters: Record<number, boolean> = {};
+	let previousBossId: number | null = null;
+	$: if (currentBoss) {
+		if (previousBossId !== currentBoss.id) {
+			previousBossId = currentBoss.id;
+			bossAbilityFilters = {};
+			currentBoss.abilities.forEach((ability) => {
+				bossAbilityFilters[ability.id] = true;
+			});
+		}
+	}
+
+	function getSpecAbilityName(abilityGameID: number): string | null {
+  // Use Object.keys with a type assertion so that className is typed as a key of classSpecAbilities.
+  const classes = Object.keys(classSpecAbilities) as (keyof typeof classSpecAbilities)[];
+  for (const className of classes) {
+    const specs = classSpecAbilities[className];
+    // Similarly, assert the keys for specs.
+    const specNames = Object.keys(specs) as (keyof typeof specs)[];
+    for (const specName of specNames) {
+      const abilities = specs[specName] as {
+        Major: { id: number; name: string }[];
+        Minor: { id: number; name: string }[];
+      };
+      for (const ability of abilities.Major) {
+        if (ability.id === abilityGameID) return ability.name;
+      }
+      for (const ability of abilities.Minor) {
+        if (ability.id === abilityGameID) return ability.name;
+      }
+    }
+  }
+  return null;
+}
+
+
+	function getBossAbilityName(abilityGameID: number): string | null {
+		if (currentBoss) {
+			const found = currentBoss.abilities.find((ability) => ability.id === abilityGameID);
+			return found ? found.name : null;
+		}
+		return null;
+	}
+
+	let indexOffset = 0;
+	let lastXValue = 0;
+	const pointInterval = damageEvents[0]?.pointInterval || healingEvents[0]?.pointInterval;
 
 	const options: ChartOptions<'line'> & { plugins: { annotation: { annotations: any[] } } } = {
 		responsive: true,
@@ -95,6 +149,33 @@
 						const label = context.dataset.label || '';
 						const value = context.raw as number;
 						return `${label}: ${value.toLocaleString()}`;
+					},
+					afterBody: function (context) {
+						const index = context[0].dataIndex;
+						let lines: string[] = [];
+						// Find spec cast events that fall on this x-coordinate.
+						let specEvents = castEvents.filter((e) =>
+							Math.round((e.timestamp - damageEvents[0].pointStart) / damageEvents[0].pointInterval) === index
+						);
+						if (specEvents.length > 0) {
+							lines.push("Spec Abilities:");
+							specEvents.forEach((e) => {
+								const abilityName = getSpecAbilityName(e.abilityGameID) || `Ability ${e.abilityGameID}`;
+								lines.push(`- ${abilityName}`);
+							});
+						}
+						// Find boss events at this x-coordinate.
+						let bossEvt = bossEvents.filter((e) =>
+							Math.round((e.timestamp - damageEvents[0].pointStart) / damageEvents[0].pointInterval) === index
+						);
+						if (bossEvt.length > 0) {
+							lines.push("Boss Abilities:");
+							bossEvt.forEach((e) => {
+								const abilityName = getBossAbilityName(e.abilityGameID) || `Ability ${e.abilityGameID}`;
+								lines.push(`- ${abilityName}`);
+							});
+						}
+						return lines;
 					}
 				}
 			},
@@ -180,9 +261,7 @@
 	function calculateSuggestedMax(damageEvents: Series[], healingEvents: Series[]): number {
 		const maxDamage = Math.max(...damageEvents[0].data);
 		const maxHealing = Math.max(...healingEvents[0].data);
-
 		const maxValue = Math.max(maxDamage, maxHealing);
-
 		return maxValue * 1.5;
 	}
 
@@ -190,12 +269,10 @@
 		if (!series || !series[0].data) {
 			return { timestamps: [], values: [] };
 		}
-
 		const timestamps = Array.from(
 			{ length: series[0].data.length },
 			(_, i) => (i * series[0].pointInterval) / 1000 // Normalize to seconds
 		);
-
 		return {
 			timestamps,
 			values: series[0].data
@@ -205,9 +282,8 @@
 	function processData(damageEvents: Series[], healingEvents: Series[]) {
 		const damageData = processSeriesData(damageEvents);
 		const healingData = processSeriesData(healingEvents);
-
 		return {
-			labels: damageData.timestamps.map((ts) => ts.toFixed(1)), // Use normalized seconds
+			labels: damageData.timestamps.map((ts) => ts.toFixed(1)),
 			damagetakenData: damageData.values,
 			effectiveHealingData: healingData.values
 		};
@@ -255,84 +331,113 @@
 		updateChartData(processedData);
 	}
 
+	// Create annotations for both regular cast events and boss events.
+	const bossAnnotationColor = 'rgba(255, 215, 0, 0.8)';
+
 	$: annotations = showAnnotations
-		? castEvents
-				.filter((event) => {
-					const abilitySpec = Object.entries(classSpecAbilities).find(([className, specs]) =>
-						Object.values(specs).some(
-							(spec) =>
-								spec.Major.some((ability) => ability.id === event.abilityGameID) ||
-								spec.Minor.some((ability) => ability.id === event.abilityGameID)
-						)
-					);
-
-					if (!abilitySpec) return false;
-
-					const [className, specs] = abilitySpec;
-					const specName = Object.keys(specs).find((spec) => {
-						const specAbilities = specs[spec as keyof typeof specs];
-						return [...(specAbilities as any).Major, ...(specAbilities as any).Minor].some(
-							(ability) => ability.id === event.abilityGameID
+		? [
+				// Regular cast event annotations (using classSpecAbilities)
+				...castEvents
+					.filter((event) => {
+						const abilitySpec = Object.entries(classSpecAbilities).find(([className, specs]) =>
+							Object.values(specs).some(
+								(spec) =>
+									(spec.Major as { id: number }[]).some(
+										(ability) => ability.id === event.abilityGameID
+									) ||
+									(spec.Minor as { id: number }[]).some(
+										(ability) => ability.id === event.abilityGameID
+									)
+							)
 						);
-					});
-
-					if (!specName) return false;
-					if (!specFilters[`${className} - ${specName}`]) return false;
-
-					if (abilityTypeFilter === 'Major') {
-						const specAbilities = specs[specName as keyof typeof specs] as {
-							Major: { id: number }[];
-							Minor: { id: number }[];
-						};
-						return specAbilities.Major.some((ability) => ability.id === event.abilityGameID);
-					} else if (abilityTypeFilter === 'Minor') {
-						const specAbilities = specs[specName as keyof typeof specs] as {
-							Major: { id: number }[];
-							Minor: { id: number }[];
-						};
-						return specAbilities.Minor.some((ability) => ability.id === event.abilityGameID);
-					}
-
-					return true;
-				})
-				.map((event: CastEvent, index: number) => {
-					const xValue: number = Math.round(
-						(event.timestamp - damageEvents[0].pointStart) / damageEvents[0].pointInterval
-					);
-					const color: string = abilityColors[event.abilityGameID] || 'rgba(0, 0, 0, 0.8)';
-					const healIcon: HTMLImageElement = new Image(26, 26);
-					healIcon.src = `icons/image-${event.abilityGameID}.jpg`;
-
-					if (index === 0) {
-						indexOffset = 0;
-						lastXValue = 0;
-					}
-
-					if (xValue - lastXValue > 4 && (index - indexOffset) % 3 !== 0) {
-						indexOffset += 1;
-						if ((index - indexOffset) % 3 === 1) {
+						if (!abilitySpec) return false;
+						const [className, specs] = abilitySpec;
+						const specName = Object.keys(specs).find((spec) => {
+							const specAbilities = specs[spec as keyof typeof specs] as {
+								Major: { id: number }[];
+								Minor: { id: number }[];
+							};
+							return [...specAbilities.Major, ...specAbilities.Minor].some(
+								(ability) => ability.id === event.abilityGameID
+							);
+						});
+						if (!specName) return false;
+						if (!specFilters[`${className} - ${specName}`]) return false;
+						if (abilityTypeFilter === 'Major') {
+							const specAbilities = specs[specName as keyof typeof specs] as {
+								Major: { id: number }[];
+								Minor: { id: number }[];
+							};
+							return specAbilities.Major.some((ability) => ability.id === event.abilityGameID);
+						} else if (abilityTypeFilter === 'Minor') {
+							const specAbilities = specs[specName as keyof typeof specs] as {
+								Major: { id: number }[];
+								Minor: { id: number }[];
+							};
+							return specAbilities.Minor.some((ability) => ability.id === event.abilityGameID);
+						}
+						return true;
+					})
+					.map((event: CastEvent, index: number) => {
+						const xValue: number = Math.round(
+							(event.timestamp - damageEvents[0].pointStart) / damageEvents[0].pointInterval
+						);
+						const color: string = abilityColors[event.abilityGameID] || 'rgba(0, 0, 0, 0.8)';
+						const icon: HTMLImageElement = new Image(26, 26);
+						icon.src = `icons/image-${event.abilityGameID}.jpg`;
+						if (index === 0) {
+							indexOffset = 0;
+							lastXValue = 0;
+						}
+						if (xValue - lastXValue > 4 && (index - indexOffset) % 3 !== 0) {
 							indexOffset += 1;
+							if ((index - indexOffset) % 3 === 1) {
+								indexOffset += 1;
+							}
 						}
-					}
-
-					lastXValue = xValue;
-					const yOffset = ((index - indexOffset) % 3) * 25;
-
-					return {
-						type: 'line',
-						xMin: xValue,
-						xMax: xValue,
-						borderColor: color,
-						borderWidth: 2,
-						label: {
-							content: healIcon,
-							display: true,
-							position: 'end',
-							yAdjust: yOffset - 12,
-							backgroundColor: 'transparent'
-						}
-					};
-				})
+						lastXValue = xValue;
+						const yOffset = ((index - indexOffset) % 3) * 25;
+						return {
+							type: 'line',
+							xMin: xValue,
+							xMax: xValue,
+							borderColor: color,
+							borderWidth: 2,
+							label: {
+								content: icon,
+								display: true,
+								position: 'end',
+								yAdjust: yOffset - 12,
+								backgroundColor: 'transparent'
+							}
+						};
+					}),
+				// Boss event annotations – now only include events whose ability id is enabled via bossAbilityFilters.
+				...bossEvents
+					.filter((event: CastEvent) => bossAbilityFilters[event.abilityGameID])
+					.map((event: CastEvent, index: number) => {
+						const xValue: number = Math.round(
+							(event.timestamp - damageEvents[0].pointStart) / damageEvents[0].pointInterval
+						);
+						const bossIcon: HTMLImageElement = new Image(26, 26);
+						bossIcon.src = `icons/image-${event.abilityGameID}.jpg`;
+						return {
+							type: 'line',
+							xMin: xValue,
+							xMax: xValue,
+							borderWidth: 0, // Hide the line
+							borderColor: 'transparent',
+							label: {
+								content: bossIcon,
+								display: true,
+								// Adjust position: using 'center' and a positive yAdjust moves the icon downward
+								position: 'start',
+								yAdjust: 0, // Increase this value as needed to move the icon further down
+								backgroundColor: 'transparent'
+							}
+						};
+					})
+			]
 		: [];
 
 	$: options.plugins = options.plugins || {};
@@ -340,7 +445,8 @@
 	$: options.plugins.annotation.annotations = annotations as any;
 </script>
 
-<div class="filters grid grid-rows-2 items-center justify-center gap-1 text-center">
+<!-- Filter controls -->
+<div class="filters grid grid-cols-1 items-center justify-center gap-4 text-center md:grid-cols-3">
 	<div>
 		<Label>Ability Type</Label>
 		<RadioGroup.Root bind:value={abilityTypeFilter}>
@@ -372,7 +478,36 @@
 			{/each}
 		</div>
 	</div>
+
+	{#if currentBoss}
+	<div>
+		<Label>{currentBoss.name} Abilities</Label>
+		<div class="flex flex-wrap items-center justify-center gap-4">
+			{#each currentBoss.abilities as ability}
+				<div class="flex items-center space-x-2">
+					<Checkbox bind:checked={bossAbilityFilters[ability.id]} />
+					<img
+						src={"icons/image-" + ability.id + ".jpg"}
+						alt={ability.name + " icon"}
+						width="26"
+						height="26"
+						class="object-contain"
+					/>
+					<a 
+						href={"https://www.wowhead.com/spell=" + ability.id} 
+						target="_blank" 
+						rel="noopener noreferrer"
+						class="underline hover:text-blue-400"
+					>
+						{ability.name}
+					</a>
+				</div>
+			{/each}
+		</div>
+	</div>
+{/if}
 </div>
+
 <div
 	class="container mx-auto flex h-[32rem] w-full items-center justify-center p-4 xl:h-[40rem] 2xl:h-[50rem]"
 >
@@ -380,6 +515,6 @@
 </div>
 
 <div class="flex items-center justify-center space-x-2">
-	<Label for="anno check" class="mb-2 block text-lg">Show Annotations</Label>
-	<Checkbox id="anno check" bind:checked={showAnnotations} />
+	<Label for="anno-check" class="mb-2 block text-lg">Show Annotations</Label>
+	<Checkbox id="anno-check" bind:checked={showAnnotations} />
 </div>
