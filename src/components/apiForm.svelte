@@ -40,7 +40,10 @@
 	async function fetchRuns(characterName: string, region: string, realm: string) {
 		resetRuns();
 
-		const url = `/api/raiderio?name=${characterName}&region=${region}&realm=${realm}`;
+		const url =
+			`/api/raiderio?name=${encodeURIComponent(characterName)}` +
+			`&region=${encodeURIComponent(region)}` +
+			`&realm=${encodeURIComponent(realm)}`;
 		const response = await fetch(url);
 
 		if (response.ok) {
