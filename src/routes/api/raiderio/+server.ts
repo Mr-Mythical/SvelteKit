@@ -33,7 +33,11 @@ export const GET: RequestHandler = async ({ url }) => {
 		});
 	}
 
-	const apiUrl = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${realm}&name=${name}&fields=mythic_plus_best_runs`;
+	const apiUrl =
+		`https://raider.io/api/v1/characters/profile?region=${encodeURIComponent(region)}` +
+		`&realm=${encodeURIComponent(realm)}` +
+		`&name=${encodeURIComponent(name)}` +
+		`&fields=mythic_plus_best_runs`;
 
 	const response = await fetch(apiUrl);
 	if (!response.ok) {
