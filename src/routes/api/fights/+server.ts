@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import type { ApiResponse, FightsResponse } from '$lib/types/apiTypes';
-import { getValidAccessToken } from '../../../lib/utils/tokenCache';
+import { getValidAccessToken } from '$lib/utils/tokenCache';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {

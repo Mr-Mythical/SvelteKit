@@ -110,11 +110,11 @@ export interface AccessToken {
 	token: string;
 	expiresIn: number;
 	obtainedAt: number;
-  }
+}
 
-  export interface TemporalAverage {
+export interface TemporalAverage {
 	percentile: number;
 	avg: number;
 	stddev: number;
 	samples: number;
-  }
+}

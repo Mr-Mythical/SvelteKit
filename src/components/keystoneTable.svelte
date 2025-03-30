@@ -9,8 +9,9 @@
 	import { Button } from '$lib/components/ui/button/';
 	import { dungeonCount } from '$lib/types/dungeons';
 	import { dungeons } from '$lib/types/dungeons';
-	import { apiPopup } from '../stores.js';
-	import { dungeonData } from '../stores.js';
+	import { apiPopup } from '../stores';
+	import { dungeonData } from '../stores';
+	import { wowSummaryStore } from '../stores';
 
 	let edit = true;
 	let scoreGoal: number;
@@ -95,6 +96,7 @@
 			$dungeonData.runs[i].num_keystone_upgrades = 1;
 			$dungeonData.runs[i].score = 0;
 		}
+		wowSummaryStore.set(null);
 	}
 
 	function scoreFormula(keyLevel: number, star: number): number {
@@ -179,6 +181,23 @@
 
 <div class="container mx-auto flex flex-col gap-8 p-4 md:flex-row md:px-16 lg:px-52 xl:px-80">
 	<div class="flex w-full flex-col space-y-6 md:w-64">
+		{#if $wowSummaryStore}
+			<div class="w-full">
+				{#each $wowSummaryStore.media.assets as asset}
+					{#if asset.key === 'inset'}
+						<img src={asset.value} alt="Character media" class="my-2" />
+					{/if}
+				{/each}
+				<h2 class="text-2xl font-bold">{$wowSummaryStore.name}</h2>
+				<p>&lt;{$wowSummaryStore.guild?.name}&gt;</p>
+				<p>{$wowSummaryStore.realm.name}</p>
+				<p>
+					{$wowSummaryStore.race.name}
+					{$wowSummaryStore.active_spec?.name}
+					{$wowSummaryStore.character_class.name}
+				</p>
+			</div>
+		{/if}
 		<div>
 			<Label class="mb-2 block text-lg" for="scoreTarget">Score Target:</Label>
 			<Input
@@ -196,6 +215,7 @@
 			<Button class="w-full" on:click={() => ($apiPopup = !$apiPopup)} aria-label="Import Character"
 				>Import Character</Button
 			>
+			<Button class="w-full" on:click={() => resetRuns()}>Reset Runs</Button>
 		</div>
 
 		<div class="border-t pt-4">

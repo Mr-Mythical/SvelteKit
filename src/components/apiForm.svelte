@@ -8,10 +8,11 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { apiPopup } from '../stores.js';
-	import { dungeonData } from '../stores.js';
+	import { apiPopup } from '../stores';
+	import { dungeonData } from '../stores';
 	import { dungeonCount } from '$lib/types/dungeons';
 	import type { RaiderIoRun } from '$lib/types/apiTypes';
+	import { wowSummaryStore } from '../stores';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
 
@@ -22,6 +23,7 @@
 				toast.success(`You submitted ${JSON.stringify(f.data, null, 2)}`);
 				const { region, realm, characterName } = f.data;
 				fetchRuns(characterName, region, realm);
+				fetchWowSummary(characterName, region, realm);
 			} else {
 				toast.error('Please fix the errors in the form.');
 			}
@@ -73,6 +75,19 @@
 		} else {
 			console.error('Error fetching Raider.io data:', response.status);
 			toast.error('Failed to fetch data from Raider.io');
+		}
+	}
+
+	async function fetchWowSummary(characterName: string, region: string, realm: string) {
+		const url = `/api/blizzard?name=${characterName}&region=${region}&realm=${realm}`;
+		const response = await fetch(url);
+
+		if (response.ok) {
+			const summaryData = await response.json();
+			console.log('Fetched WoW Full Data:', summaryData);
+			wowSummaryStore.set(summaryData);
+		} else {
+			console.error('Error fetching WoW character summary:', response.status);
 		}
 	}
 
