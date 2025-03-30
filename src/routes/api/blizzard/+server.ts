@@ -14,8 +14,8 @@ export const GET: RequestHandler = async ({ url }) => {
 	try {
 		const token = await getBlizzardValidAccessToken();
 
-		const summaryUrl = `https://${region}.api.blizzard.com/profile/wow/character/${realm}/${name}?namespace=profile-${region}&locale=en_US`;
-		const mediaUrl = `https://${region}.api.blizzard.com/profile/wow/character/${realm}/${name}/character-media?namespace=profile-${region}&locale=en_US`;
+		const summaryUrl = `https://${encodeURIComponent(region)}.api.blizzard.com/profile/wow/character/${encodeURIComponent(realm)}/${encodeURIComponent(name)}?namespace=profile-${encodeURIComponent(region)}&locale=en_US`;
+		const mediaUrl = `https://${encodeURIComponent(region)}.api.blizzard.com/profile/wow/character/${encodeURIComponent(realm)}/${encodeURIComponent(name)}/character-media?namespace=profile-${encodeURIComponent(region)}&locale=en_US`;
 
 		const [summaryResponse, mediaResponse] = await Promise.all([
 			fetch(summaryUrl, { headers: { Authorization: `Bearer ${token}` } }),

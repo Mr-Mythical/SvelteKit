@@ -13,6 +13,8 @@
 	import { dungeonData } from '../stores';
 	import { wowSummaryStore } from '../stores';
 
+	$: console.log($dungeonData);
+
 	let edit = true;
 	let scoreGoal: number;
 	let totalScore: number;
