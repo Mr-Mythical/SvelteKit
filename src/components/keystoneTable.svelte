@@ -105,13 +105,13 @@
 		}
 
 		const affixBreakpoints: Record<number, number> = {
-			4: 10,
+			4: 15,
 			7: 15,
-			10: 10,
+			10: 15,
 			12: 15
 		};
 
-		let parScore = 165;
+		let parScore = 155;
 		for (let current = 2; current < keyLevel; current++) {
 			parScore += 15;
 			const nextLevel = current + 1;
@@ -336,5 +336,45 @@
 				Copied!
 			</div>
 		{/if}
+	</div>
+</div>
+
+<div class="container mx-auto px-4 mt-8">
+	<div class="flex flex-col md:flex-row justify-center items-start gap-8">
+		<div class="max-w-xl w-full rounded-lg bg-card p-6 shadow-md text-center">
+			<h3 class="mb-4 text-2xl font-semibold">Mythic+ Tooltip Addon</h3>
+			<p class="mb-6">
+				Instantly view dungeon rewards, crest earnings, and Mythic+ score potential
+				directly in your keystone tooltips.
+			</p>
+			<Button>
+				<a
+					href="https://www.curseforge.com/wow/addons/mr-mythical"
+					target="_blank"
+					class="px-6 py-3"
+				>
+					Download on CurseForge
+				</a>
+			</Button>
+		</div>
+
+		<!-- Section 2: Patreon Support -->
+		<div class="max-w-xl w-full rounded-lg bg-card p-6 shadow-md text-center">
+			
+			<h3 class="mb-4 text-2xl font-semibold">Support on Patreon</h3>
+			<p class="mb-6">
+				Love the tools and want to support development? Consider becoming a patron!
+				Your support helps keep these tools updated and improves future features.
+			</p>
+			<Button>
+				<a
+					href="https://www.patreon.com/MrMythical"
+					target="_blank"
+					class="px-6 py-3"
+				>
+					Support on Patreon
+				</a>
+			</Button>
+		</div>
 	</div>
 </div>
