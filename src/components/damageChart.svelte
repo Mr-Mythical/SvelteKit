@@ -91,28 +91,27 @@
 	}
 
 	function getSpecAbilityName(abilityGameID: number): string | null {
-  // Use Object.keys with a type assertion so that className is typed as a key of classSpecAbilities.
-  const classes = Object.keys(classSpecAbilities) as (keyof typeof classSpecAbilities)[];
-  for (const className of classes) {
-    const specs = classSpecAbilities[className];
-    // Similarly, assert the keys for specs.
-    const specNames = Object.keys(specs) as (keyof typeof specs)[];
-    for (const specName of specNames) {
-      const abilities = specs[specName] as {
-        Major: { id: number; name: string }[];
-        Minor: { id: number; name: string }[];
-      };
-      for (const ability of abilities.Major) {
-        if (ability.id === abilityGameID) return ability.name;
-      }
-      for (const ability of abilities.Minor) {
-        if (ability.id === abilityGameID) return ability.name;
-      }
-    }
-  }
-  return null;
-}
-
+		// Use Object.keys with a type assertion so that className is typed as a key of classSpecAbilities.
+		const classes = Object.keys(classSpecAbilities) as (keyof typeof classSpecAbilities)[];
+		for (const className of classes) {
+			const specs = classSpecAbilities[className];
+			// Similarly, assert the keys for specs.
+			const specNames = Object.keys(specs) as (keyof typeof specs)[];
+			for (const specName of specNames) {
+				const abilities = specs[specName] as {
+					Major: { id: number; name: string }[];
+					Minor: { id: number; name: string }[];
+				};
+				for (const ability of abilities.Major) {
+					if (ability.id === abilityGameID) return ability.name;
+				}
+				for (const ability of abilities.Minor) {
+					if (ability.id === abilityGameID) return ability.name;
+				}
+			}
+		}
+		return null;
+	}
 
 	function getBossAbilityName(abilityGameID: number): string | null {
 		if (currentBoss) {
@@ -154,24 +153,32 @@
 						const index = context[0].dataIndex;
 						let lines: string[] = [];
 						// Find spec cast events that fall on this x-coordinate.
-						let specEvents = castEvents.filter((e) =>
-							Math.round((e.timestamp - damageEvents[0].pointStart) / damageEvents[0].pointInterval) === index
+						let specEvents = castEvents.filter(
+							(e) =>
+								Math.round(
+									(e.timestamp - damageEvents[0].pointStart) / damageEvents[0].pointInterval
+								) === index
 						);
 						if (specEvents.length > 0) {
-							lines.push("Spec Abilities:");
+							lines.push('Spec Abilities:');
 							specEvents.forEach((e) => {
-								const abilityName = getSpecAbilityName(e.abilityGameID) || `Ability ${e.abilityGameID}`;
+								const abilityName =
+									getSpecAbilityName(e.abilityGameID) || `Ability ${e.abilityGameID}`;
 								lines.push(`- ${abilityName}`);
 							});
 						}
 						// Find boss events at this x-coordinate.
-						let bossEvt = bossEvents.filter((e) =>
-							Math.round((e.timestamp - damageEvents[0].pointStart) / damageEvents[0].pointInterval) === index
+						let bossEvt = bossEvents.filter(
+							(e) =>
+								Math.round(
+									(e.timestamp - damageEvents[0].pointStart) / damageEvents[0].pointInterval
+								) === index
 						);
 						if (bossEvt.length > 0) {
-							lines.push("Boss Abilities:");
+							lines.push('Boss Abilities:');
 							bossEvt.forEach((e) => {
-								const abilityName = getBossAbilityName(e.abilityGameID) || `Ability ${e.abilityGameID}`;
+								const abilityName =
+									getBossAbilityName(e.abilityGameID) || `Ability ${e.abilityGameID}`;
 								lines.push(`- ${abilityName}`);
 							});
 						}
@@ -480,32 +487,32 @@
 	</div>
 
 	{#if currentBoss}
-	<div>
-		<Label>{currentBoss.name} Abilities</Label>
-		<div class="flex flex-wrap items-center justify-center gap-4">
-			{#each currentBoss.abilities as ability}
-				<div class="flex items-center space-x-2">
-					<Checkbox bind:checked={bossAbilityFilters[ability.id]} />
-					<img
-						src={"icons/image-" + ability.id + ".jpg"}
-						alt={ability.name + " icon"}
-						width="26"
-						height="26"
-						class="object-contain"
-					/>
-					<a 
-						href={"https://www.wowhead.com/spell=" + ability.id} 
-						target="_blank" 
-						rel="noopener noreferrer"
-						class="underline hover:text-blue-400"
-					>
-						{ability.name}
-					</a>
-				</div>
-			{/each}
+		<div>
+			<Label>{currentBoss.name} Abilities</Label>
+			<div class="flex flex-wrap items-center justify-center gap-4">
+				{#each currentBoss.abilities as ability}
+					<div class="flex items-center space-x-2">
+						<Checkbox bind:checked={bossAbilityFilters[ability.id]} />
+						<img
+							src={'icons/image-' + ability.id + '.jpg'}
+							alt={ability.name + ' icon'}
+							width="26"
+							height="26"
+							class="object-contain"
+						/>
+						<a
+							href={'https://www.wowhead.com/spell=' + ability.id}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="underline hover:text-blue-400"
+						>
+							{ability.name}
+						</a>
+					</div>
+				{/each}
+			</div>
 		</div>
-	</div>
-{/if}
+	{/if}
 </div>
 
 <div

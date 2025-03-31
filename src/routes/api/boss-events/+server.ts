@@ -23,10 +23,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			.filter((id) => id !== undefined && id !== null);
 
 		// Build filter expression based on ability IDs
-		const filter =
-			abilityIDs.length > 0
-				? `ability.id IN (${abilityIDs.join(', ')})`
-				: '';
+		const filter = abilityIDs.length > 0 ? `ability.id IN (${abilityIDs.join(', ')})` : '';
 
 		const query = `
 		  query ResourcesBySource($code: String!, $fightID: Int!, $start: Float!, $end: Float!, $filter: String!) {
@@ -64,13 +61,10 @@ export const POST: RequestHandler = async ({ request }) => {
 		const json = await response.json();
 
 		if (json.errors) {
-			return new Response(
-				JSON.stringify({ error: 'Failed to fetch cast events from API.' }),
-				{
-					status: 500,
-					headers: { 'Content-Type': 'application/json' }
-				}
-			);
+			return new Response(JSON.stringify({ error: 'Failed to fetch cast events from API.' }), {
+				status: 500,
+				headers: { 'Content-Type': 'application/json' }
+			});
 		}
 
 		const castEvents: CastEvent[] = json.data.reportData.report.events.data.filter(

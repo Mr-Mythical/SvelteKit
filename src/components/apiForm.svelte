@@ -13,8 +13,12 @@
 	import { dungeonCount } from '$lib/types/dungeons';
 	import type { RaiderIoRun } from '$lib/types/apiTypes';
 	import { wowSummaryStore } from '../stores';
+	import RealmCombobox from './realmCombobox .svelte';
+	import { usRealmOptions, euRealmOptions } from '$lib/types/realms';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
+
+	$: currentRealmOptions = $formData.region === 'eu' ? euRealmOptions : usRealmOptions;
 
 	const form = superForm(data, {
 		validators: zodClient(formSchema),
@@ -158,7 +162,15 @@
 				<Form.Field {form} name="realm">
 					<Form.Control let:attrs>
 						<Form.Label>Realm</Form.Label>
-						<Input {...attrs} bind:value={$formData.realm} />
+						<RealmCombobox
+							options={currentRealmOptions}
+							selectedValue={$formData.realm}
+							triggerId="realm-combobox"
+							onSelect={(newValue) => {
+								$formData.realm = newValue;
+							}}
+						/>
+						<input hidden bind:value={$formData.realm} name={attrs.name} />
 					</Form.Control>
 					<Form.Description>The realm your character is on.</Form.Description>
 					<Form.FieldErrors />

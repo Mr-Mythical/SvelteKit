@@ -33,9 +33,16 @@
 			<div class="rounded-lg bg-card p-6 shadow-md">
 				<h3 class="mb-4 text-2xl font-semibold">Mythic+ Tooltip Addon</h3>
 				<p class="mb-6">
-					Instantly view dungeon rewards, crest earnings, and Mythic+ score potential directly in your keystone tooltips.
+					Instantly view dungeon rewards, crest earnings, and Mythic+ score potential directly in
+					your keystone tooltips.
 				</p>
-					<Button><a href="https://www.curseforge.com/wow/addons/mr-mythical" target="_blank" class="px-6 py-3">Download on CurseForge</a></Button>
+				<Button
+					><a
+						href="https://www.curseforge.com/wow/addons/mr-mythical"
+						target="_blank"
+						class="px-6 py-3">Download on CurseForge</a
+					></Button
+				>
 			</div>
 		</div>
 	</section>
@@ -54,7 +61,8 @@
 			<div class="rounded-lg bg-card p-6 shadow-md">
 				<h3 class="mb-4 text-2xl font-semibold">Damage Pattern Analysis</h3>
 				<p class="mb-6">
-					Identify critical raid moments through average damage taken and deviation visualization of progression logs.
+					Identify critical raid moments through average damage taken and deviation visualization of
+					progression logs.
 				</p>
 				<Button><a href="/average-damage-taken" class="px-6 py-3">View Damage Patterns</a></Button>
 			</div>
@@ -68,9 +76,14 @@
 			raid encounters. Stay tuned for more features!
 		</p>
 		<p class="mb-6">
-			Love the tools and want to support development? Consider becoming a patron! Your support helps keep these tools updated and improves future features.
+			Love the tools and want to support development? Consider becoming a patron! Your support helps
+			keep these tools updated and improves future features.
 		</p>
-		<Button><a href="https://www.patreon.com/MrMythical" target="_blank" class="px-6 py-3">Support on Patreon</a></Button>
+		<Button
+			><a href="https://www.patreon.com/MrMythical" target="_blank" class="px-6 py-3"
+				>Support on Patreon</a
+			></Button
+		>
 	</section>
 </main>
 

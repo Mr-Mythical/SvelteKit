@@ -341,13 +341,13 @@
 	</div>
 </div>
 
-<div class="container mx-auto px-4 mt-8">
-	<div class="flex flex-col md:flex-row justify-center items-start gap-8">
-		<div class="max-w-xl w-full rounded-lg bg-card p-6 shadow-md text-center">
+<div class="container mx-auto mt-8 px-4">
+	<div class="flex flex-col items-start justify-center gap-8 md:flex-row">
+		<div class="w-full max-w-xl rounded-lg bg-card p-6 text-center shadow-md">
 			<h3 class="mb-4 text-2xl font-semibold">Mythic+ Tooltip Addon</h3>
 			<p class="mb-6">
-				Instantly view dungeon rewards, crest earnings, and Mythic+ score potential
-				directly in your keystone tooltips.
+				Instantly view dungeon rewards, crest earnings, and Mythic+ score potential directly in your
+				keystone tooltips.
 			</p>
 			<Button>
 				<a
@@ -361,19 +361,14 @@
 		</div>
 
 		<!-- Section 2: Patreon Support -->
-		<div class="max-w-xl w-full rounded-lg bg-card p-6 shadow-md text-center">
-			
+		<div class="w-full max-w-xl rounded-lg bg-card p-6 text-center shadow-md">
 			<h3 class="mb-4 text-2xl font-semibold">Support on Patreon</h3>
 			<p class="mb-6">
-				Love the tools and want to support development? Consider becoming a patron!
-				Your support helps keep these tools updated and improves future features.
+				Love the tools and want to support development? Consider becoming a patron! Your support
+				helps keep these tools updated and improves future features.
 			</p>
 			<Button>
-				<a
-					href="https://www.patreon.com/MrMythical"
-					target="_blank"
-					class="px-6 py-3"
-				>
+				<a href="https://www.patreon.com/MrMythical" target="_blank" class="px-6 py-3">
 					Support on Patreon
 				</a>
 			</Button>

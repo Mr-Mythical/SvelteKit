@@ -1,8 +1,8 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-import { createClient } from '@supabase/supabase-js'
-const supabaseUrl = 'https://bxlzygqaozlmeefqmdqw.supabase.co'
+import { createClient } from '@supabase/supabase-js';
+const supabaseUrl = 'https://bxlzygqaozlmeefqmdqw.supabase.co';
 const supabaseKey = env.SUPABASE_KEY;
 if (!supabaseKey) {
 	throw new Error('SUPABASE_KEY is not defined in environment variables.');
