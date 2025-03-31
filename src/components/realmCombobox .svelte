@@ -7,7 +7,6 @@
 	import { cn } from '$lib/utils.js';
 	import { tick } from 'svelte';
 
-	// Now using a more generic prop name "options"
 	export let options: Array<{ value: string; label: string }> = [];
 	export let selectedValue: string = '';
 	export let onSelect: (value: string) => void;
@@ -60,8 +59,13 @@
 				<Command.Group>
 					{#each options as option}
 						<Command.Item
-							value={option.value}
-							onSelect={(selectedValue) => handleSelect(selectedValue)}
+							value={option.label}
+							onSelect={(selectedLabel) => {
+								const selectedOption = options.find((o) => o.label === selectedLabel);
+								if (selectedOption) {
+									handleSelect(selectedOption.value);
+								}
+							}}
 							class={cn(
 								'flex cursor-pointer select-none items-center p-2',
 								selectedValue === option.value ? 'bg-secondary' : ''
@@ -82,7 +86,7 @@
 
 <style>
 	.scrollable-dropdown {
-		max-height: 300px; /* adjust this value as needed */
+		max-height: 300px;
 		overflow-y: auto;
 	}
 	.sr-only {
