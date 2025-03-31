@@ -13,8 +13,6 @@
 	import { dungeonData } from '../stores';
 	import { wowSummaryStore } from '../stores';
 
-	$: console.log($dungeonData);
-
 	let edit = true;
 	let scoreGoal: number;
 	let totalScore: number;
@@ -24,6 +22,14 @@
 	let showTooltip = false;
 	let tooltipX = 0;
 	let tooltipY = 0;
+
+	import RecentCharacters from './recentCharacters.svelte';
+	import { fetchRuns, fetchWowSummary } from '$lib/utils/characterData';
+
+	function loadCharacter(char: { characterName: string; region: string; realm: string }) {
+		fetchRuns(char.characterName, char.region, char.realm);
+		fetchWowSummary(char.characterName, char.region, char.realm);
+	}
 
 	async function exportRuns(event: MouseEvent) {
 		const json = JSON.stringify($dungeonData.runs);
@@ -183,6 +189,9 @@
 
 <div class="container mx-auto flex flex-col gap-8 p-4 md:flex-row md:px-16 lg:px-52 xl:px-80">
 	<div class="flex w-full flex-col space-y-6 md:w-64">
+		<div class="character-container">
+			<RecentCharacters {loadCharacter} />
+		</div>
 		{#if $wowSummaryStore}
 			<div class="w-full">
 				{#each $wowSummaryStore.media.assets as asset}
@@ -219,6 +228,7 @@
 			>
 			<Button class="w-full" on:click={() => resetRuns()}>Reset Runs</Button>
 		</div>
+
 
 		<div class="border-t pt-4">
 			<div class="mb-2 flex space-x-2">

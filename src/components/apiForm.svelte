@@ -14,11 +14,25 @@
 	import type { RaiderIoRun } from '$lib/types/apiTypes';
 	import { wowSummaryStore } from '../stores';
 	import RealmCombobox from './realmCombobox .svelte';
-	import { usRealmOptions, euRealmOptions } from '$lib/types/realms';
+	import {
+		usRealmOptions,
+		euRealmOptions,
+		krRealmOptions,
+		twRealmOptions
+	} from '$lib/types/realms';
+	import { fetchRuns, fetchWowSummary } from '$lib/utils/characterData';
+	import { recentCharacters } from '$lib/utils/recentCharacters';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
 
-	$: currentRealmOptions = $formData.region === 'eu' ? euRealmOptions : usRealmOptions;
+	$: currentRealmOptions =
+		$formData.region === 'eu'
+			? euRealmOptions
+			: $formData.region === 'tw'
+				? twRealmOptions
+				: $formData.region === 'kr'
+					? krRealmOptions
+					: usRealmOptions;
 
 	const form = superForm(data, {
 		validators: zodClient(formSchema),
@@ -28,6 +42,7 @@
 				const { region, realm, characterName } = f.data;
 				fetchRuns(characterName, region, realm);
 				fetchWowSummary(characterName, region, realm);
+				recentCharacters.add({ region, realm, characterName });
 			} else {
 				toast.error('Please fix the errors in the form.');
 			}
@@ -42,73 +57,6 @@
 				value: $formData.region
 			}
 		: undefined;
-
-	async function fetchRuns(characterName: string, region: string, realm: string) {
-		resetRuns();
-
-		const url =
-			`/api/raiderio?name=${encodeURIComponent(characterName)}` +
-			`&region=${encodeURIComponent(region)}` +
-			`&realm=${encodeURIComponent(realm)}`;
-		const response = await fetch(url);
-
-		if (response.ok) {
-			const data = await response.json();
-			if (data.runs?.length) {
-				const mappedRuns = data.runs.slice(0, dungeonCount).map((run: RaiderIoRun) => ({
-					dungeon: run.dungeon,
-					short_name: run.short_name || '',
-					mythic_level: run.mythic_level || 0,
-					par_time_ms: run.par_time_ms || 0,
-					num_keystone_upgrades: run.num_keystone_upgrades || 0,
-					score: run.score || 0
-				}));
-				while (mappedRuns.length < dungeonCount) {
-					mappedRuns.push({
-						dungeon: '',
-						short_name: '',
-						mythic_level: 0,
-						par_time_ms: 0,
-						num_keystone_upgrades: 0,
-						score: 0
-					});
-				}
-				dungeonData.set({ runs: mappedRuns });
-				toast.success('Runs fetched successfully.');
-			} else {
-				toast.error('No runs found for this character.');
-			}
-			apiPopup.set(false);
-		} else {
-			console.error('Error fetching Raider.io data:', response.status);
-			toast.error('Failed to fetch data from Raider.io');
-		}
-	}
-
-	async function fetchWowSummary(characterName: string, region: string, realm: string) {
-		const url = `/api/blizzard?name=${characterName}&region=${region}&realm=${realm}`;
-		const response = await fetch(url);
-
-		if (response.ok) {
-			const summaryData = await response.json();
-			console.log('Fetched WoW Full Data:', summaryData);
-			wowSummaryStore.set(summaryData);
-		} else {
-			console.error('Error fetching WoW character summary:', response.status);
-		}
-	}
-
-	function resetRuns() {
-		const emptyRuns = Array.from({ length: dungeonCount }, () => ({
-			dungeon: '',
-			short_name: '',
-			mythic_level: 0,
-			par_time_ms: 0,
-			num_keystone_upgrades: 0,
-			score: 0
-		}));
-		dungeonData.set({ runs: emptyRuns });
-	}
 </script>
 
 {#if $apiPopup}
@@ -143,7 +91,6 @@
 								<Select.Item value="eu" label="eu" />
 								<Select.Item value="tw" label="tw" />
 								<Select.Item value="kr" label="kr" />
-								<Select.Item value="cn" label="cn" />
 							</Select.Content>
 						</Select.Root>
 						<input hidden bind:value={$formData.region} name={attrs.name} />

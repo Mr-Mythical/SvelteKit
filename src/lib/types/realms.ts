@@ -238,13 +238,13 @@ export const usRealmOptions: Array<{ value: string; label: string }> = [
 	{ value: 'dreadmaul', label: 'Dreadmaul' },
 	{ value: 'caelestrasz', label: 'Caelestrasz' },
 	{ value: 'nagrand', label: 'Nagrand' },
-	{ value: "aman'thul", label: "Aman'Thul" },
+	{ value: "amanthul", label: "Aman'Thul" },
 	{ value: 'barthilas', label: 'Barthilas' },
 	{ value: 'thaurissan', label: 'Thaurissan' },
-	{ value: "dath'remar", label: "Dath'Remar" },
+	{ value: 'dathremar', label: "Dath'Remar" },
 	{ value: 'frostmourne', label: 'Frostmourne' },
-	{ value: "khaz'goroth", label: "Khaz'goroth" },
-	{ value: "jubei'thos", label: "Jubei'Thos" },
+	{ value: 'khazgoroth', label: "Khaz'goroth" },
+	{ value: 'jubeithos', label: "Jubei'Thos" },
 	{ value: 'gundrak', label: 'Gundrak' },
 	{ value: 'saurfang', label: 'Saurfang' }
 ];
