@@ -1,16 +1,16 @@
-import type { AccessToken } from '../types/apiTypes';
+import type { AccessToken } from '$lib/types/apiTypes';
 
 /**
- * Requests a Bearer Token using Client Credentials.
- * @param clientId - The Client ID.
- * @param clientSecret - The Client Secret.
+ * Requests a Blizzard Bearer Token using Client Credentials.
+ * @param clientId - The Blizzard Client ID.
+ * @param clientSecret - The Blizzard Client Secret.
  * @returns A promise that resolves to the Access Token.
  */
-export async function requestBearerToken(
+export async function requestBlizzardBearerToken(
 	clientId: string,
 	clientSecret: string
 ): Promise<AccessToken> {
-	const tokenUrl = 'https://www.warcraftlogs.com/oauth/token';
+	const tokenUrl = `https://oauth.battle.net/token`;
 	const params = new URLSearchParams();
 	params.append('grant_type', 'client_credentials');
 
@@ -28,7 +28,7 @@ export async function requestBearerToken(
 
 	if (!response.ok) {
 		const errorData = await response.json();
-		throw new Error('Failed to acquire Bearer Token.');
+		throw new Error('Failed to acquire Blizzard Bearer Token.');
 	}
 
 	const data = await response.json();

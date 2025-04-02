@@ -9,8 +9,9 @@
 	import { Button } from '$lib/components/ui/button/';
 	import { dungeonCount } from '$lib/types/dungeons';
 	import { dungeons } from '$lib/types/dungeons';
-	import { apiPopup } from '../stores.js';
-	import { dungeonData } from '../stores.js';
+	import { apiPopup } from '../stores';
+	import { dungeonData } from '../stores';
+	import { wowSummaryStore } from '../stores';
 
 	let edit = true;
 	let scoreGoal: number;
@@ -21,6 +22,14 @@
 	let showTooltip = false;
 	let tooltipX = 0;
 	let tooltipY = 0;
+
+	import RecentCharacters from './recentCharacters.svelte';
+	import { fetchRuns, fetchWowSummary } from '$lib/utils/characterData';
+
+	function loadCharacter(char: { characterName: string; region: string; realm: string }) {
+		fetchRuns(char.characterName, char.region, char.realm);
+		fetchWowSummary(char.characterName, char.region, char.realm);
+	}
 
 	async function exportRuns(event: MouseEvent) {
 		const json = JSON.stringify($dungeonData.runs);
@@ -95,6 +104,7 @@
 			$dungeonData.runs[i].num_keystone_upgrades = 1;
 			$dungeonData.runs[i].score = 0;
 		}
+		wowSummaryStore.set(null);
 	}
 
 	function scoreFormula(keyLevel: number, star: number): number {
@@ -179,6 +189,26 @@
 
 <div class="container mx-auto flex flex-col gap-8 p-4 md:flex-row md:px-16 lg:px-52 xl:px-80">
 	<div class="flex w-full flex-col space-y-6 md:w-64">
+		<div class="character-container">
+			<RecentCharacters {loadCharacter} />
+		</div>
+		{#if $wowSummaryStore}
+			<div class="w-full">
+				{#each $wowSummaryStore.media.assets as asset}
+					{#if asset.key === 'inset'}
+						<img src={asset.value} alt="Character media" class="my-2" />
+					{/if}
+				{/each}
+				<h2 class="text-2xl font-bold">{$wowSummaryStore.name}</h2>
+				<p>&lt;{$wowSummaryStore.guild?.name}&gt;</p>
+				<p>{$wowSummaryStore.realm.name}</p>
+				<p>
+					{$wowSummaryStore.race.name}
+					{$wowSummaryStore.active_spec?.name}
+					{$wowSummaryStore.character_class.name}
+				</p>
+			</div>
+		{/if}
 		<div>
 			<Label class="mb-2 block text-lg" for="scoreTarget">Score Target:</Label>
 			<Input
@@ -196,7 +226,9 @@
 			<Button class="w-full" on:click={() => ($apiPopup = !$apiPopup)} aria-label="Import Character"
 				>Import Character</Button
 			>
+			<Button class="w-full" on:click={() => resetRuns()}>Reset Runs</Button>
 		</div>
+
 
 		<div class="border-t pt-4">
 			<div class="mb-2 flex space-x-2">
@@ -319,13 +351,13 @@
 	</div>
 </div>
 
-<div class="container mx-auto px-4 mt-8">
-	<div class="flex flex-col md:flex-row justify-center items-start gap-8">
-		<div class="max-w-xl w-full rounded-lg bg-card p-6 shadow-md text-center">
+<div class="container mx-auto mt-8 px-4">
+	<div class="flex flex-col items-start justify-center gap-8 md:flex-row">
+		<div class="w-full max-w-xl rounded-lg bg-card p-6 text-center shadow-md">
 			<h3 class="mb-4 text-2xl font-semibold">Mythic+ Tooltip Addon</h3>
 			<p class="mb-6">
-				Instantly view dungeon rewards, crest earnings, and Mythic+ score potential
-				directly in your keystone tooltips.
+				Instantly view dungeon rewards, crest earnings, and Mythic+ score potential directly in your
+				keystone tooltips.
 			</p>
 			<Button>
 				<a
@@ -339,19 +371,14 @@
 		</div>
 
 		<!-- Section 2: Patreon Support -->
-		<div class="max-w-xl w-full rounded-lg bg-card p-6 shadow-md text-center">
-			
+		<div class="w-full max-w-xl rounded-lg bg-card p-6 text-center shadow-md">
 			<h3 class="mb-4 text-2xl font-semibold">Support on Patreon</h3>
 			<p class="mb-6">
-				Love the tools and want to support development? Consider becoming a patron!
-				Your support helps keep these tools updated and improves future features.
+				Love the tools and want to support development? Consider becoming a patron! Your support
+				helps keep these tools updated and improves future features.
 			</p>
 			<Button>
-				<a
-					href="https://www.patreon.com/MrMythical"
-					target="_blank"
-					class="px-6 py-3"
-				>
+				<a href="https://www.patreon.com/MrMythical" target="_blank" class="px-6 py-3">
 					Support on Patreon
 				</a>
 			</Button>

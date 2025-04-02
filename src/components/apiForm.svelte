@@ -8,12 +8,27 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { apiPopup } from '../stores.js';
-	import { dungeonData } from '../stores.js';
-	import { dungeonCount } from '$lib/types/dungeons';
-	import type { RaiderIoRun } from '$lib/types/apiTypes';
+	import { apiPopup } from '../stores';
+	import RealmCombobox from './realmCombobox .svelte';
+	import {
+		usRealmOptions,
+		euRealmOptions,
+		krRealmOptions,
+		twRealmOptions
+	} from '$lib/types/realms';
+	import { fetchRuns, fetchWowSummary } from '$lib/utils/characterData';
+	import { recentCharacters } from '$lib/utils/recentCharacters';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
+
+	$: currentRealmOptions =
+		$formData.region === 'eu'
+			? euRealmOptions
+			: $formData.region === 'tw'
+				? twRealmOptions
+				: $formData.region === 'kr'
+					? krRealmOptions
+					: usRealmOptions;
 
 	const form = superForm(data, {
 		validators: zodClient(formSchema),
@@ -22,6 +37,8 @@
 				toast.success(`You submitted ${JSON.stringify(f.data, null, 2)}`);
 				const { region, realm, characterName } = f.data;
 				fetchRuns(characterName, region, realm);
+				fetchWowSummary(characterName, region, realm);
+				recentCharacters.add({ region, realm, characterName });
 			} else {
 				toast.error('Please fix the errors in the form.');
 			}
@@ -36,60 +53,6 @@
 				value: $formData.region
 			}
 		: undefined;
-
-	async function fetchRuns(characterName: string, region: string, realm: string) {
-		resetRuns();
-
-		const url =
-			`/api/raiderio?name=${encodeURIComponent(characterName)}` +
-			`&region=${encodeURIComponent(region)}` +
-			`&realm=${encodeURIComponent(realm)}`;
-		const response = await fetch(url);
-
-		if (response.ok) {
-			const data = await response.json();
-			if (data.runs?.length) {
-				const mappedRuns = data.runs.slice(0, dungeonCount).map((run: RaiderIoRun) => ({
-					dungeon: run.dungeon,
-					short_name: run.short_name || '',
-					mythic_level: run.mythic_level || 0,
-					par_time_ms: run.par_time_ms || 0,
-					num_keystone_upgrades: run.num_keystone_upgrades || 1,
-					score: run.score || 0
-				}));
-				while (mappedRuns.length < dungeonCount) {
-					mappedRuns.push({
-						dungeon: '',
-						short_name: '',
-						mythic_level: 0,
-						par_time_ms: 0,
-						num_keystone_upgrades: 1,
-						score: 0
-					});
-				}
-				dungeonData.set({ runs: mappedRuns });
-				toast.success('Runs fetched successfully.');
-			} else {
-				toast.error('No runs found for this character.');
-			}
-			apiPopup.set(false);
-		} else {
-			console.error('Error fetching Raider.io data:', response.status);
-			toast.error('Failed to fetch data from Raider.io');
-		}
-	}
-
-	function resetRuns() {
-		const emptyRuns = Array.from({ length: dungeonCount }, () => ({
-			dungeon: '',
-			short_name: '',
-			mythic_level: 0,
-			par_time_ms: 0,
-			num_keystone_upgrades: 1,
-			score: 0
-		}));
-		dungeonData.set({ runs: emptyRuns });
-	}
 </script>
 
 {#if $apiPopup}
@@ -124,7 +87,6 @@
 								<Select.Item value="eu" label="eu" />
 								<Select.Item value="tw" label="tw" />
 								<Select.Item value="kr" label="kr" />
-								<Select.Item value="cn" label="cn" />
 							</Select.Content>
 						</Select.Root>
 						<input hidden bind:value={$formData.region} name={attrs.name} />
@@ -143,7 +105,15 @@
 				<Form.Field {form} name="realm">
 					<Form.Control let:attrs>
 						<Form.Label>Realm</Form.Label>
-						<Input {...attrs} bind:value={$formData.realm} />
+						<RealmCombobox
+							options={currentRealmOptions}
+							selectedValue={$formData.realm}
+							triggerId="realm-combobox"
+							onSelect={(newValue) => {
+								$formData.realm = newValue;
+							}}
+						/>
+						<input hidden bind:value={$formData.realm} name={attrs.name} />
 					</Form.Control>
 					<Form.Description>The realm your character is on.</Form.Description>
 					<Form.FieldErrors />

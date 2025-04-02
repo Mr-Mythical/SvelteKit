@@ -145,7 +145,12 @@
 				castEvents = castData.castEvents || [];
 				bossEvents = bossData.castEvents || [];
 
-				if (damageEvents.length === 0 && healingEvents.length === 0 && castEvents.length === 0 && bossEvents.length === 0) {
+				if (
+					damageEvents.length === 0 &&
+					healingEvents.length === 0 &&
+					castEvents.length === 0 &&
+					bossEvents.length === 0
+				) {
 					error = 'No data found for the selected fight.';
 				}
 			} else {
@@ -228,8 +233,6 @@
 			<p class="error">{error}</p>
 		{/if}
 
-
-
 		<div class="container mx-auto flex flex-col gap-8 p-4 md:px-16 lg:px-52 xl:px-80">
 			{#if Object.keys(groupedFights).length > 0}
 				<div class="mt-4 flex items-center justify-between">
@@ -310,7 +313,13 @@
 				{#if loadingDamage}
 					<p>Loading damage events...</p>
 				{:else if damageEvents.length > 0}
-					<DamageChart {damageEvents} {healingEvents} {castEvents} {bossEvents} encounterId={selectedFight.encounterID} />
+					<DamageChart
+						{damageEvents}
+						{healingEvents}
+						{castEvents}
+						{bossEvents}
+						encounterId={selectedFight.encounterID}
+					/>
 				{/if}
 			{/if}
 		</div>

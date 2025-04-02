@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/private';
 import type { AccessToken } from '$lib/types/apiTypes';
-import { requestBearerToken, isTokenExpired } from './oauth';
+import { requestBlizzardBearerToken, isTokenExpired } from './blizzardOauth';
 
 let cachedToken: AccessToken | null = null;
 
@@ -8,18 +8,18 @@ let cachedToken: AccessToken | null = null;
  * Retrieves a valid Access Token, refreshing it if necessary.
  * @returns A promise that resolves to a valid Access Token.
  */
-export async function getValidAccessToken(): Promise<string> {
+export async function getBlizzardValidAccessToken(): Promise<string> {
 	if (cachedToken && !isTokenExpired(cachedToken)) {
 		return cachedToken.token;
 	}
 
-	const clientId = env.WCL_CLIENT_ID;
-	const clientSecret = env.WCL_CLIENT_SECRET;
+	const clientId = env.BLIZZARD_CLIENT_ID;
+	const clientSecret = env.BLIZZARD_CLIENT_SECRET;
 
 	if (!clientId || !clientSecret) {
-		throw new Error('Client ID or Client Secret is not configured.');
+		throw new Error('Blizzard Client ID or Client Secret is not configured.');
 	}
 
-	cachedToken = await requestBearerToken(clientId, clientSecret);
+	cachedToken = await requestBlizzardBearerToken(clientId, clientSecret);
 	return cachedToken.token;
 }
