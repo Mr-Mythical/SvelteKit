@@ -14,7 +14,6 @@ export async function requestBearerToken(
 	const params = new URLSearchParams();
 	params.append('grant_type', 'client_credentials');
 
-	// Encode credentials using btoa
 	const credentials = `${clientId}:${clientSecret}`;
 	const encodedCredentials = btoa(credentials);
 

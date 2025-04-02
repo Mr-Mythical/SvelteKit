@@ -14,9 +14,8 @@ export async function requestBlizzardBearerToken(
 	const params = new URLSearchParams();
 	params.append('grant_type', 'client_credentials');
 
-	// Use Buffer to encode credentials (works in Node)
 	const credentials = `${clientId}:${clientSecret}`;
-	const encodedCredentials = Buffer.from(credentials).toString('base64');
+	const encodedCredentials = btoa(credentials);
 
 	const response = await fetch(tokenUrl, {
 		method: 'POST',

@@ -1,20 +1,13 @@
 import { env } from '$env/dynamic/private';
 import type { AccessToken } from '$lib/types/apiTypes';
-import { requestBlizzardBearerToken } from './blizzardOauth';
-
-/**
- * Checks if the current Access Token is expired.
- * @param accessToken - The Access Token object.
- * @returns Boolean indicating if the token is expired.
- */
-function isTokenExpired(accessToken: AccessToken): boolean {
-	const currentTime = Date.now();
-	const expiryTime = accessToken.obtainedAt + accessToken.expiresIn * 1000;
-	return currentTime >= expiryTime;
-}
+import { requestBlizzardBearerToken, isTokenExpired } from './blizzardOauth';
 
 let cachedToken: AccessToken | null = null;
 
+/**
+ * Retrieves a valid Access Token, refreshing it if necessary.
+ * @returns A promise that resolves to a valid Access Token.
+ */
 export async function getBlizzardValidAccessToken(): Promise<string> {
 	if (cachedToken && !isTokenExpired(cachedToken)) {
 		return cachedToken.token;
