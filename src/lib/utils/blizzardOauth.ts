@@ -42,3 +42,15 @@ export async function requestBlizzardBearerToken(
 
 	return accessToken;
 }
+
+/**
+ * Checks if the current Access Token is expired.
+ * @param accessToken - The Access Token object.
+ * @returns Boolean indicating if the token is expired.
+ */
+export function isTokenExpired(accessToken: AccessToken): boolean {
+	const currentTime = Date.now();
+	// Convert expiresIn to milliseconds and add to obtainedAt
+	const expiryTime = accessToken.obtainedAt + accessToken.expiresIn * 1000;
+	return currentTime >= expiryTime;
+}
