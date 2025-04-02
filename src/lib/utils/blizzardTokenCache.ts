@@ -15,11 +15,6 @@ function isTokenExpired(accessToken: AccessToken): boolean {
 
 let cachedToken: AccessToken | null = null;
 
-/**
- * Retrieves a valid Blizzard Access Token, refreshing it if necessary.
- * @param region - The region to request the token for.
- * @returns A promise that resolves to a valid Access Token string.
- */
 export async function getBlizzardValidAccessToken(): Promise<string> {
 	if (cachedToken && !isTokenExpired(cachedToken)) {
 		return cachedToken.token;

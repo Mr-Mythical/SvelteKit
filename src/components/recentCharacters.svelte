@@ -1,4 +1,3 @@
-<!-- RecentCharacters.svelte -->
 <script lang="ts">
     import { recentCharacters, type RecentCharacter } from '$lib/utils/recentCharacters';
     import { onDestroy } from 'svelte';
@@ -15,7 +14,6 @@
         unsubscribe();
     });
 
-    // Function to get the realm label based on the region and realm value
     function getRealmLabel(region: string, realmValue: string): string {
         const realmOptions =
             region === 'us'
@@ -27,7 +25,7 @@
                 : twRealmOptions;
 
         const realm = realmOptions.find((r) => r.value === realmValue);
-        return realm ? realm.label : realmValue; // Fallback to value if label is not found
+        return realm ? realm.label : realmValue; 
     }
 
     export let loadCharacter: (character: RecentCharacter) => void;
