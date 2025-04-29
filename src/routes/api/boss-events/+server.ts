@@ -17,12 +17,10 @@ export const POST: RequestHandler = async ({ request }) => {
 			);
 		}
 
-		// Extract all ability IDs from bosses
 		const abilityIDs = bosses
 			.flatMap((boss) => boss.abilities.map((ability) => ability.id))
 			.filter((id) => id !== undefined && id !== null);
 
-		// Build filter expression based on ability IDs
 		const filter = abilityIDs.length > 0 ? `ability.id IN (${abilityIDs.join(', ')})` : '';
 
 		const query = `
