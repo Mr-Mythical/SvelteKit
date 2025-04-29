@@ -1,5 +1,12 @@
 <script lang="ts">
-	import type { Fight, CastEvent, Series } from '$lib/types/apiTypes';
+	import type {
+		Fight,
+		CastEvent,
+		Series,
+		Player,
+		ReportOwner,
+		ReportGuild
+	} from '$lib/types/apiTypes';
 	import DamageChart from '../../components/damageChart.svelte';
 	import Header from '../../components/header.svelte';
 	import SEO from '../../components/seo.svelte';
@@ -7,6 +14,8 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
+	import RecentReports from '../../components/recentReports.svelte';
+	import { recentReports } from '$lib/utils/recentReports';
 
 	let reportURL: string = '';
 	let fights: Fight[] = [];
@@ -15,11 +24,16 @@
 	let healingEvents: Series[] = [];
 	let castEvents: CastEvent[] = [];
 	let bossEvents: CastEvent[] = [];
+	let allHealers: Player[] = [];
 	let error: string = '';
 	let loadingFights = false;
-	let loadingDamage = false;
+	let loadingData = false;
 	let killsOnly = false;
 	let showFightSelection = true;
+
+	let reportTitle: string;
+	let reportOwner: ReportOwner;
+	let reportGuild: ReportGuild;
 
 	const difficultyMap: Record<number, string> = {
 		2: 'Raid Finder',
@@ -45,6 +59,11 @@
 		return reportString;
 	}
 
+	function handleReportSelection(code: string) {
+		reportURL = `https://www.warcraftlogs.com/reports/${code}`;
+		fetchFights();
+	}
+
 	async function fetchFights() {
 		if (!reportURL.trim()) {
 			error = 'Please enter a report code or URL.';
@@ -55,10 +74,8 @@
 		loadingFights = true;
 		resetFights();
 		error = '';
-
+		const codeToFetch = extractReportCode(reportURL.trim());
 		try {
-			const codeToFetch = extractReportCode(reportURL.trim());
-
 			const response = await fetch('/api/fights', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -67,9 +84,20 @@
 			const data = await response.json();
 
 			if (response.ok) {
+				reportTitle = data.title;
+				reportOwner = data.owner;
+				reportGuild = data.guild;
+
 				fights = data.fights.filter((fight: Fight) => fight.difficulty !== null);
 				if (fights.length === 0) {
 					error = 'No fights found for the provided report code.';
+				} else {
+					recentReports.addReport(
+						codeToFetch,
+						reportTitle,
+						reportGuild,
+						reportOwner
+					);
 				}
 			} else {
 				error = data.error || 'Failed to fetch fights.';
@@ -87,63 +115,80 @@
 		selectedFight = fight;
 		resetEvents();
 		error = '';
-		loadingDamage = true;
+		loadingData = true;
 		showFightSelection = false;
 
 		try {
-			const [damageResponse, healingResponse, castResponse, bossResponse] = await Promise.all([
-				fetch('/api/damage-events', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						fightID: fight.id,
-						code: codeToFetch,
-						startTime: fight.startTime,
-						endTime: fight.endTime
+			const [damageResponse, healingResponse, castResponse, bossResponse, playerDetailsResponse] =
+				await Promise.all([
+					fetch('/api/damage-events', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							fightID: fight.id,
+							code: codeToFetch,
+							startTime: fight.startTime,
+							endTime: fight.endTime
+						})
+					}),
+					fetch('/api/healing-events', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							fightID: fight.id,
+							code: codeToFetch,
+							startTime: fight.startTime,
+							endTime: fight.endTime
+						})
+					}),
+					fetch('/api/cast-events', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							fightID: fight.id,
+							code: codeToFetch,
+							startTime: fight.startTime,
+							endTime: fight.endTime
+						})
+					}),
+					fetch('/api/boss-events', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							fightID: fight.id,
+							code: codeToFetch,
+							startTime: fight.startTime,
+							endTime: fight.endTime
+						})
+					}),
+					fetch('/api/player-details', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							code: codeToFetch,
+							fightID: fight.id
+						})
 					})
-				}),
-				fetch('/api/healing-events', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						fightID: fight.id,
-						code: codeToFetch,
-						startTime: fight.startTime,
-						endTime: fight.endTime
-					})
-				}),
-				fetch('/api/cast-events', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						fightID: fight.id,
-						code: codeToFetch,
-						startTime: fight.startTime,
-						endTime: fight.endTime
-					})
-				}),
-				fetch('/api/boss-events', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						fightID: fight.id,
-						code: codeToFetch,
-						startTime: fight.startTime,
-						endTime: fight.endTime
-					})
-				})
-			]);
+				]);
 
 			const damageData = await damageResponse.json();
 			const healingData = await healingResponse.json();
 			const castData = await castResponse.json();
 			const bossData = await bossResponse.json();
+			const playerDetailsData = await playerDetailsResponse.json();
 
-			if (damageResponse.ok && healingResponse.ok && castResponse.ok && bossResponse.ok) {
+			if (
+				damageResponse.ok &&
+				healingResponse.ok &&
+				castResponse.ok &&
+				bossResponse.ok &&
+				playerDetailsResponse.ok
+			) {
 				damageEvents = damageData.seriesData || [];
 				healingEvents = healingData.seriesData || [];
 				castEvents = castData.castEvents || [];
 				bossEvents = bossData.castEvents || [];
+				allHealers = playerDetailsData.healerData || [];
 
 				if (
 					damageEvents.length === 0 &&
@@ -154,13 +199,21 @@
 					error = 'No data found for the selected fight.';
 				}
 			} else {
-				error = 'Failed to fetch damage, healing, or cast events.';
+				console.error('Damage Error:', !damageResponse.ok ? await damageResponse.text() : 'OK');
+				console.error('Healing Error:', !healingResponse.ok ? await healingResponse.text() : 'OK');
+				console.error('Cast Error:', !castResponse.ok ? await castResponse.text() : 'OK');
+				console.error('Boss Error:', !bossResponse.ok ? await bossResponse.text() : 'OK');
+				console.error(
+					'Player Details Error:',
+					!playerDetailsResponse.ok ? await playerDetailsResponse.text() : 'OK'
+				);
+				error = 'Failed to fetch some data for the selected fight.';
 			}
 		} catch (err) {
 			console.error('Fetch Events Error:', err);
 			error = 'An unexpected error occurred.';
 		} finally {
-			loadingDamage = false;
+			loadingData = false;
 		}
 	}
 
@@ -197,6 +250,9 @@
 	function resetEvents() {
 		damageEvents = [];
 		healingEvents = [];
+		castEvents = [];
+		bossEvents = [];
+		allHealers = [];
 	}
 </script>
 
@@ -210,94 +266,114 @@
 <Header />
 <main>
 	{#if showFightSelection}
-		<div class="container mx-auto flex flex-col gap-4 p-4 sm:w-96">
-			<Label class="block text-lg" for="reportCode">Enter WarcraftLogs link or Code:</Label>
-			<Input
-				class="w-full"
-				type="text"
-				id="reportCode"
-				bind:value={reportURL}
-				placeholder="https://www.warcraftlogs.com/reports/<reportcode>"
-			/>
+		<div class="container mx-auto p-4">
+			<div class="mx-auto md:px-16 lg:px-52 xl:px-80">
+				<div class="flex flex-col gap-8">
+					<div class="flex flex-col gap-4 items-center">
+						<Label class="block text-lg" for="reportCode">Enter WarcraftLogs link or Code:</Label>
+						<Input
+							class="w-80"
+							type="text"
+							id="reportCode"
+							bind:value={reportURL}
+							placeholder="https://www.warcraftlogs.com/reports/<reportcode>"
+						/>
 
-			<Button class="w-full" on:click={fetchFights} disabled={loadingFights}>
-				{#if loadingFights}
-					Loading...
-				{:else}
-					Fetch Fights
-				{/if}
-			</Button>
-		</div>
+						<Button class="w-80" on:click={fetchFights} disabled={loadingFights}>
+							{#if loadingFights}
+								Loading...
+							{:else}
+								Fetch Fights
+							{/if}
+						</Button>
 
-		{#if error && !loadingFights}
-			<p class="error">{error}</p>
-		{/if}
-
-		<div class="container mx-auto flex flex-col gap-8 p-4 md:px-16 lg:px-52 xl:px-80">
-			{#if Object.keys(groupedFights).length > 0}
-				<div class="mt-4 flex items-center justify-between">
-					<h1 class="text-2xl font-bold">Fight Selection</h1>
-					<Label class="flex items-center space-x-2">
-						<span class="text-sm">Kills only</span>
-						<input type="checkbox" bind:checked={killsOnly} class="toggle" />
-					</Label>
-				</div>
-
-				{#each Object.entries(groupedFights) as [name, difficulties]}
-					<div class="mb-6">
-						<h2 class="text-xl font-bold">{name}</h2>
-						{#each Object.entries(difficulties) as [difficulty, fights]}
-							<div class="mt-2">
-								<h3 class="text-lg font-semibold">{difficultyMap[Number(difficulty)]}</h3>
-								<div class="space-y-2">
-									{#each fights.filter((fight) => fight.kill) as fight}
-										<Button
-											on:click={() => handleFightSelection(fight)}
-											class="relative flex w-full items-center justify-between rounded-md shadow-md"
-										>
-											<span class="flex-grow text-left">
-												Kill - {formatDuration(fight.startTime, fight.endTime)}
-											</span>
-											<div class="mx-2 flex h-1/4 w-1/4 flex-shrink-0 overflow-hidden rounded-md">
-												<div
-													class="h-full bg-progress"
-													style="width: {100 - fight.bossPercentage}%;"
-												></div>
-											</div>
-											<span class="flex-shrink-0 text-sm">0%</span>
-										</Button>
-									{/each}
-									<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-										{#each fights.filter((fight) => !fight.kill) as fight, index (fight.id)}
-											<Button
-												on:click={() => handleFightSelection(fight)}
-												class="relative flex w-full items-center justify-between rounded-md shadow-md"
-											>
-												<span class="flex-grow text-left">
-													Wipe {index + 1} - {formatDuration(fight.startTime, fight.endTime)}
-												</span>
-												<div class="mx-2 flex h-1/4 w-1/4 flex-shrink-0 overflow-hidden rounded-md">
-													<div
-														class="h-full bg-destructive"
-														style="width: {100 - fight.bossPercentage}%;"
-													></div>
-													<div
-														class="h-full bg-secondary"
-														style="width: {fight.bossPercentage}%;"
-													></div>
-												</div>
-												<span class="flex-shrink-0 text-sm">
-													{fight.bossPercentage}%
-												</span>
-											</Button>
-										{/each}
-									</div>
-								</div>
-							</div>
-						{/each}
+						{#if error && !loadingFights}
+							<p class="error">{error}</p>
+						{/if}
 					</div>
-				{/each}
-			{/if}
+					<div>
+						<RecentReports onSelectReport={handleReportSelection} />
+					</div>
+				</div>
+				<div class="mt-8 flex flex-col gap-8">
+					<div class="mt-8 flex flex-col gap-8 ">
+						{#if Object.keys(groupedFights).length > 0}
+							<div class="mt-4 flex items-center justify-between">
+								<div>
+									<h1 class="text-2xl font-bold">{reportTitle}</h1>
+									{#if reportGuild?.name}
+										<h2 class="text-xl font-bold">Guild: {reportGuild.name}</h2>
+									{/if}
+									<p class="text-sm text-muted">Uploaded by: {reportOwner.name}</p>
+								</div>
+								<Label class="flex items-center space-x-2">
+									<span class="text-sm">Kills only</span>
+									<input type="checkbox" bind:checked={killsOnly} class="toggle" />
+								</Label>
+							</div>
+
+							{#each Object.entries(groupedFights) as [name, difficulties]}
+								<div class="mb-6">
+									<h2 class="text-xl font-bold">{name}</h2>
+									{#each Object.entries(difficulties) as [difficulty, fights]}
+										<div class="mt-2">
+											<h3 class="text-lg font-semibold">{difficultyMap[Number(difficulty)]}</h3>
+											<div class="space-y-2">
+												{#each fights.filter((fight) => fight.kill) as fight}
+													<Button
+														on:click={() => handleFightSelection(fight)}
+														class="relative flex w-full items-center justify-between rounded-md shadow-md"
+													>
+														<span class="flex-grow text-left">
+															Kill - {formatDuration(fight.startTime, fight.endTime)}
+														</span>
+														<div class="mx-2 flex h-1/4 w-1/4 flex-shrink-0 overflow-hidden rounded-md">
+															<div
+																class="h-full bg-progress"
+																style="width: {100 - fight.bossPercentage}%;"
+															></div>
+														</div>
+														<span class="flex-shrink-0 text-sm">0%</span>
+													</Button>
+												{/each}
+												<div
+													class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
+												>
+													{#each fights.filter((fight) => !fight.kill) as fight, index (fight.id)}
+														<Button
+															on:click={() => handleFightSelection(fight)}
+															class="relative flex w-full items-center justify-between rounded-md shadow-md"
+														>
+															<span class="flex-grow text-left">
+																Wipe {index + 1} - {formatDuration(fight.startTime, fight.endTime)}
+															</span>
+															<div
+																class="mx-2 flex h-1/4 w-1/4 flex-shrink-0 overflow-hidden rounded-md"
+															>
+																<div
+																	class="h-full bg-destructive"
+																	style="width: {100 - fight.bossPercentage}%;"
+																></div>
+																<div
+																	class="h-full bg-secondary"
+																	style="width: {fight.bossPercentage}%;"
+																></div>
+															</div>
+															<span class="flex-shrink-0 text-sm">
+																{fight.bossPercentage}%
+															</span>
+														</Button>
+													{/each}
+												</div>
+											</div>
+										</div>
+									{/each}
+								</div>
+							{/each}
+						{/if}
+					</div>
+				</div>
+			</div>
 		</div>
 	{:else}
 		<div>
@@ -310,7 +386,7 @@
 					</h1>
 					<Button on:click={goBack} class="mb-4">Back</Button>
 				</div>
-				{#if loadingDamage}
+				{#if loadingData}
 					<p>Loading damage events...</p>
 				{:else if damageEvents.length > 0}
 					<DamageChart
@@ -318,6 +394,7 @@
 						{healingEvents}
 						{castEvents}
 						{bossEvents}
+						{allHealers}
 						encounterId={selectedFight.encounterID}
 					/>
 				{/if}

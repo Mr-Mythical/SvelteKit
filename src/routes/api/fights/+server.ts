@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import type { ApiResponse, FightsResponse } from '$lib/types/apiTypes';
+import type { ApiResponse, FightsAndReportInfoResponse } from '$lib/types/apiTypes';
 import { getValidAccessToken } from '$lib/utils/tokenCache';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -16,10 +16,17 @@ export const POST: RequestHandler = async ({ request }) => {
 		const accessToken = await getValidAccessToken();
 
 		const query = `
-			query FightsInReport($code: String!) {
+			query FightsAndReportInfo($code: String!) {
 				reportData {
 					report(code: $code) {
-						fights {
+						title # <-- Added
+						owner { # <-- Added
+							name
+						}
+						guild { # <-- Added
+							name
+						}
+						fights { # <-- Existing
 							id
 							name
 							startTime
@@ -53,16 +60,32 @@ export const POST: RequestHandler = async ({ request }) => {
 			});
 		}
 
-		const json: ApiResponse<FightsResponse> = await response.json();
+		const json: ApiResponse<FightsAndReportInfoResponse> = await response.json();
 
-		const fights = json.data.reportData.report.fights;
+		const reportData = json.data?.reportData?.report;
 
-		return new Response(JSON.stringify({ fights }), {
+		if (!reportData) {
+			console.error('Report data is missing in the response:', json);
+			return new Response(
+				JSON.stringify({ error: 'Could not parse report data from API response.' }),
+				{
+					status: 500,
+					headers: { 'Content-Type': 'application/json' }
+				}
+			);
+		}
+
+		const fights = reportData.fights || [];
+		const title = reportData.title || 'Untitled Report';
+		const owner = reportData.owner || null;
+		const guild = reportData.guild || null;
+
+		return new Response(JSON.stringify({ title, owner, guild, fights }), {
 			status: 200,
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (error) {
-		console.error('Server Error:', error);
+		console.error('Server Error in /api/fights:', error);
 		return new Response(JSON.stringify({ error: 'Internal Server Error.' }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }

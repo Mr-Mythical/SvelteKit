@@ -17,7 +17,18 @@ export interface Fight {
 	difficulty: number;
 }
 
-export interface FightsResponse {
+export interface ReportOwner {
+	name: string;
+}
+
+export interface ReportGuild {
+	name: string;
+}
+
+export interface FightsAndReportInfoResponse {
+	title: string;
+	owner: ReportOwner
+	guild: ReportGuild | null; // Null means its a personal report
 	fights: Fight[];
 }
 

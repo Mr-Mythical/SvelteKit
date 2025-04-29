@@ -15,23 +15,21 @@
 		Filler
 	} from 'chart.js';
 	import type { ChartOptions, ChartData } from 'chart.js';
-	import type { CastEvent, Series } from '$lib/types/apiTypes';
+	import type { CastEvent, Series, Player } from '$lib/types/apiTypes';
 	import { backgroundColorPlugin } from '$lib/utils/chartCanvasPlugin';
 	import { abilityColors } from '$lib/utils/classColors';
 	import { Label } from '$lib/components/ui/label/index';
 	import * as RadioGroup from '$lib/components/ui/radio-group/index';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { classSpecAbilities } from '$lib/types/classData';
-	// Import the new flat boss data structure.
 	import { bosses } from '$lib/types/bossData';
 
-	// Props
 	export let damageEvents: Series[] = [];
 	export let healingEvents: Series[] = [];
 	export let castEvents: CastEvent[] = [];
 	export let bossEvents: CastEvent[] = [];
-	// The encounter id passed from the fight page – this should match a boss id.
 	export let encounterId: number;
+	export let allHealers: Player[] = [];
 
 	let zoomPluginLoaded = false;
 	let zoomPlugin;
@@ -65,19 +63,47 @@
 	let specFilters: Record<string, boolean> = {};
 	let abilityTypeFilter: 'Major' | 'Minor' | 'All' = 'All';
 
-	// Populate spec filters (for your regular cast events)
-	Object.keys(classSpecAbilities).forEach((className) => {
-		Object.keys(classSpecAbilities[className as keyof typeof classSpecAbilities]).forEach(
-			(specName) => {
-				specFilters[`${className} - ${specName}`] = true;
-			}
-		);
-	});
+	function initializeSpecFilters() {
+		specFilters = {}; // Reset first
+		const specsPresent = new Set<string>();
 
-	// Use the encounterId to find the matching boss.
+		if (allHealers && allHealers.length > 0) {
+			allHealers.forEach(healer => {
+				if (healer.specs && healer.specs.length > 0) {
+					const actualSpec = healer.specs[0].spec;
+					const specKey = `${healer.name} (${actualSpec} ${healer.type})`;
+					specsPresent.add(specKey);
+				} else {
+					console.warn(`Healer ${healer.name} missing spec data for this fight.`);
+					const healerClassData = classSpecAbilities[healer.type as keyof typeof classSpecAbilities];
+					if (healerClassData) {
+						Object.keys(healerClassData).forEach(specName => {
+							specsPresent.add(`${healer.name} (${specName} ${healer.type})`);
+						});
+					}
+				}
+			});
+		}
+
+		if (specsPresent.size === 0) {
+			Object.keys(classSpecAbilities).forEach((className) => {
+				if (classSpecAbilities[className as keyof typeof classSpecAbilities]) {
+					Object.keys(classSpecAbilities[className as keyof typeof classSpecAbilities]).forEach(
+						(specName) => {
+							specsPresent.add(`${specName} ${className}`);
+						}
+					);
+				}
+			});
+		}
+
+		specsPresent.forEach(spec => specFilters[spec] = true);
+		specFilters = { ...specFilters };
+	}
+
+	$: if (allHealers) initializeSpecFilters();
+
 	$: currentBoss = bosses.find((boss) => boss.id === encounterId);
-
-	// Initialize boss ability filters only when the boss changes.
 	let bossAbilityFilters: Record<number, boolean> = {};
 	let previousBossId: number | null = null;
 	$: if (currentBoss) {
@@ -91,11 +117,9 @@
 	}
 
 	function getSpecAbilityName(abilityGameID: number): string | null {
-		// Use Object.keys with a type assertion so that className is typed as a key of classSpecAbilities.
 		const classes = Object.keys(classSpecAbilities) as (keyof typeof classSpecAbilities)[];
 		for (const className of classes) {
 			const specs = classSpecAbilities[className];
-			// Similarly, assert the keys for specs.
 			const specNames = Object.keys(specs) as (keyof typeof specs)[];
 			for (const specName of specNames) {
 				const abilities = specs[specName] as {
@@ -152,7 +176,6 @@
 					afterBody: function (context) {
 						const index = context[0].dataIndex;
 						let lines: string[] = [];
-						// Find spec cast events that fall on this x-coordinate.
 						let specEvents = castEvents.filter(
 							(e) =>
 								Math.round(
@@ -167,7 +190,6 @@
 								lines.push(`- ${abilityName}`);
 							});
 						}
-						// Find boss events at this x-coordinate.
 						let bossEvt = bossEvents.filter(
 							(e) =>
 								Math.round(
@@ -338,12 +360,8 @@
 		updateChartData(processedData);
 	}
 
-	// Create annotations for both regular cast events and boss events.
-	const bossAnnotationColor = 'rgba(255, 215, 0, 0.8)';
-
 	$: annotations = showAnnotations
 		? [
-				// Regular cast event annotations (using classSpecAbilities)
 				...castEvents
 					.filter((event) => {
 						const abilitySpec = Object.entries(classSpecAbilities).find(([className, specs]) =>
@@ -369,7 +387,13 @@
 							);
 						});
 						if (!specName) return false;
-						if (!specFilters[`${className} - ${specName}`]) return false;
+
+						const matchingFilter = Object.keys(specFilters).find(key => 
+							key.includes(`(${specName} ${className})`) ||
+							key === `${specName} ${className}`
+						);
+						if (!matchingFilter || !specFilters[matchingFilter]) return false;
+
 						if (abilityTypeFilter === 'Major') {
 							const specAbilities = specs[specName as keyof typeof specs] as {
 								Major: { id: number }[];
@@ -419,7 +443,6 @@
 							}
 						};
 					}),
-				// Boss event annotations – now only include events whose ability id is enabled via bossAbilityFilters.
 				...bossEvents
 					.filter((event: CastEvent) => bossAbilityFilters[event.abilityGameID])
 					.map((event: CastEvent, index: number) => {
@@ -432,14 +455,13 @@
 							type: 'line',
 							xMin: xValue,
 							xMax: xValue,
-							borderWidth: 0, // Hide the line
+							borderWidth: 0,
 							borderColor: 'transparent',
 							label: {
 								content: bossIcon,
 								display: true,
-								// Adjust position: using 'center' and a positive yAdjust moves the icon downward
 								position: 'start',
-								yAdjust: 0, // Increase this value as needed to move the icon further down
+								yAdjust: 0,
 								backgroundColor: 'transparent'
 							}
 						};
@@ -452,7 +474,6 @@
 	$: options.plugins.annotation.annotations = annotations as any;
 </script>
 
-<!-- Filter controls -->
 <div class="filters grid grid-cols-1 items-center justify-center gap-4 text-center md:grid-cols-3">
 	<div>
 		<Label>Ability Type</Label>
