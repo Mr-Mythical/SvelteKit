@@ -129,3 +129,31 @@ export interface TemporalAverage {
 	stddev: number;
 	samples: number;
 }
+
+export interface BrowseLogsParams {
+	bossId?: number;         // Corresponds to healer_compositions.encounter_id
+	minDuration?: number;    // In seconds (frontend)
+	maxDuration?: number;    // In seconds (frontend)
+	healerSpecs?: string[];  // Array of "ClassName-SpecName" strings, e.g., ["Druid-Restoration"]
+	page?: number;           // For pagination
+	limit?: number;          // For pagination
+}
+
+export interface BrowsedLog {
+	log_code: string;         // From healer_compositions.report_code
+	title: string;            // Derived from encounter_name or guild_name
+	boss_name: string;        // Derived from encounter_id using bossData.ts or encounter_name
+	duration_seconds: number; // Calculated from healer_compositions.duration_ms
+	healer_composition: string[]; // Array of "ClassName-SpecName" from healer_specs.spec_icon
+	log_url?: string;         // Constructed URL to Warcraft Logs
+	fight_id: number;         // From healer_compositions.fight_id
+	start_time: number;       // From healer_compositions.report_absolute_start_time_ms
+	end_time: number;         // Calculated from start_time + duration_ms
+}
+
+export interface BrowseLogsResponse {
+	logs: BrowsedLog[];
+	total: number;            // Total number of logs matching the filters
+	page: number;             // Current page number
+	limit: number;            // Number of items per page
+}
