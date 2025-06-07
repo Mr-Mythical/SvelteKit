@@ -25,8 +25,7 @@
 	import { page as pageStore } from '$app/stores';
 	import { onMount } from 'svelte';
 
-	// Existing state for single report analysis
-	let reportURL: string = ''; // This will be set by manual input or when a browsed log is chosen for analysis
+	let reportURL: string = '';
 	let fights: Fight[] = [];
 	let selectedFight: Fight | null = null;
 	let damageEvents: Series[] = [];
@@ -38,18 +37,17 @@
 	let loadingFights = false;
 	let loadingData = false;
 	let killsOnly = false;
-	let showFightSelection = true; // Controls visibility of fight list vs. detailed analysis
+	let showFightSelection = true;
 
 	let reportTitle: string | undefined;
 	let reportOwner: ReportOwner | undefined;
 	let reportGuild: ReportGuild | undefined;
 
-	// ---- NEW STATE FOR LOG BROWSER ----
 	let browsedLogs: BrowsedLog[] = [];
 	let browseLoading = false;
 	let totalBrowsedLogs = 0;
 	let currentBrowsePage = 1;
-	const browseItemsPerPage = 10; // Or make this configurable
+	const browseItemsPerPage = 10;
 	let lastBrowseParams: BrowseLogsParams | null = null;
 
 	const difficultyMap: Record<number, string> = {
@@ -63,7 +61,6 @@
 		killsOnly ? fights.filter((fight) => fight.kill) : fights
 	);
 
-	// ---- URL PARAM HANDLING ----
 	let initialReportCodeFromUrl: string | null = null;
 	let initialFightIdFromUrl: number | null = null;
 
@@ -94,13 +91,11 @@
 				return pathParts[1];
 			}
 		} catch (err) {
-			// If it's not a valid URL, assume it's a code
 		}
-		return reportString.split('#')[0].trim(); // Also trim any #fight=xx from the code
+		return reportString.split('#')[0].trim(); 
 	}
 
 	function handleReportSelection(code: string) {
-		// From RecentReports component
 		reportURL = `https://www.warcraftlogs.com/reports/${code}`;
 		resetForNewReport();
 		fetchFights();
@@ -111,7 +106,6 @@
 		fights = [];
 		showFightSelection = true;
 		resetEvents();
-		// Do not reset browseLoading or browsedLogs here, they are separate
 	}
 
 	async function fetchFights() {
@@ -122,7 +116,7 @@
 		}
 
 		loadingFights = true;
-		resetForNewReport(); // Resets fights and selectedFight
+		resetForNewReport();
 		error = '';
 		const codeToFetch = extractReportCode(reportURL.trim());
 		try {
@@ -143,7 +137,7 @@
 				} else {
 					recentReportsStore.addReport(codeToFetch, reportTitle!, reportGuild, reportOwner!);
 				}
-				showFightSelection = true; // Ensure fight selection is visible
+				showFightSelection = true;
 			} else {
 				error = data.error || 'Failed to fetch fights.';
 			}
@@ -161,11 +155,9 @@
 		resetEvents();
 		error = '';
 		loadingData = true;
-		showFightSelection = false; // Hide fight list, show analysis for selectedFight
+		showFightSelection = false;
 
 		try {
-			// ... (your existing Promise.all for fetching damage, healing, etc. events)
-			// This part remains the same as in your provided code
 			const [damageResponse, healingResponse, castResponse, bossResponse, playerDetailsResponse] =
 				await Promise.all([
 					fetch('/api/damage-events', {
@@ -246,7 +238,6 @@
 					error = 'No data found for the selected fight.';
 				}
 			} else {
-				// More specific error logging can be helpful
 				error = 'Failed to fetch some data for the selected fight. Check console for details.';
 				console.error({ damageData, healingData, castData, bossData, playerDetailsData });
 			}
@@ -259,27 +250,20 @@
 	}
 
 	function goBackToFightSelection() {
-		// Renamed from goBack for clarity
 		selectedFight = null;
-		showFightSelection = true; // Show the list of fights for the current report
-		// Events are reset when a new fight is selected or report is loaded
+		showFightSelection = true;
 	}
 
 	function goBackToReportInput() {
-		// New function to go all the way back
 		reportURL = '';
 		resetForNewReport();
-		showFightSelection = true; // Default state for input
+		showFightSelection = true; 
 		error = '';
 		reportTitle = undefined;
 		reportOwner = undefined;
 		reportGuild = undefined;
-		// Optionally clear browsed logs too, or keep them
-		// browsedLogs = [];
-		// totalBrowsedLogs = 0;
 	}
 
-	// ---- LOG BROWSER FUNCTIONS ----
 	async function handleLogSearch(event: CustomEvent<BrowseLogsParams>) {
 		browseLoading = true;
 		browsedLogs = [];
@@ -298,19 +282,17 @@
 	async function fetchAndSetBrowsedLogs(params: BrowseLogsParams, pageNum: number) {
 		browseLoading = true;
 		const fetchParams = { ...params, page: pageNum, limit: browseItemsPerPage };
-		console.log('Fetching browsed logs with params:', JSON.stringify(fetchParams, null, 2)); // Log what's being sent
+		console.log('Fetching browsed logs with params:', JSON.stringify(fetchParams, null, 2));
 		try {
 			const response = await fetch('/api/browse-logs', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(fetchParams)
 			});
-			const responseText = await response.text(); // Get raw response text first
-			console.log('Raw API Response Text:', responseText);
+			const responseText = await response.text(); 
 
 			if (response.ok) {
-				const data = JSON.parse(responseText); // Parse it after logging
-				console.log('Parsed API Data:', data);
+				const data = JSON.parse(responseText); 
 				if (data.logs) {
 					browsedLogs = data.logs;
 					totalBrowsedLogs = data.total || 0;
@@ -340,16 +322,10 @@
 	}
 
 	function analyzeLogFromBrowse(logToAnalyze: BrowsedLog) {
-		// Set the reportURL and selectedFight, then trigger data fetching for this specific log/fight
 		reportURL = `https://www.warcraftlogs.com/reports/${logToAnalyze.log_code}`;
-
-		// Create a mock Fight object or adapt handleFightSelection
-		// For now, we'll update URL and let onMount logic handle it, or directly call fetchFights and then handleFightSelection
-		// Using goto is cleaner for SvelteKit's lifecycle
 		goto(`/encounter-analysis?report=${logToAnalyze.log_code}&fight=${logToAnalyze.fight_id}`);
 	}
 
-	// Utility functions (groupFightsByNameAndDifficulty, formatDuration, resetEvents) remain the same
 	function groupFightsByNameAndDifficulty(fights: Fight[]) {
 		return fights.reduce(
 			(grouped, fight) => {

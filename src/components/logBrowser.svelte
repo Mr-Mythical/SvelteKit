@@ -3,20 +3,15 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
-	// Make sure all Select components are imported correctly as per your $lib/components/ui/select/index.ts
-	import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '$lib/components/ui/select'; //
+	import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '$lib/components/ui/select';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { bosses as bossList } from '$lib/types/bossData';
 	import { classSpecAbilities } from '$lib/types/classData';
 
 	export let loading = false;
 
-	// For Select.Root, we need to manage an object for the selected item,
-	// or handle the change event to update selectedBossId.
-	// selectedBossId will store the actual numeric ID.
 	let selectedBossId: number | undefined = undefined;
 
-	// This will hold the object { value: number, label: string } for the Select component
 	let selectedBossObject: { value: number; label: string } | undefined = undefined;
 
 	let minDuration: number | undefined = undefined;
@@ -27,8 +22,7 @@
 
 	const healerOptions: { value: string; label: string }[] = [];
 	for (const className in classSpecAbilities) {
-		// @ts-ignore
-		const specs = classSpecAbilities[className];
+		const specs = classSpecAbilities[className as keyof typeof classSpecAbilities];
 		for (const specName in specs) {
 			if (['Restoration', 'Preservation', 'Mistweaver', 'Holy', 'Discipline'].includes(specName)) {
 				healerOptions.push({ value: `${className}-${specName}`, label: `${className} - ${specName}` });
@@ -51,10 +45,9 @@
 		selectedHealerSpecs = Array.from(target.selectedOptions, option => option.value);
 	}
 
-	// Handler for when the selected boss changes
 	function handleBossChange(selected: { value: number; label?: string } | undefined) {
 		if (selected) {
-			selectedBossObject = { value: selected.value, label: selected.label ?? '' }; // Ensure label is always a string
+			selectedBossObject = { value: selected.value, label: selected.label ?? '' };
 			selectedBossId = selected.value;
 		} else {
 			selectedBossObject = undefined;

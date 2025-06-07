@@ -1,9 +1,8 @@
-// src/routes/api/browse-logs/+server.ts
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { createClient } from '@supabase/supabase-js';
-import type { BrowseLogsParams, BrowsedLog, BrowseLogsResponse } from '$lib/types/apiTypes'; // Ensure these types are in $lib/types/apiTypes.ts
-import { bosses as bossList } from '$lib/types/bossData'; // For mapping encounter_id to a canonical boss name if needed
+import type { BrowseLogsParams, BrowsedLog, BrowseLogsResponse } from '$lib/types/apiTypes';
+import { bosses as bossList } from '$lib/types/bossData'; 
 
 const supabaseUrl = env.SUPABASE_HEALER_URL;
 const supabaseKey = env.SUPABASE_HEALER_KEY;
@@ -51,23 +50,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const { data: fetchedCompositions, error: compositionsError } = await compositionsQuery;
 
-		// ---- START DEBUG LOGGING ----
-		if (compositionsError) {
-			console.error(
-				'Supabase Error (fetchedCompositions):',
-				JSON.stringify(compositionsError, null, 2)
-			);
-		}
-		console.log(
-			'Fetched Compositions (raw from Supabase):',
-			JSON.stringify(fetchedCompositions, null, 2)
-		);
-		console.log(
-			'Number of compositions fetched initially:',
-			fetchedCompositions ? fetchedCompositions.length : 0
-		);
-		// ---- END DEBUG LOGGING ----
-
 		if (compositionsError) {
 			console.error('Supabase error fetching compositions:', compositionsError);
 			throw new Error(compositionsError.message);
@@ -106,7 +88,6 @@ export const POST: RequestHandler = async ({ request }) => {
 			};
 		});
 
-		// Explicitly type the response object
 		const responsePayload: BrowseLogsResponse = {
 			logs: browsedLogsResult,
 			total: totalFilteredCount,
@@ -117,7 +98,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json(responsePayload);
 	} catch (error: any) {
 		console.error('Error in /api/browse-logs:', error.message, error.stack);
-		// Type the error response as well, though it's simpler
 		const errorResponse: { error: string } = { error: error.message || 'Internal Server Error.' };
 		return json(errorResponse, { status: 500 });
 	}
