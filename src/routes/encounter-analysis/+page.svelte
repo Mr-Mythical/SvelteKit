@@ -24,8 +24,8 @@
 	import { goto } from '$app/navigation';
 	import { page as pageStore } from '$app/stores';
 	import { onMount } from 'svelte';
-	import * as Card from "$lib/components/ui/card";
-	import * as Tabs from "$lib/components/ui/tabs";
+	import * as Card from '$lib/components/ui/card';
+	import * as Tabs from '$lib/components/ui/tabs';
 
 	let reportURL: string = '';
 	let fights: Fight[] = [];
@@ -75,7 +75,7 @@
 		if (initialReportCodeFromUrl) {
 			reportURL = `https://www.warcraftlogs.com/reports/${initialReportCodeFromUrl}`;
 			await fetchFights();
-			
+
 			if (initialFightIdFromUrl && fights.length > 0) {
 				const fightToSelect = fights.find((f) => f.id === initialFightIdFromUrl);
 				if (fightToSelect) {
@@ -92,9 +92,8 @@
 			if (pathParts.length > 1 && pathParts[0] === 'reports') {
 				return pathParts[1];
 			}
-		} catch (err) {
-		}
-		return reportString.split('#')[0].trim(); 
+		} catch (err) {}
+		return reportString.split('#')[0].trim();
 	}
 
 	function handleReportSelection(code: string) {
@@ -259,7 +258,7 @@
 	function goBackToReportInput() {
 		reportURL = '';
 		resetForNewReport();
-		showFightSelection = true; 
+		showFightSelection = true;
 		error = '';
 		reportTitle = undefined;
 		reportOwner = undefined;
@@ -291,10 +290,10 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(fetchParams)
 			});
-			const responseText = await response.text(); 
+			const responseText = await response.text();
 
 			if (response.ok) {
-				const data = JSON.parse(responseText); 
+				const data = JSON.parse(responseText);
 				if (data.logs) {
 					browsedLogs = data.logs;
 					totalBrowsedLogs = data.total || 0;
@@ -325,17 +324,18 @@
 
 	async function analyzeLogFromBrowse(logToAnalyze: BrowsedLog) {
 		reportURL = `https://www.warcraftlogs.com/reports/${logToAnalyze.log_code}`;
-		await goto(`/encounter-analysis?report=${logToAnalyze.log_code}&fight=${logToAnalyze.fight_id}`, {
-			invalidateAll: true
-		});
-		
-		// After navigation, trigger the data fetch
+		await goto(
+			`/encounter-analysis?report=${logToAnalyze.log_code}&fight=${logToAnalyze.fight_id}`,
+			{
+				invalidateAll: true
+			}
+		);
+
 		if (fights.length === 0) {
 			await fetchFights();
 		}
-		
-		// Once fights are loaded, find and select the specific fight
-		const fightToSelect = fights.find(f => f.id === logToAnalyze.fight_id);
+
+		const fightToSelect = fights.find((f) => f.id === logToAnalyze.fight_id);
 		if (fightToSelect) {
 			handleFightSelection(fightToSelect);
 		}
@@ -368,8 +368,7 @@
 		allHealers = [];
 	}
 
-	// Add this to handle default tab
-	let activeTab = "manual";
+	let activeTab = 'manual';
 </script>
 
 <SEO
@@ -472,7 +471,7 @@
 			{/each}
 		</div>
 	{:else if selectedFight}
-		<div class="mb-6">
+		<div class="mb-6 space-y-8">
 			<div class="mb-6 text-center">
 				<h1 class="text-3xl font-bold">
 					{difficultyMap[Number(selectedFight.difficulty)]}
@@ -486,11 +485,10 @@
 					<Button on:click={goBackToFightSelection} variant="outline">
 						Back to Fight Selection
 					</Button>
-					<Button on:click={goBackToReportInput} variant="outline">
-						Back to Start
-					</Button>
+					<Button on:click={goBackToReportInput} variant="outline">Back to Start</Button>
 				</div>
 			</div>
+
 			{#if loadingData}
 				<p class="py-10 text-center">Loading detailed fight data...</p>
 			{:else if damageEvents.length > 0 || healingEvents.length > 0}
@@ -502,6 +500,22 @@
 					{allHealers}
 					encounterId={selectedFight.encounterID}
 				/>
+
+				<div class="mt-8">
+					<h2 class="mt-4 text-center text-lg font-semibold">
+						More {selectedFight ? selectedFight.name : 'Boss'} Logs, With The Same Healer Composition
+					</h2>
+
+					<LogBrowserResults
+						logs={browsedLogs}
+						loading={browseLoading}
+						totalLogs={totalBrowsedLogs}
+						currentPage={currentBrowsePage}
+						itemsPerPage={browseItemsPerPage}
+						on:pageChange={handleBrowsePageChange}
+						on:analyzeLog={(e) => analyzeLogFromBrowse(e.detail)}
+					/>
+				</div>
 			{:else}
 				<p class="py-10 text-center text-destructive">
 					{error || 'No analysis data found for this fight.'}
@@ -510,7 +524,7 @@
 		</div>
 	{:else}
 		<div class="mb-10 text-center">
-			<h1 class="mb-2 text-4xl font-bold">Encounter Analysis</h1>
+			<h1 class="mb-2 text-4xl font-bold">Encounter Healing Analysis</h1>
 			<p class="text-lg text-muted-foreground">
 				Load a specific log or browse community logs to analyze healing performance.
 			</p>
@@ -572,14 +586,13 @@
 			<Tabs.Content value="browse" class="mt-6">
 				<Card.Root>
 					<Card.Header>
-						<Card.Title>Browse Community Logs</Card.Title>
-						<Card.Description>Search and filter through community submitted logs</Card.Description>
+						<Card.Title>Browse Logs From WarcraftLogs</Card.Title>
+						<Card.Description
+							>Search and filter logs based on boss, and healer composition</Card.Description
+						>
 					</Card.Header>
 					<Card.Content class="space-y-6">
-						<LogBrowserFilters 
-							on:search={handleLogSearch} 
-							loading={browseLoading} 
-						/>
+						<LogBrowserFilters on:search={handleLogSearch} loading={browseLoading} />
 						<LogBrowserResults
 							logs={browsedLogs}
 							loading={browseLoading}

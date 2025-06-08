@@ -2,7 +2,7 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { createClient } from '@supabase/supabase-js';
 import type { BrowseLogsParams, BrowsedLog, BrowseLogsResponse } from '$lib/types/apiTypes';
-import { bosses as bossList } from '$lib/types/bossData'; 
+import { bosses as bossList } from '$lib/types/bossData';
 
 const supabaseUrl = env.SUPABASE_HEALER_URL;
 const supabaseKey = env.SUPABASE_HEALER_KEY;
@@ -30,7 +30,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			healer_specs: Array<{ spec_icon: string }>;
 		};
 
-		let compositionsQuery =  supabase
+		let compositionsQuery = supabase
 			.from('healer_compositions')
 			.select('*, healer_specs(spec_icon)');
 
