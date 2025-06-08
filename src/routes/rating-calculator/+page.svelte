@@ -14,7 +14,7 @@
 	title="Mythic+ Rating Calculator - Mr. Mythical"
 	description="Calculate the required dungeon levels for your desired Mythic+ rating in World of Warcraft. Import characters, edit plans, and share key combinations."
 	image="https://mrmythical.com/Logo.png"
-	keywords="mythic+ calculator, mythic rating calculator, mythic score calculator, mythic+ score calculator, mythic plus rating calculator, mythic+ rating calculator, "
+	keywords="mythic+ calculator, mythic rating calculator, mythic score calculator, mythic+ score calculator, mythic plus rating calculator, mythic+ rating calculator, mythic plus calculator, mythic planner, mythic dungeon planner, m+ calculator"
 />
 
 <Header />
