@@ -68,16 +68,17 @@
 		const specsPresent = new Set<string>();
 
 		if (allHealers && allHealers.length > 0) {
-			allHealers.forEach(healer => {
+			allHealers.forEach((healer) => {
 				if (healer.specs && healer.specs.length > 0) {
 					const actualSpec = healer.specs[0].spec;
 					const specKey = `${healer.name} (${actualSpec} ${healer.type})`;
 					specsPresent.add(specKey);
 				} else {
 					console.warn(`Healer ${healer.name} missing spec data for this fight.`);
-					const healerClassData = classSpecAbilities[healer.type as keyof typeof classSpecAbilities];
+					const healerClassData =
+						classSpecAbilities[healer.type as keyof typeof classSpecAbilities];
 					if (healerClassData) {
-						Object.keys(healerClassData).forEach(specName => {
+						Object.keys(healerClassData).forEach((specName) => {
 							specsPresent.add(`${healer.name} (${specName} ${healer.type})`);
 						});
 					}
@@ -97,7 +98,7 @@
 			});
 		}
 
-		specsPresent.forEach(spec => specFilters[spec] = true);
+		specsPresent.forEach((spec) => (specFilters[spec] = true));
 		specFilters = { ...specFilters };
 	}
 
@@ -388,9 +389,9 @@
 						});
 						if (!specName) return false;
 
-						const matchingFilter = Object.keys(specFilters).find(key => 
-							key.includes(`(${specName} ${className})`) ||
-							key === `${specName} ${className}`
+						const matchingFilter = Object.keys(specFilters).find(
+							(key) =>
+								key.includes(`(${specName} ${className})`) || key === `${specName} ${className}`
 						);
 						if (!matchingFilter || !specFilters[matchingFilter]) return false;
 
@@ -540,9 +541,4 @@
 	class="container mx-auto flex h-[32rem] w-full items-center justify-center p-4 xl:h-[40rem] 2xl:h-[50rem]"
 >
 	<Chart type="line" data={chartData} {options} />
-</div>
-
-<div class="flex items-center justify-center space-x-2">
-	<Label for="anno-check" class="mb-2 block text-lg">Show Annotations</Label>
-	<Checkbox id="anno-check" bind:checked={showAnnotations} />
 </div>

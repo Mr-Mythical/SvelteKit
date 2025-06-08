@@ -30,7 +30,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const variables = { code, fightID };
 
-const response = await fetch('https://www.warcraftlogs.com/api/v2/client', {
+		const response = await fetch('https://www.warcraftlogs.com/api/v2/client', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
