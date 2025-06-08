@@ -24,6 +24,8 @@
 	import { goto } from '$app/navigation';
 	import { page as pageStore } from '$app/stores';
 	import { onMount } from 'svelte';
+	import * as Card from "$lib/components/ui/card";
+	import * as Tabs from "$lib/components/ui/tabs";
 
 	let reportURL: string = '';
 	let fights: Fight[] = [];
@@ -64,7 +66,7 @@
 	let initialReportCodeFromUrl: string | null = null;
 	let initialFightIdFromUrl: number | null = null;
 
-	onMount(() => {
+	onMount(async () => {
 		const urlParams = $pageStore.url.searchParams;
 		initialReportCodeFromUrl = urlParams.get('report');
 		const fightIdParam = urlParams.get('fight');
@@ -72,14 +74,14 @@
 
 		if (initialReportCodeFromUrl) {
 			reportURL = `https://www.warcraftlogs.com/reports/${initialReportCodeFromUrl}`;
-			fetchFights().then(() => {
-				if (initialFightIdFromUrl && fights.length > 0) {
-					const fightToSelect = fights.find((f) => f.id === initialFightIdFromUrl);
-					if (fightToSelect) {
-						handleFightSelection(fightToSelect);
-					}
+			await fetchFights();
+			
+			if (initialFightIdFromUrl && fights.length > 0) {
+				const fightToSelect = fights.find((f) => f.id === initialFightIdFromUrl);
+				if (fightToSelect) {
+					await handleFightSelection(fightToSelect);
 				}
-			});
+			}
 		}
 	});
 
@@ -321,9 +323,22 @@
 		}
 	}
 
-	function analyzeLogFromBrowse(logToAnalyze: BrowsedLog) {
+	async function analyzeLogFromBrowse(logToAnalyze: BrowsedLog) {
 		reportURL = `https://www.warcraftlogs.com/reports/${logToAnalyze.log_code}`;
-		goto(`/encounter-analysis?report=${logToAnalyze.log_code}&fight=${logToAnalyze.fight_id}`);
+		await goto(`/encounter-analysis?report=${logToAnalyze.log_code}&fight=${logToAnalyze.fight_id}`, {
+			invalidateAll: true
+		});
+		
+		// After navigation, trigger the data fetch
+		if (fights.length === 0) {
+			await fetchFights();
+		}
+		
+		// Once fights are loaded, find and select the specific fight
+		const fightToSelect = fights.find(f => f.id === logToAnalyze.fight_id);
+		if (fightToSelect) {
+			handleFightSelection(fightToSelect);
+		}
 	}
 
 	function groupFightsByNameAndDifficulty(fights: Fight[]) {
@@ -352,6 +367,9 @@
 		bossEvents = [];
 		allHealers = [];
 	}
+
+	// Add this to handle default tab
+	let activeTab = "manual";
 </script>
 
 <SEO
@@ -464,9 +482,14 @@
 				<p class="text-muted-foreground">
 					Duration: {formatDuration(selectedFight.startTime, selectedFight.endTime)}
 				</p>
-				<Button on:click={goBackToFightSelection} variant="outline" class="mt-4"
-					>Back to Fight Selection</Button
-				>
+				<div class="mt-4 flex justify-center gap-4">
+					<Button on:click={goBackToFightSelection} variant="outline">
+						Back to Fight Selection
+					</Button>
+					<Button on:click={goBackToReportInput} variant="outline">
+						Back to Start
+					</Button>
+				</div>
 			</div>
 			{#if loadingData}
 				<p class="py-10 text-center">Loading detailed fight data...</p>
@@ -489,55 +512,88 @@
 		<div class="mb-10 text-center">
 			<h1 class="mb-2 text-4xl font-bold">Encounter Analysis</h1>
 			<p class="text-lg text-muted-foreground">
-				Enter a WarcraftLogs report URL/code to analyze fights, or browse community logs below.
+				Load a specific log or browse community logs to analyze healing performance.
 			</p>
 		</div>
-		<div class="grid grid-cols-1 items-start gap-8 md:grid-cols-2">
-			<div class="space-y-4 rounded-lg border p-6 shadow-lg">
-				<h2 class="mb-3 text-2xl font-semibold">Load a Report</h2>
-				<Label class="block text-sm font-medium" for="reportCode"
-					>Enter WarcraftLogs link or Code:</Label
-				>
-				<Input
-					class="w-full"
-					type="text"
-					id="reportCode"
-					bind:value={reportURL}
-					placeholder="https://www.warcraftlogs.com/reports/<reportcode>"
-				/>
-				<Button class="w-full" on:click={fetchFights} disabled={loadingFights}>
-					{#if loadingFights}
-						Loading...
-					{:else}
-						Fetch Fights
-					{/if}
-				</Button>
-				{#if error && !loadingFights && !selectedFight && fights.length === 0}
-					<p class="mt-2 text-sm text-destructive">{error}</p>
-				{/if}
-			</div>
-			<div class="rounded-lg border p-6 shadow-lg">
-				<h2 class="mb-3 text-2xl font-semibold">Recent Reports</h2>
-				<RecentReports onSelectReport={handleReportSelection} />
-			</div>
-		</div>
-	{/if}
 
-	<section aria-labelledby="log-browser-heading" class="mt-12 border-t pt-8">
-		<h2 id="log-browser-heading" class="mb-6 text-center text-3xl font-bold">
-			Browse Community Logs
-		</h2>
-		<LogBrowserFilters on:search={handleLogSearch} loading={browseLoading} />
-		<LogBrowserResults
-			logs={browsedLogs}
-			loading={browseLoading}
-			totalLogs={totalBrowsedLogs}
-			currentPage={currentBrowsePage}
-			itemsPerPage={browseItemsPerPage}
-			on:pageChange={handleBrowsePageChange}
-			on:analyzeLog={(e) => analyzeLogFromBrowse(e.detail)}
-		/>
-	</section>
+		<Tabs.Root value={activeTab} class="w-full">
+			<Tabs.List class="grid w-full grid-cols-3">
+				<Tabs.Trigger value="manual">Load Report</Tabs.Trigger>
+				<Tabs.Trigger value="recent">Recent Reports</Tabs.Trigger>
+				<Tabs.Trigger value="browse">Browse Logs</Tabs.Trigger>
+			</Tabs.List>
+
+			<Tabs.Content value="manual" class="mt-6">
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Load a Specific Report</Card.Title>
+						<Card.Description>
+							Enter a WarcraftLogs report URL or code to analyze specific fights
+						</Card.Description>
+					</Card.Header>
+					<Card.Content>
+						<div class="space-y-4">
+							<div class="space-y-2">
+								<Label for="reportCode">WarcraftLogs Link or Code</Label>
+								<Input
+									type="text"
+									id="reportCode"
+									bind:value={reportURL}
+									placeholder="https://www.warcraftlogs.com/reports/<reportcode>"
+								/>
+							</div>
+							<Button class="w-full" on:click={fetchFights} disabled={loadingFights}>
+								{#if loadingFights}
+									Loading...
+								{:else}
+									Fetch Fights
+								{/if}
+							</Button>
+							{#if error && !loadingFights && !selectedFight && fights.length === 0}
+								<p class="mt-2 text-sm text-destructive">{error}</p>
+							{/if}
+						</div>
+					</Card.Content>
+				</Card.Root>
+			</Tabs.Content>
+
+			<Tabs.Content value="recent" class="mt-6">
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Recent Reports</Card.Title>
+						<Card.Description>Quick access to your recently viewed reports</Card.Description>
+					</Card.Header>
+					<Card.Content>
+						<RecentReports onSelectReport={handleReportSelection} />
+					</Card.Content>
+				</Card.Root>
+			</Tabs.Content>
+
+			<Tabs.Content value="browse" class="mt-6">
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Browse Community Logs</Card.Title>
+						<Card.Description>Search and filter through community submitted logs</Card.Description>
+					</Card.Header>
+					<Card.Content class="space-y-6">
+						<LogBrowserFilters 
+							on:search={handleLogSearch} 
+							loading={browseLoading} 
+						/>
+						<LogBrowserResults
+							logs={browsedLogs}
+							loading={browseLoading}
+							totalLogs={totalBrowsedLogs}
+							currentPage={currentBrowsePage}
+							itemsPerPage={browseItemsPerPage}
+							on:pageChange={handleBrowsePageChange}
+							on:analyzeLog={(e) => analyzeLogFromBrowse(e.detail)}
+						/>
+					</Card.Content>
+				</Card.Root>
+			</Tabs.Content>
+		</Tabs.Root>
+	{/if}
 </main>
 
 <Footer />
