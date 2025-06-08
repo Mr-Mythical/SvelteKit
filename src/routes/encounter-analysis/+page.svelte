@@ -372,10 +372,10 @@
 </script>
 
 <SEO
-	title="Raid Encounter Analysis & Log Browser - Mr. Mythical"
-	description="Analyze raid encounters from Warcraft Logs or browse community logs. Detailed damage, healing graphs, and ability overlays for deeper insights."
+	title="Raid Encounter Healing Analysis & Log Browser - Mr. Mythical"
+	description="Analyze raid encounters from Warcraft Logs. Input manual logs or browse the top logs filtered by healer compositions. Detailed damage, healing graphs, and ability overlays for deeper insights."
 	image="https://mrmythical.com/Logo.png"
-	keywords="Raid analysis, Log browser, Encounter analysis, Warcraft Logs, World of Warcraft, damage graphs, healing graphs, raid performance, ability overlays"
+	keywords="Raid analysis, Log browser, Encounter analysis, healing analysis, Warcraft Logs, World of Warcraft, wow raids, cooldown planning, boss tactics, raid leading, damage graphs, healing graphs, raid performance, ability overlays"
 />
 
 <Header />
