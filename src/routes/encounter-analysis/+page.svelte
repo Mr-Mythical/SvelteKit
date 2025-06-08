@@ -16,6 +16,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
+	import { Separator } from '$lib/components/ui/separator';
 	import RecentReports from '../../components/recentReports.svelte';
 	import { recentReports as recentReportsStore } from '$lib/utils/recentReports';
 
@@ -26,6 +27,7 @@
 	import { onMount } from 'svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import EncounterSkeleton from '../../components/skeletons/encounterSkeleton.svelte';
 
 	let reportURL: string = '';
 	let fights: Fight[] = [];
@@ -322,22 +324,33 @@
 		}
 	}
 
+	let loadingLogFromBrowse = false;
+
 	async function analyzeLogFromBrowse(logToAnalyze: BrowsedLog) {
-		reportURL = `https://www.warcraftlogs.com/reports/${logToAnalyze.log_code}`;
-		await goto(
-			`/encounter-analysis?report=${logToAnalyze.log_code}&fight=${logToAnalyze.fight_id}`,
-			{
-				invalidateAll: true
-			}
-		);
-
-		if (fights.length === 0) {
+		loadingLogFromBrowse = true;
+		loadingData = true;
+		showFightSelection = false;
+		
+		try {
+			reportURL = `https://www.warcraftlogs.com/reports/${logToAnalyze.log_code}`;
+			
+			await goto(`/encounter-analysis?report=${logToAnalyze.log_code}&fight=${logToAnalyze.fight_id}`, {
+				replaceState: true
+			});
+			
 			await fetchFights();
-		}
 
-		const fightToSelect = fights.find((f) => f.id === logToAnalyze.fight_id);
-		if (fightToSelect) {
-			handleFightSelection(fightToSelect);
+			const fightToSelect = fights.find(f => f.id === logToAnalyze.fight_id);
+			if (fightToSelect) {
+				await handleFightSelection(fightToSelect);
+			} else {
+				throw new Error('Fight not found in report');
+			}
+		} catch (err) {
+			console.error('Error analyzing log:', err);
+			error = 'Failed to load the selected fight.';
+		} finally {
+			loadingLogFromBrowse = false;
 		}
 	}
 
@@ -369,6 +382,18 @@
 	}
 
 	let activeTab = 'manual';
+	let showFilters = false;
+
+	$: if (!loadingData && damageEvents.length > 0 && allHealers.length > 0 && selectedFight) {
+		handleLogSearch(
+			new CustomEvent<BrowseLogsParams>('search', {
+				detail: {
+					bossId: selectedFight.encounterID,
+					healerSpecs: allHealers.map(healer => `${healer.type}-${healer.specs[0]?.spec}`)
+				}
+			})
+		);
+	}
 </script>
 
 <SEO
@@ -381,7 +406,9 @@
 <Header />
 
 <main class="container mx-auto space-y-8 p-4 md:p-6 lg:p-8">
-	{#if !selectedFight && reportURL && fights.length > 0}
+	{#if loadingLogFromBrowse || (selectedFight && loadingData)}
+		<EncounterSkeleton />
+	{:else if !selectedFight && reportURL && fights.length > 0}
 		<div class="mt-8 flex flex-col gap-8">
 			<div class="mt-4 flex items-center justify-between">
 				<div>
@@ -490,7 +517,7 @@
 			</div>
 
 			{#if loadingData}
-				<p class="py-10 text-center">Loading detailed fight data...</p>
+				<EncounterSkeleton />
 			{:else if damageEvents.length > 0 || healingEvents.length > 0}
 				<DamageChart
 					{damageEvents}
@@ -502,9 +529,8 @@
 				/>
 
 				<div class="mt-8">
-					<h2 class="mt-4 text-center text-lg font-semibold">
-						More {selectedFight ? selectedFight.name : 'Boss'} Logs, With The Same Healer Composition
-					</h2>
+					<h2 class="text-2xl font-bold text-center">More {selectedFight.name} logs with the same healers</h2>
+
 
 					<LogBrowserResults
 						logs={browsedLogs}
@@ -515,6 +541,32 @@
 						on:pageChange={handleBrowsePageChange}
 						on:analyzeLog={(e) => analyzeLogFromBrowse(e.detail)}
 					/>
+					
+					<Separator />
+					<div class="pt-2">
+						<Button 
+							variant="ghost" 
+							class="w-full justify-between"
+							on:click={() => showFilters = !showFilters}
+						>
+							<span>Refine Search</span>
+							<span class="text-xs">▼</span>
+						</Button>
+						
+						{#if showFilters}
+							<div class="mt-4">
+								<LogBrowserFilters 
+									on:search={handleLogSearch}
+									loading={browseLoading}
+									initialBossId={selectedFight.encounterID}
+									initialHealerSpecs={allHealers.map(healer => 
+										`${healer.type}-${healer.specs[0]?.spec}`
+									)}
+								/>
+							</div>
+						{/if}
+					</div>
+
 				</div>
 			{:else}
 				<p class="py-10 text-center text-destructive">
