@@ -27,7 +27,7 @@ export interface ReportGuild {
 
 export interface FightsAndReportInfoResponse {
 	title: string;
-	owner: ReportOwner
+	owner: ReportOwner;
 	guild: ReportGuild | null; // Null means its a personal report
 	fights: Fight[];
 }
@@ -128,4 +128,32 @@ export interface TemporalAverage {
 	avg: number;
 	stddev: number;
 	samples: number;
+}
+
+export interface BrowseLogsParams {
+	bossId?: number;
+	minDuration?: number;
+	maxDuration?: number;
+	healerSpecs?: string[];
+	page?: number;
+	limit?: number;
+}
+
+export interface BrowsedLog {
+	log_code: string;
+	title: string;
+	boss_name: string;
+	duration_seconds: number;
+	healer_composition: string[];
+	log_url?: string;
+	fight_id: number;
+	start_time: number;
+	end_time: number;
+}
+
+export interface BrowseLogsResponse {
+	logs: BrowsedLog[];
+	total: number;
+	page: number;
+	limit: number;
 }

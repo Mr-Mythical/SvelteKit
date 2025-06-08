@@ -238,7 +238,7 @@ export const usRealmOptions: Array<{ value: string; label: string }> = [
 	{ value: 'dreadmaul', label: 'Dreadmaul' },
 	{ value: 'caelestrasz', label: 'Caelestrasz' },
 	{ value: 'nagrand', label: 'Nagrand' },
-	{ value: "amanthul", label: "Aman'Thul" },
+	{ value: 'amanthul', label: "Aman'Thul" },
 	{ value: 'barthilas', label: 'Barthilas' },
 	{ value: 'thaurissan', label: 'Thaurissan' },
 	{ value: 'dathremar', label: "Dath'Remar" },

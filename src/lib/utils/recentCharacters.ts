@@ -33,9 +33,11 @@ function createRecentCharacters() {
 			update((chars) => {
 				const filtered = chars.filter(
 					(c) =>
-						!(c.region === character.region &&
-						  c.realm === character.realm &&
-						  c.characterName.toLowerCase() === character.characterName.toLowerCase())
+						!(
+							c.region === character.region &&
+							c.realm === character.realm &&
+							c.characterName.toLowerCase() === character.characterName.toLowerCase()
+						)
 				);
 				filtered.unshift(character);
 				return filtered.slice(0, 5);

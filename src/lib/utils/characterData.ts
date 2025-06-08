@@ -19,7 +19,11 @@ function resetRuns() {
 /**
  * Fetches Raider.io mythic plus runs for a character and updates the dungeonData store.
  */
-export async function fetchRuns(characterName: string, region: string, realm: string): Promise<void> {
+export async function fetchRuns(
+	characterName: string,
+	region: string,
+	realm: string
+): Promise<void> {
 	resetRuns();
 
 	const url =
@@ -65,7 +69,11 @@ export async function fetchRuns(characterName: string, region: string, realm: st
 /**
  * Fetches Blizzard WoW character summary (including media) for a character and updates the wowSummaryStore.
  */
-export async function fetchWowSummary(characterName: string, region: string, realm: string): Promise<void> {
+export async function fetchWowSummary(
+	characterName: string,
+	region: string,
+	realm: string
+): Promise<void> {
 	const url = `/api/blizzard?name=${encodeURIComponent(characterName)}&region=${encodeURIComponent(region)}&realm=${encodeURIComponent(realm)}`;
 	const response = await fetch(url);
 
