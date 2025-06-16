@@ -26,12 +26,16 @@
 		zoomPluginLoaded = true;
 	});
 
+	export let encounterId: number;
+	export let encounterName: string = 'Unknown Encounter';
+
 	interface AverageRecord {
 		time_seconds: number;
 		avg: number;
 		std: number;
 		n: number;
 		ci: number;
+		encounter_id: number;
 	}
 
 	let chartData: ChartData<'line', number[], string> = {
@@ -61,7 +65,7 @@
 		plugins: {
 			title: {
 				display: true,
-				text: 'Damage Analysis Over Time',
+				text: encounterName,
 				color: '#FFF9F5',
 				font: { size: 18 }
 			},
@@ -193,11 +197,22 @@
 		return result;
 	}
 
-	onMount(async () => {
+	async function fetchData() {
 		try {
 			loading = true;
-			const response = await fetch('/api/damage-average');
-			const rawData: AverageRecord[] = await response.json();
+			const response = await fetch(`/api/damage-average?bossId=${encounterId}`);
+			const data = await response.json();
+
+			if ('error' in data) {
+				throw new Error(data.error);
+			}
+
+			// Check if data is an array and handle error if not
+			if (!Array.isArray(data)) {
+				throw new Error('Invalid data format received from API');
+			}
+
+			const rawData = data as AverageRecord[];
 			const filteredData = rawData.filter((d) => d.n >= 5);
 
 			const windowSize = 10;
@@ -268,11 +283,15 @@
 			};
 		} catch (err) {
 			console.error('Fetch error:', err);
-			error = 'Failed to load damage data.';
+			error = `Failed to load damage data: ${err instanceof Error ? err.message : 'Unknown error'}`;
 		} finally {
 			loading = false;
 		}
-	});
+	}
+
+	$: if (encounterId) {
+		fetchData();
+	}
 </script>
 
 <div class="chart-container">
@@ -287,52 +306,4 @@
 			<Chart type="line" data={chartData} {options} />
 		</div>
 	{/if}
-</div>
-
-<div
-	class="3xl:mx-[35rem] 4xl:mx-[45rem] m-8 rounded-lg bg-card p-6 md:mx-16 lg:mx-40 xl:mx-80 2xl:mx-96"
->
-	<h2 class="mb-6 pb-2 text-2xl font-semibold text-foreground">Understanding The Visualization</h2>
-
-	<div class="metric-group mb-6">
-		<h3 class="mb-2 text-xl font-medium text-foreground">Average Damage (Blue Line)</h3>
-		<p class="text-foreground">
-			The blue line highlights the average damage taken by players at each second across all
-			analyzed fights. This serves as a baseline to identify consistent damage patterns and critical
-			moments during encounters.
-		</p>
-	</div>
-
-	<div class="mb-6">
-		<h3 class="mb-2 text-xl font-medium text-foreground">Standard Deviation Range (Blue Area)</h3>
-		<p class="text-foreground">
-			The light blue area shows the range within one standard deviation (±1), where 68% of actual
-			damage values fall. A wider blue band often indicates:
-		</p>
-		<ul class="list-inside list-disc text-foreground">
-			<li>Mechanics with variable outcomes (e.g., avoidable abilities some players miss)</li>
-			<li>Random elements (e.g., bosses targeting random players)</li>
-			<li>Differences in player skill or damage mitigation</li>
-		</ul>
-	</div>
-
-	<div class="mb-6">
-		<h3 class="mb-2 text-xl font-medium text-foreground">95% Confidence Interval (Red Area)</h3>
-		<p class="text-foreground">
-			The red shaded region reflects our confidence in the average estimate. A narrow band
-			indicates:
-		</p>
-		<ul class="list-inside list-disc text-foreground">
-			<li>Reliable data from many logs</li>
-			<li>Consistent execution across encounters</li>
-		</ul>
-		<p class="text-foreground">Wider bands suggest variability or areas needing more data.</p>
-	</div>
-
-	<div class="mb-6">
-		<h3 class="mb-2 text-xl font-medium text-foreground">Source & Selection</h3>
-		<p class="list-inside list-disc text-foreground">
-			Data comes from public progression logs (first successful kills).
-		</p>
-	</div>
 </div>
