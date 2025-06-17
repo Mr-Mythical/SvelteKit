@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		// Ensure data is an array
 		if (!Array.isArray(data)) {
 			console.error('Unexpected data format:', data);
-			return json([]);  // Return empty array if data is invalid
+			return json([]); // Return empty array if data is invalid
 		}
 
 		type RowData = {
