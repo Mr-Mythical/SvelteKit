@@ -38,7 +38,10 @@
 
 		<h2 class="mb-4 mt-4 text-xl font-bold">Managing Cookie Preferences</h2>
 
-		<a class="cky-banner-element" href="blank">Cookie Settings</a> <br />
+		<Button>
+			<span class="cky-banner-element">Cookie Settings</span>
+		</Button>
+		<br />
 
 		<p>
 			You can change your cookie preferences any time by clicking the above button. This will let
@@ -55,7 +58,7 @@
 		<ul class="ml-6 list-disc">
 			<li>
 				<Button
-					class="p-0 text-[1.03rem] font-bold text-link"
+					class="text-link p-0 text-[1.03rem] font-bold"
 					variant="link"
 					href="https://support.google.com/accounts/answer/32050"
 					target="_blank"
@@ -65,7 +68,7 @@
 			</li>
 			<li>
 				<Button
-					class="p-0 text-[1.03rem] font-bold text-link"
+					class="text-link p-0 text-[1.03rem] font-bold"
 					variant="link"
 					href="https://support.apple.com/en-in/guide/safari/sfri11471/mac"
 					target="_blank"
@@ -75,7 +78,7 @@
 			</li>
 			<li>
 				<Button
-					class="p-0 text-[1.03rem] font-bold text-link"
+					class="text-link p-0 text-[1.03rem] font-bold"
 					variant="link"
 					href="https://support.mozilla.org/en-US/kb/clear-cookies-and-site-data-firefox"
 					target="_blank"
@@ -85,7 +88,7 @@
 			</li>
 			<li>
 				<Button
-					class="p-0 text-[1.03rem] font-bold text-link"
+					class="text-link p-0 text-[1.03rem] font-bold"
 					variant="link"
 					href="https://support.microsoft.com/en-us/topic/how-to-delete-cookie-files-in-internet-explorer-bca9446f-d873-78de-77ba-d42645fa52fc"
 					target="_blank"
@@ -99,7 +102,7 @@
 		<ul class="ml-6 list-disc">
 			<li>
 				<Button
-					class="p-0 text-[1.03rem] font-bold text-link"
+					class="text-link p-0 text-[1.03rem] font-bold"
 					variant="link"
 					href="https://policies.google.com/technologies/cookies"
 					target="_blank"
@@ -109,7 +112,7 @@
 			</li>
 			<li>
 				<Button
-					class="p-0 text-[1.03rem] font-bold text-link"
+					class="text-link p-0 text-[1.03rem] font-bold"
 					variant="link"
 					href="https://www.cookieyes.com/cookie-policy/"
 					target="_blank"
@@ -123,7 +126,7 @@
 		<p>
 			If you have questions about our cookie policy, contact us at:
 			<Button
-				class="p-0 text-[1.03rem] font-bold text-link"
+				class="text-link p-0 text-[1.03rem] font-bold"
 				variant="link"
 				href="mailto:mythical@mrmythical.com"
 				>mythical@mrmythical.com
