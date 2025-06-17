@@ -330,17 +330,20 @@
 		loadingLogFromBrowse = true;
 		loadingData = true;
 		showFightSelection = false;
-		
+
 		try {
 			reportURL = `https://www.warcraftlogs.com/reports/${logToAnalyze.log_code}`;
-			
-			await goto(`/encounter-analysis?report=${logToAnalyze.log_code}&fight=${logToAnalyze.fight_id}`, {
-				replaceState: true
-			});
-			
+
+			await goto(
+				`/encounter-analysis?report=${logToAnalyze.log_code}&fight=${logToAnalyze.fight_id}`,
+				{
+					replaceState: true
+				}
+			);
+
 			await fetchFights();
 
-			const fightToSelect = fights.find(f => f.id === logToAnalyze.fight_id);
+			const fightToSelect = fights.find((f) => f.id === logToAnalyze.fight_id);
 			if (fightToSelect) {
 				await handleFightSelection(fightToSelect);
 			} else {
@@ -389,7 +392,7 @@
 			new CustomEvent<BrowseLogsParams>('search', {
 				detail: {
 					bossId: selectedFight.encounterID,
-					healerSpecs: allHealers.map(healer => `${healer.type}-${healer.specs[0]?.spec}`)
+					healerSpecs: allHealers.map((healer) => `${healer.type}-${healer.specs[0]?.spec}`)
 				}
 			})
 		);
@@ -529,8 +532,9 @@
 				/>
 
 				<div class="mt-8">
-					<h2 class="text-2xl font-bold text-center">More {selectedFight.name} logs with the same healers</h2>
-
+					<h2 class="text-center text-2xl font-bold">
+						More {selectedFight.name} logs with the same healers
+					</h2>
 
 					<LogBrowserResults
 						logs={browsedLogs}
@@ -541,32 +545,31 @@
 						on:pageChange={handleBrowsePageChange}
 						on:analyzeLog={(e) => analyzeLogFromBrowse(e.detail)}
 					/>
-					
+
 					<Separator />
 					<div class="pt-2">
-						<Button 
-							variant="ghost" 
+						<Button
+							variant="ghost"
 							class="w-full justify-between"
-							on:click={() => showFilters = !showFilters}
+							on:click={() => (showFilters = !showFilters)}
 						>
 							<span>Refine Search</span>
 							<span class="text-xs">▼</span>
 						</Button>
-						
+
 						{#if showFilters}
 							<div class="mt-4">
-								<LogBrowserFilters 
+								<LogBrowserFilters
 									on:search={handleLogSearch}
 									loading={browseLoading}
 									initialBossId={selectedFight.encounterID}
-									initialHealerSpecs={allHealers.map(healer => 
-										`${healer.type}-${healer.specs[0]?.spec}`
+									initialHealerSpecs={allHealers.map(
+										(healer) => `${healer.type}-${healer.specs[0]?.spec}`
 									)}
 								/>
 							</div>
 						{/if}
 					</div>
-
 				</div>
 			{:else}
 				<p class="py-10 text-center text-destructive">

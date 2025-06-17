@@ -1,5 +1,6 @@
 import { fontFamily } from 'tailwindcss/defaultTheme';
 import type { Config } from 'tailwindcss';
+import { link } from 'fs';
 
 const config: Config = {
 	darkMode: ['class'],
@@ -53,7 +54,8 @@ const config: Config = {
 					DEFAULT: 'hsl(var(--card) / <alpha-value>)',
 					foreground: 'hsl(var(--card-foreground) / <alpha-value>)'
 				},
-				chart: 'hsl(var(--chart) / <alpha-value>)'
+				chart: 'hsl(var(--chart) / <alpha-value>)',
+				link: 'hsl(var(--link) / <alpha-value>)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
