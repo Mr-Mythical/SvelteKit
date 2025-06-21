@@ -1,5 +1,6 @@
 <script lang="ts">
 	import KeystoneTable from '../../components/keystoneTable.svelte';
+	import ScoreExplanation from '../../components/scoreExplanation.svelte';
 	import Header from '../../components/header.svelte';
 	import ApiForm from '../../components/apiForm.svelte';
 	import SEO from '../../components/seo.svelte';
@@ -20,6 +21,7 @@
 <Header />
 <main>
 	<KeystoneTable />
+	<ScoreExplanation />
 	<ApiForm data={data.form} />
 	<Toaster richColors />
 </main>
