@@ -26,9 +26,8 @@
 </script>
 
 {#if reports.length}
-	<Card class="recent-reports h-full">
+	<Card class="recent-reports h-full border-none">
 		<div class="p-4">
-			<h3 class="mb-4 text-lg font-semibold">Recent Reports</h3>
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
 				{#each reports as report}
 					<Button
