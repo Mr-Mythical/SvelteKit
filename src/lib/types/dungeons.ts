@@ -10,14 +10,14 @@ export interface Run {
 }
 
 export const dungeons = [
-	{ value: 'Cinderbrew Meadery', label: 'Cinderbrew Meadery' },
-	{ value: 'Darkflame Cleft', label: 'Darkflame Cleft' },
-	{ value: 'Mechagon Workshop', label: 'Mechagon Workshop' },
-	{ value: 'Operation: Floodgate', label: 'Operation: Floodgate' },
-	{ value: 'Priory of the Sacred Flame', label: 'Priory of the Sacred Flame' },
-	{ value: 'The MOTHERLODE!!', label: 'The MOTHERLODE!!' },
-	{ value: 'The Rookery', label: 'The Rookery' },
-	{ value: 'Theater of Pain', label: 'Theater of Pain' }
+	{ value: 'Cinderbrew Meadery', label: 'Cinderbrew Meadery', short_name: 'BREW' },
+	{ value: 'Darkflame Cleft', label: 'Darkflame Cleft', short_name: 'DFC' },
+	{ value: 'Mechagon Workshop', label: 'Mechagon Workshop', short_name: 'WORK' },
+	{ value: 'Operation: Floodgate', label: 'Operation: Floodgate', short_name: 'FLOOD' },
+	{ value: 'Priory of the Sacred Flame', label: 'Priory of the Sacred Flame', short_name: 'PSF' },
+	{ value: 'The MOTHERLODE!!', label: 'The MOTHERLODE!!', short_name: 'ML' },
+	{ value: 'The Rookery', label: 'The Rookery', short_name: 'ROOK' },
+	{ value: 'Theater of Pain', label: 'Theater of Pain', short_name: 'TOP' }
 ];
 
 export class Dungeons {
