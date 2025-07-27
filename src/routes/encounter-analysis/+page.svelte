@@ -433,19 +433,22 @@
 			</div>
 
 			{#each Object.entries(groupedFights) as [name, difficulties]}
-				<div class="mb-6 rounded-lg border p-4 shadow">
-					<h2 class="mb-3 text-xl font-bold">{name}</h2>
+				<div class="mb-8 overflow-hidden rounded-xl border bg-card shadow-lg">
+					<div class="border-b bg-muted/30 px-6 py-4">
+						<h2 class="text-2xl font-bold tracking-tight">{name}</h2>
+					</div>
 					{#each Object.entries(difficulties) as [difficulty, difficultyFights]}
-						<div class="mt-2">
-							<h3 class="text-lg font-semibold text-primary">
+						<div class="p-4">
+							<h3 class="mb-4 flex items-center gap-2 text-lg font-semibold text-primary">
+								<span class="flex h-2 w-2 rounded-full bg-primary"></span>
 								{difficultyMap[Number(difficulty)]}
 							</h3>
-							<div class="mt-1 space-y-2">
+							<div class="grid gap-3 md:grid-cols-2">
 								{#each difficultyFights.filter((f) => f.kill === true || f.kill === null) as fight (fight.id)}
 									<Button
 										on:click={() => handleFightSelection(fight)}
 										variant="outline"
-										class="relative flex w-full items-center justify-between rounded-md p-3 text-left shadow-sm hover:bg-accent"
+										class="relative flex h-auto w-full flex-col items-start gap-2 rounded-lg border p-4 text-left transition-all hover:scale-[1.02] hover:bg-accent hover:shadow-md"
 									>
 										<span class="flex-grow">
 											{fight.kill ? 'Kill' : fight.bossPercentage != null ? 'Wipe' : 'Attempt'} - {formatDuration(
@@ -502,20 +505,60 @@
 		</div>
 	{:else if selectedFight}
 		<div class="mb-6 space-y-8">
-			<div class="mb-6 text-center">
-				<h1 class="text-3xl font-bold">
-					{difficultyMap[Number(selectedFight.difficulty)]}
-					{selectedFight.name}
-					({selectedFight.kill ? 'Kill' : `Wipe at ${selectedFight.bossPercentage}%`})
-				</h1>
-				<p class="text-muted-foreground">
-					Duration: {formatDuration(selectedFight.startTime, selectedFight.endTime)}
-				</p>
-				<div class="mt-4 flex justify-center gap-4">
-					<Button on:click={goBackToFightSelection} variant="outline">
-						Back to Fight Selection
-					</Button>
-					<Button on:click={goBackToReportInput} variant="outline">Back to Start</Button>
+			<div
+				class="sticky top-0 z-50 -mx-4 mb-6 bg-background/80 px-4 py-4 backdrop-blur-lg md:-mx-6 md:px-6 lg:-mx-8 lg:px-8"
+			>
+				<div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+					<div class="text-center md:text-left">
+						<div class="flex items-center gap-3">
+							<h1 class="text-3xl font-bold tracking-tight">
+								{selectedFight.name}
+							</h1>
+							<span class="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+								{difficultyMap[Number(selectedFight.difficulty)]}
+							</span>
+							<span
+								class={`rounded-full px-3 py-1 text-sm font-medium ${selectedFight.kill ? 'bg-green-500/10 text-green-500' : 'bg-destructive/10 text-destructive'}`}
+							>
+								{selectedFight.kill ? 'Kill' : `${selectedFight.bossPercentage}% Wipe`}
+							</span>
+						</div>
+						<p class="mt-1 text-sm text-muted-foreground">
+							Duration: {formatDuration(selectedFight.startTime, selectedFight.endTime)}
+						</p>
+					</div>
+					<div class="flex gap-4">
+						<Button on:click={goBackToFightSelection} variant="outline" class="gap-2">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="h-4 w-4"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+							Back to Fights
+						</Button>
+						<Button on:click={goBackToReportInput} variant="outline" class="gap-2">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="h-4 w-4"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+							Back to Start
+						</Button>
+					</div>
 				</div>
 			</div>
 
@@ -578,24 +621,38 @@
 			{/if}
 		</div>
 	{:else}
-		<div class="mb-10 text-center">
-			<h1 class="mb-2 text-4xl font-bold">Encounter Healing Analysis</h1>
-			<p class="text-lg text-muted-foreground">
-				Load a specific log or browse community logs to analyze healing performance.
-			</p>
+		<div
+			class="relative mb-10 overflow-hidden px-6 py-12"
+		>
+			<div class="relative z-10 text-center">
+				<h1 class="text-4xl font-bold tracking-tight">Encounter Healing Analysis</h1>
+				<p class="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+					Load a specific log or browse community logs to analyze healing performance.
+				</p>
+			</div>
 		</div>
 
-		<Tabs.Root value={activeTab} class="w-full">
-			<Tabs.List class="grid w-full grid-cols-3">
-				<Tabs.Trigger value="manual">Load Report</Tabs.Trigger>
-				<Tabs.Trigger value="recent">Recent Reports</Tabs.Trigger>
-				<Tabs.Trigger value="browse">Browse Logs</Tabs.Trigger>
-			</Tabs.List>
-
-			<Tabs.Content value="manual" class="mt-6">
-				<Card.Root>
+		<div class="mx-auto max-w-6xl space-y-6">
+			<div class="grid gap-6 lg:grid-cols-2">
+				<Card.Root class="relative overflow-hidden transition hover:shadow-lg">
 					<Card.Header>
-						<Card.Title>Load a Specific Report</Card.Title>
+						<div class="flex items-center gap-3">
+							<div class="rounded-lg bg-primary/10 p-2">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-5 w-5 text-primary"
+									viewBox="0 0 20 20"
+									fill="currentColor"
+								>
+									<path
+										fill-rule="evenodd"
+										d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586L7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+										clip-rule="evenodd"
+									/>
+								</svg>
+							</div>
+							<Card.Title>Load a Specific Report</Card.Title>
+						</div>
 						<Card.Description>
 							Enter a WarcraftLogs report URL or code to analyze specific fights
 						</Card.Description>
@@ -624,43 +681,75 @@
 						</div>
 					</Card.Content>
 				</Card.Root>
-			</Tabs.Content>
 
-			<Tabs.Content value="recent" class="mt-6">
-				<Card.Root>
+				<Card.Root class="relative overflow-hidden transition hover:shadow-lg">
+					<div
+						class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"
+					></div>
 					<Card.Header>
-						<Card.Title>Recent Reports</Card.Title>
+						<div class="flex items-center gap-3">
+							<div class="rounded-lg bg-primary/10 p-2">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-5 w-5 text-primary"
+									viewBox="0 0 20 20"
+									fill="currentColor"
+								>
+									<path
+										fill-rule="evenodd"
+										d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+										clip-rule="evenodd"
+									/>
+								</svg>
+							</div>
+							<Card.Title>Recent Reports</Card.Title>
+						</div>
 						<Card.Description>Quick access to your recently viewed reports</Card.Description>
 					</Card.Header>
-					<Card.Content>
-						<RecentReports onSelectReport={handleReportSelection} />
-					</Card.Content>
-				</Card.Root>
-			</Tabs.Content>
 
-			<Tabs.Content value="browse" class="mt-6">
-				<Card.Root>
-					<Card.Header>
-						<Card.Title>Browse Logs From WarcraftLogs</Card.Title>
-						<Card.Description
-							>Search and filter logs based on boss, and healer composition</Card.Description
-						>
-					</Card.Header>
-					<Card.Content class="space-y-6">
-						<LogBrowserFilters on:search={handleLogSearch} loading={browseLoading} />
-						<LogBrowserResults
-							logs={browsedLogs}
-							loading={browseLoading}
-							totalLogs={totalBrowsedLogs}
-							currentPage={currentBrowsePage}
-							itemsPerPage={browseItemsPerPage}
-							on:pageChange={handleBrowsePageChange}
-							on:analyzeLog={(e) => analyzeLogFromBrowse(e.detail)}
-						/>
-					</Card.Content>
+					<RecentReports onSelectReport={handleReportSelection} />
 				</Card.Root>
-			</Tabs.Content>
-		</Tabs.Root>
+			</div>
+
+			<Card.Root class="relative overflow-hidden transition hover:shadow-lg">
+				<div class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"></div>
+				<Card.Header>
+					<div class="flex items-center gap-3">
+						<div class="rounded-lg bg-primary/10 p-2">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="h-5 w-5 text-primary"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+							>
+								<path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z" />
+								<path
+									fill-rule="evenodd"
+									d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+						</div>
+						<Card.Title>Browse Logs From WarcraftLogs</Card.Title>
+					</div>
+					<Card.Description
+						>Search and filter logs based on boss and healer composition</Card.Description
+					>
+				</Card.Header>
+				<Card.Content class="space-y-6">
+					<LogBrowserFilters on:search={handleLogSearch} loading={browseLoading} />
+					<LogBrowserResults
+						logs={browsedLogs}
+						loading={browseLoading}
+						totalLogs={totalBrowsedLogs}
+						currentPage={currentBrowsePage}
+						itemsPerPage={browseItemsPerPage}
+						on:pageChange={handleBrowsePageChange}
+						on:analyzeLog={(e) => analyzeLogFromBrowse(e.detail)}
+					/>
+				</Card.Content>
+			</Card.Root>
+		</div>
 	{/if}
 </main>
 
