@@ -16,7 +16,6 @@
 /test-results
 /playwright-report
 /.nyc_output
-/tests
 
 # Logs
 logs

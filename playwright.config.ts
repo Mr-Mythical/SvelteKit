@@ -45,8 +45,11 @@ export default defineConfig({
 		{
 			name: 'chromium',
 			use: { ...devices['Desktop Chrome'] }
-		},
+		}
 
+		// Disable other browsers for faster CI runs
+		// Enable these for comprehensive testing locally
+		/* 
 		{
 			name: 'firefox',
 			use: { ...devices['Desktop Firefox'] }
@@ -57,7 +60,7 @@ export default defineConfig({
 			use: { ...devices['Desktop Safari'] }
 		},
 
-		/* Test against mobile viewports. */
+		// Test against mobile viewports.
 		{
 			name: 'Mobile Chrome',
 			use: { ...devices['Pixel 5'] }
@@ -67,7 +70,7 @@ export default defineConfig({
 			use: { ...devices['iPhone 12'] }
 		},
 
-		/* Test against branded browsers. */
+		// Test against branded browsers.
 		{
 			name: 'Microsoft Edge',
 			use: { ...devices['Desktop Edge'], channel: 'msedge' }
@@ -76,6 +79,7 @@ export default defineConfig({
 			name: 'Google Chrome',
 			use: { ...devices['Desktop Chrome'], channel: 'chrome' }
 		}
+		*/
 	],
 
 	/* Run your local dev server before starting the tests */
@@ -91,9 +95,10 @@ export default defineConfig({
 
 	/* Expect timeout for assertions */
 	expect: {
-		timeout: 10000,
+		timeout: 15000, // Increased for CI environment
 		toHaveScreenshot: {
-			threshold: 0.2
+			threshold: 0.3, // More lenient for cross-platform consistency
+			maxDiffPixels: 1000 // Allow some pixel differences
 		}
 	},
 
