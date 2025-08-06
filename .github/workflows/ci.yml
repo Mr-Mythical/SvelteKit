@@ -39,6 +39,11 @@ jobs:
 
       - name: Run Playwright tests
         run: npm run test:e2e
+        env:
+          SUPABASE_HEALER_URL: https://mock-supabase-url.com
+          SUPABASE_HEALER_KEY: mock-healer-key
+          SUPABASE_ANON_KEY: mock-anon-key
+          SUPABASE_KEY: mock-key
 
       - uses: actions/upload-artifact@v4
         if: always()
