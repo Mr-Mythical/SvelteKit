@@ -25,16 +25,15 @@
 	<section class="prose prose-invert mb-12 max-w-none rounded-lg bg-card p-6 shadow-md">
 		<h2 class="text-2xl font-bold">Premium WoW Tools for Competitive Players</h2>
 		<p>
-			Mr. Mythical provides World of Warcraft analysis tools. Our platform transforms complex game data into actionable insights, helping you make
-			smarter decisions in Mythic+ dungeons and raid encounters. Whether you're pushing +20 keys or
-			progressing through mythic raids, our calculators and visualizations give you the competitive
-			edge.
+			Mr. Mythical provides World of Warcraft analysis tools. Our platform transforms complex game
+			data into actionable insights, helping you make smarter decisions in Mythic+ dungeons and raid
+			encounters. Whether you're pushing +20 keys or progressing through mythic raids, our
+			calculators and visualizations give you the competitive edge.
 		</p>
-		<br>
+		<br />
 		<p>
-			Mr. Mythical bridges the gap between raw
-			combat logs and practical gameplay improvements. All tools are updated regularly to match the
-			latest game patches and seasons.
+			Mr. Mythical bridges the gap between raw combat logs and practical gameplay improvements. All
+			tools are updated regularly to match the latest game patches and seasons.
 		</p>
 	</section>
 
@@ -99,7 +98,9 @@
 					<li>Damage/healing timeline visualization</li>
 					<li>Boss and healer ability overlays</li>
 				</ul>
-				<p class="mb-6">Import any WCL report for instant visual breakdowns. Or browse by healer comp</p>
+				<p class="mb-6">
+					Import any WCL report for instant visual breakdowns. Or browse by healer comp
+				</p>
 				<Button><a href="/encounter-analysis" class="px-6 py-3">Analyze Raid Reports</a></Button>
 			</div>
 			<div class="rounded-lg bg-card p-6 shadow-md">
@@ -120,26 +121,40 @@
 	<section class="rounded-lg bg-card p-8 shadow-md">
 		<h2 class="mb-4 text-3xl font-bold">About Mr. Mythical</h2>
 		<p class="mb-4">
-			MrMythical.com is a passion project created to elevate World of Warcraft gameplay with clean, efficient, and reliable tools for Mythic+ and raid content. Built by an active player and developer, the platform aims to provide the community with actionable analytics and utilities that make a real difference.
+			MrMythical.com is a passion project created to elevate World of Warcraft gameplay with clean,
+			efficient, and reliable tools for Mythic+ and raid content. Built by an active player and
+			developer, the platform aims to provide the community with actionable analytics and utilities
+			that make a real difference.
 		</p>
 		<p class="mb-4">
-			The project is open source and thrives on community feedback. Contribute or suggest improvements on
-			<a href="https://github.com/Mr-Mythical/SvelteKit" target="_blank" class="text-link font-bold underline">GitHub</a>.
+			The project is open source and thrives on community feedback. Contribute or suggest
+			improvements on
+			<a
+				href="https://github.com/Mr-Mythical/SvelteKit"
+				target="_blank"
+				class="font-bold text-link underline">GitHub</a
+			>.
 		</p>
 		<p class="mb-4">
 			Support is welcome via
-			<a href="https://www.patreon.com/mrmythical" target="_blank" class="text-link font-bold underline">Patreon</a>
+			<a
+				href="https://www.patreon.com/mrmythical"
+				target="_blank"
+				class="font-bold text-link underline">Patreon</a
+			>
 			— it helps cover server costs and enables new features.
 		</p>
 		<p class="mb-4">
 			Your privacy is respected: minimal analytics and no personal data collection. See our
-			<a href="/privacy" class="text-link font-bold underline">Privacy Policy</a>
+			<a href="/privacy" class="font-bold text-link underline">Privacy Policy</a>
 			and
-			<a href="/cookie" class="text-link font-bold underline">Cookie Policy</a>
+			<a href="/cookie" class="font-bold text-link underline">Cookie Policy</a>
 			for details.
 		</p>
 		<p class="mb-6">
-			Want to learn more? Visit the full <a href="/about" class="text-link font-bold underline">About page</a> for the story, philosophy, and ways to get in touch.
+			Want to learn more? Visit the full <a href="/about" class="font-bold text-link underline"
+				>About page</a
+			> for the story, philosophy, and ways to get in touch.
 		</p>
 	</section>
 </main>

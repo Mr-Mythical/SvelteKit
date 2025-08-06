@@ -26,18 +26,18 @@ export default defineConfig({
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: 'on-first-retry',
-		
+
 		/* Take screenshot on failure */
 		screenshot: 'only-on-failure',
-		
+
 		/* Record video on failure */
 		video: 'retain-on-failure',
-		
+
 		/* Global timeout for each action */
 		actionTimeout: 10000,
-		
+
 		/* Global timeout for navigation */
-		navigationTimeout: 30000,
+		navigationTimeout: 30000
 	},
 
 	/* Configure projects for major browsers */
@@ -60,22 +60,22 @@ export default defineConfig({
 		/* Test against mobile viewports. */
 		{
 			name: 'Mobile Chrome',
-			use: { ...devices['Pixel 5'] },
+			use: { ...devices['Pixel 5'] }
 		},
 		{
 			name: 'Mobile Safari',
-			use: { ...devices['iPhone 12'] },
+			use: { ...devices['iPhone 12'] }
 		},
 
 		/* Test against branded browsers. */
 		{
 			name: 'Microsoft Edge',
-			use: { ...devices['Desktop Edge'], channel: 'msedge' },
+			use: { ...devices['Desktop Edge'], channel: 'msedge' }
 		},
 		{
 			name: 'Google Chrome',
-			use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-		},
+			use: { ...devices['Desktop Chrome'], channel: 'chrome' }
+		}
 	],
 
 	/* Run your local dev server before starting the tests */
@@ -83,20 +83,20 @@ export default defineConfig({
 		command: 'npm run build && npm run preview',
 		port: 4173,
 		reuseExistingServer: !process.env.CI,
-		timeout: 120000,
+		timeout: 120000
 	},
 
 	/* Global test timeout */
 	timeout: 60000,
-	
+
 	/* Expect timeout for assertions */
 	expect: {
 		timeout: 10000,
 		toHaveScreenshot: {
-			threshold: 0.2,
-		},
+			threshold: 0.2
+		}
 	},
-	
+
 	/* Output directory for test artifacts */
-	outputDir: 'test-results/',
+	outputDir: 'test-results/'
 });

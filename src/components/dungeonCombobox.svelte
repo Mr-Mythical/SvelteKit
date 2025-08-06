@@ -43,24 +43,27 @@
 			aria-controls={ids.content}
 			aria-haspopup="listbox"
 			aria-labelledby={`${triggerId}-label`}
-			class="w-full justify-between h-8 md:h-10 text-sm md:text-base px-3 md:px-4"
+			class="h-8 w-full justify-between px-3 text-sm md:h-10 md:px-4 md:text-base"
 			id={triggerId}
 		>
 			<span id={`${triggerId}-label`}>
 				<span class="hidden md:inline">{selectedLabel}</span>
 				<span class="md:hidden">{selected?.short_name ?? selectedLabel}</span>
 			</span>
-			<ChevronsUpDown class="ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 shrink-0 opacity-50" aria-hidden="true" />
+			<ChevronsUpDown
+				class="ml-1 h-3 w-3 shrink-0 opacity-50 md:ml-2 md:h-4 md:w-4"
+				aria-hidden="true"
+			/>
 			<span class="sr-only">Toggle dropdown</span>
 		</Button>
 	</Popover.Trigger>
 
-	<Popover.Content class="p-0 w-[200px] md:w-[250px]">
+	<Popover.Content class="w-[200px] p-0 md:w-[250px]">
 		<Command.Root>
-			<Command.Input 
-				placeholder="Search dungeon..." 
+			<Command.Input
+				placeholder="Search dungeon..."
 				aria-label="Search dungeon"
-				class="h-8 md:h-9 px-2 md:px-3 text-sm"
+				class="h-8 px-2 text-sm md:h-9 md:px-3"
 			/>
 			<Command.Empty class="p-2 text-sm">No dungeon found.</Command.Empty>
 			<Command.Group>
@@ -69,7 +72,7 @@
 						value={dungeon.value}
 						onSelect={(selectedValue) => handleSelect(selectedValue)}
 						class={cn(
-							'flex cursor-pointer select-none items-center py-1.5 md:py-2 px-2 text-sm',
+							'flex cursor-pointer select-none items-center px-2 py-1.5 text-sm md:py-2',
 							selectedValue === dungeon.value ? 'bg-secondary' : ''
 						)}
 					>

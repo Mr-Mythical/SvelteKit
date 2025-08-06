@@ -15,7 +15,7 @@ describe('DungeonCombobox', () => {
 
 	it('should render with placeholder text when no selection', () => {
 		const mockOnSelect = vi.fn();
-		
+
 		render(DungeonCombobox, {
 			props: {
 				dungeons: mockDungeons,
@@ -32,7 +32,7 @@ describe('DungeonCombobox', () => {
 
 	it('should display selected dungeon label', () => {
 		const mockOnSelect = vi.fn();
-		
+
 		render(DungeonCombobox, {
 			props: {
 				dungeons: mockDungeons,
@@ -47,7 +47,7 @@ describe('DungeonCombobox', () => {
 
 	it('should render combobox role', () => {
 		const mockOnSelect = vi.fn();
-		
+
 		render(DungeonCombobox, {
 			props: {
 				dungeons: mockDungeons,
@@ -64,7 +64,7 @@ describe('DungeonCombobox', () => {
 
 	it('should handle empty dungeons array gracefully', () => {
 		const mockOnSelect = vi.fn();
-		
+
 		render(DungeonCombobox, {
 			props: {
 				dungeons: [],

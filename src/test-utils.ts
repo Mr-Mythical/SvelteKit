@@ -3,10 +3,7 @@ import { render } from '@testing-library/svelte';
 /**
  * Custom render function that provides common test utilities
  */
-export function renderComponent(
-	component: any,
-	options: any = {}
-) {
+export function renderComponent(component: any, options: any = {}) {
 	const defaultOptions = {
 		props: {},
 		...options
@@ -35,7 +32,7 @@ export function createMockPage(overrides: any = {}) {
  * Helper to wait for async operations in tests
  */
 export function waitFor(ms: number): Promise<void> {
-	return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -48,7 +45,7 @@ export const mockData = {
 		{ value: 'the-underrot', label: 'The Underrot', short_name: 'UR' },
 		{ value: 'waycrest-manor', label: 'Waycrest Manor', short_name: 'WM' }
 	],
-	
+
 	realms: [
 		{ value: 'stormrage', label: 'Stormrage', region: 'US' },
 		{ value: 'area-52', label: 'Area-52', region: 'US' },

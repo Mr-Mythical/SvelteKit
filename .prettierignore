@@ -2,3 +2,21 @@
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
+
+# Build outputs
+.svelte-kit/
+build/
+dist/
+
+# Coverage reports
+coverage/
+
+# Test outputs
+test-results/
+playwright-report/
+
+# Generated files
+static/
+
+# Node modules
+node_modules/
