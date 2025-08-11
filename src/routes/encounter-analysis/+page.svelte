@@ -621,9 +621,7 @@
 			{/if}
 		</div>
 	{:else}
-		<div
-			class="relative mb-10 overflow-hidden px-6 py-12"
-		>
+		<div class="relative mb-10 overflow-hidden px-6 py-12">
 			<div class="relative z-10 text-center">
 				<h1 class="text-4xl font-bold tracking-tight">Encounter Healing Analysis</h1>
 				<p class="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">

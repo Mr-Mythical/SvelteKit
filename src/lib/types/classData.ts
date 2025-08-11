@@ -27,6 +27,7 @@ export const classSpecAbilities = {
 		Mistweaver: {
 			Major: [
 				{ name: 'Revival', id: 115310 },
+				{ name: 'Restoral', id: 388615 },
 				{ name: "Invoke Yu'lon", id: 322118 },
 				{ name: 'Invoke Chi-Ji', id: 325197 },
 				{ name: 'Celestial Conduit', id: 443028 }

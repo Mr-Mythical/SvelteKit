@@ -9,8 +9,8 @@
 </script>
 
 <header>
-	<nav class="border-b-2 py-4 shadow-lg flex justify-center">
-		<div class="container flex flex-wrap items-center justify-between px-2 max-w-[1400px] w-full">
+	<nav class="flex justify-center border-b-2 py-4 shadow-lg">
+		<div class="container flex w-full max-w-[1400px] flex-wrap items-center justify-between px-2">
 			<a href="/">
 				<div class="flex items-center">
 					<img

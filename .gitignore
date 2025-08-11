@@ -11,6 +11,10 @@
 /.dev.vars
 /.wrangler
 
+# Test outputs and coverage
+/coverage
+/.nyc_output
+
 # Logs
 logs
 *.log

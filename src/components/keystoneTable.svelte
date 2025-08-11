@@ -188,43 +188,50 @@
 </script>
 
 <div class="container gap-8 p-4 md:px-8 xl:px-40 2xl:px-72">
-		<h1 class="text-2xl font-bold mb-4 text-center">Mythic+ Score Calculator</h1>
+	<h1 class="mb-4 text-center text-2xl font-bold">Mythic+ Score Calculator</h1>
 	<p class="mb-4 text-center text-muted-foreground">
-		Calculate the required keystones to reach your desired World of Warcraft Mythic+ score, plan dungeon runs, and optimize your m+ score with this interactive score calculator. Import your character, set score goals, share your plans using the export and import features.
+		Calculate the required keystones to reach your desired World of Warcraft Mythic+ score, plan
+		dungeon runs, and optimize your m+ score with this interactive score calculator. Import your
+		character, set score goals, share your plans using the export and import features.
 	</p>
 </div>
 
 <div class="container flex flex-col gap-8 p-4 md:flex-row md:px-8 xl:px-40 2xl:px-72">
-
-    <div class="flex w-full flex-col space-y-6 md:w-64">
+	<div class="flex w-full flex-col space-y-6 md:w-64">
 		<div class="character-container">
-            <RecentCharacters {loadCharacter} />
-        </div>
-        {#if $wowSummaryStore}
-            <div class="w-full">
-                {#each $wowSummaryStore.media.assets as asset}
-                    {#if asset.key === 'inset'}
-                        <img src={asset.value} alt="Character media" class="my-2" />
-                    {/if}
-                {/each}
-                <h2 class="text-lg font-semibold">{$wowSummaryStore.name}</h2>
-                <p class="text-sm text-muted-foreground">&lt;{$wowSummaryStore.guild?.name}&gt; — {$wowSummaryStore.realm.name}</p>
-                <p class="text-sm">{$wowSummaryStore.race.name} {$wowSummaryStore.active_spec?.name} {$wowSummaryStore.character_class.name}</p>
-            </div>
-        {/if}
-        <div>
-            <Label class="mb-2 block text-lg" for="scoreTarget">Score Target:</Label>
-            <Input
-                class="w-full"
-                type="number"
-                id="scoreTarget"
-                placeholder="Enter your target Mythic+ score"
-                bind:value={scoreGoal}
-                min="0"
-                on:input={calculateScore}
-                aria-label="Score Target"
-            />
-        </div>
+			<RecentCharacters {loadCharacter} />
+		</div>
+		{#if $wowSummaryStore}
+			<div class="w-full">
+				{#each $wowSummaryStore.media.assets as asset}
+					{#if asset.key === 'inset'}
+						<img src={asset.value} alt="Character media" class="my-2" />
+					{/if}
+				{/each}
+				<h2 class="text-lg font-semibold">{$wowSummaryStore.name}</h2>
+				<p class="text-sm text-muted-foreground">
+					&lt;{$wowSummaryStore.guild?.name}&gt; — {$wowSummaryStore.realm.name}
+				</p>
+				<p class="text-sm">
+					{$wowSummaryStore.race.name}
+					{$wowSummaryStore.active_spec?.name}
+					{$wowSummaryStore.character_class.name}
+				</p>
+			</div>
+		{/if}
+		<div>
+			<Label class="mb-2 block text-lg" for="scoreTarget">Score Target:</Label>
+			<Input
+				class="w-full"
+				type="number"
+				id="scoreTarget"
+				placeholder="Enter your target Mythic+ score"
+				bind:value={scoreGoal}
+				min="0"
+				on:input={calculateScore}
+				aria-label="Score Target"
+			/>
+		</div>
 
 		<div class="flex flex-col space-y-2">
 			<Button class="w-full" on:click={() => ($apiPopup = !$apiPopup)} aria-label="Import Character"
@@ -251,10 +258,10 @@
 				Click Export to copy data. Paste data here, then click Import to load.
 			</small>
 		</div>
-    </div>
-    <div class="relative flex w-full flex-col items-center">
-        <h2 class="text-xl font-bold mb-2">Dungeon Runs &amp; Score Table</h2>
-        <Table.Root>
+	</div>
+	<div class="relative flex w-full flex-col items-center">
+		<h2 class="mb-2 text-xl font-bold">Dungeon Runs &amp; Score Table</h2>
+		<Table.Root>
 			<Table.Header>
 				<Table.Row>
 					<Table.Head class="text-semibold w-2/5 text-xl">Keystone</Table.Head>
@@ -338,22 +345,22 @@
 				</Table.Row>
 			</Table.Body>
 		</Table.Root>
-        {#if showTooltip}
-            <div
-                class="pointer-events-none z-50 rounded bg-muted px-2 py-1 text-sm"
-                style="
+		{#if showTooltip}
+			<div
+				class="pointer-events-none z-50 rounded bg-muted px-2 py-1 text-sm"
+				style="
           position: fixed;   
           top: {tooltipY - 30}px;  /* 30px above the cursor */
           left: {tooltipX}px;
           transform: translateX(-50%);
         "
-                role="status"
-                aria-live="polite"
-            >
-                Copied!
-            </div>
-        {/if}
-    </div>
+				role="status"
+				aria-live="polite"
+			>
+				Copied!
+			</div>
+		{/if}
+	</div>
 </div>
 
 <div class="container mx-auto mt-8 px-4">
@@ -361,9 +368,11 @@
 		<div class="w-full max-w-xl rounded-lg bg-card p-6 text-center shadow-md">
 			<h3 class="mb-4 text-2xl font-semibold">Mythic+ Rewards and Score Tooltip Addon</h3>
 			<p class="mb-6">
-				The Mr. Mythical addon gives you enhanced and customizable Mythic+ keystone tooltips with instant, detailed information, see dungeon rewards, crest earnings, and your potential score directly in tooltips and chat.
+				The Mr. Mythical addon gives you enhanced and customizable Mythic+ keystone tooltips with
+				instant, detailed information, see dungeon rewards, crest earnings, and your potential score
+				directly in tooltips and chat.
 			</p>
-			<Button class="mt-2 mr-2">
+			<Button class="mr-2 mt-2">
 				<a
 					href="https://www.curseforge.com/wow/addons/mr-mythical"
 					target="_blank"
@@ -372,12 +381,8 @@
 					Download on CurseForge
 				</a>
 			</Button>
-			<Button class="mt-2 ml-2">
-				<a
-					href="https://addons.wago.io/addons/mr-mythical"
-					target="_blank"
-					class="px-6 py-3"
-				>
+			<Button class="ml-2 mt-2">
+				<a href="https://addons.wago.io/addons/mr-mythical" target="_blank" class="px-6 py-3">
 					Download on Wago Addons
 				</a>
 			</Button>
@@ -386,7 +391,9 @@
 		<div class="w-full max-w-xl rounded-lg bg-card p-6 text-center shadow-md">
 			<h3 class="mb-4 text-2xl font-semibold">Support on Patreon</h3>
 			<p class="mb-6">
-				Enjoying these tools? Support MrMythical.com on Patreon to help keep these free, open-source WoW utilities accurate and up-to-date. Your contribution enables new features and ongoing improvements for the Mythic+ and raid community.
+				Enjoying these tools? Support MrMythical.com on Patreon to help keep these free, open-source
+				WoW utilities accurate and up-to-date. Your contribution enables new features and ongoing
+				improvements for the Mythic+ and raid community.
 			</p>
 			<Button>
 				<a href="https://www.patreon.com/MrMythical" target="_blank" class="px-6 py-3">

@@ -144,31 +144,31 @@
 			</h3>
 
 			<h4 class="text-md mb-2 font-semibold">In-Game Tooltip Addon</h4>
-            <p>
-                <Button
-                    class="p-0 text-[1.03rem] font-bold text-link"
-                    variant="link"
-                    href="https://www.curseforge.com/wow/addons/mr-mythical"
-                    target="_blank"
-                >
-                    Download on CurseForge
-                </Button>
-                Or
-                <Button
-                    class="p-0 text-[1.03rem] font-bold text-link"
-                    variant="link"
-                    href="https://addons.wago.io/addons/mr-mythical"
-                    target="_blank"
-                >
-                    Download on Wago Addons
-                </Button>
-            </p>
+			<p>
+				<Button
+					class="p-0 text-[1.03rem] font-bold text-link"
+					variant="link"
+					href="https://www.curseforge.com/wow/addons/mr-mythical"
+					target="_blank"
+				>
+					Download on CurseForge
+				</Button>
+				Or
+				<Button
+					class="p-0 text-[1.03rem] font-bold text-link"
+					variant="link"
+					href="https://addons.wago.io/addons/mr-mythical"
+					target="_blank"
+				>
+					Download on Wago Addons
+				</Button>
+			</p>
 			<p class="mb-4">
 				The Mr. Mythical addon gives you enhanced and customizable Mythic+ keystone tooltips with
 				instant, detailed information. See dungeon rewards, crest earnings, and your potential score
 				directly in tooltips and chat.
 			</p>
-            
+
 			<ul class="mb-6 ml-6 list-disc space-y-1">
 				<li>Predicted score gains for completing keys</li>
 				<li>Potential reward item levels and crests</li>
@@ -178,9 +178,10 @@
 
 			<h4 class="text-md mb-2 font-semibold">Web-Based Mythic+ Score Calculator</h4>
 			<p class="mb-4">
-				Or using the calculator on this page, you can plan your key pushing strategy with
-                real-time calculations. Just enter your desired score and necessary dungeon levels will be
-                calculated instantly, allowing you to optimize your keystone runs and share plans with your team. Or import your own characters and edit them to see how higher keystones affect your score.
+				Or using the calculator on this page, you can plan your key pushing strategy with real-time
+				calculations. Just enter your desired score and necessary dungeon levels will be calculated
+				instantly, allowing you to optimize your keystone runs and share plans with your team. Or
+				import your own characters and edit them to see how higher keystones affect your score.
 			</p>
 		</section>
 
