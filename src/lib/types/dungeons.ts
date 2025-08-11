@@ -11,12 +11,16 @@ export interface Run {
 
 export const dungeons = [
 	{ value: 'Ara-Kara, City of Echoes', label: 'Ara-Kara, City of Echoes', short_name: 'ARAK' },
-	{ value: 'Eco-Dome Al\'dani', label: 'Eco-Dome Al\'dani', short_name: 'EDA' },
+	{ value: "Eco-Dome Al'dani", label: "Eco-Dome Al'dani", short_name: 'EDA' },
 	{ value: 'Halls of Atonement', label: 'Halls of Atonement', short_name: 'HOA' },
 	{ value: 'Operation: Floodgate', label: 'Operation: Floodgate', short_name: 'FLOOD' },
 	{ value: 'Priory of the Sacred Flame', label: 'Priory of the Sacred Flame', short_name: 'PSF' },
-	{ value: 'Tazavesh: So\'leah\'s Gambit', label: 'Tazavesh: So\'leah\'s Gambit', short_name: 'GMBT' },
-	{ value: 'Tazavesh: Streets of Wonder', label: 'Tazavesh: Streets of Wonder', short_name: 'STRT' },
+	{ value: "Tazavesh: So'leah's Gambit", label: "Tazavesh: So'leah's Gambit", short_name: 'GMBT' },
+	{
+		value: 'Tazavesh: Streets of Wonder',
+		label: 'Tazavesh: Streets of Wonder',
+		short_name: 'STRT'
+	},
 	{ value: 'The Dawnbreaker', label: 'The Dawnbreaker', short_name: 'DAWN' }
 ];
 

@@ -93,7 +93,7 @@ export const bosses: Boss[] = [
 	},
 	{
 		id: 3134,
-		name: "Nexus-King Salhadaar",
+		name: 'Nexus-King Salhadaar',
 		abilities: [{ name: 'TBD', id: 1 }]
 	},
 	{
