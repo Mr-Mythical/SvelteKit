@@ -36,7 +36,16 @@ export const bosses: Boss[] = [
 	{
 		id: 3130,
 		name: 'Soulbinder Naazindhri',
-		abilities: [{ name: 'TBD', id: 1 }]
+		abilities: [
+			{ name: 'Shatterpulse', id: 1250008 },
+			{ name: 'Essence Implosion', id: 1227848 },
+			{ name: 'Arcane Expulsion', id: 1242088 },
+			{ name: 'Phase Blades', id: 1235576 },
+			{ name: 'Soulfire Convergence', id: 1225616 },
+			{ name: 'Soulfray Annihilation', id: 1227276 },
+			{ name: 'Mystic Lash', id: 1224025 },
+			{ name: 'Soul Calling', id: 1225582 }
+		]
 	},
 	{
 		id: 3132,
