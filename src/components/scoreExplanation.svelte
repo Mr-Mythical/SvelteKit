@@ -9,7 +9,7 @@
 			<h2 id="score-explanation" class="mb-2 scroll-mt-24 text-2xl font-extrabold leading-tight">
 				How the Mythic+ Score System Works in World of Warcraft
 			</h2>
-			<p class="mb-4 text-sm italic text-muted-foreground">Updated for The War Within, Season 2</p>
+			<p class="mb-4 text-sm italic text-muted-foreground">Updated for The War Within, Season 3</p>
 		</header>
 
 		<section class="mb-8" aria-labelledby="why-mplus-score-matters">
