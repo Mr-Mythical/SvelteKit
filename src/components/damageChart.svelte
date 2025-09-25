@@ -106,13 +106,17 @@
 
 	$: currentBoss = bosses.find((boss) => boss.id === encounterId);
 	let bossAbilityFilters: Record<number, boolean> = {};
+	let detectedBossAbilities: Set<number> = new Set();
 	let previousBossId: number | null = null;
 	$: if (currentBoss) {
 		if (previousBossId !== currentBoss.id) {
 			previousBossId = currentBoss.id;
 			bossAbilityFilters = {};
+			detectedBossAbilities = new Set(bossEvents.map(event => event.abilityGameID));
+
+			// Only enable abilities that are actually detected in the boss events
 			currentBoss.abilities.forEach((ability) => {
-				bossAbilityFilters[ability.id] = true;
+				bossAbilityFilters[ability.id] = detectedBossAbilities.has(ability.id);
 			});
 		}
 	}
@@ -416,7 +420,7 @@
 						);
 						const color: string = abilityColors[event.abilityGameID] || 'rgba(0, 0, 0, 0.8)';
 						const icon: HTMLImageElement = new Image(26, 26);
-						icon.src = `icons/image-${event.abilityGameID}.jpg`;
+						icon.src = `icons/${event.abilityGameID}.webp`;
 						if (index === 0) {
 							indexOffset = 0;
 							lastXValue = 0;
@@ -451,7 +455,7 @@
 							(event.timestamp - damageEvents[0].pointStart) / damageEvents[0].pointInterval
 						);
 						const bossIcon: HTMLImageElement = new Image(26, 26);
-						bossIcon.src = `icons/image-${event.abilityGameID}.jpg`;
+						bossIcon.src = `icons/${event.abilityGameID}.webp`;
 						return {
 							type: 'line',
 							xMin: xValue,
@@ -512,11 +516,11 @@
 		<div>
 			<Label>{currentBoss.name} Abilities</Label>
 			<div class="flex flex-wrap items-center justify-center gap-4">
-				{#each currentBoss.abilities as ability}
+				{#each currentBoss.abilities.filter(ability => detectedBossAbilities.has(ability.id)) as ability}
 					<div class="flex items-center space-x-2">
 						<Checkbox bind:checked={bossAbilityFilters[ability.id]} />
 						<img
-							src={'icons/image-' + ability.id + '.jpg'}
+							src={`icons/${ability.id}.webp`}
 							alt={ability.name + ' icon'}
 							width="26"
 							height="26"
