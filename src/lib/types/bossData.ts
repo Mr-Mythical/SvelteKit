@@ -101,7 +101,7 @@ export const bosses: Boss[] = [
 		abilities: [
 			{ name: 'Decree: Oath-Bound', id: 1224731 },
 			{ name: 'Dimension Glare', id: 1234539 },
-			{ name: 'King\'s Hunger', id: 1228317 },
+			{ name: "King's Hunger", id: 1228317 },
 			{ name: 'Subjugation Rule', id: 1224776 },
 			{ name: 'Command: Besiege', id: 1225016 },
 			{ name: 'Dimension Breath', id: 1228163 },
@@ -135,7 +135,7 @@ export const bosses: Boss[] = [
 			{ name: 'Mass Ejection', id: 1237694 },
 			{ name: 'Stardust Nova', id: 1237695 },
 			{ name: 'Extinction', id: 1238765 },
-			{ name: 'Conqueror\'s Cross', id: 1239262 },
+			{ name: "Conqueror's Cross", id: 1239262 },
 			{ name: 'Unknown', id: 1243349 },
 			{ name: 'Reverse Gravity', id: 1243577 },
 			{ name: 'Shattered Space', id: 1243694 },

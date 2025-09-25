@@ -112,7 +112,7 @@
 		if (previousBossId !== currentBoss.id) {
 			previousBossId = currentBoss.id;
 			bossAbilityFilters = {};
-			detectedBossAbilities = new Set(bossEvents.map(event => event.abilityGameID));
+			detectedBossAbilities = new Set(bossEvents.map((event) => event.abilityGameID));
 
 			// Only enable abilities that are actually detected in the boss events
 			currentBoss.abilities.forEach((ability) => {
@@ -516,7 +516,7 @@
 		<div>
 			<Label>{currentBoss.name} Abilities</Label>
 			<div class="flex flex-wrap items-center justify-center gap-4">
-				{#each currentBoss.abilities.filter(ability => detectedBossAbilities.has(ability.id)) as ability}
+				{#each currentBoss.abilities.filter( (ability) => detectedBossAbilities.has(ability.id) ) as ability}
 					<div class="flex items-center space-x-2">
 						<Checkbox bind:checked={bossAbilityFilters[ability.id]} />
 						<img
