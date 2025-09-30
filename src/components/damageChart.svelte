@@ -219,6 +219,28 @@
 				position: 'top',
 				labels: {
 					color: '#FFF9F5'
+				},
+				onClick: function(event, legendItem) {
+					const meta = (this as any).chart.getDatasetMeta(legendItem.datasetIndex);
+					if (legendItem.datasetIndex !== undefined) {
+						meta.hidden = meta.hidden === null
+							? !(this as any).chart.data.datasets[legendItem.datasetIndex].hidden
+							: null;
+					}
+					// Update specFilters for healer datasets
+					let label: string | undefined;
+					if (legendItem.datasetIndex !== undefined) {
+						label = (this as any).chart.data.datasets[legendItem.datasetIndex].label;
+						if (label && label.includes(' (')) {
+							const healerName = label.split(' (')[0];
+							const specKey = Object.keys(specFilters).find(key => key.startsWith(healerName + ' ('));
+							if (specKey) {
+								specFilters[specKey] = !meta.hidden;
+								specFilters = { ...specFilters };
+							}
+						}
+					}
+					(this as any).chart.update();
 				}
 			},
 			annotation: {
@@ -270,7 +292,7 @@
 				grid: {
 					color: '#555555'
 				},
-				max: calculateSuggestedMax(damageEvents, healingEvents)
+				max: calculateSuggestedMax(damageEvents, healingEvents) * 1.3
 			}
 		}
 	};
@@ -439,19 +461,6 @@
 						);
 						if (!matchingFilter || !specFilters[matchingFilter]) return false;
 
-						if (abilityTypeFilter === 'Major') {
-							const specAbilities = specs[specName as keyof typeof specs] as {
-								Major: { id: number }[];
-								Minor: { id: number }[];
-							};
-							return specAbilities.Major.some((ability) => ability.id === event.abilityGameID);
-						} else if (abilityTypeFilter === 'Minor') {
-							const specAbilities = specs[specName as keyof typeof specs] as {
-								Major: { id: number }[];
-								Minor: { id: number }[];
-							};
-							return specAbilities.Minor.some((ability) => ability.id === event.abilityGameID);
-						}
 						return true;
 					})
 					.map((event: CastEvent, index: number) => {
@@ -461,18 +470,9 @@
 						const color: string = abilityColors[event.abilityGameID] || 'rgba(0, 0, 0, 0.8)';
 						const icon: HTMLImageElement = new Image(26, 26);
 						icon.src = `icons/${event.abilityGameID}.webp`;
-						if (index === 0) {
-							indexOffset = 0;
-							lastXValue = 0;
-						}
-						if (xValue - lastXValue > 4 && (index - indexOffset) % 3 !== 0) {
-							indexOffset += 1;
-							if ((index - indexOffset) % 3 === 1) {
-								indexOffset += 1;
-							}
-						}
-						lastXValue = xValue;
-						const yOffset = ((index - indexOffset) % 3) * 25;
+						const sortedHealers = [...allHealers].sort((a, b) => a.name.localeCompare(b.name));
+						const healerIndex = sortedHealers.findIndex(h => h.id === event.sourceID);
+						const yAdjust = healerIndex >= 0 ? 20 + (healerIndex * 30) : 20;
 						return {
 							type: 'line',
 							xMin: xValue,
@@ -483,7 +483,7 @@
 								content: icon,
 								display: true,
 								position: 'end',
-								yAdjust: yOffset - 12,
+								yAdjust,
 								backgroundColor: 'transparent'
 							}
 						};
@@ -505,8 +505,8 @@
 							label: {
 								content: bossIcon,
 								display: true,
-								position: 'start',
-								yAdjust: 0,
+								position: 'end',
+								yAdjust: -12,
 								backgroundColor: 'transparent'
 							}
 						};
@@ -519,66 +519,32 @@
 	$: options.plugins.annotation.annotations = annotations as any;
 </script>
 
-<div class="filters grid grid-cols-1 items-center justify-center gap-4 text-center md:grid-cols-3">
-	<div>
-		<Label>Ability Type</Label>
-		<RadioGroup.Root bind:value={abilityTypeFilter}>
-			<div class="flex flex-wrap items-center justify-center gap-4">
+<div class="filters text-center">
+	<Label class="text-xl">{currentBoss?.name} Abilities</Label>
+	<div class="flex flex-wrap items-center justify-center gap-4">
+		{#if currentBoss}
+			{#each currentBoss.abilities.filter( (ability) => detectedBossAbilities.has(ability.id) ) as ability}
 				<div class="flex items-center space-x-2">
-					<RadioGroup.Item id="all" value="All" />
-					<Label for="all">All</Label>
-				</div>
-				<div class="flex items-center space-x-2">
-					<RadioGroup.Item id="major" value="Major" />
-					<Label for="major">Major</Label>
-				</div>
-				<div class="flex items-center space-x-2">
-					<RadioGroup.Item id="minor" value="Minor" />
-					<Label for="minor">Minor</Label>
-				</div>
-			</div>
-		</RadioGroup.Root>
-	</div>
-
-	<div>
-		<Label>Spec Filters</Label>
-		<div class="flex flex-wrap items-center justify-center gap-4">
-			{#each Object.keys(specFilters) as spec}
-				<div class="flex items-center space-x-2">
-					<Checkbox bind:checked={specFilters[spec]} />
-					<span>{spec}</span>
+					<Checkbox bind:checked={bossAbilityFilters[ability.id]} />
+					<img
+						src={`icons/${ability.id}.webp`}
+						alt={ability.name + ' icon'}
+						width="26"
+						height="26"
+						class="object-contain"
+					/>
+					<a
+						href={'https://www.wowhead.com/spell=' + ability.id}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="underline hover:text-blue-400"
+					>
+						{ability.name}
+					</a>
 				</div>
 			{/each}
-		</div>
+		{/if}
 	</div>
-
-	{#if currentBoss}
-		<div>
-			<Label>{currentBoss.name} Abilities</Label>
-			<div class="flex flex-wrap items-center justify-center gap-4">
-				{#each currentBoss.abilities.filter( (ability) => detectedBossAbilities.has(ability.id) ) as ability}
-					<div class="flex items-center space-x-2">
-						<Checkbox bind:checked={bossAbilityFilters[ability.id]} />
-						<img
-							src={`icons/${ability.id}.webp`}
-							alt={ability.name + ' icon'}
-							width="26"
-							height="26"
-							class="object-contain"
-						/>
-						<a
-							href={'https://www.wowhead.com/spell=' + ability.id}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="underline hover:text-blue-400"
-						>
-							{ability.name}
-						</a>
-					</div>
-				{/each}
-			</div>
-		</div>
-	{/if}
 </div>
 
 <div
