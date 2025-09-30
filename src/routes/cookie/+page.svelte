@@ -5,11 +5,9 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 </script>
 
-<SEO
-	title="Cookie Policy - MrMythical.com"
-	description="This Cookie Policy explains how MrMythical.com uses cookies, including those managed through CookieYes and Google Analytics."
-	image="https://mrmythical.com/Logo.png"
-/>
+SEO title="Cookie Policy - MrMythical.com" description="This Cookie Policy explains how
+MrMythical.com uses cookies, including those managed through Google Consent Mode and Google
+Analytics." image="https://mrmythical.com/Logo.png" />
 
 <Header />
 
@@ -38,15 +36,10 @@
 
 		<h2 class="mb-4 mt-4 text-xl font-bold">Managing Cookie Preferences</h2>
 
-		<Button>
-			<span class="cky-banner-element">Cookie Settings</span>
-		</Button>
-		<br />
-
 		<p>
-			You can change your cookie preferences any time by clicking the above button. This will let
-			you revisit the cookie consent banner and change your preferences or withdraw your consent
-			right away.
+			You can manage your cookie preferences through our consent banner. The consent banner appears
+			automatically for users in regions requiring consent (such as GDPR in EU and CCPA in US). You
+			can withdraw your consent at any time by clicking the consent settings link in the banner.
 		</p>
 		<br />
 		<p>
@@ -114,10 +107,10 @@
 				<Button
 					class="p-0 text-[1.03rem] font-bold text-link"
 					variant="link"
-					href="https://www.cookieyes.com/cookie-policy/"
+					href="https://policies.google.com/technologies/partner-sites"
 					target="_blank"
 				>
-					CookieYes Policy
+					Google Consent Mode Policy
 				</Button>
 			</li>
 		</ul>

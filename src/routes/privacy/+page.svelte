@@ -7,7 +7,7 @@
 
 <SEO
 	title="Privacy Policy - MrMythical.com"
-	description="Learn how MrMythical.com uses cookies and analytics, including information about Google Analytics and CookieYes consent tracking."
+	description="Learn how MrMythical.com uses cookies and analytics, including information about Google Analytics and Google Consent Mode."
 	image="https://mrmythical.com/Logo.png"
 />
 
@@ -37,7 +37,10 @@
 				<strong>Google Analytics:</strong> Tracks anonymized usage data like page views, browser type,
 				and user interactions to help improve the website.
 			</li>
-			<li><strong>CookieYes:</strong> Manages your cookie consent preferences.</li>
+			<li>
+				<strong>Google Consent Mode:</strong> Manages your cookie consent preferences through Google's
+				consent framework.
+			</li>
 		</ul>
 
 		<h2 class="mb-4 mt-4 text-xl font-bold">How This Information Is Used</h2>
