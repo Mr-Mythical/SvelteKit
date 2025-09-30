@@ -18,6 +18,7 @@
 	import type { CastEvent, Series, Player } from '$lib/types/apiTypes';
 	import { backgroundColorPlugin } from '$lib/utils/chartCanvasPlugin';
 	import { abilityColors } from '$lib/utils/classColors';
+	import { classColors } from '$lib/utils/classColors';
 	import { Label } from '$lib/components/ui/label/index';
 	import * as RadioGroup from '$lib/components/ui/radio-group/index';
 	import { Checkbox } from '$lib/components/ui/checkbox';
@@ -293,10 +294,10 @@
 	}
 
 	function calculateSuggestedMax(damageEvents: Series[], healingEvents: Series[]): number {
-		const maxDamage = Math.max(...damageEvents[0].data);
-		const maxHealing = Math.max(...healingEvents[0].data);
+		const maxDamage = damageEvents.length > 0 ? Math.max(...damageEvents[0].data) : 0;
+		const maxHealing = healingEvents.length > 0 ? Math.max(...healingEvents.flatMap(series => series.data)) : 0;
 		const maxValue = Math.max(maxDamage, maxHealing);
-		return maxValue * 1.5;
+		return maxValue * 1.2;
 	}
 
 	function processSeriesData(series: Series[]) {
@@ -315,11 +316,31 @@
 
 	function processData(damageEvents: Series[], healingEvents: Series[]) {
 		const damageData = processSeriesData(damageEvents);
-		const healingData = processSeriesData(healingEvents);
+		
+		// Filter healing events to only include actual healers by matching GUIDs
+		const healerGuids = new Set(allHealers.map(healer => healer.guid));
+		const healingSeriesData = healingEvents
+			.filter(series => typeof series.guid === 'number' && healerGuids.has(series.guid))
+			.map(series => ({
+				name: series.name,
+				guid: series.guid,
+				values: series.data
+			}));
+		
+		// Find the "Total" series for effective healing, or sum individual series if no Total
+		const totalSeries = healingEvents.find(series => series.name === 'Total');
+		const effectiveHealingData = totalSeries ? 
+			totalSeries.data : 
+			(healingEvents.length > 0 ? 
+				healingEvents[0].data.map((_, index) => 
+					healingEvents.reduce((sum, series) => sum + (series.data[index] || 0), 0)
+				) : []);
+		
 		return {
 			labels: damageData.timestamps.map((ts) => ts.toFixed(1)),
 			damagetakenData: damageData.values,
-			effectiveHealingData: healingData.values
+			effectiveHealingData,
+			healingSeries: healingSeriesData
 		};
 	}
 
@@ -327,29 +348,48 @@
 		labels: string[];
 		damagetakenData: number[];
 		effectiveHealingData: number[];
+		healingSeries: { name: string; guid?: number; values: number[] }[];
 	}) {
+		const datasets = [
+			{
+				label: 'Damage Taken',
+				data: processedData.damagetakenData,
+				backgroundColor: 'rgba(255, 99, 132, 0.2)',
+				borderColor: 'rgba(255, 99, 132, 1)',
+				fill: true,
+				pointRadius: 0,
+				tension: 0.2
+			},
+			{
+				label: 'Effective Healing',
+				data: processedData.effectiveHealingData,
+				backgroundColor: 'rgba(54, 162, 235, 0.2)',
+				borderColor: 'rgba(54, 162, 235, 1)',
+				fill: true,
+				pointRadius: 0,
+				tension: 0.2
+			}
+		];
+
+		processedData.healingSeries.forEach((healing) => {
+			// Find the corresponding healer by guid
+			const healer = allHealers.find(h => h.guid === healing.guid);
+			const healerName = healer ? `${healer.name} (${healer.type})` : healing.name;
+			const classColor = healer ? classColors[healer.type] || '#ffffff' : '#ffffff';
+			datasets.push({
+				label: healerName,
+				data: healing.values,
+				backgroundColor: 'transparent',
+				borderColor: classColor,
+				fill: false,
+				pointRadius: 0,
+				tension: 0.2
+			});
+		});
+
 		chartData = {
 			labels: processedData.labels,
-			datasets: [
-				{
-					label: 'Damage Taken',
-					data: processedData.damagetakenData,
-					backgroundColor: 'rgba(255, 99, 132, 0.2)',
-					borderColor: 'rgba(255, 99, 132, 1)',
-					fill: true,
-					pointRadius: 0,
-					tension: 0.2
-				},
-				{
-					label: 'Effective Healing',
-					data: processedData.effectiveHealingData,
-					backgroundColor: 'rgba(54, 162, 235, 0.2)',
-					borderColor: 'rgba(54, 162, 235, 1)',
-					fill: true,
-					pointRadius: 0,
-					tension: 0.2
-				}
-			]
+			datasets
 		};
 	}
 

@@ -55,7 +55,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		let seriesData: Series[] = json.data.reportData.report.graph.data.series;
-		seriesData = seriesData.filter((series) => series.name == 'Total');
+		// Remove the filter that only keeps 'Total' series
+		// seriesData = seriesData.filter((series) => series.name == 'Total');
 
 		return new Response(JSON.stringify({ seriesData }), {
 			status: 200,
