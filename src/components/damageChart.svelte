@@ -220,12 +220,13 @@
 				labels: {
 					color: '#FFF9F5'
 				},
-				onClick: function(event, legendItem) {
+				onClick: function (event, legendItem) {
 					const meta = (this as any).chart.getDatasetMeta(legendItem.datasetIndex);
 					if (legendItem.datasetIndex !== undefined) {
-						meta.hidden = meta.hidden === null
-							? !(this as any).chart.data.datasets[legendItem.datasetIndex].hidden
-							: null;
+						meta.hidden =
+							meta.hidden === null
+								? !(this as any).chart.data.datasets[legendItem.datasetIndex].hidden
+								: null;
 					}
 					// Update specFilters for healer datasets
 					let label: string | undefined;
@@ -233,7 +234,9 @@
 						label = (this as any).chart.data.datasets[legendItem.datasetIndex].label;
 						if (label && label.includes(' (')) {
 							const healerName = label.split(' (')[0];
-							const specKey = Object.keys(specFilters).find(key => key.startsWith(healerName + ' ('));
+							const specKey = Object.keys(specFilters).find((key) =>
+								key.startsWith(healerName + ' (')
+							);
 							if (specKey) {
 								specFilters[specKey] = !meta.hidden;
 								specFilters = { ...specFilters };
@@ -317,7 +320,8 @@
 
 	function calculateSuggestedMax(damageEvents: Series[], healingEvents: Series[]): number {
 		const maxDamage = damageEvents.length > 0 ? Math.max(...damageEvents[0].data) : 0;
-		const maxHealing = healingEvents.length > 0 ? Math.max(...healingEvents.flatMap(series => series.data)) : 0;
+		const maxHealing =
+			healingEvents.length > 0 ? Math.max(...healingEvents.flatMap((series) => series.data)) : 0;
 		const maxValue = Math.max(maxDamage, maxHealing);
 		return maxValue * 1.2;
 	}
@@ -338,26 +342,27 @@
 
 	function processData(damageEvents: Series[], healingEvents: Series[]) {
 		const damageData = processSeriesData(damageEvents);
-		
+
 		// Filter healing events to only include actual healers by matching GUIDs
-		const healerGuids = new Set(allHealers.map(healer => healer.guid));
+		const healerGuids = new Set(allHealers.map((healer) => healer.guid));
 		const healingSeriesData = healingEvents
-			.filter(series => typeof series.guid === 'number' && healerGuids.has(series.guid))
-			.map(series => ({
+			.filter((series) => typeof series.guid === 'number' && healerGuids.has(series.guid))
+			.map((series) => ({
 				name: series.name,
 				guid: series.guid,
 				values: series.data
 			}));
-		
+
 		// Find the "Total" series for effective healing, or sum individual series if no Total
-		const totalSeries = healingEvents.find(series => series.name === 'Total');
-		const effectiveHealingData = totalSeries ? 
-			totalSeries.data : 
-			(healingEvents.length > 0 ? 
-				healingEvents[0].data.map((_, index) => 
-					healingEvents.reduce((sum, series) => sum + (series.data[index] || 0), 0)
-				) : []);
-		
+		const totalSeries = healingEvents.find((series) => series.name === 'Total');
+		const effectiveHealingData = totalSeries
+			? totalSeries.data
+			: healingEvents.length > 0
+				? healingEvents[0].data.map((_, index) =>
+						healingEvents.reduce((sum, series) => sum + (series.data[index] || 0), 0)
+					)
+				: [];
+
 		return {
 			labels: damageData.timestamps.map((ts) => ts.toFixed(1)),
 			damagetakenData: damageData.values,
@@ -395,7 +400,7 @@
 
 		processedData.healingSeries.forEach((healing) => {
 			// Find the corresponding healer by guid
-			const healer = allHealers.find(h => h.guid === healing.guid);
+			const healer = allHealers.find((h) => h.guid === healing.guid);
 			const healerName = healer ? `${healer.name} (${healer.type})` : healing.name;
 			const classColor = healer ? classColors[healer.type] || '#ffffff' : '#ffffff';
 			datasets.push({
@@ -471,8 +476,8 @@
 						const icon: HTMLImageElement = new Image(26, 26);
 						icon.src = `icons/${event.abilityGameID}.webp`;
 						const sortedHealers = [...allHealers].sort((a, b) => a.name.localeCompare(b.name));
-						const healerIndex = sortedHealers.findIndex(h => h.id === event.sourceID);
-						const yAdjust = healerIndex >= 0 ? 20 + (healerIndex * 30) : 20;
+						const healerIndex = sortedHealers.findIndex((h) => h.id === event.sourceID);
+						const yAdjust = healerIndex >= 0 ? 20 + healerIndex * 30 : 20;
 						return {
 							type: 'line',
 							xMin: xValue,
