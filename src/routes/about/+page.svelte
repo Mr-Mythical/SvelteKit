@@ -98,13 +98,10 @@
 
 		<h2 class="mb-4 mt-8 text-2xl font-bold">Privacy Commitment</h2>
 		<p class="mb-6">
-			Your privacy matters. The site uses minimal tracking (Google Analytics) solely to improve user
-			experience, and cookie management through CookieYes. Review our detailed
+			Your privacy matters. The site does not use tracking or analytics services. Review our
+			detailed
 			<Button class="p-0 text-[1.03rem] font-bold text-link" variant="link" href="/privacy">
 				Privacy Policy
-			</Button> and
-			<Button class="p-0 text-[1.03rem] font-bold text-link" variant="link" href="/cookie">
-				Cookie Policy
 			</Button> for complete transparency.
 		</p>
 
