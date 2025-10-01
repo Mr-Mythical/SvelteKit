@@ -21,13 +21,15 @@
 		<p>
 			At MrMythical.com, we respect your privacy and are committed to protecting it. This Privacy
 			Policy explains what data we (and the third-party tools we use) collect, how it’s used, and
-			how you can control it. We do not collect personal data directly from users, but we use Google AdSense for advertising which may use cookies.
+			how you can control it. We do not collect personal data directly from users, but we use Google
+			AdSense for advertising which may use cookies.
 		</p>
 
 		<h2 class="mb-4 mt-4 text-xl font-bold">What Data Is Collected</h2>
 		<p>
 			MrMythical.com does not collect any personal information such as names, email addresses, or
-			account details. However, we use Google AdSense for advertising, which may use cookies to serve relevant ads and measure ad performance.
+			account details. However, we use Google AdSense for advertising, which may use cookies to
+			serve relevant ads and measure ad performance.
 		</p>
 
 		<h2 class="mb-4 mt-4 text-xl font-bold">How This Information Is Used</h2>
@@ -50,12 +52,9 @@
 		</ul>
 		<h2 class="mb-4 mt-4 text-xl font-bold">Cookies</h2>
 		<p>
-			MrMythical.com uses cookies through Google AdSense for advertising purposes. These cookies help serve relevant ads and measure campaign performance. You can view detailed
-			information in our <Button
-				class="p-0 text-[1.03rem] font-bold text-link"
-				variant="link"
-				href="/cookie"
-			>
+			MrMythical.com uses cookies through Google AdSense for advertising purposes. These cookies
+			help serve relevant ads and measure campaign performance. You can view detailed information in
+			our <Button class="p-0 text-[1.03rem] font-bold text-link" variant="link" href="/cookie">
 				Cookie Policy
 			</Button> and manage your preferences at any time.
 		</p>

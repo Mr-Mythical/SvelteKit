@@ -5,8 +5,12 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 </script>
 
-<SEO title="Cookie Policy - MrMythical.com" description="This Cookie Policy explains how
-MrMythical.com uses cookies for advertising through Google AdSense." image="https://mrmythical.com/Logo.png" />
+<SEO
+	title="Cookie Policy - MrMythical.com"
+	description="This Cookie Policy explains how
+MrMythical.com uses cookies for advertising through Google AdSense."
+	image="https://mrmythical.com/Logo.png"
+/>
 
 <Header />
 
@@ -24,17 +28,24 @@ MrMythical.com uses cookies for advertising through Google AdSense." image="http
 
 		<h2 class="mb-4 mt-4 text-xl font-bold">How We Use Cookies</h2>
 		<p>
-			We use third-party cookies through Google AdSense for advertising purposes. These cookies help serve relevant ads, measure ad performance, and prevent fraud. We do not use cookies for analytics or tracking beyond advertising.
+			We use third-party cookies through Google AdSense for advertising purposes. These cookies help
+			serve relevant ads, measure ad performance, and prevent fraud. We do not use cookies for
+			analytics or tracking beyond advertising.
 		</p>
 
 		<h2 class="mb-4 mt-4 text-xl font-bold">Managing Cookie Preferences</h2>
 
 		<p>
-			You can opt out of personalized advertising by visiting Google's Ad Settings page or using tools like the Network Advertising Initiative opt-out. Advertising cookies can be managed through your browser settings.
+			You can opt out of personalized advertising by visiting Google's Ad Settings page or using
+			tools like the Network Advertising Initiative opt-out. Advertising cookies can be managed
+			through your browser settings.
 		</p>
 		<br />
 		<p>
-			You can also manage cookies through your browser settings. Different browsers provide different methods to block and delete cookies used by websites. You can change the settings of your browser to block/delete the cookies. Listed below are the links to the support documents on how to manage and delete cookies from the major web browsers.
+			You can also manage cookies through your browser settings. Different browsers provide
+			different methods to block and delete cookies used by websites. You can change the settings of
+			your browser to block/delete the cookies. Listed below are the links to the support documents
+			on how to manage and delete cookies from the major web browsers.
 		</p>
 		<ul class="ml-6 list-disc">
 			<li>
