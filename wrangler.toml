@@ -1,2 +1,12 @@
 name = "my-project" # Optional, but recommended for clarity
 compatibility_date = "2025-01-14" # Required to avoid warnings
+
+# Environment variables for Blizzard OAuth and Auth.js
+# In production, set these as secrets using: wrangler secret put <NAME>
+# For local development, create a .dev.vars file with these variables
+
+[vars]
+# BLIZZARD_CLIENT_ID = "your-client-id-here"
+# BLIZZARD_CLIENT_SECRET = "your-client-secret-here"
+# BLIZZARD_REGION = "us"  # Options: us, eu, kr, tw, cn
+# AUTH_SECRET = "your-random-secret-here"  # Generate with: openssl rand -base64 32
