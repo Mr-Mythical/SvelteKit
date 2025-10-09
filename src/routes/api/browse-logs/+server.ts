@@ -1,7 +1,7 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/db';
 import { healerCompositions, unifiedReports, encounters } from '$lib/db/schema';
-import { eq, gte, lte, desc, and, sql } from 'drizzle-orm';
+import { eq, gte, lte, desc, and } from 'drizzle-orm';
 import type { BrowseLogsParams, BrowsedLog, BrowseLogsResponse } from '$lib/types/apiTypes';
 import { bosses as bossList } from '$lib/types/bossData';
 

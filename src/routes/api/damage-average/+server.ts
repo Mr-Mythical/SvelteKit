@@ -5,13 +5,19 @@ import { eq, asc } from 'drizzle-orm';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
+		console.log('API route called: /api/damage-average');
+
 		const bossId = url.searchParams.get('bossId');
 
 		if (!bossId) {
 			return json({ error: 'No bossId provided' }, { status: 400 });
 		}
 
-		const data = await db()
+		console.log('Initializing database connection...');
+		const database = db();
+		console.log('Database connection initialized, executing query...');
+
+		const data = await database
 			.select({
 				time_seconds: damageAverages.timeSeconds,
 				avg_damage: damageAverages.avgDamage,
@@ -33,9 +39,22 @@ export const GET: RequestHandler = async ({ url }) => {
 			encounter_id: row.encounter_id
 		}));
 
+		console.log(`Query completed successfully, returning ${processedData.length} records`);
 		return json(processedData);
 	} catch (error) {
-		console.error('Server error:', error);
-		return json({ error: (error as Error).message }, { status: 500 });
+		console.error('Database error in /api/damage-average:', error);
+		console.error('Error details:', {
+			name: error instanceof Error ? error.name : 'Unknown',
+			message: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined
+		});
+
+		return json(
+			{
+				error: error instanceof Error ? error.message : 'Database connection failed',
+				debug: process.env.NODE_ENV === 'development' ? String(error) : undefined
+			},
+			{ status: 500 }
+		);
 	}
 };
