@@ -1,3 +1,9 @@
-name = "my-project" # Optional, but recommended for clarity
-compatibility_date = "2025-01-14" # Required to avoid warnings
-compatibility_flags = ["nodejs_compat"] # Enable Node.js compatibility for postgres package
+name = "my-project"
+compatibility_date = "2025-01-14"
+compatibility_flags = ["nodejs_compat"]
+
+# Required for Cloudflare Pages - must match the adapter config
+pages_build_output_dir = "build"
+
+[build]
+command = "npm run build"

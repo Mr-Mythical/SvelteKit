@@ -15,20 +15,28 @@ function getDb() {
 			throw new Error('DATABASE_URL is not defined in environment variables.');
 		}
 
-		// For Cloudflare Workers, we need to use connection options that don't rely on Node.js features
-		// This will work better with the nodejs_compat flag
-		const client = postgres(connectionString, { 
-			prepare: false,
-			// These options help with Cloudflare Workers compatibility
-			transform: postgres.camel,
-			connection: {
-				// Disable features that might cause issues in Workers
-				application_name: 'sveltekit-app'
-			}
-		});
+		try {
+			// Create the postgres client with minimal configuration for Cloudflare Workers
+			const client = postgres(connectionString, {
+				prepare: false,
+				// Reduce connections for Workers environment
+				max: 1,
+				idle_timeout: 20,
+				// Disable transforms that might cause issues
+				transform: undefined,
+				types: {},
+				// Use minimal connection options
+				connection: {
+					application_name: 'cloudflare-worker'
+				}
+			});
 
-		// Create the Drizzle database instance
-		db = drizzle(client);
+			// Create the Drizzle database instance
+			db = drizzle(client);
+		} catch (error) {
+			console.error('Database initialization error:', error);
+			throw new Error('Failed to initialize database connection');
+		}
 	}
 
 	if (!db) {
