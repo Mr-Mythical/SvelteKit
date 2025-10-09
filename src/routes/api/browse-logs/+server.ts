@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				guildName: unifiedReports.guildName,
 				rankingStartTime: unifiedReports.rankingStartTime,
 				fightDuration: healerCompositions.fightDuration,
-				specIcons: healerCompositions.specIcons,
+				specIcons: healerCompositions.specIcons
 			})
 			.from(healerCompositions)
 			.innerJoin(unifiedReports, eq(healerCompositions.reportId, unifiedReports.id))
@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			guild_name: row.guildName,
 			report_absolute_start_time_ms: row.rankingStartTime,
 			duration_ms: row.fightDuration,
-			healer_specs: row.specIcons as string[],
+			healer_specs: row.specIcons as string[]
 		}));
 
 		// Filter by healer specs if specified

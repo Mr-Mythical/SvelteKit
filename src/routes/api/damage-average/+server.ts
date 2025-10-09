@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ url }) => {
 				std_dev: damageAverages.stdDev,
 				count: damageAverages.count,
 				confidence_interval: damageAverages.confidenceInterval,
-				encounter_id: damageAverages.encounterId,
+				encounter_id: damageAverages.encounterId
 			})
 			.from(damageAverages)
 			.where(eq(damageAverages.encounterId, parseInt(bossId)))
