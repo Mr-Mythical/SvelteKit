@@ -15,7 +15,10 @@
 		"test": "vitest",
 		"test:ui": "vitest --ui",
 		"test:run": "vitest run",
-		"test:coverage": "vitest run --coverage"
+		"test:coverage": "vitest run --coverage",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
+		"db:push": "drizzle-kit push"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20250109.0",
@@ -32,6 +35,7 @@
 		"autoprefixer": "^10.4.16",
 		"bits-ui": "^0.22.0",
 		"cmdk-sv": "^0.0.18",
+		"drizzle-kit": "^0.31.5",
 		"eslint": "^9.18.0",
 		"eslint-config-prettier": "^10.0.1",
 		"eslint-plugin-prettier": "^5.2.3",
@@ -57,14 +61,15 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@supabase/supabase-js": "^2.48.1",
 		"@types/jsdom": "^21.1.7",
 		"chart.js": "^4.4.7",
 		"chartjs-plugin-annotation": "^3.1.0",
 		"chartjs-plugin-zoom": "^2.2.0",
 		"clsx": "^2.1.0",
+		"drizzle-orm": "^0.44.6",
 		"formsnap": "^1.0.0",
 		"mode-watcher": "^0.2.2",
+		"postgres": "^3.4.5",
 		"sharp": "^0.34.4",
 		"svelte-chartjs": "^3.1.5",
 		"svelte-sonner": "^0.3.22",
