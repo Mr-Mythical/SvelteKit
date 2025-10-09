@@ -7,7 +7,8 @@
 
 <SEO
 	title="Cookie Policy - MrMythical.com"
-	description="This Cookie Policy explains how MrMythical.com uses cookies, including those managed through CookieYes and Google Analytics."
+	description="This Cookie Policy explains how
+MrMythical.com uses cookies for advertising through Google AdSense."
 	image="https://mrmythical.com/Logo.png"
 />
 
@@ -16,7 +17,7 @@
 <main>
 	<article class="container mx-auto p-4 md:px-16 lg:px-52 xl:px-80">
 		<h1 class="mb-2 text-2xl font-bold">Cookie Policy</h1>
-		<p class="mb-4 text-sm italic">Updated: 17-Jun-2025</p>
+		<p class="mb-4 text-sm italic">Updated: 1-Oct-2025</p>
 
 		<h2 class="mb-4 mt-4 text-xl font-bold">What are Cookies?</h2>
 		<p>
@@ -27,33 +28,24 @@
 
 		<h2 class="mb-4 mt-4 text-xl font-bold">How We Use Cookies</h2>
 		<p>
-			We use first-party and third-party cookies. First-party cookies are essential for basic site
-			functionality and do not collect any personal data. Third-party cookies (like Google
-			Analytics) help us understand how users interact with our site so we can make improvements.
+			We use third-party cookies through Google AdSense for advertising purposes. These cookies help
+			serve relevant ads, measure ad performance, and prevent fraud. We do not use cookies for
+			analytics or tracking beyond advertising.
 		</p>
-
-		<h2 class="mb-4 mt-4 text-xl font-bold">Cookies in Use</h2>
-
-		<div class="cky-audit-table-element"></div>
 
 		<h2 class="mb-4 mt-4 text-xl font-bold">Managing Cookie Preferences</h2>
 
-		<Button>
-			<span class="cky-banner-element">Cookie Settings</span>
-		</Button>
-		<br />
-
 		<p>
-			You can change your cookie preferences any time by clicking the above button. This will let
-			you revisit the cookie consent banner and change your preferences or withdraw your consent
-			right away.
+			You can opt out of personalized advertising by visiting Google's Ad Settings page or using
+			tools like the Network Advertising Initiative opt-out. Advertising cookies can be managed
+			through your browser settings.
 		</p>
 		<br />
 		<p>
-			In addition to this, different browsers provide different methods to block and delete cookies
-			used by websites. You can change the settings of your browser to block/delete the cookies.
-			Listed below are the links to the support documents on how to manage and delete cookies from
-			the major web browsers.
+			You can also manage cookies through your browser settings. Different browsers provide
+			different methods to block and delete cookies used by websites. You can change the settings of
+			your browser to block/delete the cookies. Listed below are the links to the support documents
+			on how to manage and delete cookies from the major web browsers.
 		</p>
 		<ul class="ml-6 list-disc">
 			<li>
@@ -104,20 +96,10 @@
 				<Button
 					class="p-0 text-[1.03rem] font-bold text-link"
 					variant="link"
-					href="https://policies.google.com/technologies/cookies"
+					href="https://policies.google.com/technologies/ads"
 					target="_blank"
 				>
-					Google Cookies Policy
-				</Button>
-			</li>
-			<li>
-				<Button
-					class="p-0 text-[1.03rem] font-bold text-link"
-					variant="link"
-					href="https://www.cookieyes.com/cookie-policy/"
-					target="_blank"
-				>
-					CookieYes Policy
+					Google Advertising Privacy Policy
 				</Button>
 			</li>
 		</ul>

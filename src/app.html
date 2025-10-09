@@ -6,30 +6,6 @@
 			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6044815477043049"
 			crossorigin="anonymous"
 		></script>
-		<script>
-			(function (w, d, s, l, i) {
-				w[l] = w[l] || [];
-				w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-				var f = d.getElementsByTagName(s)[0],
-					j = d.createElement(s),
-					dl = l != 'dataLayer' ? '&l=' + l : '';
-				j.async = true;
-				j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-				f.parentNode.insertBefore(j, f);
-			})(window, document, 'script', 'dataLayer', 'GTM-PZGG878X');
-		</script>
-		<script>
-			window.dataLayer = window.dataLayer || [];
-			function gtag() {
-				dataLayer.push(arguments);
-			}
-			gtag('consent', 'default', {
-				ad_storage: 'denied',
-				analytics_storage: 'denied',
-				ad_user_data: 'denied',
-				ad_personalization: 'denied'
-			});
-		</script>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="author" content="Mr. Mythical Team" />
@@ -61,14 +37,6 @@
 	</head>
 
 	<body class="min-h-screen" data-sveltekit-preload-data="hover">
-		<noscript
-			><iframe
-				src="https://www.googletagmanager.com/ns.html?id=GTM-PZGG878X"
-				height="0"
-				width="0"
-				style="display: none; visibility: hidden"
-			></iframe
-		></noscript>
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>

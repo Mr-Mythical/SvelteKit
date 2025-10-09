@@ -145,10 +145,8 @@
 			— it helps cover server costs and enables new features.
 		</p>
 		<p class="mb-4">
-			Your privacy is respected: minimal analytics and no personal data collection. See our
+			Your privacy is respected: no tracking or analytics services are used. See our
 			<a href="/privacy" class="font-bold text-link underline">Privacy Policy</a>
-			and
-			<a href="/cookie" class="font-bold text-link underline">Cookie Policy</a>
 			for details.
 		</p>
 		<p class="mb-6">
