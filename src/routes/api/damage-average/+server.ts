@@ -1,13 +1,7 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = 'https://bxlzygqaozlmeefqmdqw.supabase.co';
-const supabaseKey = env.SUPABASE_KEY;
-if (!supabaseKey) {
-	throw new Error('SUPABASE_KEY is not defined in environment variables.');
-}
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { db } from '$lib/db';
+import { damageAverages } from '$lib/db/schema';
+import { eq, asc } from 'drizzle-orm';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -17,32 +11,20 @@ export const GET: RequestHandler = async ({ url }) => {
 			return json({ error: 'No bossId provided' }, { status: 400 });
 		}
 
-		const { data, error } = await supabase
-			.from('damage_averages')
-			.select('time_seconds, avg_damage, std_dev, count, confidence_interval, encounter_id')
-			.eq('encounter_id', parseInt(bossId))
-			.order('time_seconds', { ascending: true });
+		const data = await db()
+			.select({
+				time_seconds: damageAverages.timeSeconds,
+				avg_damage: damageAverages.avgDamage,
+				std_dev: damageAverages.stdDev,
+				count: damageAverages.count,
+				confidence_interval: damageAverages.confidenceInterval,
+				encounter_id: damageAverages.encounterId,
+			})
+			.from(damageAverages)
+			.where(eq(damageAverages.encounterId, parseInt(bossId)))
+			.orderBy(asc(damageAverages.timeSeconds));
 
-		if (error) {
-			throw new Error(error.message);
-		}
-
-		// Ensure data is an array
-		if (!Array.isArray(data)) {
-			console.error('Unexpected data format:', data);
-			return json([]); // Return empty array if data is invalid
-		}
-
-		type RowData = {
-			time_seconds: number;
-			avg_damage: number;
-			std_dev: number;
-			count: number;
-			confidence_interval: number;
-			encounter_id: number;
-		};
-
-		const processedData = (data as RowData[]).map((row) => ({
+		const processedData = data.map((row) => ({
 			time_seconds: row.time_seconds,
 			avg: row.avg_damage,
 			std: row.std_dev,
