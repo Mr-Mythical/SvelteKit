@@ -4,6 +4,3 @@ compatibility_flags = ["nodejs_compat"]
 
 # Required for Cloudflare Pages - must match the adapter config
 pages_build_output_dir = "build"
-
-[build]
-command = "npm run build"
