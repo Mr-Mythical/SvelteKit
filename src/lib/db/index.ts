@@ -18,31 +18,23 @@ function getDb() {
 		}
 
 		try {
-			// Create the postgres client with Cloudflare Workers optimized configuration
+			// Create the postgres client with Cloudflare Workers compatible configuration
 			const client = postgres(connectionString, {
 				prepare: false,
-				// Critical: Single connection and prevent pooling issues
+				// Single connection for Workers
 				max: 1,
-				// Shorter timeouts for Workers environment
-				idle_timeout: 5,
-				connect_timeout: 5,
-				// DISABLE transform - this causes issues in Workers
-				transform: undefined,
-				// Minimal types configuration
-				types: {},
-				// Force SSL for cloud databases (Supabase requires SSL)
-				ssl: 'require',
-				// Minimal connection options
+				// Reasonable timeouts for Workers environment  
+				idle_timeout: 20,
+				connect_timeout: 10,
+				// Keep transform for proper camelCase conversion (required for Drizzle schema)
+				transform: postgres.camel,
+				// Minimal connection options - let connection string handle SSL
 				connection: {
 					application_name: 'cloudflare-worker'
 				},
-				// Critical: Disable features that cause connection reuse issues
+				// Disable notices to reduce noise
 				onnotice: () => {},
-				debug: false,
-				// Force connection cleanup
-				max_lifetime: 60,
-				// Prevent connection state issues
-				fetch_types: false
+				debug: false
 			});
 
 			// Create the Drizzle database instance
