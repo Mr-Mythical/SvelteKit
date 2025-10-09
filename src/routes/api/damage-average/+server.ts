@@ -18,19 +18,12 @@ export const GET: RequestHandler = async ({ url }) => {
 		console.log('Database connection initialized, executing query...');
 
 		const data = await database
-			.select({
-				time_seconds: damageAverages.timeSeconds,
-				avg_damage: damageAverages.avgDamage,
-				std_dev: damageAverages.stdDev,
-				count: damageAverages.count,
-				confidence_interval: damageAverages.confidenceInterval,
-				encounter_id: damageAverages.encounterId
-			})
+			.select()
 			.from(damageAverages)
 			.where(eq(damageAverages.encounterId, parseInt(bossId)))
 			.orderBy(asc(damageAverages.timeSeconds));
 
-		const processedData = data.map((row) => ({
+		const processedData = data.map((row: any) => ({
 			time_seconds: row.time_seconds,
 			avg: row.avg_damage,
 			std: row.std_dev,
