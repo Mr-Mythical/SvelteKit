@@ -1,2 +1,3 @@
 name = "my-project" # Optional, but recommended for clarity
 compatibility_date = "2025-01-14" # Required to avoid warnings
+compatibility_flags = ["nodejs_compat"] # Enable Node.js compatibility for postgres package
