@@ -1,48 +1,36 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = 'https://bxlzygqaozlmeefqmdqw.supabase.co';
-const supabaseKey = env.SUPABASE_KEY;
-if (!supabaseKey) {
-	throw new Error('SUPABASE_KEY is not defined in environment variables.');
-}
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { db } from '$lib/db';
+import { damageAverages } from '$lib/db/schema';
+import { eq, asc } from 'drizzle-orm';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
+		console.log('API route called: /api/damage-average');
+
 		const bossId = url.searchParams.get('bossId');
 
 		if (!bossId) {
 			return json({ error: 'No bossId provided' }, { status: 400 });
 		}
 
-		const { data, error } = await supabase
-			.from('damage_averages')
-			.select('time_seconds, avg_damage, std_dev, count, confidence_interval, encounter_id')
-			.eq('encounter_id', parseInt(bossId))
-			.order('time_seconds', { ascending: true });
+		console.log('Initializing database connection...');
+		const database = db();
+		console.log('Database connection initialized, executing query...');
 
-		if (error) {
-			throw new Error(error.message);
-		}
+		const data = await database
+			.select({
+				time_seconds: damageAverages.timeSeconds,
+				avg_damage: damageAverages.avgDamage,
+				std_dev: damageAverages.stdDev,
+				count: damageAverages.count,
+				confidence_interval: damageAverages.confidenceInterval,
+				encounter_id: damageAverages.encounterId
+			})
+			.from(damageAverages)
+			.where(eq(damageAverages.encounterId, parseInt(bossId)))
+			.orderBy(asc(damageAverages.timeSeconds));
 
-		// Ensure data is an array
-		if (!Array.isArray(data)) {
-			console.error('Unexpected data format:', data);
-			return json([]); // Return empty array if data is invalid
-		}
-
-		type RowData = {
-			time_seconds: number;
-			avg_damage: number;
-			std_dev: number;
-			count: number;
-			confidence_interval: number;
-			encounter_id: number;
-		};
-
-		const processedData = (data as RowData[]).map((row) => ({
+		const processedData = data.map((row) => ({
 			time_seconds: row.time_seconds,
 			avg: row.avg_damage,
 			std: row.std_dev,
@@ -51,9 +39,22 @@ export const GET: RequestHandler = async ({ url }) => {
 			encounter_id: row.encounter_id
 		}));
 
+		console.log(`Query completed successfully, returning ${processedData.length} records`);
 		return json(processedData);
 	} catch (error) {
-		console.error('Server error:', error);
-		return json({ error: (error as Error).message }, { status: 500 });
+		console.error('Database error in /api/damage-average:', error);
+		console.error('Error details:', {
+			name: error instanceof Error ? error.name : 'Unknown',
+			message: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined
+		});
+
+		return json(
+			{
+				error: error instanceof Error ? error.message : 'Database connection failed',
+				debug: process.env.NODE_ENV === 'development' ? String(error) : undefined
+			},
+			{ status: 500 }
+		);
 	}
 };

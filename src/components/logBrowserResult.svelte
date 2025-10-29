@@ -72,7 +72,7 @@
 							<TableCell>{log.boss_name}</TableCell>
 							<TableCell>{formatDuration(log.duration_seconds)}</TableCell>
 							<TableCell class="space-x-1">
-								{#each log.healer_composition as spec (spec)}
+								{#each log.healer_composition as spec, index (spec + index)}
 									<Badge variant="outline">{spec.replace('-', ' ')}</Badge>
 								{/each}
 							</TableCell>

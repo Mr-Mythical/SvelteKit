@@ -1,65 +1,63 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { createClient } from '@supabase/supabase-js';
+import { db } from '$lib/db';
+import { healerCompositions, unifiedReports, encounters } from '$lib/db/schema';
+import { eq, gte, lte, desc, and } from 'drizzle-orm';
 import type { BrowseLogsParams, BrowsedLog, BrowseLogsResponse } from '$lib/types/apiTypes';
 import { bosses as bossList } from '$lib/types/bossData';
-
-const supabaseUrl = env.SUPABASE_HEALER_URL;
-const supabaseKey = env.SUPABASE_HEALER_KEY;
-
-if (!supabaseUrl) {
-	throw new Error('SUPABASE_HEALER_URL is not defined in environment variables.');
-}
-if (!supabaseKey) {
-	throw new Error('SUPABASE_HEALER_KEY is not defined in environment variables.');
-}
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const params: BrowseLogsParams = await request.json();
 
-		type HealerCompositionWithSpecs = {
-			report_code: string;
-			fight_id: number;
-			encounter_id: number | null;
-			encounter_name: string | null;
-			guild_name: string | null;
-			report_absolute_start_time_ms: number | null;
-			duration_ms: number | null;
-			healer_specs: Array<{ spec_icon: string }>;
-		};
-
-		let compositionsQuery = supabase
-			.from('healer_compositions')
-			.select('*, healer_specs(spec_icon)');
+		// Build the where conditions
+		let whereConditions = [];
 
 		if (params.bossId) {
-			compositionsQuery = compositionsQuery.eq('encounter_id', params.bossId);
+			whereConditions.push(eq(unifiedReports.encounterId, params.bossId));
 		}
 		if (params.minDuration) {
-			compositionsQuery = compositionsQuery.gte('duration_ms', params.minDuration * 1000);
+			whereConditions.push(gte(healerCompositions.fightDuration, params.minDuration));
 		}
 		if (params.maxDuration) {
-			compositionsQuery = compositionsQuery.lte('duration_ms', params.maxDuration * 1000);
+			whereConditions.push(lte(healerCompositions.fightDuration, params.maxDuration));
 		}
 
-		compositionsQuery = compositionsQuery.order('report_absolute_start_time_ms', {
-			ascending: false
-		});
+		// Query healer compositions with joined data
+		let query = db()
+			.select({
+				reportCode: unifiedReports.reportCode,
+				fightId: unifiedReports.fightId,
+				encounterId: unifiedReports.encounterId,
+				encounterName: encounters.encounterName,
+				guildName: unifiedReports.guildName,
+				rankingStartTime: unifiedReports.rankingStartTime,
+				fightDuration: healerCompositions.fightDuration,
+				specIcons: healerCompositions.specIcons
+			})
+			.from(healerCompositions)
+			.innerJoin(unifiedReports, eq(healerCompositions.reportId, unifiedReports.id))
+			.innerJoin(encounters, eq(unifiedReports.encounterId, encounters.encounterId))
+			.where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
+			.orderBy(desc(unifiedReports.rankingStartTime));
 
-		const { data: fetchedCompositions, error: compositionsError } = await compositionsQuery;
+		const compositionsData = await query;
 
-		if (compositionsError) {
-			console.error('Supabase error fetching compositions:', compositionsError);
-			throw new Error(compositionsError.message);
-		}
+		// Transform data to match expected format
+		let filteredLogsData = compositionsData.map((row) => ({
+			report_code: row.reportCode,
+			fight_id: row.fightId,
+			encounter_id: row.encounterId,
+			encounter_name: row.encounterName,
+			guild_name: row.guildName,
+			report_absolute_start_time_ms: row.rankingStartTime,
+			duration_ms: row.fightDuration,
+			healer_specs: row.specIcons as string[]
+		}));
 
-		let filteredLogsData: HealerCompositionWithSpecs[] = fetchedCompositions || [];
-
+		// Filter by healer specs if specified
 		if (params.healerSpecs && params.healerSpecs.length > 0) {
 			filteredLogsData = filteredLogsData.filter((comp) => {
-				const actualSpecsInLog = comp.healer_specs.map((s) => s.spec_icon);
+				const actualSpecsInLog = comp.healer_specs;
 				return params.healerSpecs!.every((requiredSpec) => actualSpecsInLog.includes(requiredSpec));
 			});
 		}
@@ -80,7 +78,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				title: log.encounter_name || log.guild_name || `Report: ${log.report_code}`,
 				boss_name: bossData ? bossData.name : log.encounter_name || 'Unknown Boss',
 				duration_seconds: durationInSeconds,
-				healer_composition: log.healer_specs.map((s) => s.spec_icon),
+				healer_composition: log.healer_specs,
 				log_url: `https://www.warcraftlogs.com/reports/${log.report_code}#fight=${log.fight_id}`,
 				fight_id: log.fight_id,
 				start_time: log.report_absolute_start_time_ms || 0,
