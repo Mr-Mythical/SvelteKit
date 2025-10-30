@@ -29,7 +29,7 @@ declare module '@auth/core/types' {
 	interface User {
 		battletag?: string;
 	}
-	
+
 	interface Session {
 		user: {
 			id: string;

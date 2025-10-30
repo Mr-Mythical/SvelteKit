@@ -1,10 +1,6 @@
 import { SvelteKitAuth } from '@auth/sveltekit';
 import BattleNet from '@auth/core/providers/battlenet';
-import { 
-	BLIZZARD_CLIENT_ID, 
-	BLIZZARD_CLIENT_SECRET, 
-	AUTH_SECRET 
-} from '$env/static/private';
+import { BLIZZARD_CLIENT_ID, BLIZZARD_CLIENT_SECRET, AUTH_SECRET } from '$env/static/private';
 
 export const { handle, signIn, signOut } = SvelteKitAuth({
 	providers: [
@@ -13,7 +9,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 			clientSecret: BLIZZARD_CLIENT_SECRET,
 			issuer: 'https://eu.battle.net/oauth',
 			checks: ['pkce', 'nonce'],
-			authorization: { params: { scope: "openid" } },
+			authorization: { params: { scope: 'openid' } },
 			profile(profile) {
 				return {
 					id: profile.sub,

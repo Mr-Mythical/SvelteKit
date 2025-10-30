@@ -13,12 +13,7 @@
 	<!-- User is logged in -->
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger asChild let:builder>
-			<Button
-				builders={[builder]}
-				variant="outline"
-				size="default"
-				class="flex items-center gap-2"
-			>
+			<Button builders={[builder]} variant="outline" size="default" class="flex items-center gap-2">
 				<User class="h-4 w-4" />
 				<span class="hidden sm:inline">{session.user.battletag || session.user.name}</span>
 			</Button>
