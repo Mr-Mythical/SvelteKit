@@ -10,7 +10,6 @@
 		BrowseLogsParams
 	} from '$lib/types/apiTypes';
 	import DamageChart from '../../components/damageChart.svelte';
-	import Header from '../../components/header.svelte';
 	import SEO from '../../components/seo.svelte';
 	import Footer from '../../components/footer.svelte';
 	import { Input } from '$lib/components/ui/input';
@@ -406,9 +405,7 @@
 	keywords="Raid analysis, Raid analyzer, Encounter analysis, healing analysis, Warcraft Logs, World of Warcraft, wow raids, cooldown planning, boss tactics, raid leading, damage graphs, healing graphs, raid performance, ability overlays"
 />
 
-<Header />
-
-<main class="container mx-auto space-y-8 p-4 md:p-6 lg:p-8">
+<main class="container mx-auto px-4 py-8">
 	{#if loadingLogFromBrowse || (selectedFight && loadingData)}
 		<EncounterSkeleton />
 	{:else if !selectedFight && reportURL && fights.length > 0}
@@ -621,13 +618,11 @@
 			{/if}
 		</div>
 	{:else}
-		<div class="relative mb-10 overflow-hidden px-6 py-12">
-			<div class="relative z-10 text-center">
-				<h1 class="text-4xl font-bold tracking-tight">Encounter Healing Analysis</h1>
-				<p class="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-					Load a specific log or browse community logs to analyze healing performance.
-				</p>
-			</div>
+		<div class="mb-6 text-center">
+			<h1 class="mb-2 text-4xl font-bold">Encounter Analysis</h1>
+			<p class="text-lg text-muted-foreground">
+				Load a specific log or browse community logs to analyze healing performance
+			</p>
 		</div>
 
 		<div class="mx-auto max-w-6xl space-y-6">

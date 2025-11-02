@@ -187,15 +187,6 @@
 	}
 </script>
 
-<div class="container gap-8 p-4 md:px-8 xl:px-40 2xl:px-72">
-	<h1 class="mb-4 text-center text-2xl font-bold">Mythic+ Score Calculator</h1>
-	<p class="mb-4 text-center text-muted-foreground">
-		Calculate the required keystones to reach your desired World of Warcraft Mythic+ score, plan
-		dungeon runs, and optimize your m+ score with this interactive score calculator. Import your
-		character, set score goals, share your plans using the export and import features.
-	</p>
-</div>
-
 <div class="container flex flex-col gap-8 p-4 md:flex-row md:px-8 xl:px-40 2xl:px-72">
 	<div class="flex w-full flex-col space-y-6 md:w-64">
 		<div class="character-container">

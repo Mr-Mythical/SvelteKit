@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Header from '../components/header.svelte';
 	import SEO from '../components/seo.svelte';
 	import Footer from '../components/footer.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -11,7 +10,6 @@
 	image="https://mrmythical.com/Logo.png"
 	keywords="World of Warcraft tools, Mythic+ calculator, raid analysis, WoW dungeon optimization, Warcraft logs, M+ score tracker, WoW addons, raid progression"
 />
-<Header />
 <main class="container mx-auto px-4 py-8">
 	<section class="mb-12 text-center">
 		<h1 class="mb-4 text-4xl font-bold">Master World of Warcraft with Mr. Mythical</h1>
