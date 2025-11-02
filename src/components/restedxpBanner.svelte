@@ -58,7 +58,7 @@
 
 <!-- RestedXP Banner Component -->
 <div class="mb-6 mt-6 flex w-full justify-center" bind:this={bannerElement}>
-	<div class="relative overflow-hidden rounded-lg shadow-lg min-h-[90px]">
+	<div class="relative min-h-[90px] overflow-hidden rounded-lg shadow-lg">
 		<a
 			href="https://shop.restedxp.com/ref/Braunerr/"
 			target="_blank"
