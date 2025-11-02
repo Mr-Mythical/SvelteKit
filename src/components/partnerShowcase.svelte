@@ -9,29 +9,29 @@
 
 	const content: Content[] = [
 		{
-			src: '/Web Ad Banners/rxp-web_banner-leaderboard.png',
-			alt: 'RestedXP - Level Faster',
+			src: '/assets/content-default.png',
+			alt: 'Gaming Guide - Level Faster',
 			variant: 'default'
 		},
 		{
-			src: '/Web Ad Banners/rxp-web_banner-leaderboard-cata.png',
-			alt: 'RestedXP - Cataclysm Leveling Guide',
-			variant: 'cata'
+			src: '/assets/content-classic.png',
+			alt: 'Gaming Guide - Classic Content',
+			variant: 'classic'
 		},
 		{
-			src: '/Web Ad Banners/rxp-web_banner-leaderboard-hc.png',
-			alt: 'RestedXP - Hardcore Leveling Guide',
+			src: '/assets/content-hardcore.png',
+			alt: 'Gaming Guide - Hardcore Mode',
 			variant: 'hardcore'
 		},
 		{
-			src: '/Web Ad Banners/rxp-web_banner-leaderboard-tww.png',
-			alt: 'RestedXP - The War Within Guide',
-			variant: 'tww'
+			src: '/assets/content-expansion.png',
+			alt: 'Gaming Guide - Latest Expansion',
+			variant: 'expansion'
 		},
 		{
-			src: '/Web Ad Banners/rxp-web_banner-leaderboard-mop.png',
-			alt: 'RestedXP - Mists of Pandaria Guide',
-			variant: 'mop'
+			src: '/assets/content-pandaria.png',
+			alt: 'Gaming Guide - Adventure Content',
+			variant: 'adventure'
 		}
 	];
 
@@ -60,11 +60,11 @@
 <section class="mb-6 mt-6 flex w-full justify-center" bind:this={containerElement}>
 	<div class="relative min-h-[90px] overflow-hidden rounded-lg shadow-lg">
 		<a
-			href="https://shop.restedxp.com/ref/Braunerr/"
+			href="/api/redirect?target=partner"
 			target="_blank"
 			rel="noopener noreferrer"
 			class="block transition-transform hover:scale-105"
-			aria-label={`${currentContent?.alt || content[0].alt} - Click to visit RestedXP`}
+			aria-label={`${currentContent?.alt || content[0].alt} - Click to visit gaming guide`}
 		>
 			<img
 				src={currentContent?.src || content[0].src}

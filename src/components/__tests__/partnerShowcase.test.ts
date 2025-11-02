@@ -17,8 +17,8 @@ describe('PartnerShowcase', () => {
 
 		const image = container.querySelector('img');
 		expect(image).toBeTruthy();
-		expect(image?.src).toContain('rxp-web_banner-leaderboard.png');
-		expect(image?.alt).toBe('RestedXP - Level Faster');
+		expect(image?.src).toContain('content-default.png');
+		expect(image?.alt).toBe('Gaming Guide - Level Faster');
 	});
 
 	it('renders the affiliate link with correct href', () => {
@@ -26,7 +26,7 @@ describe('PartnerShowcase', () => {
 
 		const link = container.querySelector('a');
 		expect(link).toBeTruthy();
-		expect(link?.href).toBe('https://shop.restedxp.com/ref/Braunerr/');
+		expect(link?.href).toContain('/api/redirect?target=partner');
 		expect(link?.target).toBe('_blank');
 		expect(link?.rel).toBe('noopener noreferrer');
 	});
