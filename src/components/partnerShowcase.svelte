@@ -36,7 +36,7 @@
 	];
 
 	let currentIndex = 0;
-	let containerElement: HTMLDivElement;
+	let containerElement: HTMLElement;
 	let mounted = false;
 
 	// Initialize currentContent to always have a value, even during SSR
