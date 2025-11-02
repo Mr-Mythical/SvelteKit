@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Header from '../../components/header.svelte';
 	import SEO from '../../components/seo.svelte';
 	import Footer from '../../components/footer.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -11,11 +10,9 @@
 	image="https://mrmythical.com/Logo.png"
 />
 
-<Header />
-
-<main>
-	<article class="container mx-auto p-4 md:px-16 lg:px-52 xl:px-80">
-		<h1 class="mb-4 text-3xl font-bold">About Mr. Mythical</h1>
+<main class="container mx-auto px-4 py-8">
+	<article class="mx-auto max-w-4xl">
+		<h1 class="mb-6 text-4xl font-bold">About Mr. Mythical</h1>
 
 		<p class="mb-6">
 			Welcome to MrMythical.com, a passion project born from the desire to elevate World of Warcraft

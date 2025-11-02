@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Header from '../../components/header.svelte';
 	import SEO from '../../components/seo.svelte';
 	import Footer from '../../components/footer.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -12,11 +11,9 @@ MrMythical.com uses cookies for advertising through Google AdSense."
 	image="https://mrmythical.com/Logo.png"
 />
 
-<Header />
-
-<main>
-	<article class="container mx-auto p-4 md:px-16 lg:px-52 xl:px-80">
-		<h1 class="mb-2 text-2xl font-bold">Cookie Policy</h1>
+<main class="container mx-auto px-4 py-8">
+	<article class="mx-auto max-w-4xl">
+		<h1 class="mb-2 text-4xl font-bold">Cookie Policy</h1>
 		<p class="mb-4 text-sm italic">Updated: 1-Oct-2025</p>
 
 		<h2 class="mb-4 mt-4 text-xl font-bold">What are Cookies?</h2>

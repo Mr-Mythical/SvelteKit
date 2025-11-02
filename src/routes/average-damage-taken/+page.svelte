@@ -1,6 +1,5 @@
 <script lang="ts">
 	import AverageChart from '../../components/averageChart.svelte';
-	import Header from '../../components/header.svelte';
 	import SEO from '../../components/seo.svelte';
 	import Footer from '../../components/footer.svelte';
 	import { bosses } from '$lib/types/bossData';
@@ -15,7 +14,7 @@
 
 	const form = superForm(data, {
 		validators: zodClient(formSchema),
-		dataType: 'json', // Add this line
+		dataType: 'json',
 		onUpdated: ({ form: f }) => {
 			if (f.valid) {
 				toast.success(`Selected boss: ${selectedEncounter?.label}`);
@@ -49,12 +48,13 @@
 	keywords="WoW damage analysis, average damage taken, raid survivability, damage patterns, standard deviation, confidence interval, progression logs"
 />
 
-<Header />
 <main class="container mx-auto px-4 py-8">
-	<section class="mb-12 text-center">
-		<h1 class="mb-4 text-4xl font-bold">Average Damage Taken</h1>
-		<p class="mb-6 text-lg">Analyze damage patterns across different raid encounters</p>
-	</section>
+	<div class="mb-6 text-center">
+		<h1 class="mb-2 text-4xl font-bold">Average Damage Taken</h1>
+		<p class="text-lg text-muted-foreground">
+			Analyze damage patterns across different raid encounters
+		</p>
+	</div>
 
 	<div class="grid grid-cols-1 gap-8">
 		<div class="flex justify-center">
