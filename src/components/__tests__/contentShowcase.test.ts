@@ -1,8 +1,8 @@
 import { render } from '@testing-library/svelte';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import PartnerShowcase from '../partnerShowcase.svelte';
+import ContentShowcase from '../contentShowcase.svelte';
 
-describe('PartnerShowcase', () => {
+describe('ContentShowcase', () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
 	});
@@ -13,7 +13,7 @@ describe('PartnerShowcase', () => {
 	});
 
 	it('renders the first banner image on initial load', () => {
-		const { container } = render(PartnerShowcase);
+		const { container } = render(ContentShowcase);
 
 		const image = container.querySelector('img');
 		expect(image).toBeTruthy();
@@ -21,18 +21,18 @@ describe('PartnerShowcase', () => {
 		expect(image?.alt).toBe('Gaming Guide - Level Faster');
 	});
 
-	it('renders the affiliate link with correct href', () => {
-		const { container } = render(PartnerShowcase);
+	it('renders the content link with correct href', () => {
+		const { container } = render(ContentShowcase);
 
 		const link = container.querySelector('a');
 		expect(link).toBeTruthy();
-		expect(link?.href).toContain('/api/redirect?target=partner');
+		expect(link?.href).toContain('/api/redirect');
 		expect(link?.target).toBe('_blank');
 		expect(link?.rel).toBe('noopener noreferrer');
 	});
 
 	it('has correct structure', () => {
-		const { container } = render(PartnerShowcase);
+		const { container } = render(ContentShowcase);
 
 		const contentDiv = container.querySelector('div');
 		const link = container.querySelector('a');
@@ -44,7 +44,7 @@ describe('PartnerShowcase', () => {
 	});
 
 	it('has proper image dimensions', () => {
-		const { container } = render(PartnerShowcase);
+		const { container } = render(ContentShowcase);
 
 		const image = container.querySelector('img');
 		expect(image?.width).toBe(728);
@@ -52,7 +52,7 @@ describe('PartnerShowcase', () => {
 	});
 
 	it('applies hover effects and has proper styling', () => {
-		const { container } = render(PartnerShowcase);
+		const { container } = render(ContentShowcase);
 
 		const link = container.querySelector('a');
 		expect(link?.className).toContain('hover:scale-105');

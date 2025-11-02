@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { generateDynamicLink } from '$lib/utils/linkObfuscation';
+	import { enhanceContentVisibility, checkContentBlocking } from '$lib/utils/stealthContent';
+	import { createRotatingUrl, createDecoyElements } from '$lib/utils/dynamicContent';
 
 	interface Content {
 		src: string;
@@ -38,14 +41,30 @@
 	let currentIndex = 0;
 	let containerElement: HTMLElement;
 	let mounted = false;
+	let dynamicLinkUrl = '/api/redirect?t=Z3VpZGU='; // Default fallback
 
 	// Initialize currentContent to always have a value, even during SSR
 	$: currentContent = content[currentIndex] || content[0];
 
 	onMount(() => {
 		mounted = true;
+
+		// Generate dynamic link on client-side to avoid detection
+		dynamicLinkUrl = generateDynamicLink();
+
+		// Apply stealth techniques
+		enhanceContentVisibility();
+		createDecoyElements();
+
+		if (checkContentBlocking()) {
+			dynamicLinkUrl = createRotatingUrl();
+		}
+
 		const interval = setInterval(() => {
 			currentIndex = (currentIndex + 1) % content.length;
+			if (currentIndex === 0) {
+				dynamicLinkUrl = checkContentBlocking() ? createRotatingUrl() : generateDynamicLink();
+			}
 		}, 20000);
 
 		return () => clearInterval(interval);
@@ -56,11 +75,15 @@
 	}
 </script>
 
-<!-- RestedXP Content Showcase -->
-<section class="mb-6 mt-6 flex w-full justify-center" bind:this={containerElement}>
-	<div class="relative min-h-[90px] overflow-hidden rounded-lg shadow-lg">
+<!-- Content Showcase -->
+<section
+	class="mb-6 mt-6 flex w-full items-center justify-center"
+	data-content-type="showcase"
+	bind:this={containerElement}
+>
+	<div class="relative mx-auto min-h-[90px] overflow-hidden rounded-lg shadow-lg">
 		<a
-			href="/api/redirect?target=partner"
+			href={dynamicLinkUrl}
 			target="_blank"
 			rel="noopener noreferrer"
 			class="block transition-transform hover:scale-105"
@@ -72,7 +95,7 @@
 				width="728"
 				height="90"
 				loading="eager"
-				class="block h-auto w-full max-w-[728px]"
+				class="mx-auto block h-auto w-full max-w-[728px]"
 				style="aspect-ratio: 728/90;"
 			/>
 		</a>
@@ -95,11 +118,47 @@
 </section>
 
 <style>
+	/* Anti-blocking techniques */
+	section[data-content-type='showcase'] {
+		display: block !important;
+		visibility: visible !important;
+		opacity: 1 !important;
+		position: relative !important;
+		height: auto !important;
+		width: auto !important;
+		z-index: 1 !important;
+	}
+
+	section[data-content-type='showcase'] > div {
+		display: block !important;
+		visibility: visible !important;
+	}
+
+	section[data-content-type='showcase'] a {
+		display: block !important;
+		visibility: visible !important;
+		text-decoration: none !important;
+	}
+
+	section[data-content-type='showcase'] img {
+		display: block !important;
+		visibility: visible !important;
+		opacity: 1 !important;
+	}
+
 	/* Responsive adjustments */
 	@media (max-width: 768px) {
 		section :global(img) {
 			max-width: 100%;
 			height: auto;
+		}
+	}
+
+	/* Fallback for heavily blocked content */
+	@supports not (display: block) {
+		section[data-content-type='showcase'] {
+			position: static;
+			display: table;
 		}
 	}
 </style>

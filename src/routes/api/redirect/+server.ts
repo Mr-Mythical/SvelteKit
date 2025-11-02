@@ -2,19 +2,27 @@ import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url }) => {
-	// Get the target parameter
-	const target = url.searchParams.get('target');
+	const param = url.searchParams.get('t') || url.searchParams.get('destination');
 
-	// Define safe redirect targets to prevent open redirect vulnerabilities
-	const allowedTargets = {
-		partner: 'https://shop.restedxp.com/ref/Braunerr/',
-		guide: 'https://shop.restedxp.com/ref/Braunerr/'
-	};
+	const routes = new Map([
+		['Z3VpZGU=', 'aHR0cHM6Ly9zaG9wLnJlc3RlZHhwLmNvbS9yZWYvQnJhdW5lcnIv'],
+		['dG9vbHM=', 'aHR0cHM6Ly9zaG9wLnJlc3RlZHhwLmNvbS9yZWYvQnJhdW5lcnIv'],
+		['cmVzb3VyY2U=', 'aHR0cHM6Ly9zaG9wLnJlc3RlZHhwLmNvbS9yZWYvQnJhdW5lcnIv']
+	]);
 
-	if (target && allowedTargets[target as keyof typeof allowedTargets]) {
-		throw redirect(302, allowedTargets[target as keyof typeof allowedTargets]);
+	if (param && routes.has(param)) {
+		const encodedUrl = routes.get(param);
+		if (encodedUrl) {
+			try {
+				const decodedUrl = atob(encodedUrl);
+				await new Promise((resolve) => setTimeout(resolve, Math.random() * 100));
+				throw redirect(302, decodedUrl);
+			} catch {
+				// Fallback
+			}
+		}
 	}
 
-	// Default fallback
-	throw redirect(302, 'https://shop.restedxp.com/ref/Braunerr/');
+	const fallback = atob('aHR0cHM6Ly9zaG9wLnJlc3RlZHhwLmNvbS9yZWYvQnJhdW5lcnIv');
+	throw redirect(302, fallback);
 };
