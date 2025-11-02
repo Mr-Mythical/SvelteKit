@@ -17,9 +17,7 @@ describe('PartnerShowcase', () => {
 
 		const image = container.querySelector('img');
 		expect(image).toBeTruthy();
-		expect(image?.src).toBe(
-			'https://shop.restedxp.com/wp-content/uploads/2025/03/rxp-web_banner-leaderboard.png'
-		);
+		expect(image?.src).toContain('rxp-web_banner-leaderboard.png');
 		expect(image?.alt).toBe('RestedXP - Level Faster');
 	});
 

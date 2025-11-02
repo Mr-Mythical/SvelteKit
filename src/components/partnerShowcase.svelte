@@ -9,27 +9,27 @@
 
 	const content: Content[] = [
 		{
-			src: 'https://shop.restedxp.com/wp-content/uploads/2025/03/rxp-web_banner-leaderboard.png',
+			src: '/Web Ad Banners/rxp-web_banner-leaderboard.png',
 			alt: 'RestedXP - Level Faster',
 			variant: 'default'
 		},
 		{
-			src: 'https://shop.restedxp.com/wp-content/uploads/2025/03/rxp-web_banner-leaderboard-cata.png',
+			src: '/Web Ad Banners/rxp-web_banner-leaderboard-cata.png',
 			alt: 'RestedXP - Cataclysm Leveling Guide',
 			variant: 'cata'
 		},
 		{
-			src: 'https://shop.restedxp.com/wp-content/uploads/2025/03/rxp-web_banner-leaderboard-hc.png',
+			src: '/Web Ad Banners/rxp-web_banner-leaderboard-hc.png',
 			alt: 'RestedXP - Hardcore Leveling Guide',
 			variant: 'hardcore'
 		},
 		{
-			src: 'https://shop.restedxp.com/wp-content/uploads/2025/03/rxp-web_banner-leaderboard-tww.png',
+			src: '/Web Ad Banners/rxp-web_banner-leaderboard-tww.png',
 			alt: 'RestedXP - The War Within Guide',
 			variant: 'tww'
 		},
 		{
-			src: 'https://shop.restedxp.com/wp-content/uploads/2025/05/rxp-web_banner-leaderboard-mop.png',
+			src: '/Web Ad Banners/rxp-web_banner-leaderboard-mop.png',
 			alt: 'RestedXP - Mists of Pandaria Guide',
 			variant: 'mop'
 		}
