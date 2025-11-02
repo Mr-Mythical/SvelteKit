@@ -37,8 +37,13 @@
 
 	let currentBannerIndex = 0;
 	let bannerElement: HTMLDivElement;
+	let mounted = false;
+
+	// Initialize currentBanner to always have a value, even during SSR
+	$: currentBanner = banners[currentBannerIndex] || banners[0];
 
 	onMount(() => {
+		mounted = true;
 		const interval = setInterval(() => {
 			currentBannerIndex = (currentBannerIndex + 1) % banners.length;
 		}, 20000);
@@ -49,22 +54,21 @@
 	function changeBanner(index: number) {
 		currentBannerIndex = index;
 	}
-
-	$: currentBanner = banners[currentBannerIndex];
 </script>
 
+<!-- RestedXP Banner Component -->
 <div class="mb-6 mt-6 flex w-full justify-center" bind:this={bannerElement}>
-	<div class="relative overflow-hidden rounded-lg shadow-lg">
+	<div class="relative overflow-hidden rounded-lg shadow-lg min-h-[90px]">
 		<a
 			href="https://shop.restedxp.com/ref/Braunerr/"
 			target="_blank"
 			rel="noopener noreferrer"
 			class="block transition-transform hover:scale-105"
-			aria-label={`${currentBanner.alt} - Click to visit RestedXP`}
+			aria-label={`${currentBanner?.alt || banners[0].alt} - Click to visit RestedXP`}
 		>
 			<img
-				src={currentBanner.src}
-				alt={currentBanner.alt}
+				src={currentBanner?.src || banners[0].src}
+				alt={currentBanner?.alt || banners[0].alt}
 				width="728"
 				height="90"
 				loading="eager"
@@ -73,18 +77,20 @@
 			/>
 		</a>
 
-		<!-- Banner indicators -->
-		<div class="absolute bottom-2 left-1/2 flex -translate-x-1/2 space-x-1">
-			{#each banners as _, index}
-				<button
-					class="h-2 w-2 rounded-full transition-all duration-200 {index === currentBannerIndex
-						? 'bg-white'
-						: 'bg-white/50 hover:bg-white/75'}"
-					on:click={() => changeBanner(index)}
-					aria-label={`Show banner ${index + 1}`}
-				/>
-			{/each}
-		</div>
+		<!-- Banner indicators - only show when mounted to avoid hydration issues -->
+		{#if mounted}
+			<div class="absolute bottom-2 left-1/2 flex -translate-x-1/2 space-x-1">
+				{#each banners as _, index}
+					<button
+						class="h-2 w-2 rounded-full transition-all duration-200 {index === currentBannerIndex
+							? 'bg-white'
+							: 'bg-white/50 hover:bg-white/75'}"
+						on:click={() => changeBanner(index)}
+						aria-label={`Show banner ${index + 1}`}
+					/>
+				{/each}
+			</div>
+		{/if}
 	</div>
 </div>
 
