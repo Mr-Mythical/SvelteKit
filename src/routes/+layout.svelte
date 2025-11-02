@@ -2,11 +2,11 @@
 	import '../app.pcss';
 	import { ModeWatcher } from 'mode-watcher';
 	import Header from '../components/header.svelte';
-	import RestedXPBanner from '../components/restedxpBanner.svelte';
+	import PartnerShowcase from '../components/partnerShowcase.svelte';
 </script>
 
 <ModeWatcher />
 <Header />
-<RestedXPBanner />
+<PartnerShowcase />
 
 <slot />

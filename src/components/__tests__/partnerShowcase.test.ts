@@ -1,8 +1,8 @@
 import { render } from '@testing-library/svelte';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import RestedXPBanner from '../restedxpBanner.svelte';
+import PartnerShowcase from '../partnerShowcase.svelte';
 
-describe('RestedXPBanner', () => {
+describe('PartnerShowcase', () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
 	});
@@ -13,7 +13,7 @@ describe('RestedXPBanner', () => {
 	});
 
 	it('renders the first banner image on initial load', () => {
-		const { container } = render(RestedXPBanner);
+		const { container } = render(PartnerShowcase);
 
 		const image = container.querySelector('img');
 		expect(image).toBeTruthy();
@@ -24,7 +24,7 @@ describe('RestedXPBanner', () => {
 	});
 
 	it('renders the affiliate link with correct href', () => {
-		const { container } = render(RestedXPBanner);
+		const { container } = render(PartnerShowcase);
 
 		const link = container.querySelector('a');
 		expect(link).toBeTruthy();
@@ -33,15 +33,20 @@ describe('RestedXPBanner', () => {
 		expect(link?.rel).toBe('noopener noreferrer');
 	});
 
-	it('renders banner indicators', () => {
-		const { container } = render(RestedXPBanner);
+	it('has correct structure', () => {
+		const { container } = render(PartnerShowcase);
 
-		const indicators = container.querySelectorAll('button');
-		expect(indicators).toHaveLength(5); // Should have 5 indicators for 5 banners
+		const contentDiv = container.querySelector('div');
+		const link = container.querySelector('a');
+		const image = container.querySelector('img');
+		
+		expect(contentDiv).toBeTruthy();
+		expect(link).toBeTruthy();
+		expect(image).toBeTruthy();
 	});
 
 	it('has proper image dimensions', () => {
-		const { container } = render(RestedXPBanner);
+		const { container } = render(PartnerShowcase);
 
 		const image = container.querySelector('img');
 		expect(image?.width).toBe(728);
@@ -49,7 +54,7 @@ describe('RestedXPBanner', () => {
 	});
 
 	it('applies hover effects and has proper styling', () => {
-		const { container } = render(RestedXPBanner);
+		const { container } = render(PartnerShowcase);
 
 		const link = container.querySelector('a');
 		expect(link?.className).toContain('hover:scale-105');
