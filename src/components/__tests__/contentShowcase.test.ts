@@ -26,7 +26,7 @@ describe('ContentShowcase', () => {
 
 		const link = container.querySelector('a');
 		expect(link).toBeTruthy();
-		expect(link?.href).toContain('/api/redirect');
+		expect(link?.href).toBe('https://shop.restedxp.com/ref/Braunerr/');
 		expect(link?.target).toBe('_blank');
 		expect(link?.rel).toBe('noopener noreferrer');
 	});

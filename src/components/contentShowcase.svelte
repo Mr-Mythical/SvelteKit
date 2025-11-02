@@ -1,8 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { generateDynamicLink } from '$lib/utils/linkObfuscation';
-	import { enhanceContentVisibility, checkContentBlocking } from '$lib/utils/stealthContent';
-	import { createRotatingUrl, createDecoyElements } from '$lib/utils/dynamicContent';
 
 	interface Content {
 		src: string;
@@ -41,30 +38,14 @@
 	let currentIndex = 0;
 	let containerElement: HTMLElement;
 	let mounted = false;
-	let dynamicLinkUrl = '/api/redirect?t=Z3VpZGU='; // Default fallback
 
-	// Initialize currentContent to always have a value, even during SSR
 	$: currentContent = content[currentIndex] || content[0];
 
 	onMount(() => {
 		mounted = true;
 
-		// Generate dynamic link on client-side to avoid detection
-		dynamicLinkUrl = generateDynamicLink();
-
-		// Apply stealth techniques
-		enhanceContentVisibility();
-		createDecoyElements();
-
-		if (checkContentBlocking()) {
-			dynamicLinkUrl = createRotatingUrl();
-		}
-
 		const interval = setInterval(() => {
 			currentIndex = (currentIndex + 1) % content.length;
-			if (currentIndex === 0) {
-				dynamicLinkUrl = checkContentBlocking() ? createRotatingUrl() : generateDynamicLink();
-			}
 		}, 20000);
 
 		return () => clearInterval(interval);
@@ -83,7 +64,7 @@
 >
 	<div class="relative mx-auto min-h-[90px] overflow-hidden rounded-lg shadow-lg">
 		<a
-			href={dynamicLinkUrl}
+			href="https://shop.restedxp.com/ref/Braunerr/"
 			target="_blank"
 			rel="noopener noreferrer"
 			class="block transition-transform hover:scale-105"
@@ -118,47 +99,10 @@
 </section>
 
 <style>
-	/* Anti-blocking techniques */
-	section[data-content-type='showcase'] {
-		display: block !important;
-		visibility: visible !important;
-		opacity: 1 !important;
-		position: relative !important;
-		height: auto !important;
-		width: auto !important;
-		z-index: 1 !important;
-	}
-
-	section[data-content-type='showcase'] > div {
-		display: block !important;
-		visibility: visible !important;
-	}
-
-	section[data-content-type='showcase'] a {
-		display: block !important;
-		visibility: visible !important;
-		text-decoration: none !important;
-	}
-
-	section[data-content-type='showcase'] img {
-		display: block !important;
-		visibility: visible !important;
-		opacity: 1 !important;
-	}
-
-	/* Responsive adjustments */
 	@media (max-width: 768px) {
 		section :global(img) {
 			max-width: 100%;
 			height: auto;
-		}
-	}
-
-	/* Fallback for heavily blocked content */
-	@supports not (display: block) {
-		section[data-content-type='showcase'] {
-			position: static;
-			display: table;
 		}
 	}
 </style>
