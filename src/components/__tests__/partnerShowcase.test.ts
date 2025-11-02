@@ -39,7 +39,7 @@ describe('PartnerShowcase', () => {
 		const contentDiv = container.querySelector('div');
 		const link = container.querySelector('a');
 		const image = container.querySelector('img');
-		
+
 		expect(contentDiv).toBeTruthy();
 		expect(link).toBeTruthy();
 		expect(image).toBeTruthy();
