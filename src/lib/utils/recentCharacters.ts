@@ -14,7 +14,7 @@ function createRecentCharacters() {
 	// Load from API if in browser
 	async function loadFromAPI() {
 		if (!browser) return;
-		
+
 		setLoading(true);
 		try {
 			const response = await fetch('/api/recent-characters');
@@ -34,7 +34,7 @@ function createRecentCharacters() {
 	// Fallback: Load from localStorage (for migration period)
 	function loadFromLocalStorage() {
 		if (!browser) return;
-		
+
 		const stored = localStorage.getItem('recentCharacters');
 		if (stored) {
 			try {
@@ -84,7 +84,7 @@ function createRecentCharacters() {
 	// Fallback: Add to localStorage
 	function addToLocalStorage(character: RecentCharacter) {
 		if (!browser) return;
-		
+
 		const stored = localStorage.getItem('recentCharacters') || '[]';
 		try {
 			const characters = JSON.parse(stored);
@@ -101,7 +101,7 @@ function createRecentCharacters() {
 
 			characters.unshift(character);
 			const trimmed = characters.slice(0, 5);
-			
+
 			localStorage.setItem('recentCharacters', JSON.stringify(trimmed));
 			set(trimmed);
 		} catch (error) {

@@ -114,19 +114,19 @@
 	// URL management functions
 	function updateUrlParams(reportCode: string | null = null, fightId: number | null = null) {
 		const url = new URL(window.location.href);
-		
+
 		if (reportCode) {
 			url.searchParams.set('report', reportCode);
 		} else {
 			url.searchParams.delete('report');
 		}
-		
+
 		if (fightId) {
 			url.searchParams.set('fight', fightId.toString());
 		} else {
 			url.searchParams.delete('fight');
 		}
-		
+
 		goto(url.pathname + url.search, { replaceState: true });
 	}
 

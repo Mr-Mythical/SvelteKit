@@ -67,8 +67,8 @@
 {#if mobile}
 	<!-- Mobile menu styling -->
 	{#if session?.user}
-		<div 
-			class="flex flex-col gap-2 px-4 py-2 border-t border-border"
+		<div
+			class="flex flex-col gap-2 border-t border-border px-4 py-2"
 			in:fly={{ y: -10, duration: 300, easing: quintOut }}
 			out:fly={{ y: -10, duration: 200 }}
 		>
@@ -78,40 +78,40 @@
 				</div>
 				<span class="animate-fade-in">{userBattletag || session.user.name}</span>
 			</div>
-			<Button 
-				variant="destructive" 
-				size="sm" 
+			<Button
+				variant="destructive"
+				size="sm"
 				on:click={handleSignOut}
 				disabled={isSigningOut}
 				class="w-full justify-center transition-all duration-200 hover:scale-[0.98] active:scale-95"
 			>
 				{#if isSigningOut}
-					<Loader2 class="h-4 w-4 mr-2 animate-spin" />
+					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 					Signing out...
 				{:else}
-					<LogOut class="h-4 w-4 mr-2" />
+					<LogOut class="mr-2 h-4 w-4" />
 					Sign Out
 				{/if}
 			</Button>
 		</div>
 	{:else}
-		<div 
-			class="px-4 py-2 border-t border-border"
+		<div
+			class="border-t border-border px-4 py-2"
 			in:fly={{ y: 10, duration: 300, easing: quintOut }}
 			out:fly={{ y: 10, duration: 200 }}
 		>
-			<Button 
-				variant="default" 
-				size="sm" 
+			<Button
+				variant="default"
+				size="sm"
 				on:click={handleSignIn}
 				disabled={isSigningIn}
-				class="w-full justify-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-200 hover:scale-[1.02] active:scale-95 hover:shadow-lg"
+				class="w-full justify-center bg-gradient-to-r from-blue-600 to-blue-700 text-white transition-all duration-200 hover:scale-[1.02] hover:from-blue-700 hover:to-blue-800 hover:shadow-lg active:scale-95"
 			>
 				{#if isSigningIn}
-					<Loader2 class="h-4 w-4 mr-2 animate-spin" />
+					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 					Redirecting to Battle.net...
 				{:else}
-					<LogIn class="h-4 w-4 mr-2" />
+					<LogIn class="mr-2 h-4 w-4" />
 					Sign in with Battle.net
 				{/if}
 			</Button>
@@ -121,25 +121,25 @@
 	<!-- Desktop styling -->
 	<div class="flex items-center gap-3">
 		{#if session?.user}
-			<div 
+			<div
 				class="flex items-center gap-3"
 				in:fly={{ x: 20, duration: 400, easing: quintOut }}
 				out:fly={{ x: 20, duration: 200 }}
 			>
-				<div class="hidden md:flex items-center gap-2 text-sm">
+				<div class="hidden items-center gap-2 text-sm md:flex">
 					<div class="relative">
 						<User class="h-4 w-4 text-muted-foreground" />
 					</div>
-					<span class="text-foreground animate-fade-in">
-						<span class="text-primary font-semibold">{userBattletag || session.user.name}</span>
+					<span class="animate-fade-in text-foreground">
+						<span class="font-semibold text-primary">{userBattletag || session.user.name}</span>
 					</span>
 				</div>
-				<div class="md:hidden text-xs text-muted-foreground animate-fade-in">
+				<div class="animate-fade-in text-xs text-muted-foreground md:hidden">
 					{userBattletag || session.user.name}
 				</div>
-				<Button 
-					variant="destructive" 
-					size="sm" 
+				<Button
+					variant="destructive"
+					size="sm"
 					on:click={handleSignOut}
 					disabled={isSigningOut}
 					class="flex items-center gap-1.5 transition-all duration-200 hover:scale-[0.98] active:scale-95"
@@ -154,16 +154,13 @@
 				</Button>
 			</div>
 		{:else}
-			<div
-				in:fly={{ x: -20, duration: 400, easing: quintOut }}
-				out:fly={{ x: -20, duration: 200 }}
-			>
-				<Button 
-					variant="default" 
-					size="sm" 
+			<div in:fly={{ x: -20, duration: 400, easing: quintOut }} out:fly={{ x: -20, duration: 200 }}>
+				<Button
+					variant="default"
+					size="sm"
 					on:click={handleSignIn}
 					disabled={isSigningIn}
-					class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+					class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md transition-all duration-300 hover:scale-[1.02] hover:from-blue-700 hover:to-blue-800 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-70"
 				>
 					{#if isSigningIn}
 						<Loader2 class="h-4 w-4 animate-spin" />
@@ -182,10 +179,16 @@
 
 <style>
 	@keyframes fade-in {
-		from { opacity: 0; transform: translateY(-5px); }
-		to { opacity: 1; transform: translateY(0); }
+		from {
+			opacity: 0;
+			transform: translateY(-5px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
-	
+
 	.animate-fade-in {
 		animation: fade-in 0.3s ease-out;
 	}

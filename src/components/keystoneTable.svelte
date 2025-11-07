@@ -17,27 +17,149 @@
 	let scoreGoal: number;
 	let totalScore: number;
 
-	let expImData = '';
-
 	let showTooltip = false;
 	let tooltipX = 0;
 	let tooltipY = 0;
 
 	import RecentCharacters from './recentCharacters.svelte';
 	import { fetchRuns, fetchWowSummary } from '$lib/utils/characterData';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	function loadCharacter(char: { characterName: string; region: string; realm: string }) {
 		fetchRuns(char.characterName, char.region, char.realm);
 		fetchWowSummary(char.characterName, char.region, char.realm);
 	}
 
-	async function exportRuns(event: MouseEvent) {
-		const json = JSON.stringify($dungeonData.runs);
-		expImData = btoa(json);
+	let isLoadingFromUrl = false;
+	let lastUrlRuns = '';
+
+	// Only load from URL when the runs parameter actually changes
+	$: {
+		const currentUrlRuns = $page.url.searchParams.get('runs') || '';
+		if (currentUrlRuns !== lastUrlRuns && !isLoadingFromUrl) {
+			lastUrlRuns = currentUrlRuns;
+			if (currentUrlRuns) {
+				loadFromUrl();
+			}
+		}
+	}
+
+	function loadFromUrl() {
+		if (isLoadingFromUrl) return; // Prevent infinite loop
 
 		try {
-			await navigator.clipboard.writeText(expImData);
-			console.log('Export data copied to clipboard:', expImData);
+			const runsParam = $page.url.searchParams.get('runs');
+			if (runsParam) {
+				console.log('Loading from URL:', runsParam);
+				isLoadingFromUrl = true;
+
+				// Reset all runs to default first
+				dungeonData.update((data) => {
+					// Reset all runs
+					for (let i = 0; i < data.runs.length; i++) {
+						data.runs[i].mythic_level = 0;
+						data.runs[i].num_keystone_upgrades = 1;
+						data.runs[i].score = 0;
+					}
+
+					// Parse compact format without separators: ARAK152EDA121...
+					let appliedCount = 0;
+					let i = 0;
+					while (i < runsParam.length && appliedCount < data.runs.length) {
+						// Find the next dungeon short name
+						let foundDungeon = null;
+						let shortNameEnd = -1;
+
+						for (const dungeon of dungeons) {
+							const shortName = dungeon.short_name;
+							if (runsParam.startsWith(shortName, i)) {
+								foundDungeon = dungeon;
+								shortNameEnd = i + shortName.length;
+								break;
+							}
+						}
+
+						if (foundDungeon && shortNameEnd !== -1) {
+							// Extract level (2 digits) and stars (1 digit)
+							const levelStr = runsParam.substring(shortNameEnd, shortNameEnd + 2);
+							const starsStr = runsParam.substring(shortNameEnd + 2, shortNameEnd + 3);
+
+							const level = parseInt(levelStr) || 0;
+							const stars = parseInt(starsStr) || 1;
+
+							if (level > 0 && stars >= 1 && stars <= 3) {
+								// Apply to the next available run slot
+								data.runs[appliedCount].dungeon = foundDungeon.value;
+								data.runs[appliedCount].short_name = foundDungeon.short_name;
+								data.runs[appliedCount].mythic_level = level;
+								data.runs[appliedCount].num_keystone_upgrades = stars;
+								data.runs[appliedCount].score = scoreFormula(level, stars);
+								console.log(
+									`Set slot ${appliedCount} to ${foundDungeon.short_name}: level ${level}, stars ${stars}`
+								);
+								appliedCount++;
+							}
+
+							i = shortNameEnd + 3; // Move past this entry
+						} else {
+							// If we can't find a valid dungeon name, move forward one character
+							i++;
+						}
+					}
+					return data;
+				});
+
+				console.log('Successfully loaded runs from URL');
+				isLoadingFromUrl = false;
+			}
+		} catch (err) {
+			console.error('Failed to load runs from URL:', err);
+			isLoadingFromUrl = false;
+		}
+	}
+
+	function updateUrlWithCurrentData() {
+		if (isLoadingFromUrl || typeof window === 'undefined') return;
+
+		try {
+			// Create compact format without separators: ARAK152EDA121...
+			let compactData = '';
+			for (let i = 0; i < $dungeonData.runs.length; i++) {
+				const run = $dungeonData.runs[i];
+
+				// Find the dungeon that matches the current run's dungeon value
+				const selectedDungeon = dungeons.find((d) => d.value === run.dungeon);
+
+				// Only include runs with meaningful data (level > 0) and valid dungeon
+				if (run.mythic_level > 0 && selectedDungeon) {
+					// Format: shortname + level (2 digits) + stars (1 digit)
+					const levelPadded = run.mythic_level.toString().padStart(2, '0');
+					compactData += `${selectedDungeon.short_name}${levelPadded}${run.num_keystone_upgrades}`;
+				}
+			}
+
+			const currentUrl = new URL(window.location.href);
+			if (compactData.length > 0) {
+				console.log('Updating URL with:', compactData);
+				currentUrl.searchParams.set('runs', compactData);
+				lastUrlRuns = compactData; // Update our tracking variable
+			} else {
+				currentUrl.searchParams.delete('runs');
+				lastUrlRuns = ''; // Update our tracking variable
+			}
+
+			goto(currentUrl.pathname + currentUrl.search, { replaceState: true, noScroll: true });
+		} catch (err) {
+			console.error('Failed to update URL:', err);
+		}
+	}
+
+	async function shareRuns(event: MouseEvent) {
+		try {
+			const shareableUrl = window.location.href;
+			await navigator.clipboard.writeText(shareableUrl);
+			console.log('Shareable URL copied to clipboard:', shareableUrl);
 			tooltipX = event.clientX;
 			tooltipY = event.clientY;
 			showTooltip = true;
@@ -45,24 +167,8 @@
 				showTooltip = false;
 			}, 1000);
 		} catch (err) {
-			console.error('Failed to copy Export data:', err);
-			alert('Failed to copy Export data.');
-		}
-	}
-
-	function importRuns() {
-		if (!expImData) {
-			alert('No data to import');
-			return;
-		}
-		try {
-			const decodedJson = atob(expImData);
-			const parsed = JSON.parse(decodedJson);
-			$dungeonData.runs = parsed;
-			console.log('Imported runs:', parsed);
-		} catch (err) {
-			console.error('Failed to import runs:', err);
-			alert('Failed to import. Check your string.');
+			console.error('Failed to copy shareable URL:', err);
+			alert('Failed to copy shareable URL.');
 		}
 	}
 
@@ -74,6 +180,7 @@
 			$dungeonData.runs[i].mythic_level++;
 			recalcScore(i);
 		}
+		updateUrlWithCurrentData();
 	}
 
 	function decrementKeyLevel(i: number) {
@@ -84,11 +191,13 @@
 			$dungeonData.runs[i].mythic_level--;
 			recalcScore(i);
 		}
+		updateUrlWithCurrentData();
 	}
 
 	function setStars(i: number, newStars: number) {
 		$dungeonData.runs[i].num_keystone_upgrades = newStars + 1;
 		recalcScore(i);
+		updateUrlWithCurrentData();
 	}
 
 	function recalcScore(i: number) {
@@ -99,12 +208,19 @@
 	$: totalScore = $dungeonData.runs.reduce((sum, r) => sum + r.score, 0);
 
 	function resetRuns() {
-		for (let i = 0; i < dungeonCount; i++) {
-			$dungeonData.runs[i].mythic_level = 0;
-			$dungeonData.runs[i].num_keystone_upgrades = 1;
-			$dungeonData.runs[i].score = 0;
-		}
+		dungeonData.update((data) => {
+			for (let i = 0; i < dungeonCount; i++) {
+				// Reset to original dungeon names and clear run data
+				data.runs[i].dungeon = dungeons[i].value;
+				data.runs[i].short_name = dungeons[i].short_name;
+				data.runs[i].mythic_level = 0;
+				data.runs[i].num_keystone_upgrades = 1;
+				data.runs[i].score = 0;
+			}
+			return data;
+		});
 		wowSummaryStore.set(null);
+		updateUrlWithCurrentData();
 	}
 
 	function scoreFormula(keyLevel: number, star: number): number {
@@ -184,6 +300,7 @@
 				}
 			}
 		}
+		updateUrlWithCurrentData();
 	}
 </script>
 
@@ -232,21 +349,14 @@
 		</div>
 
 		<div class="border-t pt-4">
-			<div class="mb-2 flex space-x-2">
-				<Button class="w-full" on:click={(e) => exportRuns(e)} aria-label="Export Runs"
-					>Export Runs</Button
-				>
-				<Button class="w-full" on:click={importRuns} aria-label="Import Runs">Import Runs</Button>
+			<div class="mb-2">
+				<Button class="w-full" on:click={(e) => shareRuns(e)} aria-label="Share Runs">
+					Share Current Setup
+				</Button>
 			</div>
-			<Label class="mb-2 block font-semibold" for="dataInput">Export/Import Data:</Label>
-			<Input
-				class="w-full"
-				id="dataInput"
-				placeholder="Paste or view Base64 data..."
-				bind:value={expImData}
-			/>
-			<small class="mt-1 block text-sm text-muted-foreground">
-				Click Export to copy data. Paste data here, then click Import to load.
+			<small class="block text-sm text-muted-foreground">
+				Your current setup is automatically saved in the URL. Click "Share Current Setup" to copy
+				the link.
 			</small>
 		</div>
 	</div>
@@ -273,6 +383,7 @@
 										data.runs[i].dungeon = newValue;
 										return data;
 									});
+									updateUrlWithCurrentData();
 								}}
 							/>
 						</Table.Cell>

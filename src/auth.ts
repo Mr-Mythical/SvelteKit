@@ -60,7 +60,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 				try {
 					await updateUserLastSeen(token.sub);
 					await autoImportOnLogin(token.sub);
-					
+
 					console.log('Session callback completed for user:', token.sub);
 				} catch (error) {
 					console.error('Error in session callback:', error);

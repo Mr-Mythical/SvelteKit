@@ -8,7 +8,7 @@
 
 	let reports: RecentReport[] = [];
 	let isLoading = true;
-	
+
 	const unsubscribe = recentReports.subscribe((value) => {
 		reports = value;
 	});
@@ -44,16 +44,16 @@
 <Card class="recent-reports h-full border-none">
 	<div class="p-4">
 		{#if isLoading && session}
-			<div class="text-center py-8">
+			<div class="py-8 text-center">
 				<Loader2 class="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-				<p class="text-sm text-muted-foreground mt-2">Loading recent reports...</p>
+				<p class="mt-2 text-sm text-muted-foreground">Loading recent reports...</p>
 			</div>
 		{:else if !session}
-			<div class="text-center py-8 text-muted-foreground">
+			<div class="py-8 text-center text-muted-foreground">
 				<p class="text-sm">Login to sync recent reports across devices</p>
 			</div>
 		{:else if reports.length === 0}
-			<div class="text-center py-8 text-muted-foreground">
+			<div class="py-8 text-center text-muted-foreground">
 				<p class="text-sm">No recent reports yet</p>
 			</div>
 		{:else}

@@ -2,10 +2,16 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
-	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ImportIcon, CheckCircle, AlertCircle, Loader2 } from 'lucide-svelte';
-	
+
 	// Import functions (these would need to be exposed via API routes in a real implementation)
 	// import { hasOldRecentsData, getOldRecentsPreview, importOldRecentsData } from '$lib/db/migration.js';
 
@@ -100,18 +106,19 @@
 				Import Your Recent Activity
 			</CardTitle>
 			<CardDescription>
-				We found recent characters and reports saved in your browser. Import them to your account to keep your history across devices.
+				We found recent characters and reports saved in your browser. Import them to your account to
+				keep your history across devices.
 			</CardDescription>
 		</CardHeader>
 		<CardContent class="space-y-4">
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 				{#if preview.characters > 0}
 					<div class="space-y-2">
 						<div class="flex items-center gap-2">
 							<Badge variant="secondary">{preview.characters}</Badge>
 							<span class="text-sm font-medium">Recent Characters</span>
 						</div>
-						<ul class="text-xs text-muted-foreground space-y-1">
+						<ul class="space-y-1 text-xs text-muted-foreground">
 							{#each preview.characterNames.slice(0, 3) as name}
 								<li>• {name}</li>
 							{/each}
@@ -128,7 +135,7 @@
 							<Badge variant="secondary">{preview.reports}</Badge>
 							<span class="text-sm font-medium">Recent Reports</span>
 						</div>
-						<ul class="text-xs text-muted-foreground space-y-1">
+						<ul class="space-y-1 text-xs text-muted-foreground">
 							{#each preview.reportTitles.slice(0, 3) as title}
 								<li>• {title}</li>
 							{/each}
@@ -150,13 +157,12 @@
 						Import to Account
 					{/if}
 				</Button>
-				<Button variant="outline" on:click={() => hasOldData = false}>
-					Skip for Now
-				</Button>
+				<Button variant="outline" on:click={() => (hasOldData = false)}>Skip for Now</Button>
 			</div>
 
 			<p class="text-xs text-muted-foreground">
-				This will copy your browser-saved recent activity to your account. Your browser data will remain unchanged.
+				This will copy your browser-saved recent activity to your account. Your browser data will
+				remain unchanged.
 			</p>
 		</CardContent>
 	</Card>
@@ -173,16 +179,16 @@
 		<CardContent>
 			<div class="space-y-2">
 				<p class="text-sm">
-					Imported <strong>{importResults.charactersImported}</strong> characters and 
+					Imported <strong>{importResults.charactersImported}</strong> characters and
 					<strong>{importResults.reportsImported}</strong> reports to your account.
 				</p>
 				{#if importResults.errors?.length > 0}
 					<div class="mt-2">
-						<p class="text-sm text-orange-600 flex items-center gap-1">
+						<p class="flex items-center gap-1 text-sm text-orange-600">
 							<AlertCircle class="h-4 w-4" />
 							Some items couldn't be imported:
 						</p>
-						<ul class="text-xs text-muted-foreground mt-1">
+						<ul class="mt-1 text-xs text-muted-foreground">
 							{#each importResults.errors.slice(0, 3) as error}
 								<li>• {error}</li>
 							{/each}

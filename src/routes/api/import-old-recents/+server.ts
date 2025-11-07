@@ -4,7 +4,7 @@ import { importOldRecentsData } from '$lib/db/migration.js';
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		const session = await locals.getSession?.();
-		
+
 		if (!session?.user?.id) {
 			return new Response(JSON.stringify({ error: 'Not authenticated' }), {
 				status: 401,
@@ -37,12 +37,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 	} catch (error) {
 		console.error('Import error:', error);
-		return new Response(JSON.stringify({ 
-			error: 'Import failed',
-			details: error instanceof Error ? error.message : 'Unknown error'
-		}), {
-			status: 500,
-			headers: { 'Content-Type': 'application/json' }
-		});
+		return new Response(
+			JSON.stringify({
+				error: 'Import failed',
+				details: error instanceof Error ? error.message : 'Unknown error'
+			}),
+			{
+				status: 500,
+				headers: { 'Content-Type': 'application/json' }
+			}
+		);
 	}
 };

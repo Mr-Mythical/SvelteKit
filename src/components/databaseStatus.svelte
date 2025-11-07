@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { CheckCircle, XCircle, Loader2, Database, RefreshCw } from 'lucide-svelte';
@@ -47,16 +53,14 @@
 				<Database class="h-5 w-5" />
 				Database Integration Status
 			</CardTitle>
-			<CardDescription>
-				Check if your account is properly connected to the database
-			</CardDescription>
+			<CardDescription>Check if your account is properly connected to the database</CardDescription>
 		</CardHeader>
 		<CardContent class="space-y-4">
 			<div class="flex items-center justify-between">
 				<span class="text-sm font-medium">Connection Test</span>
-				<Button 
-					variant="outline" 
-					size="sm" 
+				<Button
+					variant="outline"
+					size="sm"
 					on:click={testDatabaseConnection}
 					disabled={testing}
 					class="flex items-center gap-2"
@@ -87,11 +91,11 @@
 						<CheckCircle class="h-4 w-4" />
 						Database connection successful!
 					</div>
-					
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+
+					<div class="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
 						<div>
 							<span class="font-medium">User ID:</span>
-							<code class="ml-2 text-xs bg-muted px-1 rounded">{testResult.user.id}</code>
+							<code class="ml-2 rounded bg-muted px-1 text-xs">{testResult.user.id}</code>
 						</div>
 						<div>
 							<span class="font-medium">Battletag:</span>
@@ -115,16 +119,16 @@
 						</div>
 						<div>
 							<span class="font-medium">Status:</span>
-							<Badge variant={testResult.user.isActive ? "default" : "destructive"} class="ml-2">
-								{testResult.user.isActive ? "Active" : "Inactive"}
+							<Badge variant={testResult.user.isActive ? 'default' : 'destructive'} class="ml-2">
+								{testResult.user.isActive ? 'Active' : 'Inactive'}
 							</Badge>
 						</div>
 					</div>
 
 					{#if testResult.recentItems?.length > 0}
 						<div>
-							<h4 class="text-sm font-medium mb-2">Recent Activity:</h4>
-							<ul class="text-xs space-y-1">
+							<h4 class="mb-2 text-sm font-medium">Recent Activity:</h4>
+							<ul class="space-y-1 text-xs">
 								{#each testResult.recentItems.slice(0, 5) as item}
 									<li class="flex items-center gap-2">
 										<Badge variant="outline" class="text-xs">{item.type}</Badge>
@@ -140,8 +144,11 @@
 				</div>
 			{/if}
 
-			<div class="text-xs text-muted-foreground pt-2 border-t">
-				<p>This component helps verify that your authentication is properly integrated with the database system.</p>
+			<div class="border-t pt-2 text-xs text-muted-foreground">
+				<p>
+					This component helps verify that your authentication is properly integrated with the
+					database system.
+				</p>
 			</div>
 		</CardContent>
 	</Card>

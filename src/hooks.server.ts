@@ -18,7 +18,7 @@ const handleSession: Handle = async ({ event, resolve }) => {
 		}
 		return null;
 	};
-	
+
 	return resolve(event);
 };
 

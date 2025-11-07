@@ -14,7 +14,7 @@
 
 	let characters: RecentCharacter[] = [];
 	let isLoading = true;
-	
+
 	const unsubscribe = recentCharacters.subscribe((value) => {
 		characters = value;
 	});
@@ -56,16 +56,16 @@
 	<h3 class="text-lg font-semibold">Recent Characters</h3>
 	<div class="space-y-2">
 		{#if isLoading && session}
-			<div class="text-center py-4">
+			<div class="py-4 text-center">
 				<Loader2 class="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-				<p class="text-sm text-muted-foreground mt-2">Loading recent characters...</p>
+				<p class="mt-2 text-sm text-muted-foreground">Loading recent characters...</p>
 			</div>
 		{:else if !session}
-			<div class="text-center py-4 text-muted-foreground">
+			<div class="py-4 text-center text-muted-foreground">
 				<p class="text-sm">Login to sync recent characters across devices</p>
 			</div>
 		{:else if characters.length === 0}
-			<div class="text-center py-4 text-muted-foreground">
+			<div class="py-4 text-center text-muted-foreground">
 				<p class="text-sm">No recent character searches yet</p>
 			</div>
 		{:else}

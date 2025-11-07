@@ -71,7 +71,7 @@ export const accounts = pgTable(
 	})
 );
 
-// Auth.js sessions table - matches exact Auth.js expectations  
+// Auth.js sessions table - matches exact Auth.js expectations
 export const sessions = pgTable(
 	'sessions',
 	{

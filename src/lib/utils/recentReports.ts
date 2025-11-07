@@ -19,7 +19,7 @@ function createRecentReportsStore() {
 	// Load from API if in browser
 	async function loadFromAPI() {
 		if (!browser) return;
-		
+
 		setLoading(true);
 		try {
 			const response = await fetch('/api/recent-reports');
@@ -39,7 +39,7 @@ function createRecentReportsStore() {
 	// Fallback: Load from localStorage (for migration period)
 	function loadFromLocalStorage() {
 		if (!browser) return;
-		
+
 		const stored = localStorage.getItem(STORAGE_KEY);
 		if (stored) {
 			try {
@@ -99,7 +99,7 @@ function createRecentReportsStore() {
 		owner: { name: string }
 	) {
 		if (!browser) return;
-		
+
 		const stored = localStorage.getItem(STORAGE_KEY) || '[]';
 		try {
 			const reports = JSON.parse(stored);
@@ -111,11 +111,11 @@ function createRecentReportsStore() {
 				guild,
 				owner
 			});
-			
+
 			if (newReports.length > MAX_REPORTS) {
 				newReports.pop();
 			}
-			
+
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(newReports));
 			set(newReports);
 		} catch (error) {
