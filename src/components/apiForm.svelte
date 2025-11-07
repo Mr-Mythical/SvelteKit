@@ -32,13 +32,13 @@
 
 	const form = superForm(data, {
 		validators: zodClient(formSchema),
-		onUpdated: ({ form: f }) => {
+		onUpdated: async ({ form: f }) => {
 			if (f.valid) {
 				toast.success(`You submitted ${JSON.stringify(f.data, null, 2)}`);
 				const { region, realm, characterName } = f.data;
 				fetchRuns(characterName, region, realm);
 				fetchWowSummary(characterName, region, realm);
-				recentCharacters.add({ region, realm, characterName });
+				await recentCharacters.add({ region, realm, characterName });
 			} else {
 				toast.error('Please fix the errors in the form.');
 			}

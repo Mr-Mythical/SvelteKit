@@ -58,7 +58,7 @@
 
 <!-- Content Showcase -->
 <section
-	class="mb-6 mt-6 flex w-full items-center justify-center"
+	class="mt-6 flex w-full items-center justify-center"
 	data-content-type="showcase"
 	bind:this={containerElement}
 >

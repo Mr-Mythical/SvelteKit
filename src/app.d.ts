@@ -1,10 +1,17 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
+import type { Session } from '@auth/core/types';
+
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
-		// interface PageData {}
+		interface Locals {
+			session?: Session;
+			getSession?: () => Promise<Session | null>;
+		}
+		interface PageData {
+			session?: Session;
+		}
 		// interface PageState {}
 		interface Platform {
 			env: {
