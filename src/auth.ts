@@ -25,31 +25,43 @@ function createLazyAdapter() {
 
 const getAdapter = createLazyAdapter();
 
-export const { handle, signIn, signOut } = SvelteKitAuth({
-	get adapter() {
-		return getAdapter();
-	},
-	providers: [
-		BattleNet({
-			clientId: env.BLIZZARD_CLIENT_ID,
-			clientSecret: env.BLIZZARD_CLIENT_SECRET,
-			issuer: 'https://eu.battle.net/oauth',
-			checks: ['pkce', 'nonce'],
-			authorization: { params: { scope: 'openid' } },
-			profile(profile) {
-				return {
-					id: profile.sub,
-					name: profile.battle_tag || profile.battletag,
-					email: null,
-					image: null,
-					battletag: profile.battle_tag || profile.battletag
-				};
-			}
-		})
-	],
-	secret: env.AUTH_SECRET,
-	trustHost: true,
-	debug: false,
+export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
+	// Debug environment variables
+	console.log('Auth Debug - Environment Variables:', {
+		hasClientId: !!env.BLIZZARD_CLIENT_ID,
+		hasClientSecret: !!env.BLIZZARD_CLIENT_SECRET,
+		hasAuthSecret: !!env.AUTH_SECRET,
+		clientIdStart: env.BLIZZARD_CLIENT_ID?.substring(0, 8) + '...',
+		domain: event.url.origin,
+		pathname: event.url.pathname
+	});
+
+	return {
+		get adapter() {
+			return getAdapter();
+		},
+		providers: [
+			BattleNet({
+				clientId: env.BLIZZARD_CLIENT_ID,
+				clientSecret: env.BLIZZARD_CLIENT_SECRET,
+				issuer: 'https://eu.battle.net/oauth',
+				checks: ['pkce', 'nonce'],
+				authorization: { params: { scope: 'openid' } },
+				profile(profile) {
+					console.log('Battle.net profile received:', profile);
+					return {
+						id: profile.sub,
+						name: profile.battle_tag || profile.battletag,
+						email: null,
+						image: null,
+						battletag: profile.battle_tag || profile.battletag
+					};
+				}
+			})
+		],
+		secret: env.AUTH_SECRET,
+		trustHost: true,
+		debug: true, // Enable debug logging
 	callbacks: {
 		async session({ session, token }) {
 			if (token?.sub) {
@@ -79,4 +91,5 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 			return token;
 		}
 	}
+	};
 });
