@@ -1,11 +1,11 @@
 import { SvelteKitAuth } from '@auth/sveltekit';
 import BattleNet from '@auth/core/providers/battlenet';
-import { BLIZZARD_CLIENT_ID, BLIZZARD_CLIENT_SECRET, AUTH_SECRET } from '$env/static/private';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { getUserDb } from '$lib/db/userDb.js';
 import { users, accounts, sessions } from '$lib/db/userSchema.js';
 import { updateUserLastSeen } from '$lib/db/users.js';
 import { autoImportOnLogin } from '$lib/db/migration.js';
+import { env } from '$env/dynamic/private';
 
 // Lazy-load the adapter to avoid build-time database connection issues
 function createLazyAdapter() {
@@ -31,8 +31,8 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 	},
 	providers: [
 		BattleNet({
-			clientId: BLIZZARD_CLIENT_ID,
-			clientSecret: BLIZZARD_CLIENT_SECRET,
+			clientId: env.BLIZZARD_CLIENT_ID,
+			clientSecret: env.BLIZZARD_CLIENT_SECRET,
 			issuer: 'https://eu.battle.net/oauth',
 			checks: ['pkce', 'nonce'],
 			authorization: { params: { scope: 'openid' } },
@@ -47,7 +47,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 			}
 		})
 	],
-	secret: AUTH_SECRET,
+	secret: env.AUTH_SECRET,
 	trustHost: true,
 	debug: false,
 	callbacks: {

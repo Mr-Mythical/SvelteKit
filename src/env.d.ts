@@ -8,3 +8,17 @@ declare module '$env/static/private' {
 	export const SUPABASE_HEALER_KEY: string;
 	export const SUPABASE_KEY: string;
 }
+
+declare module '$env/dynamic/private' {
+	export const env: {
+		BLIZZARD_CLIENT_ID: string;
+		BLIZZARD_CLIENT_SECRET: string;
+		AUTH_SECRET: string;
+		WCL_CLIENT_ID: string;
+		WCL_CLIENT_SECRET: string;
+		SUPABASE_HEALER_URL: string;
+		SUPABASE_HEALER_KEY: string;
+		SUPABASE_KEY: string;
+		[key: string]: string | undefined;
+	};
+}
