@@ -11,12 +11,22 @@ function createLazyAdapter() {
 	let adapter: any;
 	return () => {
 		if (!adapter) {
-			adapter = DrizzleAdapter(getUserDb(), {
-				usersTable: users,
-				accountsTable: accounts,
-				sessionsTable: sessions,
-				verificationTokensTable: verificationTokens
-			});
+			try {
+				console.log('Creating DrizzleAdapter with database connection...');
+				const db = getUserDb();
+				console.log('Database instance created successfully');
+				
+				adapter = DrizzleAdapter(db, {
+					usersTable: users,
+					accountsTable: accounts,
+					sessionsTable: sessions,
+					verificationTokensTable: verificationTokens
+				});
+				console.log('DrizzleAdapter created successfully');
+			} catch (error) {
+				console.error('Failed to create DrizzleAdapter:', error);
+				throw error;
+			}
 		}
 		return adapter;
 	};
@@ -32,7 +42,12 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 		hasAuthSecret: !!env.AUTH_SECRET,
 		clientIdStart: env.BLIZZARD_CLIENT_ID?.substring(0, 8) + '...',
 		domain: event.url.origin,
-		pathname: event.url.pathname
+		pathname: event.url.pathname,
+		// Debug database URLs
+		hasDatabaseUserUrl: !!env.DATABASE_USER_URL,
+		hasDatabaseUrl: !!env.DATABASE_URL,
+		databaseUserUrlEnd: env.DATABASE_USER_URL?.slice(-20),
+		databaseUrlEnd: env.DATABASE_URL?.slice(-20)
 	});
 
 	return {

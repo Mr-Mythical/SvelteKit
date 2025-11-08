@@ -12,6 +12,13 @@ function getUserDb() {
 	// Get the user database connection string from environment variables
 	const connectionString = env.DATABASE_USER_URL || env.DATABASE_URL;
 
+	console.log('UserDB Debug:', {
+		hasDatabaseUserUrl: !!env.DATABASE_USER_URL,
+		hasDatabaseUrl: !!env.DATABASE_URL,
+		connectionStringEnd: connectionString?.slice(-20),
+		connectionStringStart: connectionString?.slice(0, 20)
+	});
+
 	if (!connectionString) {
 		throw new Error(
 			'Neither DATABASE_USER_URL nor DATABASE_URL is defined in environment variables.'
