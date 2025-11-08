@@ -16,26 +16,33 @@ function createLazyAdapter() {
 				const db = getUserDb();
 				console.log('Database instance created successfully');
 				
-				// Test database tables existence
-				console.log('Checking database tables...');
-				db.execute(`
-					SELECT table_name 
-					FROM information_schema.tables 
-					WHERE table_schema = 'public' 
-					AND table_name IN ('users', 'accounts', 'sessions') 
-					ORDER BY table_name
-				`).then(
-					(result) => console.log('Available tables:', result),
-					(error) => console.error('Table check failed:', error)
-				);
-				
 				adapter = DrizzleAdapter(db, {
 					usersTable: users,
 					accountsTable: accounts,
 					sessionsTable: sessions,
 					verificationTokensTable: verificationTokens
 				});
-				console.log('DrizzleAdapter created successfully');
+				
+				// Override the getUserByAccount method with custom error handling
+				const originalGetUserByAccount = adapter.getUserByAccount;
+				adapter.getUserByAccount = async (account: any) => {
+					try {
+						console.log('Custom getUserByAccount called with:', account);
+						const result = await originalGetUserByAccount(account);
+						console.log('getUserByAccount succeeded:', result);
+						return result;
+					} catch (error) {
+						console.error('getUserByAccount failed with error:', error);
+						console.error('Error details:', {
+							message: error instanceof Error ? error.message : String(error),
+							stack: error instanceof Error ? error.stack : 'No stack trace',
+							name: error instanceof Error ? error.name : 'Unknown error'
+						});
+						throw error;
+					}
+				};
+				
+				console.log('DrizzleAdapter created successfully with custom error handling');
 			} catch (error) {
 				console.error('Failed to create DrizzleAdapter:', error);
 				throw error;
