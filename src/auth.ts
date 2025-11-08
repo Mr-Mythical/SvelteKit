@@ -45,25 +45,26 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 		callbacks: {
 			async signIn({ user, account, profile }: any) {
 				console.log('SignIn callback:', { user, account, profile });
-				if (account?.provider === 'battlenet') {
-					try {
-						// Create or update user profile
-						await createOrUpdateUserProfile(user.id || account.providerAccountId, {
-							battletag: (profile as any)?.battle_tag || user.name || 'Unknown'
-						});
-						console.log('User profile created/updated successfully');
-						return true;
-					} catch (error) {
-						console.error('Error creating/updating user profile:', error);
-						return false;
-					}
-				}
+				// Always allow the sign-in to proceed first
+				// User profile creation will happen in session callback
 				return true;
 			},
 			async session({ session, user }: any) {
 				console.log('Session callback:', { session, user });
-				// Update last seen on each session check
-				if (user?.id) {
+				
+				// Now create/update user profile after user exists
+				if (user?.id && session) {
+					try {
+						await createOrUpdateUserProfile(user.id, {
+							battletag: session.user?.name || 'Unknown'
+						});
+						console.log('User profile created/updated successfully in session');
+					} catch (error) {
+						console.error('Error creating/updating user profile in session:', error);
+						// Don't fail the session - just log the error
+					}
+					
+					// Update last seen on each session check
 					try {
 						await updateUserLastSeen(user.id);
 					} catch (error) {
