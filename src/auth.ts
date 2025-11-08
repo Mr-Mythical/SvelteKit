@@ -16,6 +16,19 @@ function createLazyAdapter() {
 				const db = getUserDb();
 				console.log('Database instance created successfully');
 				
+				// Test database tables existence
+				console.log('Checking database tables...');
+				db.execute(`
+					SELECT table_name 
+					FROM information_schema.tables 
+					WHERE table_schema = 'public' 
+					AND table_name IN ('users', 'accounts', 'sessions') 
+					ORDER BY table_name
+				`).then(
+					(result) => console.log('Available tables:', result),
+					(error) => console.error('Table check failed:', error)
+				);
+				
 				adapter = DrizzleAdapter(db, {
 					usersTable: users,
 					accountsTable: accounts,
@@ -49,6 +62,15 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 		databaseUserUrlEnd: env.DATABASE_USER_URL?.slice(-20),
 		databaseUrlEnd: env.DATABASE_URL?.slice(-20)
 	});
+
+	// Force adapter creation to see debug logs
+	try {
+		console.log('Forcing adapter creation for debugging...');
+		const testAdapter = getAdapter();
+		console.log('Adapter created successfully in auth config');
+	} catch (error) {
+		console.error('Adapter creation failed in auth config:', error);
+	}
 
 	return {
 		get adapter() {
