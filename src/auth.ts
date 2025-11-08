@@ -11,14 +11,14 @@ function createAdapter() {
 	console.log('Creating DrizzleAdapter with user database connection...');
 	const db = getUserDb();
 	console.log('User database instance created successfully');
-	
+
 	const adapter = DrizzleAdapter(db, {
 		usersTable: users,
 		accountsTable: accounts,
 		sessionsTable: sessions,
 		verificationTokensTable: verificationTokens
 	});
-	
+
 	console.log('DrizzleAdapter created successfully');
 	return adapter;
 }
@@ -30,7 +30,13 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 			BattleNet({
 				clientId: env.AUTH_BATTLENET_ID,
 				clientSecret: env.AUTH_BATTLENET_SECRET,
-				issuer: 'https://eu.battle.net/oauth'
+				issuer: 'https://eu.battle.net/oauth',
+				checks: ['pkce', 'nonce'],
+				authorization: { 
+					params: { 
+						scope: 'openid' 
+					} 
+				}
 			})
 		],
 		secret: env.AUTH_SECRET,
