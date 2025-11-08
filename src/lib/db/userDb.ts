@@ -13,7 +13,9 @@ function getUserDb() {
 	const connectionString = env.DATABASE_USER_URL || env.DATABASE_URL;
 
 	if (!connectionString) {
-		throw new Error('Neither DATABASE_USER_URL nor DATABASE_URL is defined in environment variables.');
+		throw new Error(
+			'Neither DATABASE_USER_URL nor DATABASE_URL is defined in environment variables.'
+		);
 	}
 
 	try {

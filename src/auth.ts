@@ -61,51 +61,53 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 		secret: env.AUTH_SECRET,
 		trustHost: true,
 		debug: true, // Enable debug logging
-	callbacks: {
-		async signIn({ user, account, profile }) {
-			// Create user profile when user signs in for the first time
-			if (account?.provider === 'battlenet' && user.id) {
-				try {
-					const battletag = (profile as any)?.battle_tag || (profile as any)?.battletag;
-					
-					await createOrUpdateUserProfile(user.id, {
-						battletag: battletag,
-						battlenetAccessToken: account.access_token || undefined,
-						battlenetRefreshToken: account.refresh_token || undefined,
-						battlenetExpiresAt: account.expires_at ? new Date(account.expires_at * 1000) : undefined
-					});
-				} catch (error) {
-					console.error('Error creating user profile:', error);
-					// Don't block auth flow
-				}
-			}
-			return true;
-		},
-		async session({ session, token }) {
-			if (token?.sub) {
-				session.user.id = token.sub;
-				(session.user as any).battletag = token.battletag as string;
+		callbacks: {
+			async signIn({ user, account, profile }) {
+				// Create user profile when user signs in for the first time
+				if (account?.provider === 'battlenet' && user.id) {
+					try {
+						const battletag = (profile as any)?.battle_tag || (profile as any)?.battletag;
 
-				// Update last seen timestamp
-				try {
-					await updateUserLastSeen(token.sub);
-					console.log('Session callback completed for user:', token.sub);
-				} catch (error) {
-					console.error('Error in session callback:', error);
-					// Don't break auth flow - continue with session
+						await createOrUpdateUserProfile(user.id, {
+							battletag: battletag,
+							battlenetAccessToken: account.access_token || undefined,
+							battlenetRefreshToken: account.refresh_token || undefined,
+							battlenetExpiresAt: account.expires_at
+								? new Date(account.expires_at * 1000)
+								: undefined
+						});
+					} catch (error) {
+						console.error('Error creating user profile:', error);
+						// Don't block auth flow
+					}
 				}
+				return true;
+			},
+			async session({ session, token }) {
+				if (token?.sub) {
+					session.user.id = token.sub;
+					(session.user as any).battletag = token.battletag as string;
+
+					// Update last seen timestamp
+					try {
+						await updateUserLastSeen(token.sub);
+						console.log('Session callback completed for user:', token.sub);
+					} catch (error) {
+						console.error('Error in session callback:', error);
+						// Don't break auth flow - continue with session
+					}
+				}
+				return session;
+			},
+			async jwt({ token, account, profile }) {
+				if (account) {
+					token.accessToken = account.access_token;
+				}
+				if (profile) {
+					token.battletag = (profile as any).battle_tag || (profile as any).battletag;
+				}
+				return token;
 			}
-			return session;
-		},
-		async jwt({ token, account, profile }) {
-			if (account) {
-				token.accessToken = account.access_token;
-			}
-			if (profile) {
-				token.battletag = (profile as any).battle_tag || (profile as any).battletag;
-			}
-			return token;
 		}
-	}
 	};
 });
