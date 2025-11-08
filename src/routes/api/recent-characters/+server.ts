@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { getUserRecents, addUserRecent, createCharacterRecent } from '$lib/db/recents.js';
+import { getUserRecents, addUserRecent } from '$lib/db/userRecents.js';
 
 // GET: Fetch user's recent characters
 export const GET: RequestHandler = async ({ locals }) => {
@@ -38,13 +38,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const { characterName, realm, region } = await request.json();
 
-		const recentItem = createCharacterRecent(characterName, realm, region, {
-			class: null, // Can be added later if available
-			level: null,
-			timestamp: Date.now()
-		});
-
-		await addUserRecent(session.user.id, recentItem);
+		await addUserRecent(
+			session.user.id,
+			'character',
+			`${characterName}-${realm}`,
+			{
+				characterName,
+				realm,
+				region
+			},
+			characterName,
+			`${realm} - ${region}`,
+			{
+				class: null,
+				level: null,
+				timestamp: Date.now()
+			}
+		);
 
 		return json({ success: true });
 	} catch (error) {

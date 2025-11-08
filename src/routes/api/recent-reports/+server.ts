@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { getUserRecents, addUserRecent, createReportRecent } from '$lib/db/recents.js';
+import { getUserRecents, addUserRecent } from '$lib/db/userRecents.js';
 
 // GET: Fetch user's recent reports
 export const GET: RequestHandler = async ({ locals }) => {
@@ -40,12 +40,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const { code, title, guild, owner } = await request.json();
 
-		const recentItem = createReportRecent(code, title, guild?.name, {
-			owner: owner?.name || 'Unknown',
-			timestamp: Date.now()
-		});
-
-		await addUserRecent(session.user.id, recentItem);
+		await addUserRecent(
+			session.user.id,
+			'report',
+			code,
+			{
+				code,
+				title,
+				guild: guild?.name,
+				owner: owner?.name || 'Unknown'
+			},
+			title,
+			guild?.name,
+			{
+				owner: owner?.name || 'Unknown',
+				timestamp: Date.now()
+			}
+		);
 
 		return json({ success: true });
 	} catch (error) {

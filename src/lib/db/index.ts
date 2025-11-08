@@ -50,3 +50,9 @@ function getDb() {
 }
 
 export { getDb as db };
+
+// User database exports - production ready
+export * from './userSchema';
+export * from './users';
+export * from './userRecents';
+export { getUserDb } from './userDb';

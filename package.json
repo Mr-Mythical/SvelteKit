@@ -18,7 +18,11 @@
 		"test:coverage": "vitest run --coverage",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
-		"db:push": "drizzle-kit push"
+		"db:push": "drizzle-kit push",
+		"db:user:generate": "drizzle-kit generate --config=drizzle.user.config.ts",
+		"db:user:migrate": "drizzle-kit migrate --config=drizzle.user.config.ts",
+		"db:user:push": "drizzle-kit push --config=drizzle.user.config.ts",
+		"db:user:drop": "drizzle-kit drop --config=drizzle.user.config.ts"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20250109.0",
@@ -82,7 +86,7 @@
 		"zod": "^3.23.4"
 	},
 	"engines": {
-		"node": ">=22.18.0",
+		"node": ">=20.0.0",
 		"npm": ">=9.0.0"
 	}
 }
