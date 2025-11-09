@@ -31,11 +31,11 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 				clientId: env.AUTH_BATTLENET_ID,
 				clientSecret: env.AUTH_BATTLENET_SECRET,
 				issuer: 'https://eu.battle.net/oauth',
-				checks: ['pkce', 'nonce'],
-				authorization: { 
-					params: { 
-						scope: 'openid' 
-					} 
+				checks: ['pkce', 'nonce', 'state'],
+				authorization: {
+					params: {
+						scope: 'openid'
+					}
 				}
 			})
 		],
@@ -51,7 +51,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 			},
 			async session({ session, user }: any) {
 				console.log('Session callback:', { session, user });
-				
+
 				// Now create/update user profile after user exists
 				if (user?.id && session) {
 					try {
@@ -63,7 +63,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 						console.error('Error creating/updating user profile in session:', error);
 						// Don't fail the session - just log the error
 					}
-					
+
 					// Update last seen on each session check
 					try {
 						await updateUserLastSeen(user.id);
