@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 
 		const latestState = recentStates[0];
-		
+
 		return json({
 			urlParams: latestState.entityData.urlParams,
 			timestamp: latestState.entityData.timestamp
@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Create a simple title based on the URL parameters
 		let title = 'Calculator State';
 		let subtitle = 'Empty state';
-		
+
 		if (urlParams) {
 			const params = new URLSearchParams(urlParams);
 			if (params.has('char')) {

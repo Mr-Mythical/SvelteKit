@@ -41,7 +41,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 		session: {
 			strategy: 'database' as const,
 			maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
-			updateAge: 24 * 60 * 60, // 24 hours - how often to update the session
+			updateAge: 24 * 60 * 60 // 24 hours - how often to update the session
 		},
 		cookies: {
 			sessionToken: {
@@ -60,7 +60,6 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 				return true;
 			},
 			async session({ session, user }: any) {
-
 				if (user?.id && session) {
 					try {
 						await createOrUpdateUserProfile(user.id, {

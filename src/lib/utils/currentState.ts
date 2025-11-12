@@ -17,7 +17,7 @@ function createCurrentStateStore() {
 		setLoading(true);
 		try {
 			const response = await fetch('/api/current-state');
-			
+
 			if (response.ok) {
 				const state = await response.json();
 				if (state) {

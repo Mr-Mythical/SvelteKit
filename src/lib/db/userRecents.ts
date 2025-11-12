@@ -28,14 +28,14 @@ export async function addUserRecent(
 	metadata: any = {}
 ): Promise<void> {
 	try {
-		console.log('addUserRecent called:', { 
-			userId, 
-			type, 
-			entityId, 
-			title, 
+		console.log('addUserRecent called:', {
+			userId,
+			type,
+			entityId,
+			title,
 			subtitle,
 			entityData: JSON.stringify(entityData).substring(0, 100) + '...',
-			metadata 
+			metadata
 		});
 
 		const db = getUserDb();

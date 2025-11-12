@@ -38,11 +38,11 @@
 			if (f.valid) {
 				toast.success(`Character imported successfully!`);
 				const { region, realm, characterName } = f.data;
-				
+
 				// Fetch character data
 				fetchRuns(characterName, region, realm);
 				fetchWowSummary(characterName, region, realm);
-				
+
 				// Update URL with character information
 				if (typeof window !== 'undefined') {
 					const currentUrl = new URL(window.location.href);
@@ -53,11 +53,11 @@
 					currentUrl.searchParams.set('char', characterName);
 					currentUrl.searchParams.set('region', region);
 					currentUrl.searchParams.set('realm', realm);
-					
+
 					// Navigate to the new URL
 					goto(currentUrl.pathname + currentUrl.search, { replaceState: true, noScroll: true });
 				}
-				
+
 				// Only save to recent characters if user is logged in
 				if ($page?.data?.session?.user) {
 					try {
@@ -66,7 +66,7 @@
 						console.error('Failed to add character to recent list:', error);
 					}
 				}
-				
+
 				// Close the popup
 				$apiPopup = false;
 			} else {
