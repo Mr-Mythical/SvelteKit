@@ -324,7 +324,6 @@
 	async function fetchAndSetBrowsedLogs(params: BrowseLogsParams, pageNum: number) {
 		browseLoading = true;
 		const fetchParams = { ...params, page: pageNum, limit: browseItemsPerPage };
-		console.log('Fetching browsed logs with params:', JSON.stringify(fetchParams, null, 2));
 		try {
 			const response = await fetch('/api/browse-logs', {
 				method: 'POST',

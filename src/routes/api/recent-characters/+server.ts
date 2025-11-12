@@ -2,7 +2,6 @@ import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { getUserRecents, addUserRecent } from '$lib/db/userRecents.js';
 
-// GET: Fetch user's recent characters
 export const GET: RequestHandler = async ({ locals }) => {
 	try {
 		const session = await locals.getSession?.();
@@ -13,11 +12,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		const recentCharacters = await getUserRecents(session.user.id, 'character', 10);
 
-		// Transform to match the expected RecentCharacter format
 		const characters = recentCharacters.map((recent) => ({
 			region: recent.entityData.region,
 			realm: recent.entityData.realm,
-			characterName: recent.entityData.name
+			characterName: recent.entityData.characterName
 		}));
 
 		return json(characters);
@@ -27,7 +25,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 };
 
-// POST: Add a character to recent list
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		const session = await locals.getSession?.();

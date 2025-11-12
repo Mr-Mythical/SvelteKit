@@ -6,11 +6,8 @@ import { users, accounts, sessions, verificationTokens } from '$lib/db/userSchem
 import { updateUserLastSeen, createOrUpdateUserProfile } from '$lib/db/users.js';
 import { env } from '$env/dynamic/private';
 
-// Simple adapter creation - your database connection is working
 function createAdapter() {
-	console.log('Creating DrizzleAdapter with user database connection...');
 	const db = getUserDb();
-	console.log('User database instance created successfully');
 
 	const adapter = DrizzleAdapter(db, {
 		usersTable: users,
@@ -19,7 +16,6 @@ function createAdapter() {
 		verificationTokensTable: verificationTokens
 	});
 
-	console.log('DrizzleAdapter created successfully');
 	return adapter;
 }
 
@@ -42,29 +38,38 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 		secret: env.AUTH_SECRET,
 		trustHost: true,
 		debug: true,
+		session: {
+			strategy: 'database' as const,
+			maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+			updateAge: 24 * 60 * 60, // 24 hours - how often to update the session
+		},
+		cookies: {
+			sessionToken: {
+				name: 'authjs.session-token',
+				options: {
+					httpOnly: true,
+					sameSite: 'lax' as const,
+					path: '/',
+					secure: process.env.NODE_ENV === 'production',
+					maxAge: 30 * 24 * 60 * 60 // 30 days in seconds
+				}
+			}
+		},
 		callbacks: {
 			async signIn({ user, account, profile }: any) {
-				console.log('SignIn callback:', { user, account, profile });
-				// Always allow the sign-in to proceed first
-				// User profile creation will happen in session callback
 				return true;
 			},
 			async session({ session, user }: any) {
-				console.log('Session callback:', { session, user });
 
-				// Now create/update user profile after user exists
 				if (user?.id && session) {
 					try {
 						await createOrUpdateUserProfile(user.id, {
 							battletag: session.user?.name || 'Unknown'
 						});
-						console.log('User profile created/updated successfully in session');
 					} catch (error) {
 						console.error('Error creating/updating user profile in session:', error);
-						// Don't fail the session - just log the error
 					}
 
-					// Update last seen on each session check
 					try {
 						await updateUserLastSeen(user.id);
 					} catch (error) {

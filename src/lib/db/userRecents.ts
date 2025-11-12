@@ -28,21 +28,40 @@ export async function addUserRecent(
 	metadata: any = {}
 ): Promise<void> {
 	try {
-		const db = getUserDb();
+		console.log('addUserRecent called:', { 
+			userId, 
+			type, 
+			entityId, 
+			title, 
+			subtitle,
+			entityData: JSON.stringify(entityData).substring(0, 100) + '...',
+			metadata 
+		});
 
-		await db
+		const db = getUserDb();
+		console.log('Database connection obtained');
+
+		const insertData = {
+			userId,
+			type,
+			entityId,
+			entityData,
+			title,
+			subtitle,
+			metadata,
+			lastAccessedAt: new Date(),
+			createdAt: new Date()
+		};
+
+		console.log('About to insert/update:', {
+			...insertData,
+			entityData: '[ENTITY_DATA]', // Don't log full data again
+			metadata: '[METADATA]'
+		});
+
+		const result = await db
 			.insert(userRecents)
-			.values({
-				userId,
-				type,
-				entityId,
-				entityData,
-				title,
-				subtitle,
-				metadata,
-				lastAccessedAt: new Date(),
-				createdAt: new Date()
-			})
+			.values(insertData)
 			.onConflictDoUpdate({
 				target: [userRecents.userId, userRecents.type, userRecents.entityId],
 				set: {
@@ -54,7 +73,7 @@ export async function addUserRecent(
 				}
 			});
 
-		console.log(`Added recent ${type} for user:`, userId);
+		console.log('Insert/update successful:', result);
 	} catch (error) {
 		console.error('Error adding user recent:', error);
 		throw error;
@@ -97,11 +116,9 @@ export async function deleteUserRecent(userId: string, recentId: number): Promis
 	try {
 		const db = getUserDb();
 
-		await db
+		await getUserDb()
 			.delete(userRecents)
 			.where(and(eq(userRecents.id, recentId), eq(userRecents.userId, userId)));
-
-		console.log('Deleted recent item:', recentId);
 	} catch (error) {
 		console.error('Error deleting user recent:', error);
 		throw error;
@@ -120,8 +137,6 @@ export async function clearUserRecents(userId: string, type?: string): Promise<v
 			: eq(userRecents.userId, userId);
 
 		await db.delete(userRecents).where(whereConditions);
-
-		console.log(`Cleared ${type ? type : 'all'} recents for user:`, userId);
 	} catch (error) {
 		console.error('Error clearing user recents:', error);
 		throw error;

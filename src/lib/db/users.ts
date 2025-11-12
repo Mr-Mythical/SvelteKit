@@ -12,12 +12,9 @@ export async function updateUserLastSeen(userId: string): Promise<void> {
 		await db
 			.update(userProfiles)
 			.set({
-				lastSeenAt: new Date(),
 				updatedAt: new Date()
 			})
 			.where(eq(userProfiles.id, userId));
-
-		console.log('Updated last seen for user:', userId);
 	} catch (error) {
 		console.error('Error updating user last seen:', error);
 		throw error;
@@ -61,8 +58,6 @@ export async function createOrUpdateUserProfile(
 					...(data.battlenetExpiresAt && { battlenetExpiresAt: data.battlenetExpiresAt })
 				}
 			});
-
-		console.log('Created/updated user profile for:', userId);
 	} catch (error) {
 		console.error('Error creating/updating user profile:', error);
 		throw error;
@@ -102,12 +97,9 @@ export async function updateUserPreferences(
 		await db
 			.update(userProfiles)
 			.set({
-				preferences: preferences,
 				updatedAt: new Date()
 			})
 			.where(eq(userProfiles.id, userId));
-
-		console.log('Updated preferences for user:', userId);
 	} catch (error) {
 		console.error('Error updating user preferences:', error);
 		throw error;

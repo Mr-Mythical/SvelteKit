@@ -15,10 +15,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		// Transform to match the expected RecentReport format
 		const reports = recentReports.map((recent) => ({
-			code: recent.entityData.reportCode,
+			code: recent.entityData.code,
 			timestamp: new Date(recent.lastAccessedAt).getTime(),
 			title: recent.entityData.title || recent.title,
-			guild: recent.entityData.guildName ? { name: recent.entityData.guildName } : undefined,
+			guild: recent.entityData.guild ? { name: recent.entityData.guild } : undefined,
 			owner: { name: recent.entityData.owner || 'Unknown' }
 		}));
 

@@ -3,6 +3,7 @@ import { dungeonData, apiPopup, wowSummaryStore } from '../../stores';
 import { dungeonCount } from '$lib/types/dungeons';
 import type { RaiderIoRun } from '$lib/types/apiTypes';
 import { toast } from 'svelte-sonner';
+import { recentCharacters } from './recentCharacters';
 
 function resetRuns() {
 	const emptyRuns = Array.from({ length: dungeonCount }, () => ({
@@ -79,7 +80,6 @@ export async function fetchWowSummary(
 
 	if (response.ok) {
 		const summaryData = await response.json();
-		console.log('Fetched WoW Full Data:', summaryData);
 		wowSummaryStore.set(summaryData);
 	} else {
 		console.error('Error fetching WoW character summary:', response.status);

@@ -65,14 +65,18 @@ function createRecentCharacters() {
 				if (response.ok) {
 					// Reload from API to get updated list
 					await loadFromAPI();
+				} else if (response.status === 401) {
+					// User not authenticated - this is expected, don't treat as error
+					// Just do nothing since we don't want to save to localStorage for unauthenticated users
+					return;
 				} else {
 					console.error('Failed to add character to API');
-					// Fallback to localStorage
+					// Fallback to localStorage for other errors (server issues, etc.)
 					addToLocalStorage(character);
 				}
 			} catch (error) {
 				console.error('Error adding character to API:', error);
-				// Fallback to localStorage
+				// Fallback to localStorage for network errors
 				addToLocalStorage(character);
 			} finally {
 				setLoading(false);
