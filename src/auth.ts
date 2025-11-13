@@ -1,0 +1,84 @@
+import { SvelteKitAuth } from '@auth/sveltekit';
+import BattleNet from '@auth/core/providers/battlenet';
+import { DrizzleAdapter } from '@auth/drizzle-adapter';
+import { getUserDb } from '$lib/db/userDb.js';
+import { users, accounts, sessions, verificationTokens } from '$lib/db/userSchema.js';
+import { updateUserLastSeen, createOrUpdateUserProfile } from '$lib/db/users.js';
+import { env } from '$env/dynamic/private';
+
+function createAdapter() {
+	const db = getUserDb();
+
+	const adapter = DrizzleAdapter(db, {
+		usersTable: users,
+		accountsTable: accounts,
+		sessionsTable: sessions,
+		verificationTokensTable: verificationTokens
+	});
+
+	return adapter;
+}
+
+export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
+	const authRequest = {
+		adapter: createAdapter(),
+		providers: [
+			BattleNet({
+				clientId: env.AUTH_BATTLENET_ID,
+				clientSecret: env.AUTH_BATTLENET_SECRET,
+				issuer: 'https://eu.battle.net/oauth',
+				checks: ['pkce', 'nonce', 'state'],
+				authorization: {
+					params: {
+						scope: 'openid'
+					}
+				}
+			})
+		],
+		secret: env.AUTH_SECRET,
+		trustHost: true,
+		debug: true,
+		session: {
+			strategy: 'database' as const,
+			maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+			updateAge: 24 * 60 * 60 // 24 hours - how often to update the session
+		},
+		cookies: {
+			sessionToken: {
+				name: 'authjs.session-token',
+				options: {
+					httpOnly: true,
+					sameSite: 'lax' as const,
+					path: '/',
+					secure: process.env.NODE_ENV === 'production',
+					maxAge: 30 * 24 * 60 * 60 // 30 days in seconds
+				}
+			}
+		},
+		callbacks: {
+			async signIn({ user, account, profile }: any) {
+				return true;
+			},
+			async session({ session, user }: any) {
+				if (user?.id && session) {
+					try {
+						await createOrUpdateUserProfile(user.id, {
+							battletag: session.user?.name || 'Unknown'
+						});
+					} catch (error) {
+						console.error('Error creating/updating user profile in session:', error);
+					}
+
+					try {
+						await updateUserLastSeen(user.id);
+					} catch (error) {
+						console.error('Error updating last seen:', error);
+					}
+				}
+				return session;
+			}
+		}
+	};
+
+	return authRequest;
+});

@@ -108,6 +108,33 @@
 		fights = [];
 		showFightSelection = true;
 		resetEvents();
+		resetLogBrowser();
+	}
+
+	// URL management functions
+	function updateUrlParams(reportCode: string | null = null, fightId: number | null = null) {
+		const url = new URL(window.location.href);
+
+		if (reportCode) {
+			url.searchParams.set('report', reportCode);
+		} else {
+			url.searchParams.delete('report');
+		}
+
+		if (fightId) {
+			url.searchParams.set('fight', fightId.toString());
+		} else {
+			url.searchParams.delete('fight');
+		}
+
+		goto(url.pathname + url.search, { replaceState: true });
+	}
+
+	function clearUrlParams() {
+		const url = new URL(window.location.href);
+		url.searchParams.delete('report');
+		url.searchParams.delete('fight');
+		goto(url.pathname + url.search, { replaceState: true });
 	}
 
 	async function fetchFights() {
@@ -137,7 +164,9 @@
 				if (fights.length === 0) {
 					error = 'No suitable fights found for the provided report code.';
 				} else {
-					recentReportsStore.addReport(codeToFetch, reportTitle!, reportGuild, reportOwner!);
+					await recentReportsStore.addReport(codeToFetch, reportTitle!, reportGuild, reportOwner!);
+					// Update URL with report code (but no fight selected yet)
+					updateUrlParams(codeToFetch, null);
 				}
 				showFightSelection = true;
 			} else {
@@ -158,6 +187,9 @@
 		error = '';
 		loadingData = true;
 		showFightSelection = false;
+
+		// Update URL with fight parameter
+		updateUrlParams(codeToFetch, fight.id);
 
 		try {
 			const [damageResponse, healingResponse, castResponse, bossResponse, playerDetailsResponse] =
@@ -254,16 +286,24 @@
 	function goBackToFightSelection() {
 		selectedFight = null;
 		showFightSelection = true;
+		resetEvents();
+		resetLogBrowser();
+		// Remove fight parameter but keep report parameter
+		const currentReport = extractReportCode(reportURL.trim());
+		updateUrlParams(currentReport, null);
 	}
 
 	function goBackToReportInput() {
 		reportURL = '';
 		resetForNewReport();
+		resetLogBrowser();
 		showFightSelection = true;
 		error = '';
 		reportTitle = undefined;
 		reportOwner = undefined;
 		reportGuild = undefined;
+		// Clear all URL parameters when going back to report input
+		clearUrlParams();
 	}
 
 	async function handleLogSearch(event: CustomEvent<BrowseLogsParams>) {
@@ -284,7 +324,6 @@
 	async function fetchAndSetBrowsedLogs(params: BrowseLogsParams, pageNum: number) {
 		browseLoading = true;
 		const fetchParams = { ...params, page: pageNum, limit: browseItemsPerPage };
-		console.log('Fetching browsed logs with params:', JSON.stringify(fetchParams, null, 2));
 		try {
 			const response = await fetch('/api/browse-logs', {
 				method: 'POST',
@@ -381,6 +420,14 @@
 		castEvents = [];
 		bossEvents = [];
 		allHealers = [];
+	}
+
+	function resetLogBrowser() {
+		browsedLogs = [];
+		browseLoading = false;
+		totalBrowsedLogs = 0;
+		currentBrowsePage = 1;
+		lastBrowseParams = null;
 	}
 
 	let activeTab = 'manual';

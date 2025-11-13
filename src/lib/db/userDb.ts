@@ -3,18 +3,19 @@ import postgres from 'postgres';
 import { env } from '$env/dynamic/private';
 import { building } from '$app/environment';
 
-// Create a completely fresh database connection for each request
-// This prevents connection state issues that cause "every other request" failures
-function getDb() {
+// User database connection for user management, recents, favorites, etc.
+function getUserDb() {
 	if (building) {
-		throw new Error('Database not available during build time');
+		throw new Error('User database not available during build time');
 	}
 
-	// Get the database connection string from environment variables
-	const connectionString = env.DATABASE_URL;
+	// Get the user database connection string from environment variables
+	const connectionString = env.DATABASE_USER_URL || env.DATABASE_URL;
 
 	if (!connectionString) {
-		throw new Error('DATABASE_URL is not defined in environment variables.');
+		throw new Error(
+			'Neither DATABASE_USER_URL nor DATABASE_URL is defined in environment variables.'
+		);
 	}
 
 	try {
@@ -42,17 +43,11 @@ function getDb() {
 		// Create the Drizzle database instance
 		return drizzle(client);
 	} catch (error) {
-		console.error('Database initialization error:', error);
+		console.error('User database initialization error:', error);
 		throw new Error(
-			`Failed to initialize database connection: ${error instanceof Error ? error.message : 'Unknown error'}`
+			`Failed to initialize user database connection: ${error instanceof Error ? error.message : 'Unknown error'}`
 		);
 	}
 }
 
-export { getDb as db };
-
-// User database exports - production ready
-export * from './userSchema';
-export * from './users';
-export * from './userRecents';
-export { getUserDb } from './userDb';
+export { getUserDb };

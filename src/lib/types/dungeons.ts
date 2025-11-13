@@ -31,7 +31,7 @@ export class Dungeons {
 		for (let i = 0; i < dungeonCount; i++) {
 			this.runs.push({
 				dungeon: dungeons[i].value,
-				short_name: '',
+				short_name: dungeons[i].short_name,
 				mythic_level: 0,
 				par_time_ms: 0,
 				num_keystone_upgrades: 1,

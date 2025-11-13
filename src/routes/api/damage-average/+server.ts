@@ -5,17 +5,13 @@ import { eq, asc } from 'drizzle-orm';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
-		console.log('API route called: /api/damage-average');
-
 		const bossId = url.searchParams.get('bossId');
 
 		if (!bossId) {
 			return json({ error: 'No bossId provided' }, { status: 400 });
 		}
 
-		console.log('Initializing database connection...');
 		const database = db();
-		console.log('Database connection initialized, executing query...');
 
 		const data = await database
 			.select({
@@ -39,7 +35,6 @@ export const GET: RequestHandler = async ({ url }) => {
 			encounter_id: row.encounter_id
 		}));
 
-		console.log(`Query completed successfully, returning ${processedData.length} records`);
 		return json(processedData);
 	} catch (error) {
 		console.error('Database error in /api/damage-average:', error);

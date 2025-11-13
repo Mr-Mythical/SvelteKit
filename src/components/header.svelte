@@ -6,6 +6,7 @@
 	import { toggleMode } from 'mode-watcher';
 	import Menu from 'lucide-svelte/icons/menu';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import AuthButton from './authButton.svelte';
 </script>
 
 <header>
@@ -109,6 +110,9 @@
 					</li>
 
 					<li>
+						<AuthButton />
+					</li>
+					<li>
 						<Button on:click={toggleMode} variant="ghost" size="icon">
 							<Sun
 								class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
@@ -163,6 +167,9 @@
 								Damage Taken Analysis
 							</a>
 						</Button>
+					</li>
+					<li>
+						<AuthButton mobile={true} />
 					</li>
 				</ul>
 			</div>

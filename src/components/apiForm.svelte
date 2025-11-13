@@ -18,6 +18,8 @@
 	} from '$lib/types/realms';
 	import { fetchRuns, fetchWowSummary } from '$lib/utils/characterData';
 	import { recentCharacters } from '$lib/utils/recentCharacters';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
 
@@ -32,13 +34,41 @@
 
 	const form = superForm(data, {
 		validators: zodClient(formSchema),
-		onUpdated: ({ form: f }) => {
+		onUpdated: async ({ form: f }) => {
 			if (f.valid) {
-				toast.success(`You submitted ${JSON.stringify(f.data, null, 2)}`);
+				toast.success(`Character imported successfully!`);
 				const { region, realm, characterName } = f.data;
+
+				// Fetch character data
 				fetchRuns(characterName, region, realm);
 				fetchWowSummary(characterName, region, realm);
-				recentCharacters.add({ region, realm, characterName });
+
+				// Update URL with character information
+				if (typeof window !== 'undefined') {
+					const currentUrl = new URL(window.location.href);
+					// Clear other parameters
+					currentUrl.searchParams.delete('runs');
+					currentUrl.searchParams.delete('score');
+					// Set character parameters
+					currentUrl.searchParams.set('char', characterName);
+					currentUrl.searchParams.set('region', region);
+					currentUrl.searchParams.set('realm', realm);
+
+					// Navigate to the new URL
+					goto(currentUrl.pathname + currentUrl.search, { replaceState: true, noScroll: true });
+				}
+
+				// Only save to recent characters if user is logged in
+				if ($page?.data?.session?.user) {
+					try {
+						await recentCharacters.add({ region, realm, characterName });
+					} catch (error) {
+						console.error('Failed to add character to recent list:', error);
+					}
+				}
+
+				// Close the popup
+				$apiPopup = false;
 			} else {
 				toast.error('Please fix the errors in the form.');
 			}
