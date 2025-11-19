@@ -5,6 +5,8 @@ import {
 	damageAverages,
 	damageData,
 	healerCompositions,
+	specStatistics,
+	specPerformance,
 	collectionProgress,
 	progressValidation
 } from './schema';
@@ -21,6 +23,8 @@ export const unifiedReportsRelations = relations(unifiedReports, ({ one, many })
 export const encountersRelations = relations(encounters, ({ many }) => ({
 	unifiedReports: many(unifiedReports),
 	damageAverages: many(damageAverages),
+	specStatistics: many(specStatistics),
+	specPerformances: many(specPerformance),
 	collectionProgresses: many(collectionProgress),
 	progressValidations: many(progressValidation)
 }));
@@ -43,6 +47,20 @@ export const healerCompositionsRelations = relations(healerCompositions, ({ one 
 	unifiedReport: one(unifiedReports, {
 		fields: [healerCompositions.reportId],
 		references: [unifiedReports.id]
+	})
+}));
+
+export const specStatisticsRelations = relations(specStatistics, ({ one }) => ({
+	encounter: one(encounters, {
+		fields: [specStatistics.encounterId],
+		references: [encounters.encounterId]
+	})
+}));
+
+export const specPerformanceRelations = relations(specPerformance, ({ one }) => ({
+	encounter: one(encounters, {
+		fields: [specPerformance.encounterId],
+		references: [encounters.encounterId]
 	})
 }));
 

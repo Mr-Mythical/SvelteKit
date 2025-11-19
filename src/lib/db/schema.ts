@@ -286,3 +286,97 @@ export const progressValidation = pgTable(
 		pk: primaryKey({ columns: [table.encounterId, table.region, table.collectionType] })
 	})
 );
+
+// =============================================================================
+// SPEC_PERFORMANCE TABLE
+// =============================================================================
+// Stores individual spec performance data from beta/PTR raid tests
+export const specPerformance = pgTable(
+	'spec_performance',
+	{
+		id: serial('id').primaryKey(),
+		reportCode: text('report_code').notNull(),
+		fightId: integer('fight_id').notNull(),
+		encounterId: integer('encounter_id')
+			.notNull()
+			.references(() => encounters.encounterId),
+		region: text('region').notNull(),
+		specIcon: text('spec_icon').notNull(),
+		playerName: text('player_name'),
+		damageDone: bigint('damage_done', { mode: 'number' }).default(0),
+		healingDone: bigint('healing_done', { mode: 'number' }).default(0),
+		dps: integer('dps').default(0),
+		hps: integer('hps').default(0),
+		fightDuration: integer('fight_duration'),
+		fightStartTime: integer('fight_start_time'),
+		fightEndTime: integer('fight_end_time'),
+		difficulty: integer('difficulty'),
+		isKill: boolean('is_kill').default(false),
+		deathCount: integer('death_count').default(0),
+		deathTime: integer('death_time'),
+		timeDeadMs: integer('time_dead_ms').default(0),
+		timeAlivePercentage: real('time_alive_percentage').default(100),
+		createdAt: timestamp('created_at').defaultNow()
+	},
+	(table) => ({
+		uniquePerformance: uniqueIndex('idx_spec_performance_unique').on(
+			table.reportCode,
+			table.fightId,
+			table.encounterId,
+			table.region,
+			table.playerName
+		),
+		encounterIdx: index('idx_spec_performance_encounter').on(table.encounterId),
+		specIdx: index('idx_spec_performance_spec').on(table.specIcon)
+	})
+);
+
+// =============================================================================
+// SPEC_STATISTICS TABLE
+// =============================================================================
+// Stores aggregated spec performance statistics
+export const specStatistics = pgTable(
+	'spec_statistics',
+	{
+		id: serial('id').primaryKey(),
+		encounterId: integer('encounter_id')
+			.notNull()
+			.references(() => encounters.encounterId),
+		region: text('region').notNull(),
+		specIcon: text('spec_icon').notNull(),
+		difficulty: integer('difficulty'),
+		killsOnly: boolean('kills_only').default(false),
+		deathFilter: text('death_filter').default('all'),
+		avgDamageDone: bigint('avg_damage_done', { mode: 'number' }),
+		avgHealingDone: bigint('avg_healing_done', { mode: 'number' }),
+		avgDps: integer('avg_dps'),
+		avgHps: integer('avg_hps'),
+		maxDamageDone: bigint('max_damage_done', { mode: 'number' }),
+		maxHealingDone: bigint('max_healing_done', { mode: 'number' }),
+		maxDps: integer('max_dps'),
+		maxHps: integer('max_hps'),
+		minDamageDone: bigint('min_damage_done', { mode: 'number' }),
+		minHealingDone: bigint('min_healing_done', { mode: 'number' }),
+		minDps: integer('min_dps'),
+		minHps: integer('min_hps'),
+		avgDeathTime: integer('avg_death_time'),
+		deathRate: real('death_rate').default(0.0),
+		sampleCount: integer('sample_count'),
+		lastUpdated: timestamp('last_updated').defaultNow()
+	},
+	(table) => ({
+		uniqueStatistic: uniqueIndex('idx_spec_statistics_unique').on(
+			table.encounterId,
+			table.region,
+			table.specIcon,
+			table.difficulty,
+			table.killsOnly,
+			table.deathFilter
+		),
+		encounterRegionSpecIdx: index('idx_spec_statistics_encounter').on(
+			table.encounterId,
+			table.region,
+			table.specIcon
+		)
+	})
+);

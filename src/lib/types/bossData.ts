@@ -147,3 +147,16 @@ export const bosses: Boss[] = [
 		]
 	}
 ];
+
+export const testBosses: Boss[] = [
+	{
+		id: 3009,
+		name: 'Vexie and the Geargrinders',
+		abilities: []
+	},
+	{
+		id: 3010,
+		name: 'Cauldron of Carnage',
+		abilities: []
+	}
+];
