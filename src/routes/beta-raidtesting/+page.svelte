@@ -471,7 +471,7 @@
 		<div class="grid grid-cols-1 gap-8">
 			<div class="flex justify-center">
 				<div class="w-full max-w-4xl space-y-4">
-					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-3">
 						<Form.Field {form} name="bossId">
 							<Form.Control let:attrs>
 								<Form.Label>Select Boss</Form.Label>
@@ -524,7 +524,30 @@
 							<Form.FieldErrors />
 						</Form.Field>
 
-						<input name="fightFilter" value={$formData.fightFilter} hidden />
+						<Form.Field {form} name="fightFilter">
+							<Form.Control let:attrs>
+								<Form.Label>Fight Filter</Form.Label>
+								<Select.Root
+									selected={selectedFightFilterValue}
+									onSelectedChange={(v) => {
+										if (v) {
+											$formData.fightFilter = v.value;
+										}
+									}}
+								>
+									<Select.Trigger {...attrs}>
+										<Select.Value placeholder="Select filter" />
+									</Select.Trigger>
+									<Select.Content>
+										{#each fightFilters as filter}
+											<Select.Item value={filter.value}>{filter.label}</Select.Item>
+										{/each}
+									</Select.Content>
+								</Select.Root>
+								<input hidden bind:value={$formData.fightFilter} name={attrs.name} />
+							</Form.Control>
+							<Form.FieldErrors />
+						</Form.Field>
 					</div>
 				</div>
 			</div>
@@ -537,7 +560,7 @@
 				<div class="rounded-lg border border-destructive bg-destructive/10 p-4 text-center">
 					<p class="text-destructive">{error}</p>
 				</div>
-			{:else if filteredSpecData.length > 0}
+			{:else}
 				<div class="rounded-lg border bg-card p-4">
 					<Tabs.Root value="damage" class="w-full">
 						<Tabs.List class="grid w-full grid-cols-2">
@@ -574,26 +597,6 @@
 											>Healer</label
 										>
 									</div>
-								</div>
-								<div class="flex items-center gap-2">
-									<span class="text-sm text-muted-foreground">Filter:</span>
-									<Select.Root
-										selected={selectedFightFilterValue}
-										onSelectedChange={(v) => {
-											if (v) {
-												$formData.fightFilter = v.value;
-											}
-										}}
-									>
-										<Select.Trigger class="w-32">
-											<Select.Value />
-										</Select.Trigger>
-										<Select.Content>
-											{#each fightFilters as filter}
-												<Select.Item value={filter.value}>{filter.label}</Select.Item>
-											{/each}
-										</Select.Content>
-									</Select.Root>
 								</div>
 							</div>
 
@@ -996,12 +999,6 @@
 							{/if}
 						</Tabs.Content>
 					</Tabs.Root>
-				</div>
-			{:else if $formData.bossId}
-				<div class="rounded-lg border bg-card p-8 text-center">
-					<p class="text-muted-foreground">
-						No data available for the selected boss and filters. Try adjusting your selection.
-					</p>
 				</div>
 			{/if}
 		</div>
