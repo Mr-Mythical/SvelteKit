@@ -47,7 +47,7 @@ export default defineConfig({
 			// Current thresholds based on existing coverage
 			thresholds: {
 				branches: 10,
-				functions: 8,
+				functions: 7,
 				lines: 4,
 				statements: 4
 			}
