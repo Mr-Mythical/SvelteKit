@@ -155,6 +155,11 @@ export const testBosses: Boss[] = [
 		abilities: []
 	},
 	{
+		id: 53177,
+		name: 'Vorasius',
+		abilities: []
+	},
+	{
 		id: 53306,
 		name: 'Chimaeras the Undreamt God',
 		abilities: []
