@@ -66,6 +66,19 @@
 					<li>
 						<Button variant="link">
 							<a
+								href="/beta-raidtesting"
+								class="inline-flex items-center gap-2 font-heading text-xl font-semibold text-foreground decoration-accent"
+							>
+								Beta Raid Testing
+								<span class="rounded-full bg-orange-500 px-2 py-0.5 text-xs font-bold text-white"
+									>NEW</span
+								>
+							</a>
+						</Button>
+					</li>
+					<li>
+						<Button variant="link">
+							<a
 								href="/rating-calculator"
 								class="font-heading text-xl font-semibold text-foreground decoration-accent"
 							>
@@ -135,6 +148,19 @@
 								class="font-heading text-xl font-semibold text-foreground decoration-accent"
 							>
 								Home
+							</a>
+						</Button>
+					</li>
+					<li>
+						<Button variant="link">
+							<a
+								href="/beta-raidtesting"
+								class="inline-flex items-center gap-2 font-heading text-xl font-semibold text-foreground decoration-accent"
+							>
+								Beta Raid Testing
+								<span class="rounded-full bg-orange-500 px-2 py-0.5 text-xs font-bold text-white"
+									>NEW</span
+								>
 							</a>
 						</Button>
 					</li>
