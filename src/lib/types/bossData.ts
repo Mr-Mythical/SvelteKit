@@ -1,5 +1,3 @@
-import { id } from "zod/v4/locales";
-
 export interface Ability {
 	name: string;
 	id: number;
