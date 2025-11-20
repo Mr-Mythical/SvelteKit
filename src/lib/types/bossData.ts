@@ -1,3 +1,5 @@
+import { id } from "zod/v4/locales";
+
 export interface Ability {
 	name: string;
 	id: number;
@@ -157,6 +159,11 @@ export const testBosses: Boss[] = [
 	{
 		id: 53177,
 		name: 'Vorasius',
+		abilities: []
+	},
+	{
+		id: 53179,
+		name: 'Fallen-King Salhadaar',
 		abilities: []
 	},
 	{
