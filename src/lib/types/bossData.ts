@@ -160,10 +160,24 @@ export const testBosses: Boss[] = [
 		abilities: []
 	},
 	{
+		id: 53178,
+		name: 'Vaelgor & Ezzorak',
+		abilities: []
+	},
+	{
 		id: 53179,
 		name: 'Fallen-King Salhadaar',
 		abilities: []
 	},
+	{ 
+		id: 53180,
+		name: 'Lightblinded Vanguard',
+		abilities: []
+	},
+	{ 
+		id: 53182, 
+		name: "Belo'ren, Child of Al'ar", 
+		abilities: [] },
 	{
 		id: 53306,
 		name: 'Chimaeras the Undreamt God',
