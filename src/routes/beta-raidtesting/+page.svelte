@@ -31,7 +31,10 @@
 		label: boss.name
 	}));
 
-	const difficulties = [{ value: '4', label: 'Heroic' }];
+	const difficulties = [
+		{ value: '4', label: 'Heroic' },
+		{ value: '5', label: 'Mythic' }
+	];
 
 	const fightFilters = [
 		{ value: 'kills_wipes', label: 'Kills & Wipes' },
@@ -48,7 +51,7 @@
 	$: if (encounters.length > 0 && !$formData.bossId) {
 		$formData.bossId = encounters[0].value;
 		$formData.difficulty = difficulties[0].value;
-		$formData.fightFilter = $formData.fightFilter || 'kills_no_deaths';
+		$formData.fightFilter = $formData.fightFilter || 'kills_wipes';
 	}
 
 	interface SpecStatistic {
