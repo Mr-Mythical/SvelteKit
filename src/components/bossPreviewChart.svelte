@@ -55,14 +55,7 @@
 
 	let loading = true;
 
-	ChartJS.register(
-		LineElement,
-		PointElement,
-		CategoryScale,
-		LinearScale,
-		LineController,
-		Filler
-	);
+	ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, LineController, Filler);
 
 	const options: ChartOptions<'line'> = {
 		responsive: true,
@@ -134,10 +127,12 @@
 
 {#if loading}
 	<div class="flex h-full w-full items-center justify-center">
-		<div class="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+		<div
+			class="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+		></div>
 	</div>
 {:else if chartData}
 	<div class="h-full w-full">
-		<Chart type="line" data={chartData} options={options} />
+		<Chart type="line" data={chartData} {options} />
 	</div>
 {/if}

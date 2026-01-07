@@ -85,8 +85,9 @@
 		<div class="mb-6">
 			<p>
 				Transform Warcraft Logs into clear, interactive visualizations. Watch damage patterns unfold
-				second-by-second, explore average raid damage across encounters, and analyze healing coverage
-				with filterable timelines. Built for raid leaders and progression teams who need visual insights.
+				second-by-second, explore average raid damage across encounters, and analyze healing
+				coverage with filterable timelines. Built for raid leaders and progression teams who need
+				visual insights.
 			</p>
 		</div>
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -99,23 +100,28 @@
 					<li>Boss mechanic overlays</li>
 				</ul>
 				<p class="mb-6">
-					Import any WarcraftLogs report for instant visual breakdowns with filterable ability tracking.
+					Import any WarcraftLogs report for instant visual breakdowns with filterable ability
+					tracking.
 				</p>
-			<Button><a href="/raid" class="px-6 py-3">Visualize Raid Reports</a></Button>
-		</div>
-		<div class="rounded-lg bg-card p-6 shadow-md">
-			<h3 class="mb-4 text-2xl font-semibold">Average Damage Taken Charts</h3>
-			<p class="mb-4">Visual analysis of raid damage patterns:</p>
-			<ul class="mb-4 ml-6 list-disc">
-				<li>Average damage taken with statistical bands</li>
-				<li>Confidence intervals across progression logs</li>
-				<li>Variability ranges showing damage spikes</li>
-			</ul>
-			<div class="mb-4 flex h-32 items-center justify-center rounded-lg bg-muted/50 overflow-hidden">
-				<BossPreviewChart bossId={3129} />
+				<Button><a href="/raid" class="px-6 py-3">Visualize Raid Reports</a></Button>
 			</div>
-			<p class="mb-6 text-sm text-muted-foreground">Example: Plexus Sentinel average raid damage taken</p>
-			<Button><a href="/raid/boss" class="px-6 py-3">Explore Boss Visualizations</a></Button>
+			<div class="rounded-lg bg-card p-6 shadow-md">
+				<h3 class="mb-4 text-2xl font-semibold">Average Damage Taken Charts</h3>
+				<p class="mb-4">Visual analysis of raid damage patterns:</p>
+				<ul class="mb-4 ml-6 list-disc">
+					<li>Average damage taken with statistical bands</li>
+					<li>Confidence intervals across progression logs</li>
+					<li>Variability ranges showing damage spikes</li>
+				</ul>
+				<div
+					class="mb-4 flex h-32 items-center justify-center overflow-hidden rounded-lg bg-muted/50"
+				>
+					<BossPreviewChart bossId={3129} />
+				</div>
+				<p class="mb-6 text-sm text-muted-foreground">
+					Example: Plexus Sentinel average raid damage taken
+				</p>
+				<Button><a href="/raid/boss" class="px-6 py-3">Explore Boss Visualizations</a></Button>
 			</div>
 		</div>
 	</section>

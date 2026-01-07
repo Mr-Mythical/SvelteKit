@@ -1,6 +1,6 @@
 <script>
-    import '../../../../app.pcss';
-    import { ModeWatcher } from 'mode-watcher';
+	import '../../../../app.pcss';
+	import { ModeWatcher } from 'mode-watcher';
 </script>
 
 <ModeWatcher />

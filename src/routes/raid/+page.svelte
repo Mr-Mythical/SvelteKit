@@ -64,7 +64,7 @@
 		browsedLogs = [];
 		totalBrowsedLogs = 0;
 		currentBrowsePage = 1;
-		
+
 		const params = { ...event.detail, page: 1, limit: browseItemsPerPage };
 		try {
 			const response = await fetch('/api/browse-logs', {
@@ -110,29 +110,33 @@
 	<section class="mx-auto mb-12 max-w-7xl">
 		<div class="space-y-4 text-center">
 			<h1 class="mb-4 text-4xl font-bold">Interactive Raid Visualization & Timeline Analysis</h1>
-			<p class="text-lg text-muted-foreground leading-relaxed">
-				Visualize your World of Warcraft raid encounters with interactive charts and timelines. 
-				Watch damage patterns unfold second-by-second, explore average damage taken across encounters, 
-				and analyze healing coverage with filterable ability timelines. Transform raw WarcraftLogs data 
-				into clear, actionable visualizations that reveal raid dynamics at a glance.
+			<p class="text-lg leading-relaxed text-muted-foreground">
+				Visualize your World of Warcraft raid encounters with interactive charts and timelines.
+				Watch damage patterns unfold second-by-second, explore average damage taken across
+				encounters, and analyze healing coverage with filterable ability timelines. Transform raw
+				WarcraftLogs data into clear, actionable visualizations that reveal raid dynamics at a
+				glance.
 			</p>
-			<div class="grid gap-4 text-left sm:grid-cols-2 md:grid-cols-3 mt-6">
+			<div class="mt-6 grid gap-4 text-left sm:grid-cols-2 md:grid-cols-3">
 				<div class="rounded-lg border bg-card p-4">
 					<h3 class="mb-2 font-semibold text-foreground">Interactive Damage Timeline</h3>
 					<p class="text-sm text-muted-foreground">
-						See every damage event plotted second-by-second with clickable ability markers and visual event highlighting
+						See every damage event plotted second-by-second with clickable ability markers and
+						visual event highlighting
 					</p>
 				</div>
 				<div class="rounded-lg border bg-card p-4">
 					<h3 class="mb-2 font-semibold text-foreground">Average Damage Taken Charts</h3>
 					<p class="text-sm text-muted-foreground">
-						Visualize average raid damage taken with statistical bands showing variability and confidence in the data
+						Visualize average raid damage taken with statistical bands showing variability and
+						confidence in the data
 					</p>
 				</div>
 				<div class="rounded-lg border bg-card p-4">
 					<h3 class="mb-2 font-semibold text-foreground">Boss Encounter Previews</h3>
 					<p class="text-sm text-muted-foreground">
-						Quick preview charts for each boss showing damage patterns across first-kill progression logs
+						Quick preview charts for each boss showing damage patterns across first-kill progression
+						logs
 					</p>
 				</div>
 			</div>
@@ -171,36 +175,38 @@
 	<div class="mx-auto max-w-7xl">
 		<div class="grid gap-8 lg:grid-cols-[1.25fr_0.75fr]">
 			<div class="space-y-6">
-			<Card.Root class="relative overflow-hidden transition hover:shadow-lg">
-				<div
-					class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"
-				></div>
-				<Card.Header>
-					<div class="flex items-center gap-3">
-						<div class="rounded-lg bg-primary/10 p-2">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-5 w-5 text-primary"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+				<Card.Root class="relative overflow-hidden transition hover:shadow-lg">
+					<div
+						class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"
+					></div>
+					<Card.Header>
+						<div class="flex items-center gap-3">
+							<div class="rounded-lg bg-primary/10 p-2">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-5 w-5 text-primary"
+									viewBox="0 0 20 20"
+									fill="currentColor"
+								>
+									<path
+										fill-rule="evenodd"
+										d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+										clip-rule="evenodd"
+									/>
+								</svg>
+							</div>
+							<Card.Title>Recent Reports</Card.Title>
 						</div>
-						<Card.Title>Recent Reports</Card.Title>
-					</div>
-					<Card.Description>Quick access to your recently viewed reports</Card.Description>
-				</Card.Header>
+						<Card.Description>Quick access to your recently viewed reports</Card.Description>
+					</Card.Header>
 
-				<RecentReports onSelectReport={handleReportSelection} />
-			</Card.Root>
+					<RecentReports onSelectReport={handleReportSelection} />
+				</Card.Root>
 
 				<Card.Root class="relative overflow-hidden transition hover:shadow-lg">
-					<div class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"></div>
+					<div
+						class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"
+					></div>
 					<Card.Header>
 						<div class="flex items-center gap-3">
 							<div class="rounded-lg bg-primary/10 p-2">
@@ -215,14 +221,14 @@
 										fill-rule="evenodd"
 										d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z"
 										clip-rule="evenodd"
-								/>
-							</svg>
+									/>
+								</svg>
+							</div>
+							<Card.Title>Browse Logs From WarcraftLogs</Card.Title>
 						</div>
-						<Card.Title>Browse Logs From WarcraftLogs</Card.Title>
-					</div>
-					<Card.Description
-						>Search and filter logs based on boss and healer composition</Card.Description
-					>
+						<Card.Description
+							>Search and filter logs based on boss and healer composition</Card.Description
+						>
 					</Card.Header>
 					<Card.Content class="space-y-4">
 						<LogBrowserFilters on:search={handleLogSearch} loading={browseLoading} />
@@ -239,7 +245,9 @@
 				</Card.Root>
 			</div>
 
-			<Card.Root class="relative overflow-hidden transition hover:shadow-lg mx-auto w-full max-w-md">
+			<Card.Root
+				class="relative mx-auto w-full max-w-md overflow-hidden transition hover:shadow-lg"
+			>
 				<div class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"></div>
 				<Card.Header>
 					<div class="flex items-center gap-3">
@@ -260,22 +268,28 @@
 						</div>
 						<Card.Title>Damage Visualization by Boss</Card.Title>
 					</div>
-					<Card.Description>Interactive damage patterns and timelines for each encounter</Card.Description>
+					<Card.Description
+						>Interactive damage patterns and timelines for each encounter</Card.Description
+					>
 				</Card.Header>
 				<Card.Content>
 					<div class="grid grid-cols-1 gap-2">
 						{#each bosses as boss (boss.id)}
 							<a
 								href={`/raid/boss/${boss.slug}`}
-								class="group relative overflow-hidden rounded-lg border bg-card p-3 transition hover:shadow-lg hover:border-primary"
+								class="group relative overflow-hidden rounded-lg border bg-card p-3 transition hover:border-primary hover:shadow-lg"
 							>
 								<div
-									class="absolute inset-0 -z-10 bg-gradient-to-br from-purple-500/5 to-transparent group-hover:from-purple-500/10 transition"
+									class="absolute inset-0 -z-10 bg-gradient-to-br from-purple-500/5 to-transparent transition group-hover:from-purple-500/10"
 								></div>
-							<div class="mb-2 flex h-32 items-center justify-center rounded-lg bg-muted/50 group-hover:bg-muted transition overflow-hidden">
-								<BossPreviewChart bossId={boss.id} />
+								<div
+									class="mb-2 flex h-32 items-center justify-center overflow-hidden rounded-lg bg-muted/50 transition group-hover:bg-muted"
+								>
+									<BossPreviewChart bossId={boss.id} />
 								</div>
-								<h3 class="text-sm font-semibold text-foreground group-hover:text-primary transition">
+								<h3
+									class="text-sm font-semibold text-foreground transition group-hover:text-primary"
+								>
 									{boss.name}
 								</h3>
 								<p class="text-xs text-muted-foreground">View patterns</p>
@@ -284,8 +298,8 @@
 					</div>
 				</Card.Content>
 			</Card.Root>
-			</div>
-			</div>
+		</div>
+	</div>
 </main>
 
 <Footer />

@@ -158,7 +158,7 @@
 							</a>
 						</Button>
 					</li>
-					
+
 					<li>
 						<AuthButton mobile={true} />
 					</li>
