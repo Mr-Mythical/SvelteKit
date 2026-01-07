@@ -2,6 +2,7 @@
 	import SEO from '../components/seo.svelte';
 	import Footer from '../components/footer.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BossPreviewChart from '../components/bossPreviewChart.svelte';
 </script>
 
 <SEO
@@ -80,42 +81,45 @@
 	</section>
 
 	<section class="mb-12">
-		<h2 class="mb-6 text-3xl font-bold">Raid Analysis Toolkit</h2>
+		<h2 class="mb-6 text-3xl font-bold">Interactive Raid Visualization</h2>
 		<div class="mb-6">
 			<p>
-				Transform Warcraft Logs into visual mastery with our raid analysis suite. Designed for raid
-				leaders and serious progression guilds, these tools help identify wipe causes, optimize
-				cooldown usage, and improve raid coordination.
+				Transform Warcraft Logs into clear, interactive visualizations. Watch damage patterns unfold
+				second-by-second, explore average raid damage across encounters, and analyze healing coverage
+				with filterable timelines. Built for raid leaders and progression teams who need visual insights.
 			</p>
 		</div>
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
 			<div class="rounded-lg bg-card p-6 shadow-md">
-				<h3 class="mb-4 text-2xl font-semibold">Encounter Healing Analysis</h3>
-				<p class="mb-4">Deep dive into raid performance with features:</p>
+				<h3 class="mb-4 text-2xl font-semibold">Timeline Visualization</h3>
+				<p class="mb-4">Interactive charts showing:</p>
 				<ul class="mb-4 ml-6 list-disc">
-					<li>Damage/healing timeline visualization</li>
-					<li>Boss and healer ability overlays</li>
+					<li>Second-by-second damage and healing events</li>
+					<li>Clickable ability markers and timelines</li>
+					<li>Boss mechanic overlays</li>
 				</ul>
 				<p class="mb-6">
-					Import any WCL report for instant visual breakdowns. Or browse by healer comp
+					Import any WarcraftLogs report for instant visual breakdowns with filterable ability tracking.
 				</p>
-				<Button><a href="/encounter-analysis" class="px-6 py-3">Analyze Raid Reports</a></Button>
+			<Button><a href="/raid" class="px-6 py-3">Visualize Raid Reports</a></Button>
+		</div>
+		<div class="rounded-lg bg-card p-6 shadow-md">
+			<h3 class="mb-4 text-2xl font-semibold">Average Damage Taken Charts</h3>
+			<p class="mb-4">Visual analysis of raid damage patterns:</p>
+			<ul class="mb-4 ml-6 list-disc">
+				<li>Average damage taken with statistical bands</li>
+				<li>Confidence intervals across progression logs</li>
+				<li>Variability ranges showing damage spikes</li>
+			</ul>
+			<div class="mb-4 flex h-32 items-center justify-center rounded-lg bg-muted/50 overflow-hidden">
+				<BossPreviewChart bossId={3129} />
 			</div>
-			<div class="rounded-lg bg-card p-6 shadow-md">
-				<h3 class="mb-4 text-2xl font-semibold">Encounter Damage Pattern</h3>
-				<p class="mb-4">Identify critical raid moments through:</p>
-				<ul class="mb-4 ml-6 list-disc">
-					<li>Average damage taken charts</li>
-					<li>Spike damage identification</li>
-					<li>Healing requirement forecasting</li>
-				</ul>
-				<p class="mb-6">Perfect for diagnosing recurring wipe patterns.</p>
-				<Button><a href="/average-damage-taken" class="px-6 py-3">View Damage Patterns</a></Button>
+			<p class="mb-6 text-sm text-muted-foreground">Example: Plexus Sentinel average raid damage taken</p>
+			<Button><a href="/raid/boss" class="px-6 py-3">Explore Boss Visualizations</a></Button>
 			</div>
 		</div>
 	</section>
 
-	<!-- Enhanced About Section -->
 	<section class="rounded-lg bg-card p-8 shadow-md">
 		<h2 class="mb-4 text-3xl font-bold">About Mr. Mythical</h2>
 		<p class="mb-4">

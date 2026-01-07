@@ -4,8 +4,15 @@ export const GET = async () => {
 	const routes = [
 		'/',
 		'/rating-calculator',
-		'/encounter-analysis',
-		'/average-damage-taken',
+		'/raid',
+		'/raid/boss/plexus-sentinel',
+		'/raid/boss/loomithar',
+		'/raid/boss/soulbinder-naazindhri',
+		'/raid/boss/forgeweaver-araz',
+		'/raid/boss/the-soul-hunters',
+		'/raid/boss/fractillus',
+		'/raid/boss/nexus-king-salhadaar',
+		'/raid/boss/dimensius-the-all-devouring',
 		'/about',
 		'/privacy',
 		'/cookie'

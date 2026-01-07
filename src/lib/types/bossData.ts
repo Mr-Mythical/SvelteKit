@@ -6,6 +6,7 @@ export interface Ability {
 export interface Boss {
 	id: number;
 	name: string;
+	slug: string;
 	abilities: Ability[];
 }
 
@@ -13,6 +14,7 @@ export const bosses: Boss[] = [
 	{
 		id: 3129,
 		name: 'Plexus Sentinel',
+		slug: 'plexus-sentinel',
 		abilities: [
 			{ name: 'Obliteration Arcanocannon', id: 1219263 },
 			{ name: 'Eradicating Salvo', id: 1219531 },
@@ -23,7 +25,8 @@ export const bosses: Boss[] = [
 	},
 	{
 		id: 3131,
-		name: "Loom'itha",
+		name: "Loom'ithar",
+		slug: 'loomithar',
 		abilities: [
 			{ name: 'Overinfusion Burst', id: 1226395 },
 			{ name: 'Infusion Tether', id: 1226311 },
@@ -37,6 +40,7 @@ export const bosses: Boss[] = [
 	{
 		id: 3130,
 		name: 'Soulbinder Naazindhri',
+		slug: 'soulbinder-naazindhri',
 		abilities: [
 			{ name: 'Shatterpulse', id: 1250008 },
 			{ name: 'Essence Implosion', id: 1227848 },
@@ -52,6 +56,7 @@ export const bosses: Boss[] = [
 	{
 		id: 3132,
 		name: 'Forgeweaver Araz',
+		slug: 'forgeweaver-araz',
 		abilities: [
 			{ name: 'Arcane Expulsion', id: 1227631 },
 			{ name: 'Arcane Siphon', id: 1228100 },
@@ -67,6 +72,7 @@ export const bosses: Boss[] = [
 	{
 		id: 3122,
 		name: 'The Soul Hunters',
+		slug: 'the-soul-hunters',
 		abilities: [
 			{ name: 'Spirit Bomb', id: 1242259 },
 			{ name: 'Sigil of Chains', id: 1240891 },
@@ -88,6 +94,7 @@ export const bosses: Boss[] = [
 	{
 		id: 3133,
 		name: 'Fractillus',
+		slug: 'fractillus',
 		abilities: [
 			{ name: 'Shattering Backhand', id: 1220394 },
 			{ name: 'Crystalline Shockwave', id: 1233416 },
@@ -98,6 +105,7 @@ export const bosses: Boss[] = [
 	{
 		id: 3134,
 		name: 'Nexus-King Salhadaar',
+		slug: 'nexus-king-salhadaar',
 		abilities: [
 			{ name: 'Decree: Oath-Bound', id: 1224731 },
 			{ name: 'Dimension Glare', id: 1234539 },
@@ -118,6 +126,7 @@ export const bosses: Boss[] = [
 	{
 		id: 3135,
 		name: 'Dimensius, the All-Devouring',
+		slug: 'dimensius-the-all-devouring',
 		abilities: [
 			{ name: 'Devour', id: 1229038 },
 			{ name: 'Massive Smash', id: 1230087 },
@@ -152,41 +161,49 @@ export const testBosses: Boss[] = [
 	{
 		id: 53176,
 		name: 'Imperator Averzian',
+		slug: 'imperator-averzian',
 		abilities: []
 	},
 	{
 		id: 53177,
 		name: 'Vorasius',
+		slug: 'vorasius',
 		abilities: []
 	},
 	{
 		id: 53178,
 		name: 'Vaelgor & Ezzorak',
+		slug: 'vaelgor-and-ezzorak',
 		abilities: []
 	},
 	{
 		id: 53179,
 		name: 'Fallen-King Salhadaar',
+		slug: 'fallen-king-salhadaar',
 		abilities: []
 	},
 	{
 		id: 53180,
 		name: 'Lightblinded Vanguard',
+		slug: 'lightblinded-vanguard',
 		abilities: []
 	},
 	{
 		id: 53182,
 		name: "Belo'ren, Child of Al'ar",
+		slug: 'beloren-child-of-alar',
 		abilities: []
 	},
 	{
 		id: 53306,
 		name: 'Chimaeras the Undreamt God',
+		slug: 'chimaeras-the-undreamt-god',
 		abilities: []
 	},
 	{
 		id: 53183,
 		name: 'Midnight Falls',
+		slug: 'midnight-falls',
 		abilities: []
 	}
 ];

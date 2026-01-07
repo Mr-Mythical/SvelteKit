@@ -28,6 +28,33 @@
 
 	export let encounterId: number;
 	export let encounterName: string = 'Unknown Encounter';
+	// Simple localStorage cache helpers with TTL
+	function getCache<T>(key: string): T | null {
+		try {
+			const raw = localStorage.getItem(key);
+			if (!raw) return null;
+			const parsed = JSON.parse(raw);
+			if (!parsed || typeof parsed !== 'object') return null;
+			const { ts, ttl, value } = parsed as { ts: number; ttl: number; value: T };
+			if (!ts || !ttl) return null;
+			const now = Date.now();
+			if (now - ts > ttl) {
+				localStorage.removeItem(key);
+				return null;
+			}
+			return value as T;
+		} catch {
+			return null;
+		}
+	}
+
+	function setCache<T>(key: string, value: T, ttlMs: number): void {
+		try {
+			localStorage.setItem(key, JSON.stringify({ ts: Date.now(), ttl: ttlMs, value }));
+		} catch {
+			// ignore storage errors
+		}
+	}
 
 	interface AverageRecord {
 		time_seconds: number;
@@ -200,18 +227,21 @@
 	async function fetchData() {
 		try {
 			loading = true;
-			const response = await fetch(`/api/damage-average?bossId=${encounterId}`);
-			const data = await response.json();
-
-			if ('error' in data) {
-				throw new Error(data.error);
+			const cacheKey = `damage-average:${encounterId}`;
+			let data = getCache<AverageRecord[]>(cacheKey);
+			if (!data) {
+				const response = await fetch(`/api/damage-average?bossId=${encounterId}`);
+				const apiData = await response.json();
+				if ('error' in apiData) {
+					throw new Error(apiData.error);
+				}
+				if (!Array.isArray(apiData)) {
+					throw new Error('Invalid data format received from API');
+				}
+				data = apiData as AverageRecord[];
+				// Cache for 24 hours
+				setCache(cacheKey, data, 24 * 60 * 60 * 1000);
 			}
-
-			// Check if data is an array and handle error if not
-			if (!Array.isArray(data)) {
-				throw new Error('Invalid data format received from API');
-			}
-
 			const rawData = data as AverageRecord[];
 			const filteredData = rawData.filter((d) => d.n >= 5);
 
