@@ -9,24 +9,20 @@
 		BrowsedLog,
 		BrowseLogsParams
 	} from '$lib/types/apiTypes';
-	import DamageChart from '../../components/damageChart.svelte';
-	import SEO from '../../components/seo.svelte';
-	import Footer from '../../components/footer.svelte';
+	import DamageChart from '../../../components/damageChart.svelte';
+	import SEO from '../../../components/seo.svelte';
+	import Footer from '../../../components/footer.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import RecentReports from '../../components/recentReports.svelte';
 	import { recentReports as recentReportsStore } from '$lib/utils/recentReports';
-
-	import LogBrowserFilters from '../../components/logBrowser.svelte';
-	import LogBrowserResults from '../../components/logBrowserResult.svelte';
 	import { goto } from '$app/navigation';
 	import { page as pageStore } from '$app/stores';
 	import { onMount } from 'svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import EncounterSkeleton from '../../components/skeletons/encounterSkeleton.svelte';
+	import EncounterSkeleton from '../../../components/skeletons/encounterSkeleton.svelte';
 
 	let reportURL: string = '';
 	let fights: Fight[] = [];
@@ -41,17 +37,11 @@
 	let loadingData = false;
 	let killsOnly = false;
 	let showFightSelection = true;
+	let initializing = false;
 
 	let reportTitle: string | undefined;
 	let reportOwner: ReportOwner | undefined;
 	let reportGuild: ReportGuild | undefined;
-
-	let browsedLogs: BrowsedLog[] = [];
-	let browseLoading = false;
-	let totalBrowsedLogs = 0;
-	let currentBrowsePage = 1;
-	const browseItemsPerPage = 10;
-	let lastBrowseParams: BrowseLogsParams | null = null;
 
 	const difficultyMap: Record<number, string> = {
 		2: 'Raid Finder',
@@ -68,12 +58,15 @@
 	let initialFightIdFromUrl: number | null = null;
 
 	onMount(async () => {
+		const params = $pageStore.params as { reportcode?: string };
+		initialReportCodeFromUrl = params?.reportcode ?? null;
+
 		const urlParams = $pageStore.url.searchParams;
-		initialReportCodeFromUrl = urlParams.get('report');
 		const fightIdParam = urlParams.get('fight');
 		initialFightIdFromUrl = fightIdParam ? parseInt(fightIdParam, 10) : null;
 
 		if (initialReportCodeFromUrl) {
+			initializing = true;
 			reportURL = `https://www.warcraftlogs.com/reports/${initialReportCodeFromUrl}`;
 			await fetchFights();
 
@@ -83,6 +76,7 @@
 					await handleFightSelection(fightToSelect);
 				}
 			}
+			initializing = false;
 		}
 	});
 
@@ -108,18 +102,12 @@
 		fights = [];
 		showFightSelection = true;
 		resetEvents();
-		resetLogBrowser();
 	}
 
 	// URL management functions
 	function updateUrlParams(reportCode: string | null = null, fightId: number | null = null) {
 		const url = new URL(window.location.href);
-
-		if (reportCode) {
-			url.searchParams.set('report', reportCode);
-		} else {
-			url.searchParams.delete('report');
-		}
+		const code = reportCode ?? ($pageStore.params as { reportcode?: string }).reportcode ?? '';
 
 		if (fightId) {
 			url.searchParams.set('fight', fightId.toString());
@@ -127,14 +115,12 @@
 			url.searchParams.delete('fight');
 		}
 
-		goto(url.pathname + url.search, { replaceState: true });
+		goto(`/raid/logs=${code}` + url.search, { replaceState: true });
 	}
 
 	function clearUrlParams() {
-		const url = new URL(window.location.href);
-		url.searchParams.delete('report');
-		url.searchParams.delete('fight');
-		goto(url.pathname + url.search, { replaceState: true });
+		// Send users back to the raid hub when clearing state
+		goto('/raid', { replaceState: true });
 	}
 
 	async function fetchFights() {
@@ -287,7 +273,6 @@
 		selectedFight = null;
 		showFightSelection = true;
 		resetEvents();
-		resetLogBrowser();
 		// Remove fight parameter but keep report parameter
 		const currentReport = extractReportCode(reportURL.trim());
 		updateUrlParams(currentReport, null);
@@ -296,103 +281,13 @@
 	function goBackToReportInput() {
 		reportURL = '';
 		resetForNewReport();
-		resetLogBrowser();
 		showFightSelection = true;
 		error = '';
 		reportTitle = undefined;
 		reportOwner = undefined;
 		reportGuild = undefined;
-		// Clear all URL parameters when going back to report input
+		// Clear all URL parameters when going back to start
 		clearUrlParams();
-	}
-
-	async function handleLogSearch(event: CustomEvent<BrowseLogsParams>) {
-		browseLoading = true;
-		browsedLogs = [];
-		totalBrowsedLogs = 0;
-		currentBrowsePage = 1;
-		lastBrowseParams = event.detail;
-		await fetchAndSetBrowsedLogs(event.detail, 1);
-	}
-
-	async function handleBrowsePageChange(event: CustomEvent<{ page: number }>) {
-		if (!lastBrowseParams) return;
-		currentBrowsePage = event.detail.page;
-		await fetchAndSetBrowsedLogs(lastBrowseParams, currentBrowsePage);
-	}
-
-	async function fetchAndSetBrowsedLogs(params: BrowseLogsParams, pageNum: number) {
-		browseLoading = true;
-		const fetchParams = { ...params, page: pageNum, limit: browseItemsPerPage };
-		try {
-			const response = await fetch('/api/browse-logs', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(fetchParams)
-			});
-			const responseText = await response.text();
-
-			if (response.ok) {
-				const data = JSON.parse(responseText);
-				if (data.logs) {
-					browsedLogs = data.logs;
-					totalBrowsedLogs = data.total || 0;
-				} else {
-					console.error('API response OK, but no logs array:', data);
-					browsedLogs = [];
-					totalBrowsedLogs = 0;
-				}
-			} else {
-				console.error(
-					'Failed to fetch browsed logs (response not OK):',
-					response.status,
-					responseText
-				);
-				error = `API Error ${response.status}: ${JSON.parse(responseText).error || 'Unknown API error'}`;
-				browsedLogs = [];
-				totalBrowsedLogs = 0;
-			}
-		} catch (err) {
-			console.error('Error in fetchAndSetBrowsedLogs (catch block):', err);
-			error = 'Network error or API unavailable while Browse logs.';
-			browsedLogs = [];
-			totalBrowsedLogs = 0;
-		} finally {
-			browseLoading = false;
-		}
-	}
-
-	let loadingLogFromBrowse = false;
-
-	async function analyzeLogFromBrowse(logToAnalyze: BrowsedLog) {
-		loadingLogFromBrowse = true;
-		loadingData = true;
-		showFightSelection = false;
-
-		try {
-			reportURL = `https://www.warcraftlogs.com/reports/${logToAnalyze.log_code}`;
-
-			await goto(
-				`/encounter-analysis?report=${logToAnalyze.log_code}&fight=${logToAnalyze.fight_id}`,
-				{
-					replaceState: true
-				}
-			);
-
-			await fetchFights();
-
-			const fightToSelect = fights.find((f) => f.id === logToAnalyze.fight_id);
-			if (fightToSelect) {
-				await handleFightSelection(fightToSelect);
-			} else {
-				throw new Error('Fight not found in report');
-			}
-		} catch (err) {
-			console.error('Error analyzing log:', err);
-			error = 'Failed to load the selected fight.';
-		} finally {
-			loadingLogFromBrowse = false;
-		}
 	}
 
 	function groupFightsByNameAndDifficulty(fights: Fight[]) {
@@ -421,39 +316,17 @@
 		bossEvents = [];
 		allHealers = [];
 	}
-
-	function resetLogBrowser() {
-		browsedLogs = [];
-		browseLoading = false;
-		totalBrowsedLogs = 0;
-		currentBrowsePage = 1;
-		lastBrowseParams = null;
-	}
-
-	let activeTab = 'manual';
-	let showFilters = false;
-
-	$: if (!loadingData && damageEvents.length > 0 && allHealers.length > 0 && selectedFight) {
-		handleLogSearch(
-			new CustomEvent<BrowseLogsParams>('search', {
-				detail: {
-					bossId: selectedFight.encounterID,
-					healerSpecs: allHealers.map((healer) => `${healer.type}-${healer.specs[0]?.spec}`)
-				}
-			})
-		);
-	}
 </script>
 
 <SEO
-	title="Raid Encounter Healing Analysis & Log Browser - Mr. Mythical"
-	description="Analyze raid encounters from Warcraft Logs. Input manual logs or browse the top logs filtered by healer compositions. Detailed damage, healing graphs, and ability overlays for deeper insights."
+	title="Raid Encounter Visualization & Log Browser - Mr. Mythical"
+	description="Visualize raid encounters from Warcraft Logs. Interactive damage and healing timelines with ability overlays for deeper insights into raid performance."
 	image="https://mrmythical.com/Logo.png"
-	keywords="Raid analysis, Raid analyzer, Encounter analysis, healing analysis, Warcraft Logs, World of Warcraft, wow raids, cooldown planning, boss tactics, raid leading, damage graphs, healing graphs, raid performance, ability overlays"
+	keywords="Raid visualization, Encounter visualization, healing visualization, Warcraft Logs, World of Warcraft, wow raids, cooldown planning, boss tactics, raid leading, damage graphs, healing graphs, raid performance, ability overlays"
 />
 
 <main class="container mx-auto px-4 py-8">
-	{#if loadingLogFromBrowse || (selectedFight && loadingData)}
+	{#if initializing || (selectedFight && loadingData)}
 		<EncounterSkeleton />
 	{:else if !selectedFight && reportURL && fights.length > 0}
 		<div class="mt-8 flex flex-col gap-8">
@@ -617,178 +490,19 @@
 					{allHealers}
 					encounterId={selectedFight.encounterID}
 				/>
-
-				<div class="mt-8">
-					<h2 class="text-center text-2xl font-bold">
-						More {selectedFight.name} logs with the same healers
-					</h2>
-
-					<LogBrowserResults
-						logs={browsedLogs}
-						loading={browseLoading}
-						totalLogs={totalBrowsedLogs}
-						currentPage={currentBrowsePage}
-						itemsPerPage={browseItemsPerPage}
-						on:pageChange={handleBrowsePageChange}
-						on:analyzeLog={(e) => analyzeLogFromBrowse(e.detail)}
-					/>
-
-					<Separator />
-					<div class="pt-2">
-						<Button
-							variant="ghost"
-							class="w-full justify-between"
-							on:click={() => (showFilters = !showFilters)}
-						>
-							<span>Refine Search</span>
-							<span class="text-xs">▼</span>
-						</Button>
-
-						{#if showFilters}
-							<div class="mt-4">
-								<LogBrowserFilters
-									on:search={handleLogSearch}
-									loading={browseLoading}
-									initialBossId={selectedFight.encounterID}
-									initialHealerSpecs={allHealers.map(
-										(healer) => `${healer.type}-${healer.specs[0]?.spec}`
-									)}
-								/>
-							</div>
-						{/if}
-					</div>
-				</div>
 			{:else}
 				<p class="py-10 text-center text-destructive">
-					{error || 'No analysis data found for this fight.'}
+					{error || 'No visualization data found for this fight.'}
 				</p>
 			{/if}
 		</div>
 	{:else}
 		<div class="mb-6 text-center">
-			<h1 class="mb-2 text-4xl font-bold">Encounter Analysis</h1>
+			<h1 class="mb-2 text-4xl font-bold">No Report Loaded</h1>
 			<p class="text-lg text-muted-foreground">
-				Load a specific log or browse community logs to analyze healing performance
+				Please load a report from the raid hub to visualize encounters
 			</p>
-		</div>
-
-		<div class="mx-auto max-w-6xl space-y-6">
-			<div class="grid gap-6 lg:grid-cols-2">
-				<Card.Root class="relative overflow-hidden transition hover:shadow-lg">
-					<Card.Header>
-						<div class="flex items-center gap-3">
-							<div class="rounded-lg bg-primary/10 p-2">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-5 w-5 text-primary"
-									viewBox="0 0 20 20"
-									fill="currentColor"
-								>
-									<path
-										fill-rule="evenodd"
-										d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586L7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
-										clip-rule="evenodd"
-									/>
-								</svg>
-							</div>
-							<Card.Title>Load a Specific Report</Card.Title>
-						</div>
-						<Card.Description>
-							Enter a WarcraftLogs report URL or code to analyze specific fights
-						</Card.Description>
-					</Card.Header>
-					<Card.Content>
-						<div class="space-y-4">
-							<div class="space-y-2">
-								<Label for="reportCode">WarcraftLogs Link or Code</Label>
-								<Input
-									type="text"
-									id="reportCode"
-									bind:value={reportURL}
-									placeholder="https://www.warcraftlogs.com/reports/<reportcode>"
-								/>
-							</div>
-							<Button class="w-full" on:click={fetchFights} disabled={loadingFights}>
-								{#if loadingFights}
-									Loading...
-								{:else}
-									Fetch Fights
-								{/if}
-							</Button>
-							{#if error && !loadingFights && !selectedFight && fights.length === 0}
-								<p class="mt-2 text-sm text-destructive">{error}</p>
-							{/if}
-						</div>
-					</Card.Content>
-				</Card.Root>
-
-				<Card.Root class="relative overflow-hidden transition hover:shadow-lg">
-					<div
-						class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"
-					></div>
-					<Card.Header>
-						<div class="flex items-center gap-3">
-							<div class="rounded-lg bg-primary/10 p-2">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-5 w-5 text-primary"
-									viewBox="0 0 20 20"
-									fill="currentColor"
-								>
-									<path
-										fill-rule="evenodd"
-										d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-										clip-rule="evenodd"
-									/>
-								</svg>
-							</div>
-							<Card.Title>Recent Reports</Card.Title>
-						</div>
-						<Card.Description>Quick access to your recently viewed reports</Card.Description>
-					</Card.Header>
-
-					<RecentReports onSelectReport={handleReportSelection} />
-				</Card.Root>
-			</div>
-
-			<Card.Root class="relative overflow-hidden transition hover:shadow-lg">
-				<div class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"></div>
-				<Card.Header>
-					<div class="flex items-center gap-3">
-						<div class="rounded-lg bg-primary/10 p-2">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-5 w-5 text-primary"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-							>
-								<path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z" />
-								<path
-									fill-rule="evenodd"
-									d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-						</div>
-						<Card.Title>Browse Logs From WarcraftLogs</Card.Title>
-					</div>
-					<Card.Description
-						>Search and filter logs based on boss and healer composition</Card.Description
-					>
-				</Card.Header>
-				<Card.Content class="space-y-6">
-					<LogBrowserFilters on:search={handleLogSearch} loading={browseLoading} />
-					<LogBrowserResults
-						logs={browsedLogs}
-						loading={browseLoading}
-						totalLogs={totalBrowsedLogs}
-						currentPage={currentBrowsePage}
-						itemsPerPage={browseItemsPerPage}
-						on:pageChange={handleBrowsePageChange}
-						on:analyzeLog={(e) => analyzeLogFromBrowse(e.detail)}
-					/>
-				</Card.Content>
-			</Card.Root>
+			<Button class="mt-4" on:click={() => goto('/raid')}>Go to Raid Hub</Button>
 		</div>
 	{/if}
 </main>

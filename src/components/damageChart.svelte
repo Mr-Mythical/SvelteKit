@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { base } from '$app/paths';
 	import { Chart } from 'svelte-chartjs';
 	import annotationPlugin from 'chartjs-plugin-annotation';
 	import {
@@ -474,7 +475,7 @@
 						);
 						const color: string = abilityColors[event.abilityGameID] || 'rgba(0, 0, 0, 0.8)';
 						const icon: HTMLImageElement = new Image(26, 26);
-						icon.src = `icons/${event.abilityGameID}.webp`;
+						icon.src = `${base}/icons/${event.abilityGameID}.webp`;
 						const sortedHealers = [...allHealers].sort((a, b) => a.name.localeCompare(b.name));
 						const healerIndex = sortedHealers.findIndex((h) => h.id === event.sourceID);
 						const yAdjust = healerIndex >= 0 ? 20 + healerIndex * 30 : 20;
@@ -500,7 +501,7 @@
 							(event.timestamp - damageEvents[0].pointStart) / damageEvents[0].pointInterval
 						);
 						const bossIcon: HTMLImageElement = new Image(26, 26);
-						bossIcon.src = `icons/${event.abilityGameID}.webp`;
+						bossIcon.src = `${base}/icons/${event.abilityGameID}.webp`;
 						return {
 							type: 'line',
 							xMin: xValue,
@@ -532,7 +533,7 @@
 				<div class="flex items-center space-x-2">
 					<Checkbox bind:checked={bossAbilityFilters[ability.id]} />
 					<img
-						src={`icons/${ability.id}.webp`}
+						src={`${base}/icons/${ability.id}.webp`}
 						alt={ability.name + ' icon'}
 						width="26"
 						height="26"

@@ -5,8 +5,8 @@
 	import Moon from 'lucide-svelte/icons/moon';
 	import { toggleMode } from 'mode-watcher';
 	import Menu from 'lucide-svelte/icons/menu';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import AuthButton from './authButton.svelte';
+	import { base } from '$app/paths';
 </script>
 
 <header>
@@ -15,10 +15,10 @@
 			<a href="/">
 				<div class="flex items-center">
 					<img
-						src="../Logo64x64.webp"
+						src={`${base}/Logo64x64.webp`}
 						alt="Mr. Mythical Logo"
 						class="h-10 w-10 md:h-16 md:w-16"
-						srcset="../Logo40x40.webp 40w, ../Logo64x64.webp 64w, ../Logo128x128.webp 128w"
+						srcset={`${base}/Logo40x40.webp 40w, ${base}/Logo64x64.webp 64w, ${base}/Logo128x128.webp 128w`}
 						sizes="(max-width: 768px) 10vw, (min-width: 769px) 16vw"
 						loading="lazy"
 					/>
@@ -34,7 +34,6 @@
 					aria-label="Toggle mobile navigation"
 					aria-expanded={open}
 					aria-controls="mobile-nav"
-					class={`transform transition-transform ${open ? 'rotate-90' : ''}`}
 				>
 					<Menu />
 				</Button>
@@ -87,39 +86,14 @@
 						</Button>
 					</li>
 					<li>
-						<DropdownMenu.Root>
-							<DropdownMenu.Trigger asChild let:builder>
-								<Button
-									builders={[builder]}
-									variant="link"
-									class="font-heading text-xl font-semibold text-foreground decoration-accent"
-								>
-									Raid Tools
-								</Button>
-							</DropdownMenu.Trigger>
-							<DropdownMenu.Content>
-								<DropdownMenu.Group asChild let:builder>
-									<DropdownMenu.Item>
-										<Button
-											builders={[builder]}
-											variant="link"
-											class="font-heading text-xl font-semibold text-foreground decoration-accent"
-										>
-											<a href="/encounter-analysis" class="w-full">Encounter Analysis</a>
-										</Button>
-									</DropdownMenu.Item>
-									<DropdownMenu.Item>
-										<Button
-											builders={[builder]}
-											variant="link"
-											class="font-heading text-xl font-semibold text-foreground decoration-accent"
-										>
-											<a href="/average-damage-taken" class="w-full">Average Damage Taken</a>
-										</Button>
-									</DropdownMenu.Item>
-								</DropdownMenu.Group>
-							</DropdownMenu.Content>
-						</DropdownMenu.Root>
+						<Button variant="link">
+							<a
+								href="/raid"
+								class="font-heading text-xl font-semibold text-foreground decoration-accent"
+							>
+								Raid
+							</a>
+						</Button>
 					</li>
 
 					<li>
@@ -177,23 +151,14 @@
 					<li>
 						<Button variant="link">
 							<a
-								href="/encounter-analysis"
+								href="/raid"
 								class="font-heading text-xl font-semibold text-foreground decoration-accent"
 							>
-								Encounter Analysis
+								Raid
 							</a>
 						</Button>
 					</li>
-					<li>
-						<Button variant="link">
-							<a
-								href="/average-damage-taken"
-								class="font-heading text-xl font-semibold text-foreground decoration-accent"
-							>
-								Damage Taken Analysis
-							</a>
-						</Button>
-					</li>
+
 					<li>
 						<AuthButton mobile={true} />
 					</li>
