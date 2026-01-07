@@ -1,9 +1,9 @@
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { bosses } from '$lib/types/bossData';
 
-export const load: PageLoad = async ({ params }) => {
-	const bossSlug = params.bossname;
+export const load: PageServerLoad = async ({ params }) => {
+	const bossSlug = (params as { bossname?: string }).bossname;
 	const boss = bosses.find((b) => b.slug === bossSlug);
 
 	if (!boss) {
