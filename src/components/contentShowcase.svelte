@@ -82,17 +82,17 @@
 	{#if adBlocked || showPatreon}
 		<!-- Patreon fallback / rotation -->
 		<div
-			class="relative mx-auto min-h-[90px] w-full max-w-[728px] overflow-hidden rounded-lg border-2 border-purple-500 bg-gradient-to-r from-purple-500/10 to-pink-500/10 shadow-lg"
+			class="relative mx-auto h-[90px] w-full max-w-[728px] overflow-hidden rounded-lg border-2 border-purple-500 bg-gradient-to-r from-purple-500/10 to-pink-500/10 shadow-lg"
 		>
 			<a
 				href="https://www.patreon.com/MrMythical"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="flex h-full items-center justify-center gap-4 p-6 transition-transform hover:scale-105"
+				class="flex h-full items-center justify-center gap-4 px-6 transition-transform hover:scale-105"
 				aria-label="Support Mr. Mythical on Patreon"
 			>
 				<svg
-					class="h-12 w-12 text-purple-600"
+					class="h-10 w-10 flex-shrink-0 text-purple-600"
 					viewBox="0 0 569 546"
 					fill="currentColor"
 					xmlns="http://www.w3.org/2000/svg"
@@ -101,8 +101,10 @@
 					<rect width="100" height="545.799988" fill="currentColor" />
 				</svg>
 				<div class="text-left">
-					<p class="text-xl font-bold text-purple-700 dark:text-purple-300">Support on Patreon</p>
-					<p class="text-sm text-gray-700 dark:text-gray-200">
+					<p class="text-lg font-bold leading-tight text-purple-700 dark:text-purple-300">
+						Support on Patreon
+					</p>
+					<p class="text-xs leading-tight text-gray-700 dark:text-gray-200">
 						Support MrMythical.com on Patreon to help keep these free, open-source WoW utilities
 						accurate and up-to-date.
 					</p>
@@ -110,7 +112,7 @@
 			</a>
 		</div>
 	{:else}
-		<div class="relative mx-auto min-h-[90px] overflow-hidden rounded-lg shadow-lg">
+		<div class="relative mx-auto h-[90px] overflow-hidden rounded-lg shadow-lg">
 			<a
 				href="https://shop.restedxp.com/ref/Braunerr/"
 				target="_blank"
