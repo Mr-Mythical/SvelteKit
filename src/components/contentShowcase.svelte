@@ -61,9 +61,9 @@
 		const interval = setInterval(() => {
 			currentIndex = (currentIndex + 1) % content.length;
 			rotationCount += 1;
-			// Every 4th rotation, surface Patreon even when not blocked
-			showPatreon = adBlocked || rotationCount % 4 === 0;
-		}, 20000);
+			// Every 2nd rotation, surface Patreon even when not blocked
+			showPatreon = adBlocked || rotationCount % 2 === 0;
+		}, 15000);
 
 		return () => clearInterval(interval);
 	});
