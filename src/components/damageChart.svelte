@@ -23,6 +23,7 @@
 	import { Label } from '$lib/components/ui/label/index';
 	import * as RadioGroup from '$lib/components/ui/radio-group/index';
 	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Button } from '$lib/components/ui/button/index';
 	import { classSpecAbilities } from '$lib/types/classData';
 	import { bosses } from '$lib/types/bossData';
 
@@ -557,4 +558,18 @@
 	class="container mx-auto flex h-[32rem] w-full items-center justify-center p-4 xl:h-[40rem] 2xl:h-[50rem]"
 >
 	<Chart type="line" data={chartData} {options} />
+</div>
+
+<div class="mt-8 w-full rounded-lg bg-card p-6 text-center shadow-md">
+	<h3 class="mb-4 text-2xl font-semibold">Support on Patreon</h3>
+	<p class="mb-6">
+		Enjoying these tools? Support MrMythical.com on Patreon to help keep these free, open-source WoW
+		utilities accurate and up-to-date. Your contribution enables new features and ongoing
+		improvements for the Mythic+ and raid community.
+	</p>
+	<Button>
+		<a href="https://www.patreon.com/MrMythical" target="_blank" class="px-6 py-3">
+			Support on Patreon
+		</a>
+	</Button>
 </div>
