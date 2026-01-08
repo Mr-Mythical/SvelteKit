@@ -82,6 +82,20 @@
 		{/if}
 	</div>
 
+	<div class="mt-8 w-full rounded-lg bg-card p-6 text-center shadow-md">
+		<h3 class="mb-4 text-2xl font-semibold">Support on Patreon</h3>
+		<p class="mb-6">
+			Enjoying these tools? Support MrMythical.com on Patreon to help keep these free, open-source
+			WoW utilities accurate and up-to-date. Your contribution enables new features and ongoing
+			improvements for the Mythic+ and raid community.
+		</p>
+		<Button>
+			<a href="https://www.patreon.com/MrMythical" target="_blank" class="px-6 py-3">
+				Support on Patreon
+			</a>
+		</Button>
+	</div>
+
 	<!-- Text below: two columns (left: details, right: understanding) -->
 	<div class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2">
 		<!-- Left column: Boss details -->

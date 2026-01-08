@@ -7,6 +7,10 @@
 	import Menu from 'lucide-svelte/icons/menu';
 	import AuthButton from './authButton.svelte';
 	import { base } from '$app/paths';
+
+	function toggleMenu() {
+		open = !open;
+	}
 </script>
 
 <header>
@@ -51,7 +55,7 @@
 			</div>
 
 			<div class="hidden w-auto md:block">
-				<ul class="flex space-x-3">
+				<ul class="flex">
 					<li>
 						<Button variant="link">
 							<a
@@ -69,9 +73,6 @@
 								class="inline-flex items-center gap-2 font-heading text-xl font-semibold text-foreground decoration-accent"
 							>
 								Beta Raid Testing
-								<span class="rounded-full bg-orange-500 px-2 py-0.5 text-xs font-bold text-white"
-									>NEW</span
-								>
 							</a>
 						</Button>
 					</li>
@@ -114,7 +115,7 @@
 			</div>
 
 			<div class={`md:hidden ${open ? 'block' : 'hidden'} mt-2 w-full`}>
-				<ul class="flex flex-col space-y-2">
+				<ul class="flex flex-col">
 					<li>
 						<Button variant="link">
 							<a
@@ -129,12 +130,9 @@
 						<Button variant="link">
 							<a
 								href="/beta-raidtesting"
-								class="inline-flex items-center gap-2 font-heading text-xl font-semibold text-foreground decoration-accent"
+								class="inline-flex items-center font-heading text-xl font-semibold text-foreground decoration-accent"
 							>
 								Beta Raid Testing
-								<span class="rounded-full bg-orange-500 px-2 py-0.5 text-xs font-bold text-white"
-									>NEW</span
-								>
 							</a>
 						</Button>
 					</li>
@@ -167,3 +165,15 @@
 		</div>
 	</nav>
 </header>
+
+<style>
+	#mobile-nav {
+		transition: max-height 0.3s ease-in-out;
+		overflow: hidden;
+		max-height: 0;
+	}
+
+	#mobile-nav.open {
+		max-height: 500px;
+	}
+</style>
