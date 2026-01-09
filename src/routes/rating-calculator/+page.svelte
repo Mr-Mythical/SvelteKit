@@ -25,7 +25,6 @@
 			character, set score goals, and share your setup with shareable URLs.
 		</p>
 	</div>
-	<h2 class="mb-4 text-2xl font-semibold">Mythic+ calculator interface</h2>
 	<KeystoneTable />
 	<ScoreExplanation />
 	<ApiForm data={data.form} />

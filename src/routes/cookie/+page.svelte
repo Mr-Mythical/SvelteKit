@@ -106,7 +106,7 @@ MrMythical.com uses cookies for advertising through Google AdSense."
 			</li>
 		</ul>
 
-		<h2 class="mb-4 mt-4 text-xl font-bold">Contact</h2>
+		<h2 class="mb-4 mt-4 text-xl font-bold">Cookie Policy Contact</h2>
 		<p>
 			If you have questions about our cookie policy, contact us at:
 			<Button

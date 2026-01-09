@@ -47,7 +47,7 @@
 
 	<!-- Boss Selection Grid -->
 	<div class="mx-auto mb-8 rounded-lg border bg-card p-4">
-		<h2 class="mb-3 text-center text-lg font-semibold">Select a raid boss</h2>
+		<h3 class="mb-3 text-center text-base font-semibold">Select a raid boss</h3>
 		<div class="flex flex-wrap justify-center gap-2">
 			{#each bosses as boss (boss.id)}
 				<button
@@ -154,9 +154,9 @@
 		<!-- Right column: Understanding the visualization -->
 		<div>
 			<section class="rounded-lg border bg-card p-6">
-				<h2 class="mb-6 pb-2 text-2xl font-semibold text-foreground">
+				<h3 class="mb-6 pb-2 text-xl font-semibold text-foreground">
 					Understanding the visualization for {currentBoss?.name || 'this boss'}
-				</h2>
+				</h3>
 
 				<div class="metric-group mb-6">
 					<h3 class="mb-2 text-xl font-medium text-foreground">Average Damage (Blue Line)</h3>

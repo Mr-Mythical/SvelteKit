@@ -110,7 +110,7 @@
 	<section class="mx-auto mb-12 max-w-7xl">
 		<div class="space-y-4 text-center">
 			<h1 class="mb-4 text-4xl font-bold">Interactive Raid Visualization & Timeline Analysis</h1>
-			<h2 class="text-2xl font-semibold">Raid visualization highlights</h2>
+			<h3 class="text-xl font-semibold">Raid visualization highlights</h3>
 			<p class="text-lg leading-relaxed text-muted-foreground">
 				Visualize your World of Warcraft raid encounters with interactive charts and timelines.
 				Watch damage patterns unfold second-by-second, explore average damage taken across
