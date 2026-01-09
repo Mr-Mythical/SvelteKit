@@ -5,7 +5,7 @@
 </script>
 
 <SEO
-	title="Cookie Policy - MrMythical.com"
+	title="Cookie Policy for Mr. Mythical WoW Tools"
 	description="This Cookie Policy explains how
 MrMythical.com uses cookies for advertising through Google AdSense."
 	image="https://mrmythical.com/Logo.png"
@@ -51,6 +51,7 @@ MrMythical.com uses cookies for advertising through Google AdSense."
 					variant="link"
 					href="https://support.google.com/accounts/answer/32050"
 					target="_blank"
+					rel="noopener noreferrer"
 				>
 					Chrome
 				</Button>
@@ -61,6 +62,7 @@ MrMythical.com uses cookies for advertising through Google AdSense."
 					variant="link"
 					href="https://support.apple.com/en-in/guide/safari/sfri11471/mac"
 					target="_blank"
+					rel="noopener noreferrer"
 				>
 					Safari
 				</Button>
@@ -71,6 +73,7 @@ MrMythical.com uses cookies for advertising through Google AdSense."
 					variant="link"
 					href="https://support.mozilla.org/en-US/kb/clear-cookies-and-site-data-firefox"
 					target="_blank"
+					rel="noopener noreferrer"
 				>
 					Firefox
 				</Button>
@@ -81,6 +84,7 @@ MrMythical.com uses cookies for advertising through Google AdSense."
 					variant="link"
 					href="https://support.microsoft.com/en-us/topic/how-to-delete-cookie-files-in-internet-explorer-bca9446f-d873-78de-77ba-d42645fa52fc"
 					target="_blank"
+					rel="noopener noreferrer"
 				>
 					Internet Explorer
 				</Button>
@@ -95,6 +99,7 @@ MrMythical.com uses cookies for advertising through Google AdSense."
 					variant="link"
 					href="https://policies.google.com/technologies/ads"
 					target="_blank"
+					rel="noopener noreferrer"
 				>
 					Google Advertising Privacy Policy
 				</Button>

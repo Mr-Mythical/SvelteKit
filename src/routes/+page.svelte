@@ -6,8 +6,8 @@
 </script>
 
 <SEO
-	title="Mr. Mythical - World of Warcraft Tools | Mythic+ & Raid Optimization"
-	description="Master World of Warcraft content with Mr. Mythical's advanced tools. Calculate Mythic+ scores, analyze raid encounters, improve gameplay strategy, and optimize your WoW performance."
+	title="Mr. Mythical - Mythic+ & Raid Tools"
+	description="Master WoW with Mr. Mythical tools: Mythic+ score calculator, raid visualizations, and strategy insights to optimize your performance."
 	image="https://mrmythical.com/Logo.png"
 	keywords="World of Warcraft tools, Mythic+ calculator, raid analysis, WoW dungeon optimization, Warcraft logs, M+ score tracker, WoW addons, raid progression"
 />
@@ -66,13 +66,19 @@
 					<a
 						href="https://www.curseforge.com/wow/addons/mr-mythical"
 						target="_blank"
+						rel="noopener noreferrer"
 						class="px-6 py-3"
 					>
 						Download on CurseForge
 					</a>
 				</Button>
 				<Button class="ml-2 mt-2">
-					<a href="https://addons.wago.io/addons/mr-mythical" target="_blank" class="px-6 py-3">
+					<a
+						href="https://addons.wago.io/addons/mr-mythical"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="px-6 py-3"
+					>
 						Download on Wago Addons
 					</a>
 				</Button>
@@ -140,6 +146,7 @@
 			<a
 				href="https://github.com/Mr-Mythical/SvelteKit"
 				target="_blank"
+				rel="noopener noreferrer"
 				class="font-bold text-link underline">GitHub</a
 			>.
 		</p>
@@ -148,6 +155,7 @@
 			<a
 				href="https://www.patreon.com/mrmythical"
 				target="_blank"
+				rel="noopener noreferrer"
 				class="font-bold text-link underline">Patreon</a
 			>
 			— it helps cover server costs and enables new features.

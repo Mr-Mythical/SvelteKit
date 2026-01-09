@@ -150,6 +150,7 @@
 					variant="link"
 					href="https://www.curseforge.com/wow/addons/mr-mythical"
 					target="_blank"
+					rel="noopener noreferrer"
 				>
 					Download on CurseForge
 				</Button>
@@ -159,6 +160,7 @@
 					variant="link"
 					href="https://addons.wago.io/addons/mr-mythical"
 					target="_blank"
+					rel="noopener noreferrer"
 				>
 					Download on Wago Addons
 				</Button>
