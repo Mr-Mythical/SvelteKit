@@ -897,7 +897,12 @@
 				</a>
 			</Button>
 			<Button class="ml-2 mt-2">
-				<a href="https://addons.wago.io/addons/mr-mythical" target="_blank" rel="noopener noreferrer" class="px-6 py-3">
+				<a
+					href="https://addons.wago.io/addons/mr-mythical"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="px-6 py-3"
+				>
 					Download on Wago Addons
 				</a>
 			</Button>
@@ -911,7 +916,12 @@
 				improvements for the Mythic+ and raid community.
 			</p>
 			<Button>
-				<a href="https://www.patreon.com/MrMythical" target="_blank" rel="noopener noreferrer" class="px-6 py-3">
+				<a
+					href="https://www.patreon.com/MrMythical"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="px-6 py-3"
+				>
 					Support on Patreon
 				</a>
 			</Button>

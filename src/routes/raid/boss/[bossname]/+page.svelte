@@ -90,7 +90,12 @@
 			improvements for the Mythic+ and raid community.
 		</p>
 		<Button>
-			<a href="https://www.patreon.com/MrMythical" target="_blank" rel="noopener noreferrer" class="px-6 py-3">
+			<a
+				href="https://www.patreon.com/MrMythical"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="px-6 py-3"
+			>
 				Support on Patreon
 			</a>
 		</Button>

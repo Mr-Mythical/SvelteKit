@@ -18,16 +18,16 @@
 		<div class="container flex w-full max-w-[1400px] flex-wrap items-center justify-between px-2">
 			<a href="/">
 				<div class="flex items-center">
-						<img
-							src={`${base}/Logo64x64.webp`}
-							alt="Mr. Mythical Logo"
-							class="h-10 w-10 md:h-16 md:w-16"
-							srcset={`${base}/Logo40x40.webp 40w, ${base}/Logo64x64.webp 64w, ${base}/Logo128x128.webp 128w`}
-							sizes="(max-width: 768px) 10vw, (min-width: 769px) 16vw"
-							loading="lazy"
-							width="64"
-							height="64"
-						/>
+					<img
+						src={`${base}/Logo64x64.webp`}
+						alt="Mr. Mythical Logo"
+						class="h-10 w-10 md:h-16 md:w-16"
+						srcset={`${base}/Logo40x40.webp 40w, ${base}/Logo64x64.webp 64w, ${base}/Logo128x128.webp 128w`}
+						sizes="(max-width: 768px) 10vw, (min-width: 769px) 16vw"
+						loading="lazy"
+						width="64"
+						height="64"
+					/>
 					<span class="ml-3 font-heading text-2xl font-semibold md:text-3xl">Mr. Mythical</span>
 				</div>
 			</a>

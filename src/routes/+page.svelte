@@ -73,7 +73,12 @@
 					</a>
 				</Button>
 				<Button class="ml-2 mt-2">
-					<a href="https://addons.wago.io/addons/mr-mythical" target="_blank" rel="noopener noreferrer" class="px-6 py-3">
+					<a
+						href="https://addons.wago.io/addons/mr-mythical"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="px-6 py-3"
+					>
 						Download on Wago Addons
 					</a>
 				</Button>
