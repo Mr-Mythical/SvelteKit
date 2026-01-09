@@ -22,7 +22,7 @@
 	</section>
 
 	<section class="prose prose-invert mb-12 max-w-none rounded-lg bg-card p-6 shadow-md">
-		<h2 class="text-2xl font-bold">Premium WoW Tools for Competitive Players</h2>
+		<h3 class="text-xl font-bold">Premium WoW Tools for Competitive Players</h3>
 		<p>
 			Mr. Mythical provides World of Warcraft analysis tools. Our platform transforms complex game
 			data into actionable insights, helping you make smarter decisions in Mythic+ dungeons and raid

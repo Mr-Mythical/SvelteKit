@@ -56,7 +56,7 @@
 			</Button> and manage your preferences at any time.
 		</p>
 
-		<h2 class="mb-4 mt-4 text-xl font-bold">Contact</h2>
+		<h2 class="mb-4 mt-4 text-xl font-bold">Privacy Policy Contact</h2>
 		<p>
 			If you have questions or concerns about this privacy policy, please contact:
 			<Button
