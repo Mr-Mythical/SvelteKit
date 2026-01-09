@@ -100,16 +100,17 @@
 </script>
 
 <SEO
-	title="Raid Tools - Mr. Mythical"
+	title="World of Warcraft Raid Tools & Log Visualizer | Mr. Mythical"
 	description="Visualize raid encounters, browse logs, and explore damage patterns with interactive charts and timelines."
 	image="https://mrmythical.com/Logo.png"
-	keywords="Raid tools, encounter visualization, log browser, damage visualization, World of Warcraft, raid planning"
+	keywords="raid tools, raid log analysis, encounter visualization, WarcraftLogs, WoW raid planner, damage visualization, healing timelines"
 />
 
 <main class="container mx-auto px-4 py-6">
 	<section class="mx-auto mb-12 max-w-7xl">
 		<div class="space-y-4 text-center">
 			<h1 class="mb-4 text-4xl font-bold">Interactive Raid Visualization & Timeline Analysis</h1>
+			<h2 class="text-2xl font-semibold">Raid visualization highlights</h2>
 			<p class="text-lg leading-relaxed text-muted-foreground">
 				Visualize your World of Warcraft raid encounters with interactive charts and timelines.
 				Watch damage patterns unfold second-by-second, explore average damage taken across
@@ -308,7 +309,7 @@
 			improvements for the Mythic+ and raid community.
 		</p>
 		<Button>
-			<a href="https://www.patreon.com/MrMythical" target="_blank" class="px-6 py-3">
+			<a href="https://www.patreon.com/MrMythical" target="_blank" rel="noopener noreferrer" class="px-6 py-3">
 				Support on Patreon
 			</a>
 		</Button>

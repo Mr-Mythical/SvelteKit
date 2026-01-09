@@ -5,7 +5,7 @@
 </script>
 
 <SEO
-	title="Privacy Policy - MrMythical.com"
+	title="Privacy Policy for Mr. Mythical WoW Tools"
 	description="Learn how MrMythical.com respects your privacy and uses cookies for advertising."
 	image="https://mrmythical.com/Logo.png"
 />

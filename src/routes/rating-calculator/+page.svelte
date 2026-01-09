@@ -12,7 +12,7 @@
 
 <SEO
 	title="Mythic+ Rating Calculator - Mr. Mythical"
-	description="Calculate the required dungeon levels for your desired Mythic+ rating in World of Warcraft. Import characters, edit setups, and share your setup with shareable URLs."
+	description="Calculate the dungeon levels needed for your Mythic+ rating target, import your character, adjust setups, and share a link instantly."
 	image="https://mrmythical.com/Logo.png"
 	keywords="mythic+ calculator, mythic rating calculator, mythic score calculator, mythic+ score calculator, mythic plus rating calculator, mythic+ rating calculator, mythic plus calculator, mythic planner, mythic dungeon planner, m+ calculator"
 />
@@ -25,6 +25,7 @@
 			character, set score goals, and share your setup with shareable URLs.
 		</p>
 	</div>
+	<h2 class="mb-4 text-2xl font-semibold">Mythic+ calculator interface</h2>
 	<KeystoneTable />
 	<ScoreExplanation />
 	<ApiForm data={data.form} />

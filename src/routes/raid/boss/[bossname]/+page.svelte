@@ -29,7 +29,7 @@
 
 <SEO
 	title={`${currentBoss?.name} Damage Visualization - Mr. Mythical`}
-	description={`${currentBoss?.name} raid boss damage visualization with interactive charts, average damage trends, standard deviation ranges, confidence intervals, and key ability timings to help plan strategies.`}
+	description={`${currentBoss?.name} raid boss damage charts with averages, variance bands, confidence intervals, and key ability timings for cooldown planning.`}
 	image="https://mrmythical.com/Logo.png"
 	keywords={`${currentBoss?.name}, ${currentBoss?.slug}, raid boss visualization, damage patterns, World of Warcraft, WoW raid, encounter charts, standard deviation, confidence interval`}
 />
@@ -47,7 +47,7 @@
 
 	<!-- Boss Selection Grid -->
 	<div class="mx-auto mb-8 rounded-lg border bg-card p-4">
-		<h2 class="mb-3 text-center text-lg font-semibold">Select Boss</h2>
+		<h2 class="mb-3 text-center text-lg font-semibold">Select a raid boss</h2>
 		<div class="flex flex-wrap justify-center gap-2">
 			{#each bosses as boss (boss.id)}
 				<button
@@ -90,7 +90,7 @@
 			improvements for the Mythic+ and raid community.
 		</p>
 		<Button>
-			<a href="https://www.patreon.com/MrMythical" target="_blank" class="px-6 py-3">
+			<a href="https://www.patreon.com/MrMythical" target="_blank" rel="noopener noreferrer" class="px-6 py-3">
 				Support on Patreon
 			</a>
 		</Button>
@@ -150,7 +150,7 @@
 		<div>
 			<section class="rounded-lg border bg-card p-6">
 				<h2 class="mb-6 pb-2 text-2xl font-semibold text-foreground">
-					Understanding The Visualization
+					Understanding the visualization for {currentBoss?.name || 'this boss'}
 				</h2>
 
 				<div class="metric-group mb-6">

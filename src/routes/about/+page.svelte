@@ -5,7 +5,7 @@
 </script>
 
 <SEO
-	title="About MrMythical"
+	title="About MrMythical | World of Warcraft Mythic+ & Raid Tools"
 	description="Learn more about MrMythical.com — what it's for, who made it, and how it helps World of Warcraft players improve their Mythic+ and raid performance."
 	image="https://mrmythical.com/Logo.png"
 />

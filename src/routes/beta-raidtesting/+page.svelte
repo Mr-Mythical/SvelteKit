@@ -450,7 +450,7 @@
 
 <SEO
 	title="Beta Raid Testing - Mr. Mythical"
-	description="Analyze spec performance data from beta and PTR raid tests. View DPS and HPS statistics, compare class performance across different encounters and difficulties."
+	description="Analyze spec performance from beta and PTR raid tests with DPS/HPS stats and class comparisons across encounters and difficulties."
 	image="https://mrmythical.com/Logo.png"
 	keywords="WoW beta testing, PTR raid testing, spec performance, DPS rankings, HPS rankings, class balance, beta raid data"
 />
@@ -474,6 +474,7 @@
 		<div class="grid grid-cols-1 gap-8">
 			<div class="flex justify-center">
 				<div class="w-full max-w-4xl space-y-4">
+					<h2 class="text-2xl font-semibold">Configure encounter filters</h2>
 					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
 						<Form.Field {form} name="bossId">
 							<Form.Control let:attrs>
@@ -542,6 +543,7 @@
 				</div>
 			{:else if filteredSpecData.length > 0}
 				<div class="rounded-lg border bg-card p-4">
+					<h2 class="mb-4 text-2xl font-semibold">Performance breakdown</h2>
 					<Tabs.Root value="damage" class="w-full">
 						<Tabs.List class="grid w-full grid-cols-2">
 							<Tabs.Trigger value="damage">Damage</Tabs.Trigger>
@@ -549,6 +551,7 @@
 						</Tabs.List>
 
 						<Tabs.Content value="damage">
+							<h3 class="mb-2 text-xl font-semibold">Damage performance overview</h3>
 							<!-- Toggles - Always visible -->
 							<div class="mb-6 flex items-center justify-end gap-6 px-4">
 								<div class="flex items-center space-x-2">
@@ -617,7 +620,7 @@
 									<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 										<!-- Damage Table -->
 										<div class="overflow-x-auto">
-											<h3 class="mb-3 text-xl font-semibold">Detailed Statistics</h3>
+											<h3 class="mb-3 text-xl font-semibold">Detailed DPS statistics</h3>
 											<table class="w-full">
 												<thead>
 													<tr class="border-b">
@@ -722,7 +725,7 @@
 
 										<!-- Top 50 Players Table -->
 										<div class="overflow-x-auto">
-											<h3 class="mb-3 text-xl font-semibold">Top 50 Players</h3>
+											<h3 class="mb-3 text-xl font-semibold">Top 50 DPS players</h3>
 											{#if loadingTop50Players.all}
 												<p class="py-4 text-center">Loading top players...</p>
 											{:else if top50PlayersDps?.length > 0}
@@ -776,6 +779,7 @@
 						</Tabs.Content>
 
 						<Tabs.Content value="healing">
+							<h3 class="mb-2 text-xl font-semibold">Healing performance overview</h3>
 							<!-- Toggles - Always visible -->
 							<div class="mb-6 flex items-center justify-end gap-6 px-4">
 								<div class="flex items-center space-x-2">
@@ -844,7 +848,7 @@
 									<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 										<!-- Healing Table -->
 										<div class="overflow-x-auto">
-											<h3 class="mb-3 text-xl font-semibold">Detailed Statistics</h3>
+											<h3 class="mb-3 text-xl font-semibold">Detailed HPS statistics</h3>
 											<table class="w-full">
 												<thead>
 													<tr class="border-b">
@@ -946,7 +950,7 @@
 
 										<!-- Top 50 Players Table -->
 										<div class="overflow-x-auto">
-											<h3 class="mb-3 text-xl font-semibold">Top 50 Players</h3>
+											<h3 class="mb-3 text-xl font-semibold">Top 50 HPS players</h3>
 											{#if loadingTop50Players.all}
 												<p class="py-4 text-center">Loading top players...</p>
 											{:else if top50PlayersHps?.length > 0}
