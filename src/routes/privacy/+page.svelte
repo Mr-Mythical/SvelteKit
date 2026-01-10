@@ -63,6 +63,7 @@
 				class="p-0 text-[1.03rem] font-bold text-link"
 				variant="link"
 				href="mailto:mythical@mrmythical.com"
+				data-cfasync="false"
 			>
 				mythical@mrmythical.com
 			</Button>

@@ -109,10 +109,10 @@
 				class="p-0 text-[1.03rem] font-bold text-link"
 				variant="link"
 				href="mailto:mythical@mrmythical.com"
+				data-cfasync="false"
 			>
 				mythical@mrmythical.com
-			</Button>
-			. Your input helps make Mr. Mythical better for everyone.
+			</Button>. Your input helps make Mr. Mythical better for everyone.
 		</p>
 	</article>
 </main>
