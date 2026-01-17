@@ -12,6 +12,7 @@
 	import { apiPopup } from '../stores';
 	import { dungeonData } from '../stores';
 	import { wowSummaryStore } from '../stores';
+	import { scoreFormula, computeRunLevelsForScore } from '$lib/utils/keystoneCalculations';
 
 	let edit = true;
 	let scoreGoal: number | undefined;
@@ -605,42 +606,6 @@
 		}, 100);
 	}
 
-	function scoreFormula(keyLevel: number, star: number): number {
-		if (keyLevel < 2) {
-			return 0;
-		}
-
-		const affixBreakpoints: Record<number, number> = {
-			4: 15,
-			7: 15,
-			10: 15,
-			12: 15
-		};
-
-		let parScore = 155;
-		for (let current = 2; current < keyLevel; current++) {
-			parScore += 15;
-			const nextLevel = current + 1;
-			if (affixBreakpoints[nextLevel]) {
-				parScore += affixBreakpoints[nextLevel];
-			}
-		}
-
-		let timeAdjustment = 0;
-		switch (star) {
-			case 1:
-				timeAdjustment = 0;
-				break;
-			case 2:
-				timeAdjustment = 7.5;
-				break;
-			case 3:
-				timeAdjustment = 15;
-				break;
-		}
-		return parScore + timeAdjustment;
-	}
-
 	function calculateScore() {
 		// Return early if scoreGoal is undefined
 		if (scoreGoal === undefined) return;
@@ -661,43 +626,13 @@
 			return data;
 		});
 
-		let scorePerDungeon = scoreGoal / dungeonCount;
-		let runScore;
-		if (scoreGoal >= 1240) {
-			for (let i = 0; i < 30; i++) {
-				runScore = Math.round(scoreFormula(i, 1));
-				if (scorePerDungeon === runScore) {
-					for (let j = 0; j < dungeonCount; j++) {
-						$dungeonData.runs[j].mythic_level = i;
-						$dungeonData.runs[j].score = runScore;
-					}
-					break;
-				} else if (runScore > scorePerDungeon) {
-					runScore = Math.round(scoreFormula(i - 1, 1));
-					let scoreDifference = Math.round(scoreGoal - runScore * dungeonCount);
-
-					for (let j = 0; j < dungeonCount; j++) {
-						if (scoreDifference > 0) {
-							scoreDifference -= scoreFormula(i, 1) - scoreFormula(i - 1, 1);
-							$dungeonData.runs[j].mythic_level = i;
-							$dungeonData.runs[j].score = scoreFormula(i, 1);
-						} else {
-							$dungeonData.runs[j].mythic_level = i - 1;
-							$dungeonData.runs[j].score = scoreFormula(i - 1, 1);
-						}
-					}
-					break;
-				}
-			}
-		} else {
-			let tempScore = scoreGoal;
-			for (let i = 0; i < dungeonCount; i++) {
-				if (tempScore > 0) {
-					tempScore -= 155;
-					$dungeonData.runs[i].mythic_level = 2;
-					$dungeonData.runs[i].score += 155;
-				}
-			}
+		// Compute run levels via shared utility (DRY)
+		const runLevels = computeRunLevelsForScore(scoreGoal, dungeonCount);
+		for (let i = 0; i < dungeonCount; i++) {
+			const lvl = runLevels[i] ?? 0;
+			$dungeonData.runs[i].mythic_level = lvl;
+			$dungeonData.runs[i].score = lvl > 0 ? scoreFormula(lvl, 1) : 0;
+			$dungeonData.runs[i].num_keystone_upgrades = 1; // keep 1-star baseline
 		}
 		// Don't call updateUrlWithCurrentData() during score calculation
 		// The score input will handle URL updates and saving
