@@ -1,10 +1,54 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
 
 	export let title = '';
 	export let description = '';
 	export let image = '';
 	export let keywords = '';
+	export let schemas: Record<string, unknown>[] = [];
+
+	const base = 'https://mrmythical.com';
+	$: fullUrl = base + $page.url.pathname;
+	$: segments = $page.url.pathname.split('/').filter(Boolean);
+	$: breadcrumbList = {
+		'@context': 'https://schema.org',
+		'@type': 'BreadcrumbList',
+		itemListElement: segments.map((seg, idx) => ({
+			'@type': 'ListItem',
+			position: idx + 1,
+			item: {
+				'@id': base + '/' + segments.slice(0, idx + 1).join('/'),
+				name: seg
+			}
+		}))
+	};
+	$: webPage = {
+		'@context': 'https://schema.org',
+		'@type': 'WebPage',
+		name: title,
+		description,
+		url: fullUrl,
+		isPartOf: { '@type': 'WebSite', name: 'mrmythical.com', url: base }
+	};
+	$: organization = {
+		'@context': 'https://schema.org',
+		'@type': 'Organization',
+		name: 'Mr. Mythical',
+		url: base,
+		logo: image
+	};
+	$: website = {
+		'@context': 'https://schema.org',
+		'@type': 'WebSite',
+		name: title,
+		url: fullUrl,
+		logo: image,
+		potentialAction: {
+			'@type': 'SearchAction',
+			target: base + '/rating-calculator?score={search_term_string}',
+			'query-input': 'required name=search_term_string'
+		}
+	};
 </script>
 
 <svelte:head>
@@ -29,13 +73,13 @@
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={image} />
 
-	{@html `
-      <script type="application/ld+json">{
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "${title}",
-        "url": "https://mrmythical.com{$page.url.pathname}",
-        "logo": "${image}"
-      }</script>
-    `}
+	{@html `<script type="application/ld+json">${JSON.stringify(website)}</script>`}
+	{@html `<script type="application/ld+json">${JSON.stringify(organization)}</script>`}
+	{@html `<script type="application/ld+json">${JSON.stringify(webPage)}</script>`}
+	{@html `<script type="application/ld+json">${JSON.stringify(breadcrumbList)}</script>`}
+	{#if schemas && schemas.length}
+		{#each schemas as s}
+			{@html `<script type="application/ld+json">${JSON.stringify(s)}</script>`}
+		{/each}
+	{/if}
 </svelte:head>
