@@ -4,6 +4,10 @@ export const GET = async () => {
 	const routes = [
 		'/',
 		'/rating-calculator',
+		'/rating-calculator?score=2000',
+		'/rating-calculator?score=2500',
+		'/rating-calculator?score=3000',
+		'/rating-calculator?score=3500',
 		'/raid',
 		'/raid/boss/plexus-sentinel',
 		'/raid/boss/loomithar',
