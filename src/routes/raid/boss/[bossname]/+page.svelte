@@ -28,10 +28,10 @@
 </script>
 
 <SEO
-	title={`${currentBoss?.name} Damage Visualization - Mr. Mythical`}
-	description={`${currentBoss?.name} raid boss damage charts with averages, variance bands, confidence intervals, and key ability timings for cooldown planning.`}
+	title={`Mythic ${currentBoss?.name} Damage Visualization - Mr. Mythical`}
+	description={`Mythic ${currentBoss?.name} raid boss damage charts with averages, variance bands, confidence intervals, and key ability timings for cooldown planning.`}
 	image="https://mrmythical.com/Logo.png"
-	keywords={`${currentBoss?.name}, ${currentBoss?.slug}, raid boss visualization, damage patterns, World of Warcraft, WoW raid, encounter charts, standard deviation, confidence interval`}
+	keywords={`Mythic ${currentBoss?.name}, ${currentBoss?.slug}, Manaforge Omega, raid boss visualization, damage patterns, World of Warcraft, WoW raid, encounter charts, standard deviation, confidence interval`}
 />
 
 <main class="container mx-auto px-4 py-8">
