@@ -113,7 +113,7 @@
 			</div>
 			<div class="rounded-lg bg-card p-6 shadow-md">
 				<h3 class="mb-4 text-2xl font-semibold">Average Damage Taken Charts</h3>
-				<p class="mb-4">Visual analysis of raid damage patterns:</p>
+				<p class="mb-4">Visual analysis of Mythic Manaforge Omega damage patterns:</p>
 				<ul class="mb-4 ml-6 list-disc">
 					<li>Average damage taken with statistical bands</li>
 					<li>Confidence intervals across progression logs</li>
@@ -125,7 +125,7 @@
 					<BossPreviewChart bossId={3129} />
 				</div>
 				<p class="mb-6 text-sm text-muted-foreground">
-					Example: Plexus Sentinel average raid damage taken
+					Example: Mythic Plexus Sentinel - Manaforge Omega average raid damage taken
 				</p>
 				<Button><a href="/raid/boss" class="px-6 py-3">Explore Boss Visualizations</a></Button>
 			</div>
