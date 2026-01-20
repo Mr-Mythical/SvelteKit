@@ -28,16 +28,18 @@
 </script>
 
 <SEO
-	title={`${currentBoss?.name} Damage Visualization - Mr. Mythical`}
-	description={`${currentBoss?.name} raid boss damage charts with averages, variance bands, confidence intervals, and key ability timings for cooldown planning.`}
+	title={`Mythic ${currentBoss?.name} Damage Visualization - Mr. Mythical`}
+	description={`Mythic ${currentBoss?.name} raid boss damage charts with averages, variance bands, confidence intervals, and key ability timings for cooldown planning.`}
 	image="https://mrmythical.com/Logo.png"
-	keywords={`${currentBoss?.name}, ${currentBoss?.slug}, raid boss visualization, damage patterns, World of Warcraft, WoW raid, encounter charts, standard deviation, confidence interval`}
+	keywords={`Mythic ${currentBoss?.name}, ${currentBoss?.slug}, Manaforge Omega, raid boss visualization, damage patterns, World of Warcraft, WoW raid, encounter charts, standard deviation, confidence interval`}
 />
 
 <main class="container mx-auto px-4 py-8">
 	<div class="mb-6 flex items-center justify-between">
 		<div>
-			<h1 class="mb-2 text-4xl font-bold">{currentBoss?.name || 'Boss'} - Damage Visualization</h1>
+			<h1 class="mb-2 text-4xl font-bold">
+				Mythic {currentBoss?.name || 'Boss'} - Damage Visualization
+			</h1>
 			<p class="text-lg text-muted-foreground">
 				Interactive damage patterns across different raid encounters
 			</p>
@@ -78,7 +80,10 @@
 	<!-- Chart row: full-width single column -->
 	<div class="rounded-lg border bg-card p-4">
 		{#if currentBoss}
-			<AverageChart encounterId={currentBoss.id} encounterName={`${currentBoss.name} Mythic`} />
+			<AverageChart
+				encounterId={currentBoss.id}
+				encounterName={`Mythic ${currentBoss.name} - Manaforge Omega`}
+			/>
 		{/if}
 	</div>
 
@@ -109,10 +114,11 @@
 				<section class="rounded-lg border bg-card p-6">
 					<h2 class="mb-3 text-2xl font-semibold text-foreground">About {currentBoss.name}</h2>
 					<p class="mb-4 text-foreground">
-						Explore detailed damage visualization for {currentBoss.name}. These charts highlight
-						second-by-second trends, variability, and confidence around raid-wide damage intake,
-						using aggregated progression logs to surface consistent patterns and spike moments. Use
-						this view to align cooldown rotations, healer assignments, and mitigation windows.
+						Explore detailed damage visualization for Mythic {currentBoss.name}. These charts
+						highlight second-by-second trends, variability, and confidence around raid-wide damage
+						intake, using aggregated progression logs to surface consistent patterns and spike
+						moments. Use this view to align cooldown rotations, healer assignments, and mitigation
+						windows.
 					</p>
 
 					{#if currentBoss.abilities && currentBoss.abilities.length > 0}

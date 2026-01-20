@@ -36,9 +36,9 @@
 				used during encounters, helping you optimize your raids healing strategy
 			</li>
 			<li>
-				<strong>Average Damage Taken:</strong> Using data from Warcraft Logs, this tool helps you understand
-				how much damage your raid typically takes in various raid encounters every second, allowing for
-				better planning and survivability
+				<strong>Average Damage Taken:</strong> Using Warcraft Logs data from Mythic Manaforge Omega,
+				this tool helps you understand how much damage your raid typically takes against each boss every
+				second, allowing for better planning and survivability
 			</li>
 		</ul>
 
