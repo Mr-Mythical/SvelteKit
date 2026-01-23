@@ -24,7 +24,7 @@ const handleSecurity: Handle = async ({ event, resolve }) => {
 		"img-src 'self' data: https:",
 		"font-src 'self' data: https:",
 		"connect-src 'self' https:",
-		"frame-src 'self' https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google",
+		"frame-src 'self' https: https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://googleads.g.doubleclick.net https://tpc.googlesyndication.com",
 		"frame-ancestors 'self'",
 		"object-src 'none'",
 		"base-uri 'self'",
