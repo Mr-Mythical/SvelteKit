@@ -71,16 +71,6 @@
 					<li>
 						<Button variant="link">
 							<a
-								href="/beta-raidtesting"
-								class="inline-flex items-center gap-2 font-heading text-xl font-semibold text-foreground decoration-accent"
-							>
-								Beta Raid Testing
-							</a>
-						</Button>
-					</li>
-					<li>
-						<Button variant="link">
-							<a
 								href="/rating-calculator"
 								class="font-heading text-xl font-semibold text-foreground decoration-accent"
 							>
@@ -125,16 +115,6 @@
 								class="font-heading text-xl font-semibold text-foreground decoration-accent"
 							>
 								Home
-							</a>
-						</Button>
-					</li>
-					<li>
-						<Button variant="link">
-							<a
-								href="/beta-raidtesting"
-								class="inline-flex items-center font-heading text-xl font-semibold text-foreground decoration-accent"
-							>
-								Beta Raid Testing
 							</a>
 						</Button>
 					</li>
