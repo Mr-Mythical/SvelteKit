@@ -10,18 +10,14 @@ export interface Run {
 }
 
 export const dungeons = [
-	{ value: 'Ara-Kara, City of Echoes', label: 'Ara-Kara, City of Echoes', short_name: 'ARAK' },
-	{ value: "Eco-Dome Al'dani", label: "Eco-Dome Al'dani", short_name: 'EDA' },
-	{ value: 'Halls of Atonement', label: 'Halls of Atonement', short_name: 'HOA' },
-	{ value: 'Operation: Floodgate', label: 'Operation: Floodgate', short_name: 'FLOOD' },
-	{ value: 'Priory of the Sacred Flame', label: 'Priory of the Sacred Flame', short_name: 'PSF' },
-	{ value: "Tazavesh: So'leah's Gambit", label: "Tazavesh: So'leah's Gambit", short_name: 'GMBT' },
-	{
-		value: 'Tazavesh: Streets of Wonder',
-		label: 'Tazavesh: Streets of Wonder',
-		short_name: 'STRT'
-	},
-	{ value: 'The Dawnbreaker', label: 'The Dawnbreaker', short_name: 'DAWN' }
+	{ value: "Algeth'ar Academy", label: "Algeth'ar Academy", short_name: 'AA' },
+	{ value: "Magisters' Terrace", label: "Magisters' Terrace", short_name: 'MT' },
+	{ value: 'Maisara Caverns', label: 'Maisara Caverns', short_name: 'MC' },
+	{ value: 'Nexus-Point Xenas', label: 'Nexus-Point Xenas', short_name: 'NPX' },
+	{ value: 'Pit of Saron', label: 'Pit of Saron', short_name: 'POS' },
+	{ value: 'Seat of the Triumvirate', label: 'Seat of the Triumvirate', short_name: 'SEAT' },
+	{ value: 'Skyreach', label: 'Skyreach', short_name: 'SR' },
+	{ value: 'Windrunner Spire', label: 'Windrunner Spire', short_name: 'WS' }
 ];
 
 export class Dungeons {
