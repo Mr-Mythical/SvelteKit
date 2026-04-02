@@ -40,14 +40,15 @@
 				Affix Breakpoints &amp; Bonus Points
 			</h3>
 			<p>
-				In Midnight Season 1, keystone levels <b>+2 through +6</b> feature <b>Lindormi's Guidance</b>.
-				It highlights and weakens select non-boss enemies to help players learn a basic route through
-				the dungeon, but it <strong>does not affect score</strong>. <br /> <br />
-				Besides the base score, clearing certain key levels with new affixes will earn you <strong
-					>bonus points</strong
-				>: <b>+5, +7, +10, and +12</b> each award an extra <b>15 points</b> for increased
-				difficulty.
-				And should therefore be your priority when pushing keys early in the season. <br /> <br />
+				In Midnight Season 1, keystone levels <b>+2 through +6</b> feature
+				<b>Lindormi's Guidance</b>. It highlights and weakens select non-boss enemies to help
+				players learn a basic route through the dungeon, but it
+				<strong>does not affect score</strong>. <br /> <br />
+				Besides the base score, clearing certain key levels with new affixes will earn you
+				<strong>bonus points</strong>: <b>+5, +7, +10, and +12</b> each award an extra
+				<b>15 points</b>
+				for increased difficulty. And should therefore be your priority when pushing keys early in
+				the season. <br /> <br />
 				Below is a quick reference for the base score and bonus affix points at each key level:
 			</p>
 			<Table.Root class="mb-6">
