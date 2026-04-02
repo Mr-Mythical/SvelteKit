@@ -9,7 +9,7 @@
 			<h2 id="score-explanation" class="mb-2 scroll-mt-24 text-2xl font-extrabold leading-tight">
 				How the Mythic+ Score System Works in World of Warcraft
 			</h2>
-			<p class="mb-4 text-sm italic text-muted-foreground">Updated for The War Within, Season 3</p>
+			<p class="mb-4 text-sm italic text-muted-foreground">Updated for Midnight, Season 1</p>
 		</header>
 
 		<section class="mb-8" aria-labelledby="why-mplus-score-matters">
@@ -40,11 +40,15 @@
 				Affix Breakpoints &amp; Bonus Points
 			</h3>
 			<p>
-				Besides the base score, clearing certain key levels with new affixes will earn you <strong
-					>bonus points</strong
-				>:
-				<b>+4, +7, +10, and +12</b> each award an extra <b>15 points</b> for increased difficulty.
-				And should therefore be your priority when pushing keys early in the season. <br /> <br />
+				In Midnight Season 1, keystone levels <b>+2 through +6</b> feature
+				<b>Lindormi's Guidance</b>. It highlights and weakens select non-boss enemies to help
+				players learn a basic route through the dungeon, but it
+				<strong>does not affect score</strong>. <br /> <br />
+				Besides the base score, clearing certain key levels with new affixes will earn you
+				<strong>bonus points</strong>: <b>+5, +7, +10, and +12</b> each award an extra
+				<b>15 points</b>
+				for increased difficulty. And should therefore be your priority when pushing keys early in
+				the season. <br /> <br />
 				Below is a quick reference for the base score and bonus affix points at each key level:
 			</p>
 			<Table.Root class="mb-6">
@@ -63,11 +67,11 @@
 						<Table.Cell>+3</Table.Cell>
 						<Table.Cell>170</Table.Cell>
 					</Table.Row>
-					<Table.Row class="bg-muted/50">
-						<Table.Cell>+4</Table.Cell>
-						<Table.Cell>200</Table.Cell>
-					</Table.Row>
 					<Table.Row>
+						<Table.Cell>+4</Table.Cell>
+						<Table.Cell>185</Table.Cell>
+					</Table.Row>
+					<Table.Row class="bg-muted/50">
 						<Table.Cell>+5</Table.Cell>
 						<Table.Cell>215</Table.Cell>
 					</Table.Row>
@@ -195,7 +199,7 @@
 				<Table.Body>
 					<Table.Row>
 						<Table.Cell class="w-1/3 font-semibold">1. Hit Affix Breakpoints</Table.Cell>
-						<Table.Cell>Prioritize clearing dungeons at +4, +7, +10, and +12</Table.Cell>
+						<Table.Cell>Prioritize clearing dungeons at +5, +7, +10, and +12</Table.Cell>
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell class="w-1/3 font-semibold">2. Focus on Timer Efficiency</Table.Cell>
