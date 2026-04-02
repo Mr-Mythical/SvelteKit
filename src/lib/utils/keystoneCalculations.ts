@@ -11,7 +11,7 @@ export function scoreFormula(keyLevel: number, stars: number = 1): number {
 	}
 
 	const affixBreakpoints: Record<number, number> = {
-		4: 15,
+		5: 15,
 		7: 15,
 		10: 15,
 		12: 15
