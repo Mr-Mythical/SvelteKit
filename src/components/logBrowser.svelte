@@ -1,15 +1,10 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { run } from 'svelte/legacy';
+
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
-	import {
-		Select,
-		SelectContent,
-		SelectItem,
-		SelectTrigger,
-		SelectValue
-	} from '$lib/components/ui/select';
+	import * as Select from '$lib/components/ui/select';
 	import {
 		Card,
 		CardContent,
@@ -22,20 +17,28 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Separator } from '$lib/components/ui/separator';
 
-	export let loading = false;
 
-	export let initialBossId: number | undefined = undefined;
-	export let initialHealerSpecs: string[] = [];
+	interface Props {
+		loading?: boolean;
+		initialBossId?: number | undefined;
+		initialHealerSpecs?: string[];
+		onsearch?: (detail: {
+			bossId?: number;
+			minDuration?: number;
+			maxDuration?: number;
+			healerSpecs?: string[];
+		}) => void;
+	}
 
-	let selectedBossId: number | undefined = initialBossId;
-	let selectedBossObject = initialBossId
-		? { value: initialBossId, label: bossList.find((b) => b.id === initialBossId)?.name || '' }
-		: undefined;
-	let minDuration: number | undefined = undefined;
-	let maxDuration: number | undefined = undefined;
-	let selectedHealerSpecs: string[] = initialHealerSpecs;
+	let { loading = false, initialBossId = undefined, initialHealerSpecs = [], onsearch }: Props = $props();
 
-	const dispatch = createEventDispatcher();
+	let selectedBossId: number | undefined = $state(initialBossId);
+	let selectedBossLabel = $derived(
+		selectedBossId ? (bossList.find((b) => b.id === selectedBossId)?.name ?? '') : ''
+	);
+	let minDuration: number | undefined = $state(undefined);
+	let maxDuration: number | undefined = $state(undefined);
+	let selectedHealerSpecs: string[] = $state(initialHealerSpecs);
 
 	const healerOptions: { value: string; label: string }[] = [];
 	for (const className in classSpecAbilities) {
@@ -52,7 +55,7 @@
 	healerOptions.sort((a, b) => a.label.localeCompare(b.label));
 
 	function handleSearch() {
-		dispatch('search', {
+		onsearch?.({
 			bossId: selectedBossId,
 			minDuration: minDuration ? minDuration * 60 : undefined,
 			maxDuration: maxDuration ? maxDuration * 60 : undefined,
@@ -60,19 +63,19 @@
 		});
 	}
 
-	function handleBossChange(selected: { value: number; label?: string } | undefined) {
-		if (selected) {
-			selectedBossObject = { value: selected.value, label: selected.label ?? '' };
-			selectedBossId = selected.value;
-		} else {
-			selectedBossObject = undefined;
+	function handleBossChange(value: string) {
+		if (!value) {
 			selectedBossId = undefined;
+		} else {
+			selectedBossId = Number(value);
 		}
 	}
 
-	$: if (initialBossId || initialHealerSpecs.length > 0) {
-		handleSearch();
-	}
+	run(() => {
+		if (initialBossId || initialHealerSpecs.length > 0) {
+			handleSearch();
+		}
+	});
 </script>
 
 <Card class="w-full">
@@ -86,19 +89,23 @@
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 			<div class="space-y-2">
 				<Label for="boss-select">Boss</Label>
-				<Select selected={selectedBossObject} onSelectedChange={handleBossChange}>
-					<SelectTrigger id="boss-select" class="w-full">
-						<SelectValue placeholder="Any Boss" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value={undefined} label="Any Boss" class="italic text-muted-foreground">
+				<Select.Root
+					type="single"
+					value={selectedBossId != null ? String(selectedBossId) : ''}
+					onValueChange={handleBossChange}
+				>
+					<Select.Trigger id="boss-select" class="w-full">
+						{selectedBossLabel || 'Any Boss'}
+					</Select.Trigger>
+					<Select.Content>
+						<Select.Item value="" label="Any Boss" class="italic text-muted-foreground">
 							Any Boss
-						</SelectItem>
+						</Select.Item>
 						{#each bossList as boss (boss.id)}
-							<SelectItem value={boss.id} label={boss.name}>{boss.name}</SelectItem>
+							<Select.Item value={String(boss.id)} label={boss.name}>{boss.name}</Select.Item>
 						{/each}
-					</SelectContent>
-				</Select>
+					</Select.Content>
+				</Select.Root>
 			</div>
 
 			<div class="space-y-2">
@@ -134,7 +141,7 @@
 		<div class="space-y-4">
 			<div class="flex items-center justify-between">
 				<Label class="text-base">Healer Composition</Label>
-				<Button variant="ghost" size="sm" on:click={() => (selectedHealerSpecs = [])}>
+				<Button variant="ghost" size="sm" onclick={() => (selectedHealerSpecs = [])}>
 					Clear Selection
 				</Button>
 			</div>
@@ -145,7 +152,7 @@
 						<Checkbox
 							id={healer.value}
 							checked={selectedHealerSpecs.includes(healer.value)}
-							onCheckedChange={(checked) => {
+							onCheckedChange={(checked: boolean) => {
 								if (checked) {
 									selectedHealerSpecs = [...selectedHealerSpecs, healer.value];
 								} else {
@@ -170,7 +177,7 @@
 		</div>
 
 		<div class="flex justify-end">
-			<Button on:click={handleSearch} disabled={loading} class="min-w-[120px]">
+			<Button onclick={handleSearch} disabled={loading} class="min-w-[120px]">
 				{#if loading}
 					<span class="mr-2 inline-block animate-spin">⟳</span>
 					Searching...

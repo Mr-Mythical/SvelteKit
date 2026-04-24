@@ -1,16 +1,20 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { signIn } from '@auth/sveltekit/client';
-	import User from 'lucide-svelte/icons/user';
-	import Key from 'lucide-svelte/icons/key';
-	import Hash from 'lucide-svelte/icons/hash';
-	import LogIn from 'lucide-svelte/icons/log-in';
+	import User from '@lucide/svelte/icons/user';
+	import Key from '@lucide/svelte/icons/key';
+	import Hash from '@lucide/svelte/icons/hash';
+	import LogIn from '@lucide/svelte/icons/log-in';
 
-	export let data: any;
+	interface Props {
+		data: any;
+	}
 
-	$: session = data.session;
-	$: userBattletag = session?.user ? (session.user as any).battletag : null;
-	$: accessToken = session ? (session as any).accessToken : null;
+	let { data }: Props = $props();
+
+	let session = $derived(data.session);
+	let userBattletag = $derived(session?.user ? (session.user as any).battletag : null);
+	let accessToken = $derived(session ? (session as any).accessToken : null);
 </script>
 
 <svelte:head>
@@ -100,7 +104,7 @@
 				features.
 			</p>
 			<Button
-				on:click={() => signIn('battlenet')}
+				onclick={() => signIn('battlenet')}
 				class="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-lg"
 			>
 				<LogIn class="mr-2 h-4 w-4" />

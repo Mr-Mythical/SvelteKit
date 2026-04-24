@@ -4,10 +4,10 @@
 	import { page } from '$app/stores';
 	import { Card } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import Loader2 from 'lucide-svelte/icons/loader-2';
+	import Loader2 from '@lucide/svelte/icons/loader-2';
 
-	let reports: RecentReport[] = [];
-	let isLoading = true;
+	let reports: RecentReport[] = $state([]);
+	let isLoading = $state(true);
 
 	const unsubscribe = recentReports.subscribe((value) => {
 		reports = value;
@@ -17,7 +17,7 @@
 		isLoading = value;
 	});
 
-	$: session = $page.data.session;
+	let session = $derived($page.data.session);
 
 	onMount(async () => {
 		// Initialize by loading from API
@@ -29,7 +29,11 @@
 		unsubscribeLoading();
 	});
 
-	export let onSelectReport: (code: string) => void;
+	interface Props {
+		onSelectReport: (code: string) => void;
+	}
+
+	let { onSelectReport }: Props = $props();
 
 	function formatTimestamp(timestamp: number): string {
 		const date = new Date(timestamp);
@@ -63,7 +67,7 @@
 						<Button
 							variant="outline"
 							class="h-50 w-full p-3 text-left"
-							on:click={() => onSelectReport(report.code)}
+							onclick={() => onSelectReport(report.code)}
 						>
 							<div class="w-full">
 								<div class="flex items-start justify-between">

@@ -24,24 +24,24 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import EncounterSkeleton from '../../../components/skeletons/encounterSkeleton.svelte';
 
-	let reportURL: string = '';
-	let fights: Fight[] = [];
-	let selectedFight: Fight | null = null;
-	let damageEvents: Series[] = [];
-	let healingEvents: Series[] = [];
-	let castEvents: CastEvent[] = [];
-	let bossEvents: CastEvent[] = [];
-	let allHealers: Player[] = [];
-	let error: string = '';
+	let reportURL: string = $state('');
+	let fights: Fight[] = $state([]);
+	let selectedFight: Fight | null = $state(null);
+	let damageEvents: Series[] = $state([]);
+	let healingEvents: Series[] = $state([]);
+	let castEvents: CastEvent[] = $state([]);
+	let bossEvents: CastEvent[] = $state([]);
+	let allHealers: Player[] = $state([]);
+	let error: string = $state('');
 	let loadingFights = false;
-	let loadingData = false;
-	let killsOnly = false;
+	let loadingData = $state(false);
+	let killsOnly = $state(false);
 	let showFightSelection = true;
-	let initializing = false;
+	let initializing = $state(false);
 
-	let reportTitle: string | undefined;
-	let reportOwner: ReportOwner | undefined;
-	let reportGuild: ReportGuild | undefined;
+	let reportTitle: string | undefined = $state();
+	let reportOwner: ReportOwner | undefined = $state();
+	let reportGuild: ReportGuild | undefined = $state();
 
 	const difficultyMap: Record<number, string> = {
 		2: 'Raid Finder',
@@ -50,9 +50,6 @@
 		5: 'Mythic'
 	};
 
-	$: groupedFights = groupFightsByNameAndDifficulty(
-		killsOnly ? fights.filter((fight) => fight.kill) : fights
-	);
 
 	let initialReportCodeFromUrl: string | null = null;
 	let initialFightIdFromUrl: number | null = null;
@@ -316,6 +313,9 @@
 		bossEvents = [];
 		allHealers = [];
 	}
+	let groupedFights = $derived(groupFightsByNameAndDifficulty(
+		killsOnly ? fights.filter((fight) => fight.kill) : fights
+	));
 </script>
 
 <SEO
@@ -345,7 +345,7 @@
 						<span class="text-sm">Kills only</span>
 						<input type="checkbox" bind:checked={killsOnly} class="toggle toggle-primary" />
 					</Label>
-					<Button on:click={goBackToReportInput} variant="outline">Load Different Report</Button>
+					<Button onclick={goBackToReportInput} variant="outline">Load Different Report</Button>
 				</div>
 			</div>
 
@@ -363,7 +363,7 @@
 							<div class="grid gap-3 md:grid-cols-2">
 								{#each difficultyFights.filter((f) => f.kill === true || f.kill === null) as fight (fight.id)}
 									<Button
-										on:click={() => handleFightSelection(fight)}
+										onclick={() => handleFightSelection(fight)}
 										variant="outline"
 										class="relative flex h-auto w-full flex-col items-start gap-2 rounded-lg border p-4 text-left transition-all hover:scale-[1.02] hover:bg-accent hover:shadow-md"
 									>
@@ -391,7 +391,7 @@
 								{#if !killsOnly}
 									{#each difficultyFights.filter((f) => f.kill === false) as fight, index (fight.id)}
 										<Button
-											on:click={() => handleFightSelection(fight)}
+											onclick={() => handleFightSelection(fight)}
 											variant="outline"
 											class="relative flex w-full items-center justify-between rounded-md p-3 text-left shadow-sm hover:bg-accent"
 										>
@@ -445,7 +445,7 @@
 						</p>
 					</div>
 					<div class="flex gap-4">
-						<Button on:click={goBackToFightSelection} variant="outline" class="gap-2">
+						<Button onclick={goBackToFightSelection} variant="outline" class="gap-2">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								class="h-4 w-4"
@@ -460,7 +460,7 @@
 							</svg>
 							Back to Fights
 						</Button>
-						<Button on:click={goBackToReportInput} variant="outline" class="gap-2">
+						<Button onclick={goBackToReportInput} variant="outline" class="gap-2">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								class="h-4 w-4"
@@ -502,7 +502,7 @@
 			<p class="text-lg text-muted-foreground">
 				Please load a report from the raid hub to visualize encounters
 			</p>
-			<Button class="mt-4" on:click={() => goto('/raid')}>Go to Raid Hub</Button>
+			<Button class="mt-4" onclick={() => goto('/raid')}>Go to Raid Hub</Button>
 		</div>
 	{/if}
 </main>

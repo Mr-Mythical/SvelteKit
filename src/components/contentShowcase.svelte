@@ -35,14 +35,14 @@
 		}
 	];
 
-	let currentIndex = 0;
-	let containerElement: HTMLElement;
-	let mounted = false;
-	let adBlocked = false;
-	let showPatreon = false;
+	let currentIndex = $state(0);
+	let containerElement: HTMLElement | undefined = $state();
+	let mounted = $state(false);
+	let adBlocked = $state(false);
+	let showPatreon = $state(false);
 	let rotationCount = 0;
 
-	$: currentContent = content[currentIndex] || content[0];
+	let currentContent = $derived(content[currentIndex] || content[0]);
 
 	onMount(() => {
 		mounted = true;
@@ -139,9 +139,9 @@
 							class="h-2 w-2 rounded-full transition-all duration-200 {index === currentIndex
 								? 'bg-white'
 								: 'bg-white/50 hover:bg-white/75'}"
-							on:click={() => changeContent(index)}
+							onclick={() => changeContent(index)}
 							aria-label={`Show content ${index + 1}`}
-						/>
+						></button>
 					{/each}
 				</div>
 			{/if}

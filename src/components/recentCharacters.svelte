@@ -10,10 +10,10 @@
 	} from '$lib/types/realms';
 	import { Card } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import Loader2 from 'lucide-svelte/icons/loader-2';
+	import Loader2 from '@lucide/svelte/icons/loader-2';
 
-	let characters: RecentCharacter[] = [];
-	let isLoading = true;
+	let characters: RecentCharacter[] = $state([]);
+	let isLoading = $state(true);
 
 	const unsubscribe = recentCharacters.subscribe((value) => {
 		characters = value;
@@ -23,7 +23,7 @@
 		isLoading = value;
 	});
 
-	$: session = $page.data.session;
+	let session = $derived($page.data.session);
 
 	onMount(async () => {
 		// Initialize by loading from API
@@ -49,7 +49,11 @@
 		return realm ? realm.label : realmValue;
 	}
 
-	export let loadCharacter: (character: RecentCharacter) => void;
+	interface Props {
+		loadCharacter: (character: RecentCharacter) => void;
+	}
+
+	let { loadCharacter }: Props = $props();
 </script>
 
 <Card class="recent-characters space-y-4 p-4">
@@ -74,7 +78,7 @@
 					<Button
 						variant="outline"
 						class="w-full justify-between text-left"
-						on:click={() => loadCharacter(char)}
+						onclick={() => loadCharacter(char)}
 					>
 						<div>
 							<span class="font-medium">

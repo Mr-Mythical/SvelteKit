@@ -74,9 +74,6 @@ vi.mock('$app/forms', () => ({
 	enhance: vi.fn()
 }));
 
-// Mock SvelteKit modules that are commonly used
-vi.mock('$lib/utils', () => ({}));
-
 // Global test utilities
 global.fetch = vi.fn();
 

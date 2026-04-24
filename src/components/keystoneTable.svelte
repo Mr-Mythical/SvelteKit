@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { run as run_1 } from 'svelte/legacy';
+
 	import DungeonCombobox from './dungeonCombobox.svelte';
 	import * as Table from '$lib/components/ui/table';
-	import ArrowUp from 'lucide-svelte/icons/chevron-up';
-	import ArrowDown from 'lucide-svelte/icons/chevron-down';
-	import Star from 'lucide-svelte/icons/star';
+	import ArrowUp from '@lucide/svelte/icons/chevron-up';
+	import ArrowDown from '@lucide/svelte/icons/chevron-down';
+	import Star from '@lucide/svelte/icons/star';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button/';
@@ -15,15 +17,15 @@
 	import { scoreFormula, computeRunLevelsForScore } from '$lib/utils/keystoneCalculations';
 
 	let edit = true;
-	let scoreGoal: number | undefined;
-	let totalScore: number;
-	let scoreUpdateTimeout: NodeJS.Timeout;
+	let scoreGoal: number | undefined = $state();
+	let totalScore: number = $derived($dungeonData.runs.reduce((sum, r) => sum + r.score, 0));
+	let scoreUpdateTimeout: NodeJS.Timeout | undefined = $state();
 	let isResetting = false; // Flag to prevent URL updates during reset
 	let isCalculatingFromScore = false; // Flag to prevent URL updates during score calculation
 
-	let showTooltip = false;
-	let tooltipX = 0;
-	let tooltipY = 0;
+	let showTooltip = $state(false);
+	let tooltipX = $state(0);
+	let tooltipY = $state(0);
 
 	import RecentCharacters from './recentCharacters.svelte';
 	import { fetchRuns, fetchWowSummary } from '$lib/utils/characterData';
@@ -51,7 +53,7 @@
 	let lastUrlRuns = '';
 	let lastUrlCharacter = '';
 	let lastUrlScore = '';
-	let isMounted = false;
+	let isMounted = $state(false);
 
 	function updateAndSaveUrl(currentUrl: URL, context: string) {
 		try {
@@ -417,33 +419,9 @@
 		isMounted = true;
 	});
 
-	let previousAuthState = false;
-	let hasLoadedSavedState = false;
+	let previousAuthState = $state(false);
+	let hasLoadedSavedState = $state(false);
 
-	$: {
-		const isAuthenticated = !!$page.data.session?.user;
-		const justSignedIn = !previousAuthState && isAuthenticated && isMounted && !hasLoadedSavedState;
-
-		if (justSignedIn) {
-			// Check if we have URL parameters - if so, don't load saved state
-			const urlChar = getCharacterFromUrl();
-			const urlRuns = $page.url.searchParams.get('runs');
-			const urlScore = $page.url.searchParams.get('score');
-
-			if (!urlChar && !urlRuns && !urlScore) {
-				// No URL parameters, load saved state
-				hasLoadedSavedState = true;
-				loadSavedStateOnSignIn();
-			}
-		}
-
-		// Reset the flag when user signs out
-		if (!isAuthenticated && previousAuthState) {
-			hasLoadedSavedState = false;
-		}
-
-		previousAuthState = isAuthenticated;
-	}
 
 	// Function to load saved state when user signs in
 	async function loadSavedStateOnSignIn() {
@@ -552,7 +530,6 @@
 		run.score = scoreFormula(run.mythic_level, run.num_keystone_upgrades);
 	}
 
-	$: totalScore = $dungeonData.runs.reduce((sum, r) => sum + r.score, 0);
 
 	function resetRuns() {
 		// Set flags to prevent URL reactive interference and URL updates
@@ -638,6 +615,31 @@
 		// The score input will handle URL updates and saving
 		isCalculatingFromScore = false;
 	}
+	run_1(() => {
+		const isAuthenticated = !!$page.data.session?.user;
+		const justSignedIn = !previousAuthState && isAuthenticated && isMounted && !hasLoadedSavedState;
+
+		if (justSignedIn) {
+			// Check if we have URL parameters - if so, don't load saved state
+			const urlChar = getCharacterFromUrl();
+			const urlRuns = $page.url.searchParams.get('runs');
+			const urlScore = $page.url.searchParams.get('score');
+
+			if (!urlChar && !urlRuns && !urlScore) {
+				// No URL parameters, load saved state
+				hasLoadedSavedState = true;
+				loadSavedStateOnSignIn();
+			}
+		}
+
+		// Reset the flag when user signs out
+		if (!isAuthenticated && previousAuthState) {
+			hasLoadedSavedState = false;
+		}
+
+		previousAuthState = isAuthenticated;
+	});
+	
 </script>
 
 <div class="container flex flex-col gap-8 p-4 md:flex-row md:px-8 xl:px-40 2xl:px-72">
@@ -672,7 +674,7 @@
 				placeholder="Enter your target Mythic+ score"
 				bind:value={scoreGoal}
 				min="0"
-				on:input={() => {
+				oninput={() => {
 					calculateScore();
 					// Debounce URL update to avoid conflicts while typing
 					if (scoreUpdateTimeout) clearTimeout(scoreUpdateTimeout);
@@ -688,15 +690,15 @@
 		</div>
 
 		<div class="flex flex-col space-y-2">
-			<Button class="w-full" on:click={() => ($apiPopup = !$apiPopup)} aria-label="Import Character"
+			<Button class="w-full" onclick={() => ($apiPopup = !$apiPopup)} aria-label="Import Character"
 				>Import Character</Button
 			>
-			<Button class="w-full" on:click={() => resetRuns()}>Reset Runs</Button>
+			<Button class="w-full" onclick={() => resetRuns()}>Reset Runs</Button>
 		</div>
 
 		<div class="border-t pt-4">
 			<div class="mb-2">
-				<Button class="w-full" on:click={(e) => shareRuns(e)} aria-label="Share Runs">
+				<Button class="w-full" onclick={(e) => shareRuns(e)} aria-label="Share Runs">
 					Share Current Setup
 				</Button>
 			</div>
@@ -740,7 +742,7 @@
 									class="h-6 w-6"
 									variant="ghost"
 									size="icon"
-									on:click={() => incrementKeyLevel(i)}
+									onclick={() => incrementKeyLevel(i)}
 									aria-label="Increase Mythic Level"
 								>
 									<ArrowUp class="text-foreground" />
@@ -753,7 +755,7 @@
 												class="h-5 w-5"
 												variant="ghost"
 												size="icon"
-												on:click={() => setStars(i, j)}
+												onclick={() => setStars(i, j)}
 												aria-label="Set Stars"
 											>
 												<Star class="fill-foreground text-foreground" />
@@ -763,7 +765,7 @@
 												class="h-5 w-5"
 												variant="ghost"
 												size="icon"
-												on:click={() => setStars(i, j)}
+												onclick={() => setStars(i, j)}
 												aria-label="Set Stars"
 											>
 												<Star class="text-foreground" />
@@ -775,7 +777,7 @@
 									class="h-6 w-6"
 									variant="ghost"
 									size="icon"
-									on:click={() => decrementKeyLevel(i)}
+									onclick={() => decrementKeyLevel(i)}
 									aria-label="Decrease Mythic Level"
 								>
 									<ArrowDown class="text-foreground" />

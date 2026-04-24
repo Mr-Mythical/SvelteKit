@@ -1,16 +1,26 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 
-	export let title = '';
-	export let description = '';
-	export let image = '';
-	export let keywords = '';
-	export let schemas: Record<string, unknown>[] = [];
+	interface Props {
+		title?: string;
+		description?: string;
+		image?: string;
+		keywords?: string;
+		schemas?: Record<string, unknown>[];
+	}
+
+	let {
+		title = '',
+		description = '',
+		image = '',
+		keywords = '',
+		schemas = []
+	}: Props = $props();
 
 	const base = 'https://mrmythical.com';
-	$: fullUrl = base + $page.url.pathname;
-	$: segments = $page.url.pathname.split('/').filter(Boolean);
-	$: breadcrumbList = {
+	let fullUrl = $derived(base + $page.url.pathname);
+	let segments = $derived($page.url.pathname.split('/').filter(Boolean));
+	let breadcrumbList = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'BreadcrumbList',
 		itemListElement: segments.map((seg, idx) => ({
@@ -21,23 +31,23 @@
 				name: seg
 			}
 		}))
-	};
-	$: webPage = {
+	});
+	let webPage = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'WebPage',
 		name: title,
 		description,
 		url: fullUrl,
 		isPartOf: { '@type': 'WebSite', name: 'mrmythical.com', url: base }
-	};
-	$: organization = {
+	});
+	let organization = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'Organization',
 		name: 'Mr. Mythical',
 		url: base,
 		logo: image
-	};
-	$: website = {
+	});
+	let website = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'WebSite',
 		name: title,
@@ -48,7 +58,7 @@
 			target: base + '/rating-calculator?score={search_term_string}',
 			'query-input': 'required name=search_term_string'
 		}
-	};
+	});
 </script>
 
 <svelte:head>

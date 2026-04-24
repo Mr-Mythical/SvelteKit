@@ -62,7 +62,7 @@
 			<Button
 				class="p-0 text-[1.03rem] font-bold text-link"
 				variant="link"
-				on:click={() => (window.location.href = 'mailto:mythical@mrmythical.com')}
+				onclick={() => (window.location.href = 'mailto:mythical@mrmythical.com')}
 			>
 				mythical@mrmythical.com
 			</Button>

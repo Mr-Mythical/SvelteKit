@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { onMount } from 'svelte';
 	import { Chart } from 'svelte-chartjs';
 	import {
@@ -16,7 +18,7 @@
 	import type { ChartData, ChartOptions } from 'chart.js';
 	import { backgroundColorPlugin } from '$lib/utils/chartCanvasPlugin';
 
-	let zoomPluginLoaded = false;
+	let zoomPluginLoaded = $state(false);
 
 	let zoomPlugin;
 	onMount(async () => {
@@ -26,8 +28,12 @@
 		zoomPluginLoaded = true;
 	});
 
-	export let encounterId: number;
-	export let encounterName: string = 'Unknown Encounter';
+	interface Props {
+		encounterId: number;
+		encounterName?: string;
+	}
+
+	let { encounterId, encounterName = 'Unknown Encounter' }: Props = $props();
 	// Simple localStorage cache helpers with TTL
 	function getCache<T>(key: string): T | null {
 		try {
@@ -65,13 +71,13 @@
 		encounter_id: number;
 	}
 
-	let chartData: ChartData<'line', number[], string> = {
+	let chartData: ChartData<'line', number[], string> = $state({
 		labels: [],
 		datasets: []
-	};
+	});
 
-	let loading = false;
-	let error: string | null = null;
+	let loading = $state(false);
+	let error: string | null = $state(null);
 
 	ChartJS.register(
 		LineElement,
@@ -86,7 +92,7 @@
 		backgroundColorPlugin
 	);
 
-	const options: ChartOptions<'line'> = {
+	const options: ChartOptions<'line'> = $state({
 		responsive: true,
 		maintainAspectRatio: false,
 		plugins: {
@@ -102,12 +108,14 @@
 				callbacks: {
 					title: (context) => {
 						const seconds = context[0].parsed.x;
+						if (seconds == null) return '';
 						const minutes = Math.floor(seconds / 60);
 						const remainingSeconds = seconds % 60;
 						return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 					},
 					label: (context) => {
 						const value = context.parsed.y;
+						if (value == null) return '';
 						const datasetIndex = context.datasetIndex;
 						const formatted = Number(value.toFixed(2)).toLocaleString();
 
@@ -183,28 +191,30 @@
 				grid: { color: '#555555' }
 			}
 		}
-	};
+	});
 
-	$: if (zoomPluginLoaded) {
-		if (!options.plugins) {
-			options.plugins = {};
-		}
-		options.plugins.zoom = {
-			pan: {
-				enabled: true,
-				mode: 'x'
-			},
-			zoom: {
-				wheel: {
-					enabled: true
-				},
-				pinch: {
-					enabled: true
-				},
-				mode: 'x'
+	run(() => {
+		if (zoomPluginLoaded) {
+			if (!options.plugins) {
+				options.plugins = {};
 			}
-		};
-	}
+			options.plugins.zoom = {
+				pan: {
+					enabled: true,
+					mode: 'x'
+				},
+				zoom: {
+					wheel: {
+						enabled: true
+					},
+					pinch: {
+						enabled: true
+					},
+					mode: 'x'
+				}
+			};
+		}
+	});
 
 	function movingAverage(arr: number[], windowSize: number) {
 		const result = [];
@@ -319,9 +329,11 @@
 		}
 	}
 
-	$: if (encounterId) {
-		fetchData();
-	}
+	run(() => {
+		if (encounterId) {
+			fetchData();
+		}
+	});
 </script>
 
 <div class="chart-container">

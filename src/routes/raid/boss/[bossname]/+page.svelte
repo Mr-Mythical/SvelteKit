@@ -8,9 +8,13 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 
-	export let data;
+	interface Props {
+		data: any;
+	}
 
-	$: currentBoss = bosses.find((b) => b.id === data.bossId);
+	let { data }: Props = $props();
+
+	let currentBoss = $derived(bosses.find((b) => b.id === data.bossId));
 
 	function goBack() {
 		goto('/raid');
@@ -44,7 +48,7 @@
 				Interactive damage patterns across different raid encounters
 			</p>
 		</div>
-		<Button variant="outline" on:click={goBack}>Back</Button>
+		<Button variant="outline" onclick={goBack}>Back</Button>
 	</div>
 
 	<!-- Boss Selection Grid -->
@@ -53,7 +57,7 @@
 		<div class="flex flex-wrap justify-center gap-2">
 			{#each bosses as boss (boss.id)}
 				<button
-					on:click={() => selectBoss(boss.slug)}
+					onclick={() => selectBoss(boss.slug)}
 					class="group relative flex-shrink-0 overflow-hidden rounded-lg border bg-card p-2 transition hover:shadow-lg {boss.id ===
 					currentBoss?.id
 						? 'border-primary ring-2 ring-primary'
@@ -133,7 +137,7 @@
 										height="26"
 										class="object-contain"
 										loading="lazy"
-										on:error={hideImgOnError}
+										onerror={hideImgOnError}
 									/>
 									<a
 										href={'https://www.wowhead.com/spell=' + ability.id}

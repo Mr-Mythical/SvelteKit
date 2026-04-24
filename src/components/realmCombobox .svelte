@@ -1,20 +1,28 @@
 <script lang="ts">
-	import Check from 'lucide-svelte/icons/check';
-	import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
+	import Check from '@lucide/svelte/icons/check';
+	import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';
 	import * as Command from '$lib/components/ui/command/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn } from '$lib/utils.js';
 	import { tick } from 'svelte';
 
-	export let options: Array<{ value: string; label: string }> = [];
-	export let selectedValue: string = '';
-	export let onSelect: (value: string) => void;
-	export let triggerId: string = '';
+	interface Props {
+		options?: Array<{ value: string; label: string }>;
+		selectedValue?: string;
+		onSelect: (value: string) => void;
+		triggerId?: string;
+	}
 
-	let open = false;
+	let {
+		options = [],
+		selectedValue = '',
+		onSelect,
+		triggerId = ''
+	}: Props = $props();
 
-	$: selectedLabel = options.find((o) => o.value === selectedValue)?.label ?? 'Select a realm...';
+	let open = $state(false);
+
+	let selectedLabel = $derived(options.find((o) => o.value === selectedValue)?.label ?? 'Select a realm...');
 
 	function closeAndFocusTrigger(triggerId: string) {
 		open = false;
@@ -32,23 +40,20 @@
 	}
 </script>
 
-<Popover.Root bind:open let:ids>
-	<Popover.Trigger asChild let:builder>
-		<Button
-			builders={[builder]}
-			variant="outline"
-			role="combobox"
-			aria-expanded={open}
-			aria-controls={ids.content}
-			aria-haspopup="listbox"
-			aria-labelledby={`${triggerId}-label`}
-			class="w-full justify-between"
-			id={triggerId}
-		>
-			<span id={`${triggerId}-label`}>{selectedLabel}</span>
-			<ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
-			<span class="sr-only">Toggle dropdown</span>
-		</Button>
+<Popover.Root bind:open>
+	<Popover.Trigger
+		id={triggerId}
+		role="combobox"
+		aria-expanded={open}
+		aria-haspopup="listbox"
+		aria-labelledby={`${triggerId}-label`}
+		class={cn(
+			'inline-flex h-10 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+		)}
+	>
+		<span id={`${triggerId}-label`}>{selectedLabel}</span>
+		<ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
+		<span class="sr-only">Toggle dropdown</span>
 	</Popover.Trigger>
 
 	<Popover.Content class="p-0">
@@ -60,11 +65,8 @@
 					{#each options as option}
 						<Command.Item
 							value={option.label}
-							onSelect={(selectedLabel) => {
-								const selectedOption = options.find((o) => o.label === selectedLabel);
-								if (selectedOption) {
-									handleSelect(selectedOption.value);
-								}
+							onSelect={() => {
+								handleSelect(option.value);
 							}}
 							class={cn(
 								'flex cursor-pointer select-none items-center p-2',

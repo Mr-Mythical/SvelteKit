@@ -1,25 +1,31 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { signIn, signOut } from '@auth/sveltekit/client';
 	import { page } from '$app/stores';
 	import { fly, fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import LogIn from 'lucide-svelte/icons/log-in';
-	import LogOut from 'lucide-svelte/icons/log-out';
-	import User from 'lucide-svelte/icons/user';
-	import Loader2 from 'lucide-svelte/icons/loader-2';
+	import LogIn from '@lucide/svelte/icons/log-in';
+	import LogOut from '@lucide/svelte/icons/log-out';
+	import User from '@lucide/svelte/icons/user';
+	import Loader2 from '@lucide/svelte/icons/loader-2';
 
-	export let mobile: boolean = false;
+	interface Props {
+		mobile?: boolean;
+	}
 
-	let isSigningIn = false;
-	let isSigningOut = false;
+	let { mobile = false }: Props = $props();
 
-	$: session = $page.data.session;
-	$: userBattletag = session?.user ? (session.user as any).battletag : null;
-	$: isLoading = isSigningIn || isSigningOut;
+	let isSigningIn = $state(false);
+	let isSigningOut = $state(false);
+
+	let session = $derived($page.data.session);
+	let userBattletag = $derived(session?.user ? (session.user as any).battletag : null);
+	let isLoading = $derived(isSigningIn || isSigningOut);
 
 	// Check if we're in the middle of an OAuth flow
-	$: {
+	run(() => {
 		if (typeof window !== 'undefined') {
 			const urlParams = new URLSearchParams(window.location.search);
 			// If we have OAuth callback parameters, we're returning from Battle.net
@@ -35,7 +41,7 @@
 				isSigningOut = false;
 			}
 		}
-	}
+	});
 
 	async function handleSignIn() {
 		isSigningIn = true;
@@ -81,7 +87,7 @@
 			<Button
 				variant="destructive"
 				size="sm"
-				on:click={handleSignOut}
+				onclick={handleSignOut}
 				disabled={isSigningOut}
 				class="w-full justify-center transition-all duration-200 hover:scale-[0.98] active:scale-95"
 			>
@@ -103,7 +109,7 @@
 			<Button
 				variant="default"
 				size="sm"
-				on:click={handleSignIn}
+				onclick={handleSignIn}
 				disabled={isSigningIn}
 				class="w-full justify-center bg-gradient-to-r from-blue-600 to-blue-700 text-white transition-all duration-200 hover:scale-[1.02] hover:from-blue-700 hover:to-blue-800 hover:shadow-lg active:scale-95"
 			>
@@ -140,7 +146,7 @@
 				<Button
 					variant="destructive"
 					size="sm"
-					on:click={handleSignOut}
+					onclick={handleSignOut}
 					disabled={isSigningOut}
 					class="flex items-center gap-1.5 transition-all duration-200 hover:scale-[0.98] active:scale-95"
 				>
@@ -158,7 +164,7 @@
 				<Button
 					variant="default"
 					size="sm"
-					on:click={handleSignIn}
+					onclick={handleSignIn}
 					disabled={isSigningIn}
 					class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md transition-all duration-300 hover:scale-[1.02] hover:from-blue-700 hover:to-blue-800 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-70"
 				>

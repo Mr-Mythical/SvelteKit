@@ -15,7 +15,8 @@
 	import { backgroundColorPlugin } from '$lib/utils/chartCanvasPlugin';
 	import { getClassColorFromSpec } from '$lib/utils/classColors';
 
-	export let specs: Array<{
+	interface Props {
+		specs: Array<{
 		spec_icon: string;
 		avg_dps?: number | null;
 		avg_hps?: number | null;
@@ -25,14 +26,23 @@
 		min_hps?: number | null;
 		sample_count?: number | null;
 	}>;
-	export let chartTitle: string = 'Spec Performance';
-	export let metricType: 'dps' | 'hps' = 'dps';
-	export let showMinMax: boolean = false;
-	export let showRoles: { dps: boolean; tank: boolean; healer: boolean } = {
+		chartTitle?: string;
+		metricType?: 'dps' | 'hps';
+		showMinMax?: boolean;
+		showRoles?: { dps: boolean; tank: boolean; healer: boolean };
+	}
+
+	let {
+		specs,
+		chartTitle = 'Spec Performance',
+		metricType = 'dps',
+		showMinMax = false,
+		showRoles = {
 		dps: true,
 		tank: true,
 		healer: true
-	};
+	}
+	}: Props = $props();
 
 	const HEALER_SPECS = ['Restoration', 'Holy', 'Mistweaver', 'Discipline', 'Preservation'];
 	const TANK_SPECS = ['Blood', 'Protection', 'Brewmaster', 'Guardian', 'Vengeance'];
@@ -63,12 +73,12 @@
 		return parts[1]; // Return just the spec name
 	}
 
-	$: filteredSpecs = specs.filter((spec) => {
+	let filteredSpecs = $derived(specs.filter((spec) => {
 		const role = getSpecRole(spec.spec_icon);
 		return showRoles[role];
-	});
+	}));
 
-	$: chartData = {
+	let chartData = $derived({
 		labels: filteredSpecs.map((spec) => getSpecName(spec.spec_icon)),
 		datasets: [
 			...(showMinMax
@@ -115,7 +125,7 @@
 					]
 				: [])
 		]
-	} as ChartData<'bar', number[], string>;
+	} as ChartData<'bar', number[], string>);
 
 	const options: ChartOptions<'bar'> = {
 		responsive: true,
@@ -134,6 +144,7 @@
 				callbacks: {
 					label: (context) => {
 						const value = context.parsed.x;
+						if (value == null) return '';
 						const formatted = value.toLocaleString();
 						const datasetLabel = context.dataset.label || '';
 						return `${datasetLabel}: ${formatted}`;

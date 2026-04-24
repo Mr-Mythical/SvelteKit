@@ -1,21 +1,29 @@
 <script lang="ts">
-	import Check from 'lucide-svelte/icons/check';
-	import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
+	import Check from '@lucide/svelte/icons/check';
+	import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';
 	import * as Command from '$lib/components/ui/command/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn } from '$lib/utils.js';
 	import { tick } from 'svelte';
 
-	export let dungeons: Array<{ value: string; label: string; short_name: string }> = [];
-	export let selectedValue: string = '';
-	export let onSelect: (value: string) => void;
-	export let triggerId: string = '';
+	interface Props {
+		dungeons?: Array<{ value: string; label: string; short_name: string }>;
+		selectedValue?: string;
+		onSelect: (value: string) => void;
+		triggerId?: string;
+	}
 
-	let open = false;
+	let {
+		dungeons = [],
+		selectedValue = '',
+		onSelect,
+		triggerId = ''
+	}: Props = $props();
 
-	$: selected = dungeons.find((d) => d.value === selectedValue);
-	$: selectedLabel = selected?.label ?? 'Select a dungeon...';
+	let open = $state(false);
+
+	let selected = $derived(dungeons.find((d) => d.value === selectedValue));
+	let selectedLabel = $derived(selected?.label ?? 'Select a dungeon...');
 
 	function closeAndFocusTrigger(triggerId: string) {
 		open = false;
@@ -33,29 +41,26 @@
 	}
 </script>
 
-<Popover.Root bind:open let:ids>
-	<Popover.Trigger asChild let:builder>
-		<Button
-			builders={[builder]}
-			variant="outline"
-			role="combobox"
-			aria-expanded={open}
-			aria-controls={ids.content}
-			aria-haspopup="listbox"
-			aria-labelledby={`${triggerId}-label`}
-			class="h-8 w-full justify-between px-3 text-sm md:h-10 md:px-4 md:text-base"
-			id={triggerId}
-		>
-			<span id={`${triggerId}-label`}>
-				<span class="hidden md:inline">{selectedLabel}</span>
-				<span class="md:hidden">{selected?.short_name ?? selectedLabel}</span>
-			</span>
-			<ChevronsUpDown
-				class="ml-1 h-3 w-3 shrink-0 opacity-50 md:ml-2 md:h-4 md:w-4"
-				aria-hidden="true"
-			/>
-			<span class="sr-only">Toggle dropdown</span>
-		</Button>
+<Popover.Root bind:open>
+	<Popover.Trigger
+		id={triggerId}
+		role="combobox"
+		aria-expanded={open}
+		aria-haspopup="listbox"
+		aria-labelledby={`${triggerId}-label`}
+		class={cn(
+			'inline-flex h-8 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:h-10 md:px-4 md:text-base'
+		)}
+	>
+		<span id={`${triggerId}-label`}>
+			<span class="hidden md:inline">{selectedLabel}</span>
+			<span class="md:hidden">{selected?.short_name ?? selectedLabel}</span>
+		</span>
+		<ChevronsUpDown
+			class="ml-1 h-3 w-3 shrink-0 opacity-50 md:ml-2 md:h-4 md:w-4"
+			aria-hidden="true"
+		/>
+		<span class="sr-only">Toggle dropdown</span>
 	</Popover.Trigger>
 
 	<Popover.Content class="w-[200px] p-0 md:w-[250px]">
@@ -70,7 +75,7 @@
 				{#each dungeons as dungeon}
 					<Command.Item
 						value={dungeon.value}
-						onSelect={(selectedValue) => handleSelect(selectedValue)}
+						onSelect={() => handleSelect(dungeon.value)}
 						class={cn(
 							'flex cursor-pointer select-none items-center px-2 py-1.5 text-sm md:py-2',
 							selectedValue === dungeon.value ? 'bg-secondary' : ''

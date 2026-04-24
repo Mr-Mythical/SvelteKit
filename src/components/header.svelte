@@ -1,10 +1,10 @@
 <script lang="ts">
-	let open = false;
+	let open = $state(false);
 	import Button from '$lib/components/ui/button/button.svelte';
-	import Sun from 'lucide-svelte/icons/sun';
-	import Moon from 'lucide-svelte/icons/moon';
+	import Sun from '@lucide/svelte/icons/sun';
+	import Moon from '@lucide/svelte/icons/moon';
 	import { toggleMode } from 'mode-watcher';
-	import Menu from 'lucide-svelte/icons/menu';
+	import Menu from '@lucide/svelte/icons/menu';
 	import AuthButton from './authButton.svelte';
 	import { base } from '$app/paths';
 
@@ -36,7 +36,7 @@
 				<Button
 					variant="ghost"
 					size="icon"
-					on:click={() => (open = !open)}
+					onclick={() => (open = !open)}
 					aria-label="Toggle mobile navigation"
 					aria-expanded={open}
 					aria-controls="mobile-nav"
@@ -45,7 +45,7 @@
 				</Button>
 				<div class={`md:hidden ${open ? 'block' : 'hidden'} mt-2 w-full`} id="mobile-nav"></div>
 
-				<Button on:click={toggleMode} variant="ghost" size="icon" aria-label="Toggle theme">
+				<Button onclick={toggleMode} variant="ghost" size="icon" aria-label="Toggle theme">
 					<Sun
 						class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
 					/>
@@ -93,7 +93,7 @@
 						<AuthButton />
 					</li>
 					<li>
-						<Button on:click={toggleMode} variant="ghost" size="icon">
+						<Button onclick={toggleMode} variant="ghost" size="icon">
 							<Sun
 								class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
 							/>

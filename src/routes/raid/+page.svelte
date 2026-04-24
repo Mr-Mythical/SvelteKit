@@ -12,13 +12,13 @@
 	import BossPreviewChart from '../../components/bossPreviewChart.svelte';
 	import { goto } from '$app/navigation';
 
-	let reportURL: string = '';
-	let loadingFights = false;
-	let error: string = '';
-	let browseLoading = false;
-	let browsedLogs: any[] = [];
-	let totalBrowsedLogs = 0;
-	let currentBrowsePage = 1;
+	let reportURL: string = $state('');
+	let loadingFights = $state(false);
+	let error: string = $state('');
+	let browseLoading = $state(false);
+	let browsedLogs: any[] = $state([]);
+	let totalBrowsedLogs = $state(0);
+	let currentBrowsePage = $state(1);
 	const browseItemsPerPage = 10;
 
 	function handleReportSelection(code: string) {
@@ -59,13 +59,18 @@
 		}
 	}
 
-	async function handleLogSearch(event: CustomEvent) {
+	async function handleLogSearch(detail: {
+		bossId?: number;
+		minDuration?: number;
+		maxDuration?: number;
+		healerSpecs?: string[];
+	}) {
 		browseLoading = true;
 		browsedLogs = [];
 		totalBrowsedLogs = 0;
 		currentBrowsePage = 1;
 
-		const params = { ...event.detail, page: 1, limit: browseItemsPerPage };
+		const params = { ...detail, page: 1, limit: browseItemsPerPage };
 		try {
 			const response = await fetch('/api/browse-logs', {
 				method: 'POST',
@@ -90,7 +95,7 @@
 		}
 	}
 
-	async function handleBrowsePageChange(event: CustomEvent<{ page: number }>) {
+	async function handleBrowsePageChange(_detail: { page: number }) {
 		// Handle page change if needed
 	}
 
@@ -159,7 +164,7 @@
 					bind:value={reportURL}
 					placeholder="https://www.warcraftlogs.com/reports/<reportcode>"
 				/>
-				<Button on:click={fetchFights} disabled={loadingFights}>
+				<Button onclick={fetchFights} disabled={loadingFights}>
 					{#if loadingFights}
 						Loading...
 					{:else}
@@ -232,15 +237,15 @@
 						>
 					</Card.Header>
 					<Card.Content class="space-y-4">
-						<LogBrowserFilters on:search={handleLogSearch} loading={browseLoading} />
+						<LogBrowserFilters onsearch={handleLogSearch} loading={browseLoading} />
 						<LogBrowserResults
 							logs={browsedLogs}
 							loading={browseLoading}
 							totalLogs={totalBrowsedLogs}
 							currentPage={currentBrowsePage}
 							itemsPerPage={browseItemsPerPage}
-							on:pageChange={handleBrowsePageChange}
-							on:analyzeLog={(e) => analyzeLogFromBrowse(e.detail)}
+							onpageChange={handleBrowsePageChange}
+							onanalyzeLog={(log) => analyzeLogFromBrowse(log)}
 						/>
 					</Card.Content>
 				</Card.Root>

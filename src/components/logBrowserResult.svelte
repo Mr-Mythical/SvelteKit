@@ -17,15 +17,26 @@
 		TableRow
 	} from '$lib/components/ui/table';
 	import { Badge } from '$lib/components/ui/badge';
-	import { createEventDispatcher } from 'svelte';
 
-	export let logs: BrowsedLog[] = [];
-	export let loading = false;
-	export let totalLogs = 0;
-	export let currentPage = 1;
-	export let itemsPerPage = 10;
+	interface Props {
+		logs?: BrowsedLog[];
+		loading?: boolean;
+		totalLogs?: number;
+		currentPage?: number;
+		itemsPerPage?: number;
+		onpageChange?: (detail: { page: number }) => void;
+		onanalyzeLog?: (log: BrowsedLog) => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let {
+		logs = [],
+		loading = false,
+		totalLogs = 0,
+		currentPage = 1,
+		itemsPerPage = 10,
+		onpageChange,
+		onanalyzeLog
+	}: Props = $props();
 
 	function formatDuration(seconds: number): string {
 		const minutes = Math.floor(seconds / 60);
@@ -35,12 +46,12 @@
 
 	function handlePageChange(newPage: number) {
 		if (newPage > 0 && newPage <= Math.ceil(totalLogs / itemsPerPage)) {
-			dispatch('pageChange', { page: newPage });
+			onpageChange?.({ page: newPage });
 		}
 	}
 
 	function analyzeLog(log: BrowsedLog) {
-		dispatch('analyzeLog', log);
+		onanalyzeLog?.(log);
 	}
 </script>
 
@@ -77,7 +88,7 @@
 								{/each}
 							</TableCell>
 							<TableCell class="space-x-2 text-right">
-								<Button variant="outline" size="sm" on:click={() => analyzeLog(log)}>Analyze</Button
+								<Button variant="outline" size="sm" onclick={() => analyzeLog(log)}>Analyze</Button
 								>
 								<a href={log.log_url} target="_blank" rel="noopener noreferrer">
 									<Button variant="link" size="sm">View on WCL</Button>
@@ -89,12 +100,12 @@
 			</Table>
 			{#if totalLogs > itemsPerPage}
 				<div class="mt-6 flex items-center justify-center space-x-2">
-					<Button on:click={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}
+					<Button onclick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}
 						>Previous</Button
 					>
 					<span>Page {currentPage} of {Math.ceil(totalLogs / itemsPerPage)}</span>
 					<Button
-						on:click={() => handlePageChange(currentPage + 1)}
+						onclick={() => handlePageChange(currentPage + 1)}
 						disabled={currentPage * itemsPerPage >= totalLogs}>Next</Button
 					>
 				</div>

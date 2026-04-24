@@ -12,7 +12,11 @@
 	} from 'chart.js';
 	import type { ChartData, ChartOptions } from 'chart.js';
 
-	export let bossId: number;
+	interface Props {
+		bossId: number;
+	}
+
+	let { bossId }: Props = $props();
 
 	// Simple localStorage cache helpers with TTL
 	function getCache<T>(key: string): T | null {
@@ -51,9 +55,9 @@
 		encounter_id: number;
 	}
 
-	let chartData: ChartData<'line', number[], string> | null = null;
+	let chartData: ChartData<'line', number[], string> | null = $state(null);
 
-	let loading = true;
+	let loading = $state(true);
 
 	ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, LineController, Filler);
 

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
 	import { Chart } from 'svelte-chartjs';
@@ -27,14 +29,25 @@
 	import { classSpecAbilities } from '$lib/types/classData';
 	import { bosses } from '$lib/types/bossData';
 
-	export let damageEvents: Series[] = [];
-	export let healingEvents: Series[] = [];
-	export let castEvents: CastEvent[] = [];
-	export let bossEvents: CastEvent[] = [];
-	export let encounterId: number;
-	export let allHealers: Player[] = [];
+	interface Props {
+		damageEvents?: Series[];
+		healingEvents?: Series[];
+		castEvents?: CastEvent[];
+		bossEvents?: CastEvent[];
+		encounterId: number;
+		allHealers?: Player[];
+	}
 
-	let zoomPluginLoaded = false;
+	let {
+		damageEvents = [],
+		healingEvents = [],
+		castEvents = [],
+		bossEvents = [],
+		encounterId,
+		allHealers = []
+	}: Props = $props();
+
+	let zoomPluginLoaded = $state(false);
 	let zoomPlugin;
 	onMount(async () => {
 		const module = await import('chartjs-plugin-zoom');
@@ -57,13 +70,13 @@
 		backgroundColorPlugin
 	);
 
-	let chartData: ChartData<'line', number[], string> = {
+	let chartData: ChartData<'line', number[], string> = $state({
 		labels: [],
 		datasets: []
-	};
+	});
 
 	let showAnnotations = true;
-	let specFilters: Record<string, boolean> = {};
+	let specFilters: Record<string, boolean> = $state({});
 	let abilityTypeFilter: 'Major' | 'Minor' | 'All' = 'All';
 
 	function initializeSpecFilters() {
@@ -105,24 +118,28 @@
 		specFilters = { ...specFilters };
 	}
 
-	$: if (allHealers) initializeSpecFilters();
+	run(() => {
+		if (allHealers) initializeSpecFilters();
+	});
 
-	$: currentBoss = bosses.find((boss) => boss.id === encounterId);
-	let bossAbilityFilters: Record<number, boolean> = {};
-	let detectedBossAbilities: Set<number> = new Set();
-	let previousBossId: number | null = null;
-	$: if (currentBoss) {
-		if (previousBossId !== currentBoss.id) {
-			previousBossId = currentBoss.id;
-			bossAbilityFilters = {};
-			detectedBossAbilities = new Set(bossEvents.map((event) => event.abilityGameID));
+	let currentBoss = $derived(bosses.find((boss) => boss.id === encounterId));
+	let bossAbilityFilters: Record<number, boolean> = $state({});
+	let detectedBossAbilities: Set<number> = $state(new Set());
+	let previousBossId: number | null = $state(null);
+	run(() => {
+		if (currentBoss) {
+			if (previousBossId !== currentBoss.id) {
+				previousBossId = currentBoss.id;
+				bossAbilityFilters = {};
+				detectedBossAbilities = new Set(bossEvents.map((event) => event.abilityGameID));
 
-			// Only enable abilities that are actually detected in the boss events
-			currentBoss.abilities.forEach((ability) => {
-				bossAbilityFilters[ability.id] = detectedBossAbilities.has(ability.id);
-			});
+				// Only enable abilities that are actually detected in the boss events
+				currentBoss.abilities.forEach((ability) => {
+					bossAbilityFilters[ability.id] = detectedBossAbilities.has(ability.id);
+				});
+			}
 		}
-	}
+	});
 
 	function getSpecAbilityName(abilityGameID: number): string | null {
 		const classes = Object.keys(classSpecAbilities) as (keyof typeof classSpecAbilities)[];
@@ -157,7 +174,7 @@
 	let lastXValue = 0;
 	const pointInterval = damageEvents[0]?.pointInterval || healingEvents[0]?.pointInterval;
 
-	const options: ChartOptions<'line'> & { plugins: { annotation: { annotations: any[] } } } = {
+	const options: ChartOptions<'line'> & { plugins: { annotation: { annotations: any[] } } } = $state({
 		responsive: true,
 		plugins: {
 			title: {
@@ -300,25 +317,27 @@
 				max: calculateSuggestedMax(damageEvents, healingEvents) * 1.3
 			}
 		}
-	};
+	});
 
-	$: if (zoomPluginLoaded) {
-		options.plugins.zoom = {
-			pan: {
-				enabled: true,
-				mode: 'x'
-			},
-			zoom: {
-				wheel: {
-					enabled: true
+	run(() => {
+		if (zoomPluginLoaded) {
+			options.plugins.zoom = {
+				pan: {
+					enabled: true,
+					mode: 'x'
 				},
-				pinch: {
-					enabled: true
-				},
-				mode: 'x'
-			}
-		};
-	}
+				zoom: {
+					wheel: {
+						enabled: true
+					},
+					pinch: {
+						enabled: true
+					},
+					mode: 'x'
+				}
+			};
+		}
+	});
 
 	function calculateSuggestedMax(damageEvents: Series[], healingEvents: Series[]): number {
 		const maxDamage = damageEvents.length > 0 ? Math.max(...damageEvents[0].data) : 0;
@@ -429,12 +448,14 @@
 		}
 	});
 
-	$: if (damageEvents.length > 0 || healingEvents.length > 0) {
-		const processedData = processData(damageEvents, healingEvents);
-		updateChartData(processedData);
-	}
+	run(() => {
+		if (damageEvents.length > 0 || healingEvents.length > 0) {
+			const processedData = processData(damageEvents, healingEvents);
+			updateChartData(processedData);
+		}
+	});
 
-	$: annotations = showAnnotations
+	let annotations = $derived(showAnnotations
 		? [
 				...castEvents
 					.filter((event) => {
@@ -519,11 +540,13 @@
 						};
 					})
 			]
-		: [];
+		: []);
 
-	$: options.plugins = options.plugins || {};
-	$: options.plugins.annotation = options.plugins.annotation || { annotations: [] };
-	$: options.plugins.annotation.annotations = annotations as any;
+	$effect(() => {
+		options.plugins = options.plugins || {};
+		(options.plugins as any).annotation = (options.plugins as any).annotation || { annotations: [] };
+		(options.plugins as any).annotation.annotations = annotations as any;
+	});
 </script>
 
 <div class="filters text-center">

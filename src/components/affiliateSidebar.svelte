@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
-	let visible = false;
+	let visible = $state(false);
 	let timer: ReturnType<typeof setTimeout>;
 	onMount(() => {
 		timer = setTimeout(() => {
@@ -23,7 +23,7 @@
 	>
 		<div class="relative overflow-hidden rounded-t-lg shadow-2xl">
 			<button
-				on:click={closeBanner}
+				onclick={closeBanner}
 				class="absolute right-4 top-4 z-10 m-0 flex h-6 w-6 items-center justify-center rounded-full border-none bg-black/60 p-0 text-white hover:bg-black/80 focus:outline-none"
 				style="box-shadow: 0 1px 4px rgba(0,0,0,0.18);"
 				aria-label="Close banner"

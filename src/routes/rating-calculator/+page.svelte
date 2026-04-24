@@ -8,7 +8,11 @@
 	import type { PageData } from './$types.js';
 	import * as Accordion from '$lib/components/ui/accordion';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	const defaultDescription =
 		'Try the interactive m+ calculator to see which keystones you need for your desired Mythic+ score in WoW. Import your character and plan your runs!';
@@ -102,7 +106,7 @@
 	<ApiForm data={data.form} />
 	<section class="mt-12">
 		<h2 class="mb-6 text-2xl font-bold">Frequently Asked Questions</h2>
-		<Accordion.Root value="" class="w-full">
+		<Accordion.Root type="multiple" value={[]} class="w-full">
 			{#each faqItems as item, i (i)}
 				<Accordion.Item value={`faq-${i}`}>
 					<Accordion.Trigger>{item.question}</Accordion.Trigger>
