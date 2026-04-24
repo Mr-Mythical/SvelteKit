@@ -9,6 +9,12 @@
 	--color-ring: hsl(var(--ring));
 	--color-background: hsl(var(--background));
 	--color-foreground: hsl(var(--foreground));
+	--color-progress: hsl(var(--progress));
+	--color-chart: hsl(var(--chart));
+	--color-link: hsl(var(--link));
+
+	--color-grad: #86132a;
+	--color-gradinverse: #ec7990;
 
 	--color-primary: hsl(var(--primary));
 	--color-primary-foreground: hsl(var(--primary-foreground));
@@ -31,19 +37,24 @@
 	--color-card: hsl(var(--card));
 	--color-card-foreground: hsl(var(--card-foreground));
 
-	--color-sidebar: hsl(var(--sidebar-background));
-	--color-sidebar-foreground: hsl(var(--sidebar-foreground));
-	--color-sidebar-primary: hsl(var(--sidebar-primary));
-	--color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
-	--color-sidebar-accent: hsl(var(--sidebar-accent));
-	--color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
-	--color-sidebar-border: hsl(var(--sidebar-border));
-	--color-sidebar-ring: hsl(var(--sidebar-ring));
-
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
 	--radius-xl: calc(var(--radius) + 4px);
+
+	--font-heading: 'League Spartan';
+	--font-body: 'Roboto';
+
+	--text-sm: 0.75rem;
+	--text-base: 1rem;
+	--text-xl: 1.333rem;
+	--text-2xl: 1.777rem;
+	--text-3xl: 2.369rem;
+	--text-4xl: 3.158rem;
+	--text-5xl: 4.21rem;
+
+	--font-weight-normal: 400;
+	--font-weight-bold: 700;
 
 	--animate-accordion-down: accordion-down 0.2s ease-out;
 	--animate-accordion-up: accordion-up 0.2s ease-out;
@@ -80,64 +91,54 @@
 
 @layer base {
 	:root {
-		--background: 0 0% 100%;
-		--foreground: 222.2 84% 4.9%;
-		--muted: 210 40% 96.1%;
-		--muted-foreground: 215.4 16.3% 46.9%;
-		--popover: 0 0% 100%;
-		--popover-foreground: 222.2 84% 4.9%;
-		--card: 0 0% 100%;
-		--card-foreground: 222.2 84% 4.9%;
-		--border: 214.3 31.8% 91.4%;
-		--input: 214.3 31.8% 91.4%;
-		--primary: 222.2 47.4% 11.2%;
-		--primary-foreground: 210 40% 98%;
-		--secondary: 210 40% 96.1%;
-		--secondary-foreground: 222.2 47.4% 11.2%;
-		--accent: 210 40% 96.1%;
-		--accent-foreground: 222.2 47.4% 11.2%;
-		--destructive: 0 72.2% 50.6%;
-		--destructive-foreground: 210 40% 98%;
-		--ring: 222.2 84% 4.9%;
+		--background: 0 60% 99%;
+		--foreground: 24 100% 2%;
+		--card: 0 60% 95%;
+		--card-foreground: 24 100% 2%;
+		--chart: 0 10% 20%;
+		--popover: 0 60% 99%;
+		--popover-foreground: 24 100% 2%;
+		--primary: 348 75% 81%;
+		--primary-foreground: 24 100% 2%;
+		--secondary: 0 61% 90%;
+		--secondary-foreground: 24 100% 2%;
+		--muted: 0 20% 80%;
+		--muted-foreground: 0 20% 30%;
+		--accent: 19 49% 90%;
+		--accent-foreground: 24 100% 2%;
+		--destructive: 0 62% 70%;
+		--destructive-foreground: 24 100% 2%;
+		--border: 0 61% 90%;
+		--input: 0 61% 80%;
+		--ring: 19 49% 40%;
+		--progress: 126 75% 81%;
+		--link: 348 80% 35%;
 		--radius: 0.5rem;
-		--sidebar-background: 0 0% 98%;
-		--sidebar-foreground: 240 5.3% 26.1%;
-		--sidebar-primary: 240 5.9% 10%;
-		--sidebar-primary-foreground: 0 0% 98%;
-		--sidebar-accent: 240 4.8% 95.9%;
-		--sidebar-accent-foreground: 240 5.9% 10%;
-		--sidebar-border: 220 13% 91%;
-		--sidebar-ring: 217.2 91.2% 59.8%;
 	}
 
 	.dark {
-		--background: 222.2 84% 4.9%;
-		--foreground: 210 40% 98%;
-		--muted: 217.2 32.6% 17.5%;
-		--muted-foreground: 215 20.2% 65.1%;
-		--popover: 222.2 84% 4.9%;
-		--popover-foreground: 210 40% 98%;
-		--card: 222.2 84% 4.9%;
-		--card-foreground: 210 40% 98%;
-		--border: 217.2 32.6% 17.5%;
-		--input: 217.2 32.6% 17.5%;
-		--primary: 210 40% 98%;
-		--primary-foreground: 222.2 47.4% 11.2%;
-		--secondary: 217.2 32.6% 17.5%;
-		--secondary-foreground: 210 40% 98%;
-		--accent: 217.2 32.6% 17.5%;
-		--accent-foreground: 210 40% 98%;
-		--destructive: 0 62.8% 30.6%;
-		--destructive-foreground: 210 40% 98%;
-		--ring: 212.7 26.8% 83.9%;
-		--sidebar-background: 240 5.9% 10%;
-		--sidebar-foreground: 240 4.8% 95.9%;
-		--sidebar-primary: 224.3 76.3% 48%;
-		--sidebar-primary-foreground: 0 0% 100%;
-		--sidebar-accent: 240 3.7% 15.9%;
-		--sidebar-accent-foreground: 240 4.8% 95.9%;
-		--sidebar-border: 240 3.7% 15.9%;
-		--sidebar-ring: 217.2 91.2% 59.8%;
+		--background: 0 60% 1%;
+		--foreground: 24 100% 98%;
+		--card: 0 60% 5%;
+		--card-foreground: 24 100% 98%;
+		--chart: 0 10% 20%;
+		--popover: 0 60% 1%;
+		--popover-foreground: 24 100% 98%;
+		--primary: 348 75% 19%;
+		--primary-foreground: 24 100% 98%;
+		--secondary: 0 61% 10%;
+		--secondary-foreground: 24 100% 98%;
+		--muted: 0 20% 20%;
+		--muted-foreground: 0 20% 70%;
+		--accent: 19 49% 10%;
+		--accent-foreground: 24 100% 98%;
+		--destructive: 0 62% 30%;
+		--destructive-foreground: 24 100% 98%;
+		--border: 0 61% 10%;
+		--input: 0 61% 20%;
+		--ring: 19 49% 60%;
+		--progress: 126 75% 19%;
+		--link: 348 80% 65%;
 	}
 }
 
