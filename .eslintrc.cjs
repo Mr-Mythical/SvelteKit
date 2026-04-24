@@ -10,7 +10,7 @@ module.exports = {
 		sourceType: 'module'
 	},
 	extends: ['eslint:recommended', 'plugin:svelte/recommended', 'prettier'],
-	plugins: ['svelte', 'prettier'],
+	plugins: ['svelte'],
 	overrides: [
 		{
 			files: ['**/*.svelte'],
@@ -18,7 +18,6 @@ module.exports = {
 		}
 	],
 	rules: {
-		'prettier/prettier': 'error'
 		// Add custom rules if needed, e.g., "no-console": "warn"
 	}
 };
