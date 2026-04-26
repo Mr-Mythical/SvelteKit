@@ -8,7 +8,7 @@ let cachedToken: AccessToken | null = null;
  * Retrieves a valid Access Token, refreshing it if necessary.
  * @returns A promise that resolves to a valid Access Token.
  */
-export async function getValidAccessToken(): Promise<string> {
+export async function getOrRefreshAccessToken(): Promise<string> {
 	if (cachedToken && !isTokenExpired(cachedToken)) {
 		return cachedToken.token;
 	}

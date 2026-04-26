@@ -1,5 +1,5 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/db';
+import { getRaidDb } from '$lib/db';
 import { specPerformance } from '$lib/db/schema';
 import { eq, desc, and } from 'drizzle-orm';
 
@@ -15,7 +15,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			return json({ error: 'encounterId and specIcon are required' }, { status: 400 });
 		}
 
-		const database = db();
+		const database = getRaidDb();
 
 		let whereConditions: any[] = [
 			eq(specPerformance.encounterId, parseInt(encounterId)),

@@ -22,7 +22,7 @@ Object.entries(classSpecAbilities).forEach(([className, specs]) => {
 	Object.values(specs).forEach((spec) => {
 		const { Major, Minor } = spec;
 
-		[...Major, ...Minor].forEach((ability: any) => {
+		[...Major, ...Minor].forEach((ability: { name: string; id: number }) => {
 			if (ability.id) {
 				abilityColors[ability.id] = classColors[className];
 			}

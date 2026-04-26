@@ -1,8 +1,9 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { getUserRecents, type CharacterRecentData } from '$lib/db/userRecents.js';
-import { getValidAccessToken } from '$lib/utils/tokenCache';
+import { getOrRefreshAccessToken } from '$lib/utils/tokenCache';
 import { getMyWowRoster } from '$lib/utils/myWowRoster';
+import { requireSession } from '$lib/server/requireSession';
 
 // Returns a flat list of recent WarcraftLogs reports aggregated across the
 // signed-in user's characters, plus a deduplicated list of the
@@ -208,16 +209,15 @@ async function fetchReportsForGuild(
 }
 
 export const GET: RequestHandler = async ({ locals }) => {
-	try {
-		const session = await locals.getSession?.();
-		if (!session?.user?.id) {
-			return json({ reports: [], guilds: [] } satisfies CharacterReportsResponse);
-		}
+	const auth = await requireSession(locals);
+	if ('response' in auth) return auth.response;
+	const userId = auth.session.user.id;
 
+	try {
 		// Source 1: the user's Battle.net roster (level 90+).
 		let bnetCharacters: Array<{ characterName: string; realm: string; region: string }> = [];
 		try {
-			const roster = await getMyWowRoster(session.user.id);
+			const roster = await getMyWowRoster(userId);
 			bnetCharacters = roster.characters
 				.filter((character) => character.level >= 90)
 				.map((character) => ({
@@ -231,7 +231,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		// Source 2: manually-imported recents (covers characters on other accounts
 		// or when the bnet scope is missing).
-		const recents = await getUserRecents<CharacterRecentData>(session.user.id, 'character', 6);
+		const recents = await getUserRecents<CharacterRecentData>(userId, 'character', 6);
 		const recentCharacters = recents
 			.map((recent) => ({
 				characterName: recent.entityData?.characterName,
@@ -255,7 +255,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			return json({ reports: [], guilds: [] } satisfies CharacterReportsResponse);
 		}
 
-		const token = await getValidAccessToken();
+		const token = await getOrRefreshAccessToken();
 
 		const perCharacter = await Promise.all(
 			merged.map(async (character) => {

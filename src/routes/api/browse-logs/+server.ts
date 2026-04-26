@@ -1,6 +1,6 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/db';
-import { healerCompositions, unifiedReports, encounters } from '$lib/db/schema';
+import { getRaidDb } from '$lib/db';
+import { healerCompositions, encounters } from '$lib/db/schema';
 import { eq, gte, lte, desc, and } from 'drizzle-orm';
 import type { BrowseLogsParams, BrowsedLog, BrowseLogsResponse } from '$lib/types/apiTypes';
 import { bosses as bossList } from '$lib/types/bossData';
@@ -13,7 +13,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		let whereConditions = [];
 
 		if (params.bossId) {
-			whereConditions.push(eq(unifiedReports.encounterId, params.bossId));
+			whereConditions.push(eq(healerCompositions.encounterId, params.bossId));
 		}
 		if (params.minDuration) {
 			whereConditions.push(gte(healerCompositions.fightDuration, params.minDuration));
@@ -22,23 +22,24 @@ export const POST: RequestHandler = async ({ request }) => {
 			whereConditions.push(lte(healerCompositions.fightDuration, params.maxDuration));
 		}
 
-		// Query healer compositions with joined data
-		let query = db()
+		// Query healer compositions with joined encounter data.
+		// The live DB stores report_code/fight_id/encounter_id/region directly on
+		// healer_compositions (no separate unified_reports table), so we sort by
+		// last_updated as a recency proxy and leave guild_name/start_time empty.
+		let query = getRaidDb()
 			.select({
-				reportCode: unifiedReports.reportCode,
-				fightId: unifiedReports.fightId,
-				encounterId: unifiedReports.encounterId,
+				reportCode: healerCompositions.reportCode,
+				fightId: healerCompositions.fightId,
+				encounterId: healerCompositions.encounterId,
 				encounterName: encounters.encounterName,
-				guildName: unifiedReports.guildName,
-				rankingStartTime: unifiedReports.rankingStartTime,
+				lastUpdated: healerCompositions.lastUpdated,
 				fightDuration: healerCompositions.fightDuration,
 				specIcons: healerCompositions.specIcons
 			})
 			.from(healerCompositions)
-			.innerJoin(unifiedReports, eq(healerCompositions.reportId, unifiedReports.id))
-			.innerJoin(encounters, eq(unifiedReports.encounterId, encounters.encounterId))
+			.innerJoin(encounters, eq(healerCompositions.encounterId, encounters.encounterId))
 			.where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
-			.orderBy(desc(unifiedReports.rankingStartTime));
+			.orderBy(desc(healerCompositions.lastUpdated));
 
 		const compositionsData = await query;
 
@@ -48,8 +49,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			fight_id: row.fightId,
 			encounter_id: row.encounterId,
 			encounter_name: row.encounterName,
-			guild_name: row.guildName,
-			report_absolute_start_time_ms: row.rankingStartTime,
+			guild_name: null as string | null,
+			report_absolute_start_time_ms: row.lastUpdated ? row.lastUpdated.getTime() : 0,
 			duration_ms: row.fightDuration,
 			healer_specs: row.specIcons as string[]
 		}));

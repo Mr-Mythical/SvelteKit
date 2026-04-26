@@ -1,7 +1,7 @@
 import { eq, desc, and, notInArray } from 'drizzle-orm';
 import { getUserDb } from './userDb';
 import { userRecents } from './userSchema';
-import { dbOperation, dbOperationOr } from './_helpers';
+import { dbOperation } from './_helpers';
 
 const RECENT_RETENTION_BY_TYPE: Record<string, number> = {
 	report: 6,
@@ -147,7 +147,7 @@ export function getUserRecents<T = unknown>(
 	type?: string,
 	limit: number = 6
 ): Promise<RecentItem<T>[]> {
-	return dbOperationOr<RecentItem<T>[]>('getUserRecents', [], async () => {
+	return dbOperation('getUserRecents', async () => {
 		const whereConditions = type
 			? and(eq(userRecents.userId, userId), eq(userRecents.type, type))
 			: eq(userRecents.userId, userId);

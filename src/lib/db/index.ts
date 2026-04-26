@@ -5,7 +5,7 @@ import { building } from '$app/environment';
 
 // Create a completely fresh database connection for each request
 // This prevents connection state issues that cause "every other request" failures
-function getDb() {
+function getRaidDb() {
 	if (building) {
 		throw new Error('Database not available during build time');
 	}
@@ -49,7 +49,7 @@ function getDb() {
 	}
 }
 
-export { getDb as db };
+export { getRaidDb };
 
 // User database exports - production ready
 export * from './userSchema';

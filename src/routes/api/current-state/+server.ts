@@ -1,10 +1,11 @@
 import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
 import {
 	getUserRecents,
 	addUserRecent,
 	type CurrentStateRecentData
 } from '$lib/db/userRecents.js';
+import { apiError, apiOk } from '$lib/server/apiResponses';
+import { requireSession } from '$lib/server/requireSession';
 
 export interface CurrentState {
 	urlParams: string;
@@ -13,40 +14,38 @@ export interface CurrentState {
 
 // GET: Fetch user's current state
 export const GET: RequestHandler = async ({ locals }) => {
+	const auth = await requireSession(locals);
+	if ('response' in auth) return auth.response;
+
 	try {
-		const session = await locals.getSession?.();
-
-		if (!session?.user?.id) {
-			return json(null);
-		}
-
-		const recentStates = await getUserRecents<CurrentStateRecentData>(session.user.id, 'current_state', 1);
+		const recentStates = await getUserRecents<CurrentStateRecentData>(
+			auth.session.user.id,
+			'current_state',
+			1
+		);
 
 		if (recentStates.length === 0) {
-			return json(null);
+			return apiOk(null);
 		}
 
 		const latestState = recentStates[0];
 
-		return json({
+		return apiOk({
 			urlParams: latestState.entityData.urlParams,
 			timestamp: latestState.entityData.timestamp
 		});
 	} catch (error) {
 		console.error('Error fetching current state:', error);
-		return json(null);
+		return apiError('Failed to fetch current state');
 	}
 };
 
 // POST: Save user's current state
 export const POST: RequestHandler = async ({ request, locals }) => {
+	const auth = await requireSession(locals);
+	if ('response' in auth) return auth.response;
+
 	try {
-		const session = await locals.getSession?.();
-
-		if (!session?.user?.id) {
-			return json({ error: 'Not authenticated' }, { status: 401 });
-		}
-
 		const { urlParams }: Omit<CurrentState, 'timestamp'> = await request.json();
 
 		const timestamp = Date.now();
@@ -76,7 +75,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		await addUserRecent(
-			session.user.id,
+			auth.session.user.id,
 			'current_state',
 			'current',
 			{ urlParams, timestamp },
@@ -85,9 +84,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			{ timestamp, hasUrlParams: !!urlParams }
 		);
 
-		return json({ success: true, timestamp });
+		return apiOk({ success: true, timestamp });
 	} catch (error) {
 		console.error('Error saving current state:', error);
-		return json({ error: 'Failed to save state' }, { status: 500 });
+		return apiError('Failed to save state');
 	}
 };

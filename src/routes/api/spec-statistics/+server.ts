@@ -1,7 +1,7 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/db';
+import { getRaidDb } from '$lib/db';
 import { specStatistics } from '$lib/db/schema';
-import { eq, and, desc, or, isNull } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -13,9 +13,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			return json({ error: 'No encounterId provided' }, { status: 400 });
 		}
 
-		console.log('[spec-statistics] Query params:', { encounterId, difficulty, fightFilter });
-
-		const database = db();
+		const database = getRaidDb();
 
 		// Build where conditions
 		const conditions = [eq(specStatistics.encounterId, parseInt(encounterId))];
@@ -78,8 +76,6 @@ export const GET: RequestHandler = async ({ url }) => {
 			.from(specStatistics)
 			.where(and(...conditions))
 			.orderBy(desc(specStatistics.avgDps), desc(specStatistics.avgHps));
-
-		console.log('[spec-statistics] Found', data.length, 'records');
 
 		return json(data);
 	} catch (error) {

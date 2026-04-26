@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { getUserDb } from './userDb';
 import { userProfiles } from './userSchema';
-import { dbOperation, dbOperationOr } from './_helpers';
+import { dbOperation } from './_helpers';
 
 export interface BattleNetCredentials {
 	battletag?: string;
@@ -50,8 +50,10 @@ export function createOrUpdateUserProfile(
 	});
 }
 
-export function getUserProfile(userId: string) {
-	return dbOperationOr('getUserProfile', null, async () => {
+export type UserProfileRow = typeof userProfiles.$inferSelect;
+
+export function getUserProfile(userId: string): Promise<UserProfileRow | null> {
+	return dbOperation('getUserProfile', async () => {
 		const profile = await getUserDb()
 			.select()
 			.from(userProfiles)

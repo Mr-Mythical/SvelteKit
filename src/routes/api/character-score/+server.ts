@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { getBlizzardValidAccessToken } from '$lib/utils/blizzardTokenCache';
+import { getOrRefreshBlizzardAccessToken } from '$lib/utils/blizzardTokenCache';
 
 type ScoreSource = 'blizzard' | 'raiderio';
 
@@ -56,7 +56,7 @@ async function fromBlizzard(
 	name: string
 ): Promise<{ result: ScoreResponse | null; status: number | null }> {
 	try {
-		const token = await getBlizzardValidAccessToken();
+		const token = await getOrRefreshBlizzardAccessToken();
 		const url =
 			`https://${region}.api.blizzard.com/profile/wow/character/` +
 			`${encodeURIComponent(realm.toLowerCase())}/${encodeURIComponent(name.toLowerCase())}` +

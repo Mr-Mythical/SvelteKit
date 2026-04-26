@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { getBlizzardValidAccessToken } from '$lib/utils/blizzardTokenCache';
+import { getOrRefreshBlizzardAccessToken } from '$lib/utils/blizzardTokenCache';
 import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 
@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	const nameLc = name.toLowerCase();
 
 	try {
-		const token = await getBlizzardValidAccessToken();
+		const token = await getOrRefreshBlizzardAccessToken();
 
 		const summaryUrl = `https://${encodeURIComponent(regionLc)}.api.blizzard.com/profile/wow/character/${encodeURIComponent(realmLc)}/${encodeURIComponent(nameLc)}?namespace=profile-${encodeURIComponent(regionLc)}&locale=en_US`;
 		const mediaUrl = `https://${encodeURIComponent(regionLc)}.api.blizzard.com/profile/wow/character/${encodeURIComponent(realmLc)}/${encodeURIComponent(nameLc)}/character-media?namespace=profile-${encodeURIComponent(regionLc)}&locale=en_US`;

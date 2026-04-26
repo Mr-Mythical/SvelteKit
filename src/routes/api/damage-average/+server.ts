@@ -1,5 +1,5 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/db';
+import { getRaidDb } from '$lib/db';
 import { damageAverages } from '$lib/db/schema';
 import { eq, asc } from 'drizzle-orm';
 
@@ -11,7 +11,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			return json({ error: 'No bossId provided' }, { status: 400 });
 		}
 
-		const database = db();
+		const database = getRaidDb();
 
 		const data = await database
 			.select({
