@@ -44,6 +44,21 @@ interface BossEventsData {
 	};
 }
 
+/**
+ * POST /api/boss-events
+ *
+ * Returns enemy cast events (boss abilities) for a single fight, enriched with
+ * ability name + icon metadata pulled from the report's master data.
+ *
+ * Body: `{ fightID, code, startTime, endTime }` — see {@link parseFightRequestBody}.
+ *
+ * Returns:
+ * - 200 `{ events, abilities }`
+ * - 400 if the body is malformed.
+ * - 502 if the WarcraftLogs GraphQL call fails (network or schema error).
+ *
+ * @throws Never — {@link WclQueryError} is caught and translated to a 502.
+ */
 export const POST: RequestHandler = async ({ request }) => {
 	const body = parseFightRequestBody(await request.json().catch(() => null));
 	if (!body) return apiError('Invalid or missing fight ID and/or report code.', 400);

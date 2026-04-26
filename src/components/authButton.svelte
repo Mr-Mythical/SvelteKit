@@ -10,6 +10,7 @@
 	import LogOut from '@lucide/svelte/icons/log-out';
 	import User from '@lucide/svelte/icons/user';
 	import Loader2 from '@lucide/svelte/icons/loader-2';
+	import { logClientError } from '$lib/utils/clientLog';
 
 	interface Props {
 		mobile?: boolean;
@@ -49,7 +50,7 @@
 			// Note: signIn redirects to Battle.net, so this won't return until page reload
 			await signIn('battlenet');
 		} catch (error) {
-			console.error('Sign in error:', error);
+			logClientError('authButton', 'Sign in failed before redirect', error);
 			// Only reset loading state if there's an error (redirect failed)
 			isSigningIn = false;
 		}
@@ -62,7 +63,7 @@
 			// Note: signOut may redirect/reload, so this might not return
 			await signOut();
 		} catch (error) {
-			console.error('Sign out error:', error);
+			logClientError('authButton', 'Sign out failed', error);
 			// Only reset loading state if there's an error
 			isSigningOut = false;
 		}

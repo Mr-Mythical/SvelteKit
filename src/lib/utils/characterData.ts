@@ -3,7 +3,6 @@ import { dungeonData, apiPopup, wowSummaryStore } from '../../stores';
 import { dungeonCount } from '$lib/types/dungeons';
 import type { RaiderIoRun } from '$lib/types/apiTypes';
 import { toast } from 'svelte-sonner';
-import { recentCharacters } from './recentCharacters';
 
 function resetRuns() {
 	const emptyRuns = Array.from({ length: dungeonCount }, () => ({
@@ -20,10 +19,18 @@ function resetRuns() {
 /**
  * Fetches Raider.io mythic plus runs for a character and updates the dungeonData store.
  */
+/**
+ * Fetches Mythic+ runs from `/api/raiderio` and updates `dungeonData`.
+ * Toasts success/failure to the user; never throws (network errors are
+ * caught implicitly by the surrounding fetch and surfaced via toast +
+ * `console.error`).
+ *
+ * @throws Never — caller does not need a try/catch.
+ */
 export async function fetchRuns(
-	characterName: string,
 	region: string,
-	realm: string
+	realm: string,
+	characterName: string
 ): Promise<void> {
 	resetRuns();
 
@@ -68,12 +75,16 @@ export async function fetchRuns(
 }
 
 /**
- * Fetches Blizzard WoW character summary (including media) for a character and updates the wowSummaryStore.
+ * Fetches Blizzard WoW character summary (including media) and updates
+ * `wowSummaryStore`. Failures are logged to console only — the store is left
+ * untouched so the UI keeps showing whatever it had.
+ *
+ * @throws Never — non-OK responses are silently dropped.
  */
 export async function fetchWowSummary(
-	characterName: string,
 	region: string,
-	realm: string
+	realm: string,
+	characterName: string
 ): Promise<void> {
 	const url = `/api/blizzard?name=${encodeURIComponent(characterName)}&region=${encodeURIComponent(region)}&realm=${encodeURIComponent(realm)}`;
 	const response = await fetch(url);
