@@ -19,9 +19,9 @@
 	} from 'chart.js';
 	import type { ChartOptions, ChartData } from 'chart.js';
 	import type { CastEvent, Series, Player } from '$lib/types/apiTypes';
-	import { backgroundColorPlugin } from '$lib/utils/chartCanvasPlugin';
-	import { abilityColors } from '$lib/utils/classColors';
-	import { classColors } from '$lib/utils/classColors';
+	import { backgroundColorPlugin } from '$lib/ui/chartCanvasPlugin';
+	import { abilityColors } from '$lib/ui/classColors';
+	import { classColors } from '$lib/ui/classColors';
 	import { Label } from '$lib/components/ui/label/index';
 	import * as RadioGroup from '$lib/components/ui/radio-group/index';
 	import { Checkbox } from '$lib/components/ui/checkbox';

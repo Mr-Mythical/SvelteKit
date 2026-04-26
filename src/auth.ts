@@ -7,7 +7,7 @@ import type { AdapterUser } from '@auth/core/adapters';
 import { getUserDb } from '$lib/db/userDb.js';
 import { users, accounts, sessions, verificationTokens } from '$lib/db/userSchema.js';
 import { updateUserLastSeen, createOrUpdateUserProfile } from '$lib/db/users.js';
-import { refreshRosterFromBattleNet } from '$lib/utils/myWowRoster';
+import { refreshRosterFromBattleNet } from '$lib/data/myWowRoster';
 import { logServerError } from '$lib/server/logger';
 import { env } from '$env/dynamic/private';
 import { and, eq } from 'drizzle-orm';

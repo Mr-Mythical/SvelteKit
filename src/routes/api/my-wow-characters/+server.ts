@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { getMyWowRoster } from '$lib/utils/myWowRoster';
+import { getMyWowRoster } from '$lib/data/myWowRoster';
 import { apiOk } from '$lib/server/apiResponses';
 import { requireSession } from '$lib/server/requireSession';
 

@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import { Card } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { recentReports, type RecentReport } from '$lib/utils/recentReports';
+	import { recentReports, type RecentReport } from '$lib/stores/recentReports';
 	import Loader2 from '@lucide/svelte/icons/loader-2';
 	import { logClientError } from '$lib/utils/clientLog';
 

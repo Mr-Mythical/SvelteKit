@@ -16,7 +16,7 @@
 		Filler
 	} from 'chart.js';
 	import type { ChartData, ChartOptions } from 'chart.js';
-	import { backgroundColorPlugin } from '$lib/utils/chartCanvasPlugin';
+	import { backgroundColorPlugin } from '$lib/ui/chartCanvasPlugin';
 
 	let zoomPluginLoaded = $state(false);
 

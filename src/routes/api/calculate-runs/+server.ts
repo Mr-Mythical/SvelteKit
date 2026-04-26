@@ -3,7 +3,7 @@ import {
 	scoreFormula,
 	calculateKeystoneBreakdown,
 	type KeystoneBreakdown
-} from '$lib/utils/keystoneCalculations';
+} from '$lib/calculations/keystoneCalculations';
 import { dungeonCount } from '$lib/types/dungeons';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 

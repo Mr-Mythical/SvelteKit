@@ -1,4 +1,4 @@
-import { getValidAccessToken } from '$lib/utils/tokenCache';
+import { getOrRefreshAccessToken } from '$lib/auth/tokenCache';
 
 export const WCL_GRAPHQL_URL = 'https://www.warcraftlogs.com/api/v2/client';
 
@@ -22,7 +22,7 @@ export async function executeWclQuery<T>(
 	query: string,
 	variables: Record<string, unknown>
 ): Promise<T> {
-	const accessToken = await getValidAccessToken();
+const accessToken = await getOrRefreshAccessToken();
 
 	const response = await fetch(WCL_GRAPHQL_URL, {
 		method: 'POST',

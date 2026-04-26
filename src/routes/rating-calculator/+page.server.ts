@@ -3,7 +3,7 @@ import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { formSchema } from './schema.js';
-import { calculateKeystoneBreakdown } from '$lib/utils/keystoneCalculations';
+import { calculateKeystoneBreakdown } from '$lib/calculations/keystoneCalculations';
 import { dungeonCount } from '$lib/types/dungeons';
 
 export const load: PageServerLoad = async (event) => {

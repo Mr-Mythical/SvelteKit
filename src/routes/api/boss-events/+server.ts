@@ -5,7 +5,7 @@ import {
 	enrichAbilityEvent,
 	isExcludedBossAbilityEvent,
 	type WarcraftLogsAbility
-} from '$lib/utils/abilityMetadata';
+} from '$lib/ui/abilityMetadata';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { executeWclQuery, parseFightRequestBody, WclQueryError } from '$lib/server/wclGraphQL';
 import { logServerError } from '$lib/server/logger';

@@ -5,7 +5,7 @@
  * timeout) and reports per-attempt debug info. The route handler is just a
  * fallback chain over these sources.
  */
-import { getOrRefreshBlizzardAccessToken } from '$lib/utils/blizzardTokenCache';
+import { getOrRefreshBlizzardAccessToken } from '$lib/auth/blizzardTokenCache';
 
 export type ScoreSourceName = 'blizzard' | 'raiderio';
 

@@ -16,9 +16,9 @@
 		twRealmOptions,
 		usRealmOptions
 	} from '$lib/types/realms';
-	import { fetchRuns, fetchWowSummary, emptyDungeonRuns } from '$lib/utils/characterData';
+	import { fetchRuns, fetchWowSummary, emptyDungeonRuns } from '$lib/data/characterData';
 	import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
-	import { recentCharacters } from '$lib/utils/recentCharacters';
+	import { recentCharacters } from '$lib/stores/recentCharacters';
 	import { logClientError } from '$lib/utils/clientLog';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';

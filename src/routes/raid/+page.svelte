@@ -10,7 +10,7 @@
 	import BossPreviewChart from '../../components/bossPreviewChart.svelte';
 	import { goto } from '$app/navigation';
 	import { reveal } from '$lib/actions/reveal';
-	import { extractWarcraftLogsReportCode } from '$lib/utils/warcraftlogs';
+	import { extractWarcraftLogsReportCode } from '$lib/data/warcraftlogs';
 
 	let reportURL: string = $state('');
 	let loadingFights = $state(false);

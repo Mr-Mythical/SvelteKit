@@ -1,4 +1,4 @@
-// src/lib/utils/characterData.ts
+// src/lib/data/characterData.ts
 //
 // Framework-agnostic data fetchers for character data. These return raw,
 // normalized data objects and *do not* import any Svelte stores or UI helpers

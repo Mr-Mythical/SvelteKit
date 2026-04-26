@@ -1,3 +1,18 @@
+/**
+ * Drizzle schema for the **user / auth** database.
+ *
+ * This is one of two intentionally separate databases. The split is by
+ * deployment — they are different Postgres instances behind different
+ * connection strings:
+ *
+ * - This file (`userSchema.ts`) → `DATABASE_USER_URL` (user/auth, read-write).
+ *   Drizzle config: `drizzle.user.config.ts` → migrations under `drizzle/user/`.
+ * - `schema.ts` → `DATABASE_URL` (read-only raid analytics).
+ *   Drizzle config: `drizzle.config.ts` → migrations under `drizzle/`.
+ *
+ * Connection factories: `getUserDb()` (this schema) and `getRaidDb()`
+ * (`schema.ts`) — see `connection.ts`.
+ */
 import {
 	pgTable,
 	serial,
@@ -148,6 +163,35 @@ export const userRecents = pgTable(
 			table.userId,
 			table.type,
 			table.entityId
+		)
+	})
+);
+// Per-user WoW character roster — populated from Battle.net profile sync.
+// Migration: drizzle/user/0003_messy_iceman.sql.
+export const userCharacters = pgTable(
+	'user_characters',
+	{
+		id: serial('id').primaryKey().notNull(),
+		userId: text('userId')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		region: varchar('region', { length: 4 }).notNull(),
+		realmSlug: text('realm_slug').notNull(),
+		realmName: text('realm_name').notNull(),
+		characterName: text('character_name').notNull(),
+		level: integer('level').default(0).notNull(),
+		className: text('class_name'),
+		raceName: text('race_name'),
+		faction: varchar('faction', { length: 16 }),
+		fetchedAt: timestamp('fetched_at').defaultNow().notNull()
+	},
+	(table) => ({
+		userIdx: index('idx_user_characters_user').on(table.userId),
+		uniqueCharacter: uniqueIndex('idx_user_characters_unique').on(
+			table.userId,
+			table.region,
+			table.realmSlug,
+			table.characterName
 		)
 	})
 );

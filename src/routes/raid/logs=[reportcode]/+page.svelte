@@ -16,7 +16,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import { recentReports as recentReportsStore } from '$lib/utils/recentReports';
+	import { recentReports as recentReportsStore } from '$lib/stores/recentReports';
 	import { goto } from '$app/navigation';
 	import { page as pageStore } from '$app/stores';
 	import { onMount } from 'svelte';

@@ -1,7 +1,7 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { getUserRecents, type CharacterRecentData } from '$lib/db/userRecents.js';
-import { getMyWowRoster } from '$lib/utils/myWowRoster';
+import { getMyWowRoster } from '$lib/data/myWowRoster';
 import { requireSession } from '$lib/server/requireSession';
 import { executeWclQuery, WclQueryError } from '$lib/server/wclGraphQL';
 import { logServerError, logServerWarn } from '$lib/server/logger';

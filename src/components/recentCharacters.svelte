@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { recentCharacters, type RecentCharacter } from '$lib/utils/recentCharacters';
+	import { recentCharacters, type RecentCharacter } from '$lib/stores/recentCharacters';
 	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/stores';
 	import {

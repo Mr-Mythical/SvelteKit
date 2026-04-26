@@ -317,3 +317,72 @@ operations.
 - **Return empty value** only for documented "no rows, success" semantics
   inside `dbOperation`.
 
+## 8. API Endpoint Naming
+
+Routes under `src/routes/api/**` follow three documented patterns. Match the
+existing pattern your endpoint fits — don't invent a fourth.
+
+### The patterns
+
+1. **Resource (`<noun>` or `<modifier>-<noun>`)** — the default. The endpoint
+   represents a thing or a query over a thing. Use kebab-case, plural where the
+   response is a list.
+   - Examples: `recent-characters`, `recent-reports`, `top-players`,
+     `spec-statistics`, `player-details`, `character-score`, `damage-average`,
+     `death-hotspots`, `current-state`, `boss-events`, `cast-events`,
+     `damage-events`, `death-events`, `healing-events`, `fights`.
+
+2. **Provider passthrough (`<provider>`)** — a thin proxy/cache in front of an
+   external API where the route name *is* the provider's name. Used only when
+   the response shape mirrors the upstream and there's no domain transform.
+   - Examples: `blizzard`, `raiderio`.
+
+3. **RPC (`<verb>-<noun>`)** — reserved for action-shaped endpoints that
+   compute or trigger something (not a CRUD-style read). Used sparingly.
+   - Examples: `calculate-runs` (computes a key plan from a target score),
+     `browse-logs` (paginated WCL search bridge with side-effectful caching).
+
+### Rules
+
+- **Default to pattern 1.** Reach for RPC only when "GET this thing" doesn't
+  fit (the endpoint is doing work, not returning a resource).
+- **kebab-case** always; never camelCase or snake_case in URL segments.
+- **No trailing slashes**, no version prefix (`/v1/`) — versioning is
+  unnecessary for an internal/site API; if a breaking change is needed,
+  introduce a sibling endpoint with a new name.
+- **Public endpoints are stable.** `/api/calculate-runs` is documented for
+  external integrations on the rating-calculator page; renaming requires a
+  redirect and a deprecation note.
+- **Errors and successes** follow §7 (`apiError` / `apiOk`); naming doesn't
+  affect response shape.
+
+## 9. Library Layout (`src/lib/**`)
+
+Code under `src/lib/` is grouped by **what it does**, not by "is it a util".
+The `utils/` folder used to be a catch-all and was split into domain-focused
+modules. The current map:
+
+| Folder                | What lives there                                                              |
+| --------------------- | ----------------------------------------------------------------------------- |
+| `src/lib/auth/`       | OAuth client-credentials flows and token caches (Blizzard + WCL).             |
+| `src/lib/calculations/` | Pure domain math (e.g. Mythic+ keystone scoring formula).                   |
+| `src/lib/components/` | Reusable Svelte UI primitives (shadcn-svelte exports).                        |
+| `src/lib/data/`       | External-API fetchers and DTO shaping (Warcraft Logs, Blizzard character).    |
+| `src/lib/db/`         | Drizzle schemas, query helpers, and connection factories.                     |
+| `src/lib/hooks/`      | Reusable Svelte runes / actions.                                              |
+| `src/lib/server/`     | Server-only helpers (`apiResponses`, `logger`, `wclGraphQL`, `requireSession`, `scoreSources`). |
+| `src/lib/stores/`     | Svelte writable stores and their persistence backends (recents).              |
+| `src/lib/types/`      | Shared TypeScript types and JSON-backed reference data (realms, dungeons).    |
+| `src/lib/ui/`         | Browser-only UI helpers: chart plugins, tooltip wiring, ability metadata, class colors. |
+| `src/lib/utils/`      | Cross-cutting helpers that don't belong to any single domain (currently just `clientLog`). |
+
+### Rules
+
+- **`utils/` is a last resort.** If a new helper has a real domain, put it
+  with that domain. Only `utils/` for genuinely cross-cutting helpers (a
+  toast/log shim used by every layer).
+- **`server/` is for server-only code.** Anything imported from the browser
+  must live elsewhere (or be carved out into a client-safe sibling).
+- **Imports use `$lib/...` aliases**, never deep relative paths between
+  these folders.
+

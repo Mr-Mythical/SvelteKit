@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { getOrRefreshBlizzardAccessToken } from '$lib/utils/blizzardTokenCache';
+import { getOrRefreshBlizzardAccessToken } from '$lib/auth/blizzardTokenCache';
 import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { logServerError } from '$lib/server/logger';

@@ -17,7 +17,7 @@
 	import { apiPopup } from '../stores';
 	import { dungeonData } from '../stores';
 	import { wowSummaryStore } from '../stores';
-	import { scoreFormula, computeRunLevelsForScore } from '$lib/utils/keystoneCalculations';
+	import { scoreFormula, computeRunLevelsForScore } from '$lib/calculations/keystoneCalculations';
 	import { logClientError } from '$lib/utils/clientLog';
 
 	let edit = true;
@@ -37,13 +37,13 @@
 	let totalPulseTimeout: ReturnType<typeof setTimeout> | undefined = $state();
 	let listPulseTimeout: ReturnType<typeof setTimeout> | undefined = $state();
 
-	import { fetchRuns, fetchWowSummary, emptyDungeonRuns } from '$lib/utils/characterData';
+	import { fetchRuns, fetchWowSummary, emptyDungeonRuns } from '$lib/data/characterData';
 	import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
-	import { recentCharacters } from '$lib/utils/recentCharacters';
+	import { recentCharacters } from '$lib/stores/recentCharacters';
 	import RecentCharacters from './recentCharacters.svelte';
 	import { goto, replaceState, afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { currentState } from '$lib/utils/currentState';
+	import { currentState } from '$lib/data/currentState';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 

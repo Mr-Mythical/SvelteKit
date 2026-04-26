@@ -70,7 +70,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		const page = params.page || 1;
 		const limit = params.limit || 10;
 		const offset = (page - 1) * limit;
-		const paginatedLogsData = filteredLogsData.slice(offset, offset + limit);
+		const paginatedLogsData = filteredLogsData
+			.slice(offset, offset + limit)
+			.filter(
+				(log): log is typeof log & { report_code: string; fight_id: number } =>
+					log.report_code !== null && log.fight_id !== null
+			);
 
 		const browsedLogsResult: BrowsedLog[] = paginatedLogsData.map((log) => {
 			const bossData = log.encounter_id ? bossList.find((b) => b.id === log.encounter_id) : null;

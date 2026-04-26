@@ -1,3 +1,21 @@
+/**
+ * Drizzle schema for the **raid analytics** database.
+ *
+ * This is one of two intentionally separate databases. The split is by
+ * deployment — they are different Postgres instances behind different
+ * connection strings:
+ *
+ * - This file (`schema.ts`) → `DATABASE_URL` (read-only raid analytics).
+ *   Drizzle config: `drizzle.config.ts` → migrations under `drizzle/`.
+ * - `userSchema.ts` → `DATABASE_USER_URL` (user/auth, read-write).
+ *   Drizzle config: `drizzle.user.config.ts` → migrations under `drizzle/user/`.
+ *
+ * Connection factories: `getRaidDb()` (this schema) and `getUserDb()`
+ * (`userSchema.ts`) — see `connection.ts`.
+ *
+ * If you need a table that spans both domains, the answer is almost always
+ * a join in app code; do not duplicate tables across schemas.
+ */
 import {
 	pgTable,
 	serial,
@@ -179,19 +197,51 @@ export const unifiedReports = pgTable(
 // =============================================================================
 // Stores healer specialization compositions for each fight report
 // Uses JSON array to handle multiple healers of the same spec
+// NOTE: The deployed `healer_compositions` table denormalises the report
+// identifiers (report_code/fight_id/encounter_id/region) and `last_updated`
+// directly onto the row instead of joining via `unified_reports`. The schema
+// below mirrors the live table so Drizzle types match production. The
+// `unifiedReports` table is retained for legacy migration history but is not
+// referenced at runtime.
 export const healerCompositions = pgTable(
 	'healer_compositions',
 	{
 		id: serial('id').primaryKey(),
 		reportId: integer('report_id')
-			.notNull()
 			.unique()
 			.references(() => unifiedReports.id, { onDelete: 'cascade' }),
+		reportCode: text('report_code'),
+		fightId: integer('fight_id'),
+		encounterId: integer('encounter_id'),
+		region: text('region'),
 		specIcons: json('spec_icons').$type<string[]>().notNull(), // JSON array of healer spec icons
-		fightDuration: integer('fight_duration') // Calculated fight duration in milliseconds
+		fightDuration: integer('fight_duration'), // Calculated fight duration in milliseconds
+		lastUpdated: timestamp('last_updated').defaultNow()
 	},
 	(table) => ({
-		reportIdx: index('idx_healer_compositions_report').on(table.reportId)
+		reportIdx: index('idx_healer_compositions_report').on(table.reportId),
+		encounterIdx: index('idx_healer_compositions_encounter').on(table.encounterId)
+	})
+);
+
+// =============================================================================
+// DEATH_HOTSPOTS TABLE
+// =============================================================================
+// Aggregates death events into per-second buckets for heatmap rendering.
+// Mirrors a production-only table that has no Drizzle migration in this repo.
+export const deathHotspots = pgTable(
+	'death_hotspots',
+	{
+		id: serial('id').primaryKey(),
+		encounterId: integer('encounter_id')
+			.notNull()
+			.references(() => encounters.encounterId),
+		timeSeconds: integer('time_seconds').notNull(),
+		deathCount: integer('death_count').notNull(),
+		sampleCount: integer('sample_count').notNull()
+	},
+	(table) => ({
+		encounterIdx: index('idx_death_hotspots_encounter').on(table.encounterId)
 	})
 );
 
