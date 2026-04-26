@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			encounter_id: row.encounterId,
 			encounter_name: row.encounterName,
 			guild_name: null as string | null,
-			report_absolute_start_time_ms: row.lastUpdated ? row.lastUpdated.getTime() : 0,
+			report_absolute_start_time_ms: row.lastUpdated != null ? row.lastUpdated.getTime() : 0,
 			duration_ms: row.fightDuration,
 			healer_specs: row.specIcons as string[]
 		}));
@@ -78,8 +78,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			);
 
 		const browsedLogsResult: BrowsedLog[] = paginatedLogsData.map((log) => {
-			const bossData = log.encounter_id ? bossList.find((b) => b.id === log.encounter_id) : null;
-			const durationInSeconds = log.duration_ms ? Math.floor(log.duration_ms / 1000) : 0;
+			const bossData = log.encounter_id != null ? bossList.find((b) => b.id === log.encounter_id) : null;
+			const durationInSeconds = log.duration_ms != null ? Math.floor(log.duration_ms / 1000) : 0;
 
 			return {
 				log_code: log.report_code,
@@ -89,8 +89,8 @@ export const POST: RequestHandler = async ({ request }) => {
 				healer_composition: log.healer_specs,
 				log_url: `https://www.warcraftlogs.com/reports/${log.report_code}#fight=${log.fight_id}`,
 				fight_id: log.fight_id,
-				start_time: log.report_absolute_start_time_ms || 0,
-				end_time: (log.report_absolute_start_time_ms || 0) + (log.duration_ms || 0)
+				start_time: log.report_absolute_start_time_ms ?? 0,
+				end_time: (log.report_absolute_start_time_ms ?? 0) + (log.duration_ms ?? 0)
 			};
 		});
 
