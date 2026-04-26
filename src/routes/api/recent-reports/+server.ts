@@ -6,6 +6,7 @@ import {
 } from '$lib/db/userRecents.js';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { requireSession } from '$lib/server/requireSession';
+import { logServerError } from '$lib/server/logger';
 
 // GET: Fetch user's recent reports
 export const GET: RequestHandler = async ({ locals }) => {
@@ -30,7 +31,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		return apiOk(reports);
 	} catch (error) {
-		console.error('Error fetching recent reports:', error);
+		logServerError('api/recent-reports', 'fetch failed', error);
 		return apiError('Failed to fetch recent reports');
 	}
 };
@@ -63,7 +64,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return apiOk({ success: true });
 	} catch (error) {
-		console.error('Error adding recent report:', error);
+		logServerError('api/recent-reports', 'add failed', error);
 		return apiError('Failed to add report');
 	}
 };

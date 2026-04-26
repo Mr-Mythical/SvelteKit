@@ -1,129 +1,98 @@
+/**
+ * Composition layer for the recent-reports store.
+ *
+ * Mirrors `recentCharacters.ts`: API backend first, fall back to localStorage
+ * only when the API is *unavailable* (network/5xx). 401 means anonymous and
+ * we deliberately don't mirror so the user doesn't accidentally persist.
+ *
+ * The `source` store signals which backend supplied the current data so the
+ * UI can flag a degraded state (e.g. "(offline)" indicator) instead of
+ * silently swapping data sources.
+ */
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
+import {
+	apiRecentReportsBackend,
+	localStorageRecentReportsBackend,
+	type RecentReport
+} from './recentReportsBackends';
 
-export interface RecentReport {
-	code: string;
-	timestamp: number;
-	title: string;
-	guild?: { name: string };
-	owner: { name: string };
-}
+export type { RecentReport };
 
-const STORAGE_KEY = 'recentReports';
-const MAX_REPORTS = 6;
+export type RecentReportsSource = 'api' | 'local-storage' | null;
 
 function createRecentReportsStore() {
 	const { subscribe, set } = writable<RecentReport[]>([]);
 	const { subscribe: subscribeLoading, set: setLoading } = writable<boolean>(false);
+	const { subscribe: subscribeSource, set: setSource } = writable<RecentReportsSource>(null);
 
-	// Load from API if in browser
-	async function loadFromAPI() {
+	async function loadFromApiOrFallback() {
+		const apiReports = await apiRecentReportsBackend.load();
+		if (apiReports) {
+			set(apiReports);
+			setSource('api');
+			return;
+		}
+		const localReports = await localStorageRecentReportsBackend.load();
+		if (localReports) {
+			set(localReports);
+			setSource('local-storage');
+		}
+	}
+
+	async function init() {
 		if (!browser) return;
-
 		setLoading(true);
 		try {
-			const response = await fetch('/api/recent-reports');
-			if (response.ok) {
-				const reports = await response.json();
-				set(reports);
-			}
-		} catch (error) {
-			console.error('Error loading recent reports from API:', error);
-			// Fallback to localStorage on error
-			loadFromLocalStorage();
+			await loadFromApiOrFallback();
 		} finally {
 			setLoading(false);
 		}
 	}
 
-	// Fallback: Load from localStorage (for migration period)
-	function loadFromLocalStorage() {
-		if (!browser) return;
-
-		const stored = localStorage.getItem(STORAGE_KEY);
-		if (stored) {
-			try {
-				const reports = JSON.parse(stored);
-				set(reports);
-			} catch (error) {
-				console.error('Error parsing recent reports from localStorage', error);
-			}
-		}
-	}
-
-	return {
-		subscribe,
-		loading: { subscribe: subscribeLoading },
-		init: loadFromAPI,
-		addReport: async (
-			code: string,
-			title: string,
-			guild: { name: string } | undefined,
-			owner: { name: string }
-		) => {
-			setLoading(true);
-			try {
-				// Send to API
-				const response = await fetch('/api/recent-reports', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({ code, title, guild, owner })
-				});
-
-				if (response.ok) {
-					// Reload from API to get updated list
-					await loadFromAPI();
-				} else {
-					console.error('Failed to add report to API');
-					// Fallback to localStorage
-					addToLocalStorage(code, title, guild, owner);
-				}
-			} catch (error) {
-				console.error('Error adding report to API:', error);
-				// Fallback to localStorage
-				addToLocalStorage(code, title, guild, owner);
-			} finally {
-				setLoading(false);
-			}
-		},
-		clear: () => set([])
-	};
-
-	// Fallback: Add to localStorage
-	function addToLocalStorage(
+	async function addReport(
 		code: string,
 		title: string,
 		guild: { name: string } | undefined,
 		owner: { name: string }
 	) {
 		if (!browser) return;
-
-		const stored = localStorage.getItem(STORAGE_KEY) || '[]';
+		const report: RecentReport = { code, timestamp: Date.now(), title, guild, owner };
+		setLoading(true);
 		try {
-			const reports = JSON.parse(stored);
-			const newReports = reports.filter((r: RecentReport) => r.code !== code);
-			newReports.unshift({
-				code,
-				timestamp: Date.now(),
-				title,
-				guild,
-				owner
-			});
+			const apiResult = await apiRecentReportsBackend.add(report);
 
-			if (newReports.length > MAX_REPORTS) {
-				newReports.pop();
+			if (apiResult.status === 'ok') {
+				await loadFromApiOrFallback();
+				return;
 			}
 
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(newReports));
-			set(newReports);
-		} catch (error) {
-			console.error('Error saving to localStorage:', error);
+			if (apiResult.status === 'unauthorized') {
+				// Anonymous user: don't mirror to localStorage.
+				return;
+			}
+
+			const localResult = await localStorageRecentReportsBackend.add(report);
+			if (localResult.status === 'ok' && localResult.reports) {
+				set(localResult.reports);
+				setSource('local-storage');
+			}
 		} finally {
 			setLoading(false);
 		}
 	}
+
+	return {
+		subscribe,
+		loading: { subscribe: subscribeLoading },
+		source: { subscribe: subscribeSource },
+		init,
+		addReport,
+		clear: () => {
+			set([]);
+			setSource(null);
+		}
+	};
 }
 
 export const recentReports = createRecentReportsStore();

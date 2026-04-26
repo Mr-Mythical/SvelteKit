@@ -4,6 +4,8 @@ import { healerCompositions, encounters } from '$lib/db/schema';
 import { eq, gte, lte, desc, and } from 'drizzle-orm';
 import type { BrowseLogsParams, BrowsedLog, BrowseLogsResponse } from '$lib/types/apiTypes';
 import { bosses as bossList } from '$lib/types/bossData';
+import { apiError } from '$lib/server/apiResponses';
+import { handleApiError } from '$lib/server/logger';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
@@ -96,8 +98,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		return json(responsePayload);
 	} catch (error: any) {
-		console.error('Error in /api/browse-logs:', error.message, error.stack);
-		const errorResponse: { error: string } = { error: error.message || 'Internal Server Error.' };
-		return json(errorResponse, { status: 500 });
+		return handleApiError('api/browse-logs', error, error?.message || 'Internal Server Error.');
 	}
 };

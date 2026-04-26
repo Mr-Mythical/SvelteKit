@@ -2,6 +2,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { getOrRefreshBlizzardAccessToken } from '$lib/utils/blizzardTokenCache';
 import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
 import { apiError, apiOk } from '$lib/server/apiResponses';
+import { logServerError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const name = url.searchParams.get('name');
@@ -42,7 +43,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		return apiOk(combinedData);
 	} catch (error) {
-		console.error('Error in /api/blizzard:', error);
+		logServerError('api/blizzard', 'request failed', error);
 		return apiError(error instanceof Error ? error.message : 'Internal Server Error.');
 	}
 };

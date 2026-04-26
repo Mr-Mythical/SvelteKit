@@ -6,6 +6,7 @@ import {
 } from '$lib/db/userRecents.js';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { requireSession } from '$lib/server/requireSession';
+import { logServerError } from '$lib/server/logger';
 
 export interface CurrentState {
 	urlParams: string;
@@ -35,7 +36,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			timestamp: latestState.entityData.timestamp
 		});
 	} catch (error) {
-		console.error('Error fetching current state:', error);
+		logServerError('api/current-state', 'fetch failed', error);
 		return apiError('Failed to fetch current state');
 	}
 };
@@ -86,7 +87,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return apiOk({ success: true, timestamp });
 	} catch (error) {
-		console.error('Error saving current state:', error);
+		logServerError('api/current-state', 'save failed', error);
 		return apiError('Failed to save state');
 	}
 };

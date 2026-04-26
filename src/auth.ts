@@ -8,6 +8,7 @@ import { getUserDb } from '$lib/db/userDb.js';
 import { users, accounts, sessions, verificationTokens } from '$lib/db/userSchema.js';
 import { updateUserLastSeen, createOrUpdateUserProfile } from '$lib/db/users.js';
 import { refreshRosterFromBattleNet } from '$lib/utils/myWowRoster';
+import { logServerError } from '$lib/server/logger';
 import { env } from '$env/dynamic/private';
 import { and, eq } from 'drizzle-orm';
 
@@ -96,7 +97,12 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async () => {
 									eq(accounts.provider, 'battlenet')
 								)
 							);
-					} catch {}
+					} catch (error) {
+						// Token-update best-effort: a failure here just means the cached
+						// access_token is stale, which the next API call will refresh.
+						// Log it so we can spot persistent failures, but don't block sign-in.
+						logServerError('auth/signIn', 'failed to update battlenet account tokens', error);
+					}
 
 					// Kick off a roster sync in the background. Don't await - we don't
 					// want the login flow to hang on Blizzard latency. The DB read path
@@ -105,8 +111,8 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async () => {
 					(async () => {
 						try {
 							await refreshRosterFromBattleNet(userId);
-						} catch {
-							console.error('signIn: roster sync failed');
+						} catch (error) {
+							logServerError('auth/signIn', 'background roster sync failed', error);
 						}
 					})();
 				}

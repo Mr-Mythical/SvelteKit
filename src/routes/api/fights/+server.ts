@@ -2,6 +2,7 @@ import type { RequestHandler } from './$types';
 import type { FightsAndReportInfoResponse } from '$lib/types/apiTypes';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { executeWclQuery, WclQueryError } from '$lib/server/wclGraphQL';
+import { logServerError } from '$lib/server/logger';
 
 const QUERY = `
 	query FightsAndReportInfo($code: String!) {
@@ -44,7 +45,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const data = await executeWclQuery<FightsData>(QUERY, { code });
 		const reportData = data.reportData?.report;
 		if (!reportData) {
-			console.error('fights: report data missing');
+			logServerError('api/fights', 'report data missing in WCL response', { code });
 			return apiError('Could not parse report data from API response.');
 		}
 		return apiOk({
@@ -55,10 +56,10 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 	} catch (error) {
 		if (error instanceof WclQueryError) {
-			console.error('fights: WCL error', error.detail);
+			logServerError('api/fights', 'WCL query failed', error.detail);
 			return apiError('Failed to fetch fights from API.');
 		}
-		console.error('fights: failed', error);
+		logServerError('api/fights', 'request failed', error);
 		return apiError('Internal Server Error.');
 	}
 };

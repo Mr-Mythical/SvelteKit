@@ -2,6 +2,8 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { specPerformance } from '$lib/db/schema';
 import { eq, desc, and } from 'drizzle-orm';
+import { apiError } from '$lib/server/apiResponses';
+import { handleApiError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -12,7 +14,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		const metric = url.searchParams.get('metric') || 'dps';
 
 		if (!encounterId || !specIcon) {
-			return json({ error: 'encounterId and specIcon are required' }, { status: 400 });
+			return apiError('encounterId and specIcon are required', 400);
 		}
 
 		const database = getRaidDb();
@@ -67,7 +69,6 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		return json(result);
 	} catch (error) {
-		console.error('Error in /api/spec-top-players:', error);
-		return json({ error: 'Failed to fetch top players' }, { status: 500 });
+		return handleApiError('api/spec-top-players', error, 'Failed to fetch top players');
 	}
 };

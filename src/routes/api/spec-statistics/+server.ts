@@ -2,6 +2,8 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { specStatistics } from '$lib/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
+import { apiError } from '$lib/server/apiResponses';
+import { handleApiError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -10,7 +12,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		const fightFilter = url.searchParams.get('fightFilter');
 
 		if (!encounterId) {
-			return json({ error: 'No encounterId provided' }, { status: 400 });
+			return apiError('No encounterId provided', 400);
 		}
 
 		const database = getRaidDb();
@@ -79,19 +81,10 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		return json(data);
 	} catch (error) {
-		console.error('Database error in /api/spec-statistics:', error);
-		console.error('Error details:', {
-			name: error instanceof Error ? error.name : 'Unknown',
-			message: error instanceof Error ? error.message : String(error),
-			stack: error instanceof Error ? error.stack : undefined
-		});
-
-		return json(
-			{
-				error: error instanceof Error ? error.message : 'Database connection failed',
-				debug: process.env.NODE_ENV === 'development' ? String(error) : undefined
-			},
-			{ status: 500 }
+		return handleApiError(
+			'api/spec-statistics',
+			error,
+			error instanceof Error ? error.message : 'Database connection failed'
 		);
 	}
 };

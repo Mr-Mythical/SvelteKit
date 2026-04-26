@@ -3,6 +3,7 @@ import type { CastEvent } from '$lib/types/apiTypes';
 import { classSpecAbilities } from '$lib/types/classData';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { executeWclQuery, parseFightRequestBody, WclQueryError } from '$lib/server/wclGraphQL';
+import { logServerError } from '$lib/server/logger';
 
 const HEALER_SPECS = '"Holy", "Restoration", "Preservation", "Discipline", "Mistweaver"';
 
@@ -72,7 +73,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (error instanceof WclQueryError) {
 			return apiError('Failed to fetch cast events from API.');
 		}
-		console.error('cast-events: failed', error);
+		logServerError('api/cast-events', 'request failed', error);
 		return apiError('Internal Server Error.');
 	}
 };

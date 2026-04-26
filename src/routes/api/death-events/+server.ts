@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { executeWclQuery, parseFightRequestBody, WclQueryError } from '$lib/server/wclGraphQL';
+import { logServerError } from '$lib/server/logger';
 
 export interface DeathEvent {
 	timestamp: number;
@@ -98,10 +99,10 @@ export const POST: RequestHandler = async ({ request }) => {
 		return apiOk({ deathEvents });
 	} catch (error) {
 		if (error instanceof WclQueryError) {
-			console.error('death-events: WCL error', error.detail);
+			logServerError('api/death-events', 'WCL query failed', error.detail);
 			return apiError('Failed to fetch death events.');
 		}
-		console.error('death-events: failed', error);
+		logServerError('api/death-events', 'request failed', error);
 		return apiError('Internal Server Error.');
 	}
 };

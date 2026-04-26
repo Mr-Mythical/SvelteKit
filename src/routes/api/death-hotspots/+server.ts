@@ -2,12 +2,14 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { deathHotspots } from '$lib/db/schema';
 import { eq, asc } from 'drizzle-orm';
+import { apiError } from '$lib/server/apiResponses';
+import { handleApiError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
 		const bossId = url.searchParams.get('bossId');
 		if (!bossId) {
-			return json({ error: 'No bossId provided' }, { status: 400 });
+			return apiError('No bossId provided', 400);
 		}
 
 		const data = await getRaidDb()
@@ -22,10 +24,10 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		return json(data);
 	} catch (error) {
-		console.error('Database error in /api/death-hotspots:', error);
-		return json(
-			{ error: error instanceof Error ? error.message : 'Database connection failed' },
-			{ status: 500 }
+		return handleApiError(
+			'api/death-hotspots',
+			error,
+			error instanceof Error ? error.message : 'Database connection failed'
 		);
 	}
 };

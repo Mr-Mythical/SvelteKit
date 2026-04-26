@@ -4,6 +4,7 @@ import { getUserRecents, type CharacterRecentData } from '$lib/db/userRecents.js
 import { getMyWowRoster } from '$lib/utils/myWowRoster';
 import { requireSession } from '$lib/server/requireSession';
 import { executeWclQuery, WclQueryError } from '$lib/server/wclGraphQL';
+import { logServerError, logServerWarn } from '$lib/server/logger';
 
 // Returns a flat list of recent WarcraftLogs reports aggregated across the
 // signed-in user's characters, plus a deduplicated list of the
@@ -164,10 +165,10 @@ function logWclFailure(
 	error: unknown
 ): void {
 	if (error instanceof WclQueryError && error.kind === 'graphql') {
-		console.warn(`character-reports: WCL graphql errors for ${kind}`, target, error.detail);
+		logServerWarn('api/character-reports', `WCL GraphQL errors for ${kind}`, { target, detail: error.detail });
 		return;
 	}
-	console.error(`character-reports: WCL fetch failed for ${kind}`, target, error);
+	logServerError('api/character-reports', `WCL fetch failed for ${kind}`, { target, error });
 }
 
 export const GET: RequestHandler = async ({ locals }) => {
@@ -188,7 +189,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 					region: character.region
 				}));
 		} catch (error) {
-			console.error('character-reports: battlenet roster fetch failed', error);
+			logServerError('api/character-reports', 'battlenet roster fetch failed', error);
 		}
 
 		// Source 2: manually-imported recents (covers characters on other accounts
@@ -297,7 +298,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		return json({ reports, guilds } satisfies CharacterReportsResponse);
 	} catch (error) {
-		console.error('character-reports: failed', error);
+		logServerError('api/character-reports', 'request failed', error);
 		return json({ reports: [], guilds: [] } satisfies CharacterReportsResponse);
 	}
 };

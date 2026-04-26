@@ -2,6 +2,7 @@ import type { RequestHandler } from './$types';
 import type { Series } from '$lib/types/apiTypes';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { executeWclQuery, parseFightRequestBody, WclQueryError } from '$lib/server/wclGraphQL';
+import { logServerError } from '$lib/server/logger';
 
 const QUERY = `
 	query DamageTakenSeries($code: String!, $fightID: Int!, $start: Float!, $end: Float!) {
@@ -42,7 +43,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (error instanceof WclQueryError) {
 			return apiError('Failed to fetch damage data from API.');
 		}
-		console.error('damage-events: failed', error);
+		logServerError('api/damage-events', 'request failed', error);
 		return apiError('Internal Server Error.');
 	}
 };

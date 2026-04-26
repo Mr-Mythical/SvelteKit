@@ -2,6 +2,8 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { specPerformance } from '$lib/db/schema';
 import { eq, desc, and } from 'drizzle-orm';
+import { apiError } from '$lib/server/apiResponses';
+import { handleApiError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -12,11 +14,11 @@ export const GET: RequestHandler = async ({ url }) => {
 		const metric = url.searchParams.get('metric'); // 'dps' or 'hps'
 
 		if (!encounterId) {
-			return json({ error: 'encounterId is required' }, { status: 400 });
+			return apiError('encounterId is required', 400);
 		}
 
 		if (!role || !metric) {
-			return json({ error: 'role and metric are required' }, { status: 400 });
+			return apiError('role and metric are required', 400);
 		}
 
 		const database = getRaidDb();
@@ -54,7 +56,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			case 'dps':
 				break;
 			default:
-				return json({ error: 'Invalid role' }, { status: 400 });
+				return apiError('Invalid role', 400);
 		}
 
 		let query;
@@ -166,7 +168,6 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		return json(result);
 	} catch (error) {
-		console.error('Error in /api/top-players:', error);
-		return json({ error: 'Failed to fetch top players' }, { status: 500 });
+		return handleApiError('api/top-players', error, 'Failed to fetch top players');
 	}
 };

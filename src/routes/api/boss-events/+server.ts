@@ -8,6 +8,7 @@ import {
 } from '$lib/utils/abilityMetadata';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { executeWclQuery, parseFightRequestBody, WclQueryError } from '$lib/server/wclGraphQL';
+import { logServerError } from '$lib/server/logger';
 
 const QUERY = `
 	query ResourcesBySource($code: String!, $fightID: Int!, $start: Float!, $end: Float!) {
@@ -86,7 +87,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (error instanceof WclQueryError) {
 			return apiError('Failed to fetch cast events from API.');
 		}
-		console.error('boss-events: failed', error);
+		logServerError('api/boss-events', 'request failed', error);
 		return apiError('Internal Server Error.');
 	}
 };
