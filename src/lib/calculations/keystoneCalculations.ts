@@ -109,10 +109,10 @@ export function computeRunLevelsForScore(
 			}
 		}
 	} else {
-		let tempScore = targetScore;
+		let remainingScore = targetScore;
 		for (let i = 0; i < dungeonCount; i++) {
-			if (tempScore > 0) {
-				tempScore -= KEYSTONE_SCORING.BASE_SCORE_AT_LEVEL_2;
+			if (remainingScore > 0) {
+				remainingScore -= KEYSTONE_SCORING.BASE_SCORE_AT_LEVEL_2;
 				result.push(KEYSTONE_SCORING.MIN_TIMED_LEVEL);
 			} else {
 				result.push(0);

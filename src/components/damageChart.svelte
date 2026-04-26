@@ -347,7 +347,7 @@
 		return maxValue * 1.2;
 	}
 
-	function processSeriesData(series: Series[]) {
+	function extractSeriesTimeline(series: Series[]) {
 		if (!series || !series[0].data) {
 			return { timestamps: [], values: [] };
 		}
@@ -361,8 +361,8 @@
 		};
 	}
 
-	function processData(damageEvents: Series[], healingEvents: Series[]) {
-		const damageData = processSeriesData(damageEvents);
+	function buildChartSeries(damageEvents: Series[], healingEvents: Series[]) {
+		const damageData = extractSeriesTimeline(damageEvents);
 
 		// Filter healing events to only include actual healers by matching GUIDs
 		const healerGuids = new Set(allHealers.map((healer) => healer.guid));
@@ -443,14 +443,14 @@
 
 	onMount(() => {
 		if (damageEvents.length > 0 || healingEvents.length > 0) {
-			const processedData = processData(damageEvents, healingEvents);
+			const processedData = buildChartSeries(damageEvents, healingEvents);
 			updateChartData(processedData);
 		}
 	});
 
 	run(() => {
 		if (damageEvents.length > 0 || healingEvents.length > 0) {
-			const processedData = processData(damageEvents, healingEvents);
+			const processedData = buildChartSeries(damageEvents, healingEvents);
 			updateChartData(processedData);
 		}
 	});

@@ -81,15 +81,15 @@ export const blizzardScoreSource: ScoreSource = {
 				`https://${region}.api.blizzard.com/profile/wow/character/` +
 				`${encodeURIComponent(realm.toLowerCase())}/${encodeURIComponent(name.toLowerCase())}` +
 				`/mythic-keystone-profile?namespace=profile-${region}&locale=en_US`;
-			const res = await fetchWithTimeout(url, {
+			const response = await fetchWithTimeout(url, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 					'Battlenet-Namespace': `profile-${region}`
 				}
 			});
-			attempts.push({ realm, name, status: res.status });
-			if (!res.ok) return { result: null, attempts };
-			const data = (await res.json()) as BlizzardMythicKeystoneProfile;
+			attempts.push({ realm, name, status: response.status });
+			if (!response.ok) return { result: null, attempts };
+			const data = (await response.json()) as BlizzardMythicKeystoneProfile;
 			const rating = data?.current_mythic_rating?.rating;
 			if (typeof rating !== 'number') return { result: null, attempts };
 			return {
@@ -160,14 +160,14 @@ export const raiderIoScoreSource: ScoreSource = {
 						`&realm=${encodeURIComponent(realmVariant)}` +
 						`&name=${encodeURIComponent(nameVariant)}` +
 						`&fields=mythic_plus_scores_by_season:current`;
-					const res = await fetchWithTimeout(url, undefined, RAIDERIO_TIMEOUT_MS);
+					const response = await fetchWithTimeout(url, undefined, RAIDERIO_TIMEOUT_MS);
 					attempts.push({
 						realm: realmVariant,
 						name: nameVariant,
-						status: res.ok ? 200 : res.status
+						status: response.ok ? 200 : response.status
 					});
-					if (!res.ok) continue;
-					const data = (await res.json()) as RaiderIoProfileResponse;
+					if (!response.ok) continue;
+					const data = (await response.json()) as RaiderIoProfileResponse;
 					const current = data?.mythic_plus_scores_by_season?.[0];
 					const rating = current?.scores?.all;
 					if (typeof rating !== 'number') continue;
