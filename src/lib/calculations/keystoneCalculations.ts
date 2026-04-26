@@ -58,10 +58,18 @@ export function scoreFormula(keyLevel: number, stars: number = 1): number {
 		}
 	}
 
-	const timeAdjustment =
-		KEYSTONE_SCORING.TIME_BONUS_BY_STARS[
-			stars as keyof typeof KEYSTONE_SCORING.TIME_BONUS_BY_STARS
-		] ?? 0;
+	// Stars come from Blizzard's keystone result and are always 1, 2, or 3 for
+	// timed runs (1 = timed, 2 = +1 chest, 3 = +2 chest). Anything outside
+	// that range — including the legacy 0 we sometimes see for untimed runs —
+	// contributes no time bonus and we surface it explicitly rather than via a
+	// silent fallback in the index expression.
+	const STAR_BONUSES = KEYSTONE_SCORING.TIME_BONUS_BY_STARS;
+	let timeAdjustment: number;
+	if (stars === 1 || stars === 2 || stars === 3) {
+		timeAdjustment = STAR_BONUSES[stars];
+	} else {
+		timeAdjustment = 0;
+	}
 	return parScore + timeAdjustment;
 }
 
