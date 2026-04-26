@@ -1,6 +1,10 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { getUserRecents, addUserRecent } from '$lib/db/userRecents.js';
+import {
+	getUserRecents,
+	addUserRecent,
+	type CurrentStateRecentData
+} from '$lib/db/userRecents.js';
 
 export interface CurrentState {
 	urlParams: string;
@@ -16,7 +20,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			return json(null);
 		}
 
-		const recentStates = await getUserRecents(session.user.id, 'current_state', 1);
+		const recentStates = await getUserRecents<CurrentStateRecentData>(session.user.id, 'current_state', 1);
 
 		if (recentStates.length === 0) {
 			return json(null);

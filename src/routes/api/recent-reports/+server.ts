@@ -1,6 +1,10 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { getUserRecents, addUserRecent } from '$lib/db/userRecents.js';
+import {
+	getUserRecents,
+	addUserRecent,
+	type ReportRecentData
+} from '$lib/db/userRecents.js';
 
 // GET: Fetch user's recent reports
 export const GET: RequestHandler = async ({ locals }) => {
@@ -11,7 +15,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			return json([]);
 		}
 
-		const recentReports = await getUserRecents(session.user.id, 'report', 6);
+		const recentReports = await getUserRecents<ReportRecentData>(session.user.id, 'report', 6);
 
 		// Transform to match the expected RecentReport format
 		const reports = recentReports.map((recent) => ({

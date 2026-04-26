@@ -1,6 +1,10 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { getUserRecents, addUserRecent } from '$lib/db/userRecents.js';
+import {
+	getUserRecents,
+	addUserRecent,
+	type CharacterRecentData
+} from '$lib/db/userRecents.js';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	try {
@@ -10,7 +14,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			return json([]);
 		}
 
-		const recentCharacters = await getUserRecents(session.user.id, 'character', 10);
+		const recentCharacters = await getUserRecents<CharacterRecentData>(session.user.id, 'character', 6);
 
 		const characters = recentCharacters.map((recent) => ({
 			region: recent.entityData.region,

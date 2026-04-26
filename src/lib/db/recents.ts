@@ -1,10 +1,7 @@
 import { eq, desc, and } from 'drizzle-orm';
 import { getUserDb } from './userDb.js';
-import { userRecents, users } from './userSchema.js';
-
-// =============================================================================
-// TYPES
-// =============================================================================
+import { userRecents } from './userSchema.js';
+import { dbOperation } from './_helpers';
 
 export type RecentType = 'character' | 'report' | 'guild' | 'dungeon_run';
 
@@ -13,8 +10,8 @@ export interface RecentItem {
 	entityId: string;
 	title: string;
 	subtitle?: string;
-	entityData: Record<string, any>;
-	metadata?: Record<string, any>;
+	entityData: Record<string, unknown>;
+	metadata?: Record<string, unknown>;
 }
 
 export interface UserRecentWithDetails {
@@ -23,25 +20,16 @@ export interface UserRecentWithDetails {
 	entityId: string;
 	title: string;
 	subtitle?: string;
-	entityData: Record<string, any>;
-	metadata?: Record<string, any>;
+	entityData: Record<string, unknown>;
+	metadata?: Record<string, unknown>;
 	lastAccessedAt: Date;
 	createdAt: Date;
 }
 
-// =============================================================================
-// USER RECENTS OPERATIONS
-// =============================================================================
-
-/**
- * Add or update a recent item for a user
- * If the item already exists, it updates the lastAccessedAt timestamp
- */
-export async function addUserRecent(userId: string, item: RecentItem): Promise<void> {
-	const db = getUserDb();
-
-	try {
-		// First try to update if exists
+/** Upsert a recent item. Updates lastAccessedAt + payload if it already exists. */
+export function addUserRecent(userId: string, item: RecentItem): Promise<void> {
+	return dbOperation('addUserRecent', async () => {
+		const db = getUserDb();
 		const updated = await db
 			.update(userRecents)
 			.set({
@@ -60,7 +48,6 @@ export async function addUserRecent(userId: string, item: RecentItem): Promise<v
 			)
 			.returning();
 
-		// If no rows updated, insert new record
 		if (updated.length === 0) {
 			await db.insert(userRecents).values({
 				userId,
@@ -72,28 +59,20 @@ export async function addUserRecent(userId: string, item: RecentItem): Promise<v
 				metadata: item.metadata || {}
 			});
 		}
-	} catch (error) {
-		console.error('Error adding user recent:', error);
-		throw error;
-	}
+	});
 }
 
-/**
- * Get recent items for a user, optionally filtered by type
- */
-export async function getUserRecents(
+export function getUserRecents(
 	userId: string,
 	type?: RecentType,
 	limit: number = 10
 ): Promise<UserRecentWithDetails[]> {
-	const db = getUserDb();
-
-	try {
+	return dbOperation('getUserRecents', async () => {
 		const whereCondition = type
 			? and(eq(userRecents.userId, userId), eq(userRecents.type, type))
 			: eq(userRecents.userId, userId);
 
-		const results = await db
+		const results = await getUserDb()
 			.select()
 			.from(userRecents)
 			.where(whereCondition)
@@ -106,29 +85,21 @@ export async function getUserRecents(
 			entityId: r.entityId,
 			title: r.title,
 			subtitle: r.subtitle || undefined,
-			entityData: r.entityData as Record<string, any>,
-			metadata: (r.metadata as Record<string, any>) || {},
+			entityData: r.entityData as Record<string, unknown>,
+			metadata: (r.metadata as Record<string, unknown>) || {},
 			lastAccessedAt: new Date(r.lastAccessedAt),
 			createdAt: new Date(r.createdAt)
 		}));
-	} catch (error) {
-		console.error('Error getting user recents:', error);
-		throw error;
-	}
+	});
 }
 
-/**
- * Remove a recent item for a user
- */
-export async function removeUserRecent(
+export function removeUserRecent(
 	userId: string,
 	type: RecentType,
 	entityId: string
 ): Promise<void> {
-	const db = getUserDb();
-
-	try {
-		await db
+	return dbOperation('removeUserRecent', async () => {
+		await getUserDb()
 			.delete(userRecents)
 			.where(
 				and(
@@ -137,42 +108,23 @@ export async function removeUserRecent(
 					eq(userRecents.entityId, entityId)
 				)
 			);
-	} catch (error) {
-		console.error('Error removing user recent:', error);
-		throw error;
-	}
+	});
 }
 
-/**
- * Clear all recents for a user, optionally filtered by type
- */
-export async function clearUserRecents(userId: string, type?: RecentType): Promise<void> {
-	const db = getUserDb();
-
-	try {
+export function clearUserRecents(userId: string, type?: RecentType): Promise<void> {
+	return dbOperation('clearUserRecents', async () => {
 		const whereCondition = type
 			? and(eq(userRecents.userId, userId), eq(userRecents.type, type))
 			: eq(userRecents.userId, userId);
-
-		await db.delete(userRecents).where(whereCondition);
-	} catch (error) {
-		console.error('Error clearing user recents:', error);
-		throw error;
-	}
+		await getUserDb().delete(userRecents).where(whereCondition);
+	});
 }
 
-// =============================================================================
-// UTILITY FUNCTIONS
-// =============================================================================
-
-/**
- * Helper function to create character recent items
- */
 export function createCharacterRecent(
 	characterName: string,
 	realm: string,
 	region: string,
-	additionalData: Record<string, any> = {}
+	additionalData: Record<string, unknown> = {}
 ): RecentItem {
 	return {
 		type: 'character',
@@ -188,14 +140,11 @@ export function createCharacterRecent(
 	};
 }
 
-/**
- * Helper function to create report recent items
- */
 export function createReportRecent(
 	reportCode: string,
 	reportTitle: string,
 	guildName?: string,
-	additionalData: Record<string, any> = {}
+	additionalData: Record<string, unknown> = {}
 ): RecentItem {
 	return {
 		type: 'report',
@@ -211,14 +160,11 @@ export function createReportRecent(
 	};
 }
 
-/**
- * Helper function to create guild recent items
- */
 export function createGuildRecent(
 	guildName: string,
 	realm: string,
 	region: string,
-	additionalData: Record<string, any> = {}
+	additionalData: Record<string, unknown> = {}
 ): RecentItem {
 	return {
 		type: 'guild',
@@ -234,14 +180,11 @@ export function createGuildRecent(
 	};
 }
 
-/**
- * Helper function to create dungeon run recent items
- */
 export function createDungeonRunRecent(
 	dungeonName: string,
 	keystoneLevel: number,
 	reportCode: string,
-	additionalData: Record<string, any> = {}
+	additionalData: Record<string, unknown> = {}
 ): RecentItem {
 	return {
 		type: 'dungeon_run',
