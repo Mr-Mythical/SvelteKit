@@ -102,7 +102,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		};
 
 		return apiOk(responsePayload);
-	} catch (error: any) {
-		return handleApiError('api/browse-logs', error, error?.message || 'Internal Server Error.');
+	} catch (error) {
+		const message = error instanceof Error ? error.message : 'Internal Server Error.';
+		return handleApiError('api/browse-logs', error, message);
 	}
 };

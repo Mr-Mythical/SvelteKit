@@ -11,12 +11,13 @@
 	import { goto } from '$app/navigation';
 	import { reveal } from '$lib/actions/reveal';
 	import { extractWarcraftLogsReportCode } from '$lib/data/warcraftlogs';
+	import type { BrowsedLog } from '$lib/types/apiTypes';
 
 	let reportURL: string = $state('');
 	let loadingFights = $state(false);
 	let error: string = $state('');
 	let browseLoading = $state(false);
-	let browsedLogs: any[] = $state([]);
+	let browsedLogs: BrowsedLog[] = $state([]);
 	let totalBrowsedLogs = $state(0);
 	let currentBrowsePage = $state(1);
 	const browseItemsPerPage = 10;
@@ -112,7 +113,7 @@
 		// is wired up here.
 	}
 
-	function analyzeLogFromBrowse(log: any) {
+	function analyzeLogFromBrowse(log: BrowsedLog) {
 		goto(`/raid/logs=${log.log_code}?fight=${log.fight_id}`);
 	}
 </script>

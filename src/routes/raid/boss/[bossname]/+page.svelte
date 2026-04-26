@@ -7,9 +7,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
+	import type { PageData } from './$types';
 
 	interface Props {
-		data: any;
+		data: PageData;
 	}
 
 	let { data }: Props = $props();

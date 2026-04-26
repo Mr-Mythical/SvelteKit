@@ -131,13 +131,13 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async () => {
 							battletag: session.user?.name || 'Unknown'
 						});
 					} catch (error) {
-						console.error('Error creating/updating user profile in session:', error);
+						logServerError('auth/session', 'failed to upsert user profile', error);
 					}
 
 					try {
 						await updateUserLastSeen(user.id);
 					} catch (error) {
-						console.error('Error updating last seen:', error);
+						logServerError('auth/session', 'failed to update last_seen', error);
 					}
 				}
 				return session;

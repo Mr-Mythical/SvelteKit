@@ -6,15 +6,23 @@
 	import Hash from '@lucide/svelte/icons/hash';
 	import LogIn from '@lucide/svelte/icons/log-in';
 
+	import type { PageData } from './$types';
+	import type { Session } from '@auth/core/types';
+
+	type AppSession = Session & {
+		accessToken?: string;
+		user?: { battletag?: string } & NonNullable<Session['user']>;
+	};
+
 	interface Props {
-		data: any;
+		data: PageData;
 	}
 
 	let { data }: Props = $props();
 
-	let session = $derived(data.session);
-	let userBattletag = $derived(session?.user ? (session.user as any).battletag : null);
-	let accessToken = $derived(session ? (session as any).accessToken : null);
+	let session = $derived(data.session as AppSession | undefined);
+	let userBattletag = $derived(session?.user?.battletag ?? null);
+	let accessToken = $derived(session?.accessToken ?? null);
 </script>
 
 <svelte:head>

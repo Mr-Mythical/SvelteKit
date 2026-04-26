@@ -1,7 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { specPerformance } from '$lib/db/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, type SQL } from 'drizzle-orm';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
 
@@ -19,7 +19,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		const database = getRaidDb();
 
-		let whereConditions: any[] = [
+		const whereConditions: (SQL | undefined)[] = [
 			eq(specPerformance.encounterId, parseInt(encounterId)),
 			eq(specPerformance.specIcon, specIcon)
 		];

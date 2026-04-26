@@ -11,6 +11,12 @@
 	import User from '@lucide/svelte/icons/user';
 	import Loader2 from '@lucide/svelte/icons/loader-2';
 	import { logClientError } from '$lib/utils/clientLog';
+	import type { Session } from '@auth/core/types';
+
+	type AppSession = Session & {
+		accessToken?: string;
+		user?: { battletag?: string } & NonNullable<Session['user']>;
+	};
 
 	interface Props {
 		mobile?: boolean;
@@ -21,8 +27,8 @@
 	let isSigningIn = $state(false);
 	let isSigningOut = $state(false);
 
-	let session = $derived($page.data.session);
-	let userBattletag = $derived(session?.user ? (session.user as any).battletag : null);
+	let session = $derived($page.data.session as AppSession | undefined);
+	let userBattletag = $derived(session?.user?.battletag ?? null);
 	let isLoading = $derived(isSigningIn || isSigningOut);
 
 	// Check if we're in the middle of an OAuth flow
