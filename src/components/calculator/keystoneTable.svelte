@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { run as run_1 } from 'svelte/legacy';
 
-	import DungeonCombobox from './dungeonCombobox.svelte';
+	import DungeonCombobox from '../combobox/dungeonCombobox.svelte';
 	import * as Table from '$lib/components/ui/table';
 	import ArrowUp from '@lucide/svelte/icons/chevron-up';
 	import ArrowDown from '@lucide/svelte/icons/chevron-down';
@@ -14,9 +14,9 @@
 	import { Button } from '$lib/components/ui/button/';
 	import { dungeonCount } from '$lib/types/dungeons';
 	import { dungeons } from '$lib/types/dungeons';
-	import { apiPopup } from '../stores';
-	import { dungeonData } from '../stores';
-	import { wowSummaryStore } from '../stores';
+	import { apiPopup } from '../../stores';
+	import { dungeonData } from '../../stores';
+	import { wowSummaryStore } from '../../stores';
 	import { scoreFormula, computeRunLevelsForScore } from '$lib/calculations/keystoneCalculations';
 	import { logClientError } from '$lib/utils/clientLog';
 
@@ -40,7 +40,7 @@
 	import { fetchRuns, fetchWowSummary, emptyDungeonRuns } from '$lib/data/characterData';
 	import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
 	import { recentCharacters } from '$lib/stores/recentCharacters';
-	import RecentCharacters from './recentCharacters.svelte';
+	import RecentCharacters from '../raid/recentCharacters.svelte';
 	import { goto, replaceState, afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { currentState } from '$lib/data/currentState';

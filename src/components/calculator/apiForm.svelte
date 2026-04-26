@@ -3,13 +3,13 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button/';
-	import { formSchema, type FormSchema } from '../routes/rating-calculator/schema';
+	import { formSchema, type FormSchema } from '../../routes/rating-calculator/schema';
 	import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { apiPopup, dungeonData, wowSummaryStore } from '../stores';
-	import RealmCombobox from './realmCombobox.svelte';
+	import { apiPopup, dungeonData, wowSummaryStore } from '../../stores';
+	import RealmCombobox from '../combobox/realmCombobox.svelte';
 	import {
 		euRealmOptions,
 		krRealmOptions,

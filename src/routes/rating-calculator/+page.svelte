@@ -1,9 +1,9 @@
 <script lang="ts">
-	import KeystoneTable from '../../components/keystoneTable.svelte';
-	import ScoreExplanation from '../../components/scoreExplanation.svelte';
-	import ApiForm from '../../components/apiForm.svelte';
+	import KeystoneTable from '../../components/calculator/keystoneTable.svelte';
+	import ScoreExplanation from '../../components/calculator/scoreExplanation.svelte';
+	import ApiForm from '../../components/calculator/apiForm.svelte';
 	import SEO from '../../components/seo.svelte';
-	import Footer from '../../components/footer.svelte';
+	import Footer from '../../components/layout/footer.svelte';
 	import { Toaster } from 'svelte-sonner';
 	import type { PageData } from './$types.js';
 	import * as Accordion from '$lib/components/ui/accordion';

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import AverageChart from '../../../../components/averageChart.svelte';
-	import BossPreviewChart from '../../../../components/bossPreviewChart.svelte';
+	import AverageChart from '../../../../components/charts/averageChart.svelte';
+	import BossPreviewChart from '../../../../components/charts/bossPreviewChart.svelte';
 	import SEO from '../../../../components/seo.svelte';
-	import Footer from '../../../../components/footer.svelte';
+	import Footer from '../../../../components/layout/footer.svelte';
 	import { bosses } from '$lib/types/bossData';
 	import { Button } from '$lib/components/ui/button';
 	import { goto } from '$app/navigation';

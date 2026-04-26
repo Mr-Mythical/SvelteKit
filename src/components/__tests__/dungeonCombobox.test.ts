@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/svelte';
-import DungeonCombobox from '../dungeonCombobox.svelte';
+import DungeonCombobox from '../combobox/dungeonCombobox.svelte';
 
 describe('DungeonCombobox', () => {
 	const mockDungeons = [

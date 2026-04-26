@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SEO from '../../components/seo.svelte';
-	import Footer from '../../components/footer.svelte';
+	import Footer from '../../components/layout/footer.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 </script>
 

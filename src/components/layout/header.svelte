@@ -5,7 +5,7 @@
 	import Moon from '@lucide/svelte/icons/moon';
 	import { toggleMode } from 'mode-watcher';
 	import Menu from '@lucide/svelte/icons/menu';
-	import AuthButton from './authButton.svelte';
+	import AuthButton from '../authButton.svelte';
 	import { base } from '$app/paths';
 
 	function toggleMenu() {

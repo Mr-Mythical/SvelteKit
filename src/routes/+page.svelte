@@ -1,8 +1,8 @@
 <script lang="ts">
 	import SEO from '../components/seo.svelte';
-	import Footer from '../components/footer.svelte';
+	import Footer from '../components/layout/footer.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import BossPreviewChart from '../components/bossPreviewChart.svelte';
+	import BossPreviewChart from '../components/charts/bossPreviewChart.svelte';
 </script>
 
 <SEO

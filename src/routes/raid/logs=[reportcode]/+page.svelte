@@ -9,9 +9,9 @@
 		BrowsedLog,
 		BrowseLogsParams
 	} from '$lib/types/apiTypes';
-	import DamageChart from '../../../components/damageChart.svelte';
+	import DamageChart from '../../../components/charts/damageChart.svelte';
 	import SEO from '../../../components/seo.svelte';
-	import Footer from '../../../components/footer.svelte';
+	import Footer from '../../../components/layout/footer.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';

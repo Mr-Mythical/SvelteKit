@@ -1,13 +1,13 @@
 <script lang="ts">
 	import SEO from '../../components/seo.svelte';
-	import Footer from '../../components/footer.svelte';
+	import Footer from '../../components/layout/footer.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { bosses } from '$lib/types/bossData';
-	import YourReports from '../../components/yourReports.svelte';
-	import LogBrowserFilters from '../../components/logBrowser.svelte';
-	import LogBrowserResults from '../../components/logBrowserResult.svelte';
-	import BossPreviewChart from '../../components/bossPreviewChart.svelte';
+	import YourReports from '../../components/raid/yourReports.svelte';
+	import LogBrowserFilters from '../../components/raid/logBrowser.svelte';
+	import LogBrowserResults from '../../components/raid/logBrowserResult.svelte';
+	import BossPreviewChart from '../../components/charts/bossPreviewChart.svelte';
 	import { goto } from '$app/navigation';
 	import { reveal } from '$lib/actions/reveal';
 	import { extractWarcraftLogsReportCode } from '$lib/data/warcraftlogs';
