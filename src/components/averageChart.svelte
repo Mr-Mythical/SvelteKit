@@ -17,6 +17,7 @@
 	} from 'chart.js';
 	import type { ChartData, ChartOptions } from 'chart.js';
 	import { backgroundColorPlugin } from '$lib/ui/chartCanvasPlugin';
+	import { logClientError } from '$lib/utils/clientLog';
 
 	let zoomPluginLoaded = $state(false);
 
@@ -322,7 +323,7 @@
 				]
 			};
 		} catch (err) {
-			console.error('Fetch error:', err);
+			logClientError('averageChart', 'fetch failed', err);
 			error = `Failed to load damage data: ${err instanceof Error ? err.message : 'Unknown error'}`;
 		} finally {
 			loading = false;

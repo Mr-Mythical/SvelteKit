@@ -11,6 +11,7 @@
 		Filler
 	} from 'chart.js';
 	import type { ChartData, ChartOptions } from 'chart.js';
+	import { logClientError } from '$lib/utils/clientLog';
 
 	interface Props {
 		bossId: number;
@@ -122,7 +123,7 @@
 				]
 			};
 		} catch (err) {
-			console.error('Error loading preview chart:', err);
+			logClientError('bossPreviewChart', 'failed to load preview chart', err);
 		} finally {
 			loading = false;
 		}
