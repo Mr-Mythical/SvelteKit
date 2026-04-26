@@ -1,8 +1,8 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { damageAverages } from '$lib/db/schema';
 import { eq, asc } from 'drizzle-orm';
-import { apiError } from '$lib/server/apiResponses';
+import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -37,7 +37,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			encounter_id: row.encounter_id
 		}));
 
-		return json(processedData);
+		return apiOk(processedData);
 	} catch (error) {
 		return handleApiError(
 			'api/damage-average',

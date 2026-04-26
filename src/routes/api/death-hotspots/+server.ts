@@ -1,8 +1,8 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { deathHotspots } from '$lib/db/schema';
 import { eq, asc } from 'drizzle-orm';
-import { apiError } from '$lib/server/apiResponses';
+import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -22,7 +22,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			.where(eq(deathHotspots.encounterId, parseInt(bossId)))
 			.orderBy(asc(deathHotspots.timeSeconds));
 
-		return json(data);
+		return apiOk(data);
 	} catch (error) {
 		return handleApiError(
 			'api/death-hotspots',

@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
+import { apiOk } from '$lib/server/apiResponses';
 import {
 	blizzardScoreSource,
 	raiderIoScoreSource,
@@ -38,9 +38,7 @@ export const GET: RequestHandler = async ({ url, setHeaders }) => {
 	const debug = url.searchParams.get('debug') === '1';
 
 	if (!name || !region || !realm || !VALID_REGIONS.has(region)) {
-		return json({ score: null, color: null, source: null } satisfies ScoreResult, {
-			status: 400
-		});
+		return apiOk({ score: null, color: null, source: null } satisfies ScoreResult, 400);
 	}
 
 	const { result, attemptsBySource } = await resolveScore(SCORE_SOURCES, region, realm, name);
@@ -49,7 +47,7 @@ export const GET: RequestHandler = async ({ url, setHeaders }) => {
 	setHeaders({ 'cache-control': 'public, max-age=300, s-maxage=300' });
 
 	if (debug) {
-		return json({
+		return apiOk({
 			...result,
 			debug: {
 				blizzardStatus: attemptsBySource.blizzard[0]?.status ?? null,
@@ -58,5 +56,5 @@ export const GET: RequestHandler = async ({ url, setHeaders }) => {
 		});
 	}
 
-	return json(result);
+	return apiOk(result);
 };

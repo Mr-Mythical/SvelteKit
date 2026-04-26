@@ -1,10 +1,10 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { healerCompositions, encounters } from '$lib/db/schema';
 import { eq, gte, lte, desc, and } from 'drizzle-orm';
 import type { BrowseLogsParams, BrowsedLog, BrowseLogsResponse } from '$lib/types/apiTypes';
 import { bosses as bossList } from '$lib/types/bossData';
-import { apiError } from '$lib/server/apiResponses';
+import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -101,7 +101,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			limit
 		};
 
-		return json(responsePayload);
+		return apiOk(responsePayload);
 	} catch (error: any) {
 		return handleApiError('api/browse-logs', error, error?.message || 'Internal Server Error.');
 	}

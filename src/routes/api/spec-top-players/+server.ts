@@ -1,8 +1,8 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { specPerformance } from '$lib/db/schema';
 import { eq, desc, and } from 'drizzle-orm';
-import { apiError } from '$lib/server/apiResponses';
+import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -67,7 +67,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			report_url: `https://www.warcraftlogs.com/reports/${r.report_code}#fight=${r.fight_id}`
 		}));
 
-		return json(result);
+		return apiOk(result);
 	} catch (error) {
 		return handleApiError('api/spec-top-players', error, 'Failed to fetch top players');
 	}

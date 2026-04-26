@@ -1,8 +1,8 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { specStatistics } from '$lib/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
-import { apiError } from '$lib/server/apiResponses';
+import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -79,7 +79,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			.where(and(...conditions))
 			.orderBy(desc(specStatistics.avgDps), desc(specStatistics.avgHps));
 
-		return json(data);
+		return apiOk(data);
 	} catch (error) {
 		return handleApiError(
 			'api/spec-statistics',

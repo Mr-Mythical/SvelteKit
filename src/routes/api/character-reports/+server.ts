@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
+import { apiOk } from '$lib/server/apiResponses';
 import { getUserRecents, type CharacterRecentData } from '$lib/db/userRecents.js';
 import { getMyWowRoster } from '$lib/data/myWowRoster';
 import { requireSession } from '$lib/server/requireSession';
@@ -215,7 +215,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 
 		if (merged.length === 0) {
-			return json({ reports: [], guilds: [] } satisfies CharacterReportsResponse);
+			return apiOk({ reports: [], guilds: [] } satisfies CharacterReportsResponse);
 		}
 
 		const perCharacter = await Promise.all(
@@ -296,9 +296,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.sort((a, b) => b.count - a.count)
 			.slice(0, MAX_GUILD_FILTERS_SHOWN);
 
-		return json({ reports, guilds } satisfies CharacterReportsResponse);
+		return apiOk({ reports, guilds } satisfies CharacterReportsResponse);
 	} catch (error) {
 		logServerError('api/character-reports', 'request failed', error);
-		return json({ reports: [], guilds: [] } satisfies CharacterReportsResponse);
+		return apiOk({ reports: [], guilds: [] } satisfies CharacterReportsResponse);
 	}
 };
