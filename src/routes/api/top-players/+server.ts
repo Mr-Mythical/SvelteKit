@@ -120,8 +120,8 @@ export const GET: RequestHandler = async ({ url }) => {
 				duplicatesFound.push(`${result.player_name} (${result.spec_icon})`);
 				// Keep the better performance based on the ordering metric
 				const metricKey = metric === 'hps' ? 'hps' : 'dps';
-				const currentValue = result[metricKey] || 0;
-				const existingValue = existing[metricKey] || 0;
+				const currentValue = result[metricKey] ?? 0;
+				const existingValue = existing[metricKey] ?? 0;
 
 				if (currentValue > existingValue) {
 					playerMap.set(key, result);

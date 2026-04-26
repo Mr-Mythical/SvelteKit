@@ -224,7 +224,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 				return reports.map<CharacterReport>((report) => ({
 					code: report.code,
 					title: report.title || 'Untitled report',
-					timestamp: (report.startTime ?? 0) || 0,
+					timestamp: report.startTime ?? 0,
 					guild: report.guild?.name ? { name: report.guild.name } : null,
 					owner: { name: report.owner?.name || 'Unknown' },
 					sourceCharacter: {
@@ -264,7 +264,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 					return reports.map<CharacterReport>((report) => ({
 						code: report.code,
 						title: report.title || 'Untitled report',
-						timestamp: (report.startTime ?? 0) || 0,
+						timestamp: report.startTime ?? 0,
 						guild: report.guild?.name ? { name: report.guild.name } : { name: guild.name },
 						owner: { name: report.owner?.name || 'Unknown' },
 						sourceCharacter: guild.sourceCharacter

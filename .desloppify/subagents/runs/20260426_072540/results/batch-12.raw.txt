@@ -1,0 +1,46 @@
+{
+  "batch": "authorization_consistency",
+  "batch_index": 12,
+  "assessments": {
+    "authorization_consistency": 67.0
+  },
+  "dimension_notes": {
+    "authorization_consistency": {
+      "evidence": [
+        "Auth pattern is consistent: all protected endpoints check session?.user?.id via locals.getSession()",
+        "Public/protected separation is clear: /api/recent-*, /api/my-wow-characters, /api/current-state require auth; /api/fights, /api/damage-events, /api/browse-logs are intentionally public",
+        "Auth.js configured with PKCE/nonce/state, database session strategy, httpOnly cookies",
+        "User data endpoints filter by userId from session; no cross-user access observed",
+        "GET endpoints return silent fallbacks on auth failure with HTTP 200 (recent-reports returns [], recent-characters returns [], current-state returns null)",
+        "POST endpoints return explicit 401 with {error:'Not authenticated'} on auth failure",
+        "Profile route guards correctly: redirects to /auth/signin if !session.user",
+        "No centralized permission constants; auth logic is inline per endpoint",
+        "No service_role bypass, admin roles, or audit logging for elevated access"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "GET endpoints fail silently with HTTP 200 while POST endpoints fail with HTTP 401 — inconsistent contract for the same auth condition"
+    }
+  },
+  "dimension_judgment": {
+    "authorization_consistency": {
+      "dimension_character": "Authorization is well-structured with clear separation between public and protected endpoints, consistent session checks, and proper OAuth configuration. Protected GET endpoints violate consistency by returning HTTP 200 with empty data on auth failure while POST endpoints correctly return 401.",
+      "score_rationale": "Solid foundational auth practices and correct ownership filtering. Primary defect is the inconsistent GET vs POST error-response strategy on protected endpoints, weakening the authorization contract."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "authorization_consistency",
+      "identifier": "inconsistent_auth_error_responses",
+      "summary": "Protected GET endpoints return HTTP 200 with empty/null data on auth failure; POST endpoints return HTTP 401 with error",
+      "related_files": ["src/routes/api/recent-reports/+server.ts","src/routes/api/recent-characters/+server.ts","src/routes/api/current-state/+server.ts","src/routes/api/character-reports/+server.ts","src/routes/api/my-wow-characters/+server.ts"],
+      "evidence": ["GET /api/recent-reports returns json([]) on auth check failure","GET /api/recent-characters returns json([])","GET /api/current-state returns json(null)","GET /api/my-wow-characters returns json({characters:[],hasScope:false})","POST endpoints consistently return 401 with {error:'Not authenticated'}"],
+      "suggestion": "Standardize: all protected endpoints return 401 with {error} on auth failure. Centralize via locals.requireUser() helper or hooks middleware.",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor",
+      "root_cause_cluster": "inline_auth_checks_lack_centralized_contract"
+    }
+  ]
+}

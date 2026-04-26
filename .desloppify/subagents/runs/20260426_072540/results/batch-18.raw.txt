@@ -1,0 +1,88 @@
+{
+  "batch": "contract_coherence",
+  "batch_index": 18,
+  "assessments": {
+    "contract_coherence": 62.5
+  },
+  "dimension_notes": {
+    "contract_coherence": {
+      "evidence": [
+        "Two exports named addUserRecent with incompatible signatures: recents.ts (userId, item: RecentItem) vs userRecents.ts (userId, type, entityId, entityData, title, subtitle, metadata)",
+        "Exported function getUserProfile(userId: string) lacks return type annotation",
+        "Module-level cache mutation in getValidAccessToken/getBlizzardValidAccessToken: 'get'-prefixed functions mutate module state",
+        "Public API uses Record<string, any> and bare any: RecentItem.entityData: any, updateUserPreferences(preferences: Record<string, any>)",
+        "Unsafe type assertions: row.region as StoredCharacter['region'], r.entityData as Record<string, any>",
+        "Inconsistent error handling: getUserRecents returns [] on error, getUserProfile returns null, others throw",
+        "Mixed API response patterns: raw Response vs json() helper"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Duplicate function exports with incompatible signatures; loose typing in public interfaces; module-level state mutation hidden behind getter naming"
+    }
+  },
+  "dimension_judgment": {
+    "contract_coherence": {
+      "dimension_character": "Partial contract discipline but two significant patterns: duplicate function exports with incompatible signatures, and pervasive loose typing (any, Record<string,any>) in public API boundaries. Module-level state mutation hidden behind getter-named functions further erodes contract reliability.",
+      "score_rationale": "Codebase enforces basic structure (consistent async, typed signatures in some places) but critical gaps: addUserRecent duplication is genuine API contract violation, missing return type annotations on exports, widespread any in public APIs at trust boundaries."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "contract_coherence",
+      "identifier": "duplicate_addUserRecent",
+      "summary": "Two incompatible function exports named addUserRecent",
+      "related_files": ["src/lib/db/recents.ts","src/lib/db/userRecents.ts","src/routes/api/recent-characters/+server.ts","src/routes/api/recent-reports/+server.ts","src/routes/api/current-state/+server.ts","src/routes/api/character-reports/+server.ts"],
+      "evidence": ["recents.ts addUserRecent(userId,item:RecentItem)","userRecents.ts addUserRecent(userId,type,entityId,entityData,title,subtitle?,metadata={})","All API routes import from userRecents.js but recents.ts remains"],
+      "suggestion": "Remove or deprecate recents.ts; consolidate consumers to userRecents.ts",
+      "confidence": "high",
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor",
+      "root_cause_cluster": "incomplete_migration"
+    },
+    {
+      "dimension": "contract_coherence",
+      "identifier": "missing_return_type_getUserProfile",
+      "summary": "Exported getUserProfile lacks return type annotation; returns profile[0] | null implicitly",
+      "related_files": ["src/lib/db/users.ts"],
+      "evidence": ["getUserProfile(userId:string) has no return type"],
+      "suggestion": "Add Promise<typeof userProfiles.$inferSelect | null> or typed interface",
+      "confidence": "high",
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "contract_coherence",
+      "identifier": "get_functions_with_side_effects",
+      "summary": "getValidAccessToken/getBlizzardValidAccessToken mutate module-level state, violating 'get' naming contract",
+      "related_files": ["src/lib/utils/tokenCache.ts","src/lib/utils/blizzardTokenCache.ts"],
+      "evidence": ["let cachedToken at module scope","cachedToken = await requestBearerToken(...) inside 'get' function"],
+      "suggestion": "Rename to getOrRefreshAccessToken or move state into a typed cache wrapper that signals mutation",
+      "confidence": "medium",
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "contract_coherence",
+      "identifier": "loose_typing_any_in_public_api",
+      "summary": "Public API uses any/Record<string,any> in core interfaces",
+      "related_files": ["src/lib/db/userRecents.ts","src/lib/db/users.ts","src/lib/db/recents.ts"],
+      "evidence": ["RecentItem entityData/metadata: any","updateUserPreferences preferences: Record<string,any>"],
+      "suggestion": "Define typed interfaces per entity (CharacterData, ReportData) or Zod schemas",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "contract_coherence",
+      "identifier": "inconsistent_error_handling_patterns",
+      "summary": "DB functions use inconsistent error contracts: some return [] on error, some null, some throw",
+      "related_files": ["src/lib/db/users.ts","src/lib/db/userRecents.ts","src/lib/db/bnetAccount.ts"],
+      "evidence": ["getUserRecents returns [] on error","getUserProfile returns null","updateUserPreferences throws","refreshBattleNetToken returns null"],
+      "suggestion": "Standardize one pattern (throw or null/empty) and document",
+      "confidence": "high",
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    }
+  ]
+}

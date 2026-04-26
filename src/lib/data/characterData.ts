@@ -68,10 +68,10 @@ export async function fetchRuns(
 	const mappedRuns: DungeonRun[] = data.runs.slice(0, dungeonCount).map((run) => ({
 		dungeon: run.dungeon,
 		short_name: run.short_name || '',
-		mythic_level: run.mythic_level || 0,
-		par_time_ms: run.par_time_ms || 0,
-		num_keystone_upgrades: run.num_keystone_upgrades || 0,
-		score: run.score || 0
+		mythic_level: run.mythic_level ?? 0,
+		par_time_ms: run.par_time_ms ?? 0,
+		num_keystone_upgrades: run.num_keystone_upgrades ?? 0,
+		score: run.score ?? 0
 	}));
 
 	while (mappedRuns.length < dungeonCount) {

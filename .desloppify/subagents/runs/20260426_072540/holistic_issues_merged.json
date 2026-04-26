@@ -1,0 +1,2283 @@
+{
+  "assessments": {
+    "abstraction_fitness": {
+      "score": 82.0,
+      "components": [
+        "Abstraction Leverage",
+        "Indirection Cost",
+        "Interface Honesty",
+        "Delegation Density",
+        "Definition Directness",
+        "Type Discipline"
+      ],
+      "component_scores": {
+        "Abstraction Leverage": 88.0,
+        "Indirection Cost": 84.0,
+        "Interface Honesty": 96.0,
+        "Delegation Density": 94.0,
+        "Definition Directness": 78.0,
+        "Type Discipline": 95.0
+      }
+    },
+    "ai_generated_debt": 32.0,
+    "api_surface_coherence": 52.0,
+    "authorization_consistency": 67.0,
+    "contract_coherence": 62.5,
+    "convention_outlier": 82.0,
+    "cross_module_architecture": 72.0,
+    "dependency_health": 83.0,
+    "design_coherence": 52.0,
+    "error_consistency": 48.0,
+    "high_level_elegance": 66.0,
+    "incomplete_migration": 32.0,
+    "initialization_coupling": 35.0,
+    "logic_clarity": 72.5,
+    "low_level_elegance": 71.0,
+    "mid_level_elegance": 64.0,
+    "naming_quality": 76.0,
+    "package_organization": 42.5,
+    "test_strategy": 18.0,
+    "type_safety": 68.5
+  },
+  "dimension_notes": {
+    "cross_module_architecture": {
+      "evidence": [
+        "src/lib/utils/characterData.ts imports from '../../stores' (client Svelte stores), violating boundary: utilities should not depend on framework-specific reactive state",
+        "src/lib/db/userDb.ts and src/lib/db/index.ts properly gate database initialization with 'if (building)' checks, preventing import-time side effects during build",
+        "Database layer cleanly separates data DB (getDb) and user DB (getUserDb) via distinct factory functions; 9-file db/ module has avg fan-in/out of 1.6, indicating moderate hub density but manageable",
+        "Routes -> lib/db/utils/types dependency direction is consistent throughout; no observed cycles or downstream-to-upstream imports",
+        "Auth orchestration properly centralizes lib/db access through src/auth.ts, using single createAdapter() function to manage Drizzle adapter creation",
+        "Coupling matrix shows 1 edge from src/lib/utils to src/ (stores import), indicating one documented boundary violation; all other directions respect layering"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": ""
+    },
+    "high_level_elegance": {
+      "evidence": [
+        "40+ files with zero importers marked as orphaned across src/lib/db/, src/lib/utils/, src/routes/api/",
+        "src/lib/utils/ contains 17 files spanning fundamentally different concerns: token caching, OAuth, API fetching, data transformation, calculations, UI helpers with no clear module responsibility boundary",
+        "Schema organization split across 3 locations: src/lib/db/schema.ts (orphaned), src/lib/db/userSchema.ts (active), drizzle/schema.ts",
+        "API endpoint naming uses inconsistent patterns: event-type, external-service, aggregation-type",
+        "Two separate database connection functions (getDb, getUserDb) with unclear distinction"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Dead code volume, utils responsibility confusion, schema duplication, and inconsistent API naming patterns all directly violate the 'ownership clarity' core principle of high_level_elegance"
+    },
+    "convention_outlier": {
+      "evidence": [
+        "Sibling load() functions use inconsistent type signatures: ServerLoad vs PageServerLoad with varying parameter patterns",
+        "API route error handling diverges: damage-events logs GraphQL errors with console.error, healing-events does not",
+        "Database initialization code duplicated identically in src/lib/db/index.ts (getDb) and src/lib/db/userDb.ts (getUserDb)",
+        "Camel case naming convention is uniformly applied across all modules",
+        "Named export pattern dominates across src/lib/"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": ""
+    },
+    "error_consistency": {
+      "evidence": [
+        "Empty catch blocks in src/auth.ts catch {} without any logging or recovery",
+        "API routes return generic 'Internal Server Error' without logging original error",
+        "myWowRoster catches errors and returns empty array silently",
+        "currentState catches and returns null instead of propagating",
+        "GraphQL error detection inconsistent across event handlers",
+        "Mixed error strategies: throw vs return null vs return empty array",
+        "Timeouts in myWowRoster (4500ms) silently resolve to empty array",
+        "Error response shapes inconsistent across endpoints"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Multiple contradictory error handling patterns prevent reliable error recovery. Empty catch blocks and silent failures make debugging production issues impossible."
+    },
+    "naming_quality": {
+      "evidence": [
+        "Generic verb 'do' in doSave callback",
+        "Generic callback 'hide' in wowheadTooltips.ts",
+        "Abbreviation 'res' inconsistent with rest of codebase using 'response'",
+        "Generic verb 'process' in processSeriesData and processData",
+        "Generic prefix 'temp' in tempScore",
+        "Strong: 40+ functions use clear domain-specific names",
+        "Strong: Consistent prefixing conventions (get, is, has, create, build, fetch, handle)",
+        "Issues isolated to 6 locations - not systemic"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit",
+      "confidence": "high",
+      "issues_preventing_higher_score": ""
+    },
+    "abstraction_fitness": {
+      "evidence": [
+        "Minimal pass-through wrappers earn their indirection (cn delegates to clsx+twMerge)",
+        "Zero one-implementation interfaces; zero delegation-heavy classes",
+        "Type discipline strong: specific TypeScript types throughout",
+        "Legitimate abstraction hotspots: currentState store, reveal action have meaningful behavior",
+        "Critical defect: oauth.ts and blizzardOauth.ts duplicate requestBearerToken/isTokenExpired",
+        "Boilerplate duplication: cast/damage/healing/boss-events repeat parameter validation, token fetch, error structure",
+        "No shared GraphQL query builder despite identical query construction patterns"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "OAuth provider duplication adds cognitive load; boilerplate GraphQL handler pattern obscures intent and creates maintenance risk",
+      "sub_axes": {
+        "abstraction_leverage": 88.0,
+        "indirection_cost": 84.0,
+        "interface_honesty": 96.0,
+        "delegation_density": 94.0,
+        "definition_directness": 78.0,
+        "type_discipline": 95.0
+      }
+    },
+    "dependency_health": {
+      "evidence": [
+        "sharp (^0.34.4) in production dependencies but zero imports",
+        "@internationalized/date (^3.12.1) in production dependencies but zero imports",
+        "chart.js (^4.4.7) actively used in 4 charting components",
+        "@auth/* packages form intentional cohesive auth layer",
+        "drizzle-orm and postgres are primary database layer with no duplication",
+        "Form library sveltekit-superforms actively used",
+        "Utility libs (clsx, tailwind-merge) serve distinct purposes - not redundant",
+        "No multiple libraries for the same purpose",
+        "No observable circular dependency cycles in production code"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "single_edit",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Two unused production dependencies (sharp, @internationalized/date) add unnecessary bloat"
+    },
+    "low_level_elegance": {
+      "evidence": [
+        "Token refresh logic in bnetAccount.ts has clear branching with early returns and precise conditions",
+        "Helper extraction is consistent: normalizeAccount, createCharacterRecent, colorToHex follow single-purpose patterns",
+        "extractWarcraftLogsReportCode demonstrates balanced extraction: regex validation, URL parsing, regex fallback",
+        "State mutation in recent stores has redundant setLoading(false) calls in nested try-catch finally blocks",
+        "Unused variable tierSuffix defined in rating-calculator +page.server.ts line 103 but never referenced",
+        "reveal() Svelte action properly scopes side effects",
+        "loadFromAPI called from add() creates overlapping loading state mutations"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Redundant nested state mutations in recent stores and overlapping loading state management reduce directness. Unused variable represents dead assignment."
+    },
+    "mid_level_elegance": {
+      "evidence": [
+        "API routes manually destructure and validate request.json with repeated boilerplate validation - no centralized validation",
+        "Token caching via module-level singleton in tokenCache.ts not request-scoped safe",
+        "Session fetched via HTTP fetch in hooks.server.ts instead of direct call",
+        "Database connection created fresh per request in userDb.ts - workaround for initialization coupling",
+        "Data translation patterns inconsistent: boss-events enriches; damage-events passes raw",
+        "Error handling consistently generic: 'Internal Server Error' without context",
+        "characterData.ts manually maps RaiderIoRun fields to store format",
+        "browse-logs and death-events show good seam design with typed mapping"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Scattered validation responsibility, unsafe lifecycle management, error context loss, inconsistent data translation"
+    },
+    "test_strategy": {
+      "evidence": [
+        "11 test files across 580+ source files - test-to-source ratio ~1:50",
+        "Zero tests for 20+ API route handlers",
+        "Core utility functions missing test coverage: blizzardOauth, characterData, keystoneCalculations, myWowRoster, tokenCache",
+        "Database operations untested: createOrUpdateUserProfile, updateUserLastSeen",
+        "Authentication flows completely untested",
+        "Existing tests are shallow DOM checks rather than behavioral tests",
+        "No integration tests between API and frontend",
+        "No error path testing",
+        "Performance tests appear disconnected from real-world usage"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change",
+      "confidence": "high",
+      "issues_preventing_higher_score": "API routes with complex business logic untested; auth and error paths zero coverage; integration layer untested; test layering lacks breadth"
+    },
+    "api_surface_coherence": {
+      "evidence": [
+        "Error response pattern inconsistency: POST endpoints use raw Response(JSON.stringify({error}), {status, headers}) while GET endpoints use json({error}, {status})",
+        "Parameter ordering inconsistency: character-score uses (region, realm, name) via query params, blizzard and raiderio use (name, region, realm)",
+        "Response shape inconsistency: direct array, wrapped object {runs: [...]}, nested {graph: {data}}, success flag {success: true}",
+        "Missing JSDoc error contracts on API routes; character-score has 6+ retry/fallback chains with no documented error behavior",
+        "Type-safety boundary violations: addUserRecent accepts entityData: any and metadata: any",
+        "Mixed HTTP methods for symmetric ops: warcraftlogs event endpoints are POST with JSON bodies, blizzard/raiderio GET with query params"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Error response inconsistency across all 22 API endpoints; parameter ordering inconsistency for similar operations; missing error contracts."
+    },
+    "authorization_consistency": {
+      "evidence": [
+        "Auth pattern is consistent: all protected endpoints check session?.user?.id via locals.getSession()",
+        "Public/protected separation is clear: /api/recent-*, /api/my-wow-characters, /api/current-state require auth; /api/fights, /api/damage-events, /api/browse-logs are intentionally public",
+        "Auth.js configured with PKCE/nonce/state, database session strategy, httpOnly cookies",
+        "User data endpoints filter by userId from session; no cross-user access observed",
+        "GET endpoints return silent fallbacks on auth failure with HTTP 200 (recent-reports returns [], recent-characters returns [], current-state returns null)",
+        "POST endpoints return explicit 401 with {error:'Not authenticated'} on auth failure",
+        "Profile route guards correctly: redirects to /auth/signin if !session.user",
+        "No centralized permission constants; auth logic is inline per endpoint",
+        "No service_role bypass, admin roles, or audit logging for elevated access"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "GET endpoints fail silently with HTTP 200 while POST endpoints fail with HTTP 401 \u2014 inconsistent contract for the same auth condition"
+    },
+    "ai_generated_debt": {
+      "evidence": [
+        "Identical try-catch-console.error boilerplate across 20+ functions in src/lib/db/ (users.ts, recents.ts, userRecents.ts)",
+        "Docstring bloat in users.ts: '/** Update user's last seen timestamp */' echoes function name, repeated for updateUserLastSeen, createOrUpdateUserProfile, getUserProfile, updateUserPreferences",
+        "Defensive null-coalescing chains in src/lib/utils/wowheadTooltips.ts: 4 chained Tooltips?.hide?.() calls without comment explaining fallback strategy",
+        "Generic handler names: handleSignIn, handleSignOut, handleFightSelection, handleLogSearch, loadCharacterFromUrl",
+        "Pass-through wrapper normalizeAccount() in bnetAccount.ts: only renames fields without validation or semantic value",
+        "Generic comments restating code: '// Process character parameters' (keystoneTable.svelte multiple lines), '// Handle fight filtering', '// Handle page change if needed'",
+        "Repetitive console logging: console.error('Failed to...') with object dumps (raid/logs/+page.svelte line 260)",
+        "Error handling inconsistency: getUserProfile returns null vs updateUserLastSeen throws"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Boilerplate spans 20+ functions in db layer; docstring bloat across module; generic comments distributed across 10+ components"
+    },
+    "incomplete_migration": {
+      "evidence": [
+        "Two coexisting database schemas: src/lib/db/schema.ts (402 LOC, marked orphaned but actively imported) and src/lib/db/userSchema.ts (new, 6 importers)",
+        "Old schema tables actively imported: healerCompositions and encounters in browse-logs; deathHotspots in death-hotspots; damageAverages in damage-average; specPerformance in spec-top-players and top-players",
+        "Two drizzle configs: drizzle.config.ts (old) and drizzle.user.config.ts (new) both present",
+        "Dual database connections: getDb() (old routes) and getUserDb() (new modules) without clear boundary documentation",
+        "Separate migration histories: drizzle/ (0000-0002) and drizzle/user/ (0000-0003) parallel tracks",
+        "Manual consolidation file: drizzle/migrations/drop_global_recents_and_user_favorites.sql",
+        "Mixed authentication patterns: simple Auth.js users vs extended userProfiles with Battle.net fields",
+        "40+ orphaned API route files",
+        "MIGRATION_PLAN.md exists for Svelte 5+ upgrade (separate, intentional, tracked)"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Old schema remains with no deprecation path; dual configs create maintenance risk; orphaned-but-imported state; no clear migration endpoint"
+    },
+    "package_organization": {
+      "evidence": [
+        "src/components/ contains 22+ Svelte files at root level mixing layout (seo, footer, header), keystone-calc (apiForm, keystoneTable, scoreExplanation), log-analysis (logBrowser, logBrowserResult, yourReports), charts (averageChart, damageChart, specPerformanceChart, deathHotspots, bossPreviewChart), auth (authButton), selection widgets (dungeonCombobox, realmCombobox), and report widgets",
+        "src/lib/utils/ contains 17 files mixing OAuth modules (blizzardOauth.ts, blizzardTokenCache.ts, tokenCache.ts, oauth.ts), abilities (abilityMetadata.ts, abilityName.ts), character data (characterData.ts, myWowCharacters.ts, myWowRoster.ts), external APIs (warcraftlogs.ts, wowheadTooltips.ts), recents (recentCharacters.ts, recentReports.ts), calculations (keystoneCalculations.ts), styling (classColors.ts)",
+        "seo.svelte and footer.svelte have 8 importers (high fan-in), used across multiple route pages \u2014 should be in components/layout/",
+        "Routes import via relative paths (../../components/seo.svelte) indicating implicit feature clustering with no directory structure to match",
+        "userDb.ts has 6 importers \u2014 concentrated coupling point",
+        "src/lib/types/ has 8 files mixing Blizzard schema (blizzard.ts, blizzardFull.ts, blizzardMedia.ts, apiTypes.ts) with domain types (bossData, classData, dungeons, realms)",
+        "src/lib/hooks/ is empty; src/lib/actions/ contains only reveal.ts \u2014 underpopulated framework folders",
+        "keystoneTable.svelte exclusively used by rating-calculator route but lives at components root alongside unrelated charts/auth"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Persistent flat directory overload in src/components/ and src/lib/utils/; Blizzard types not separated from domain types; underpopulated framework folders signal incomplete pattern adoption"
+    },
+    "initialization_coupling": {
+      "evidence": [
+        "Module-level mutable state in src/lib/utils/tokenCache.ts: let cachedToken: AccessToken | null = null shared across all requests, called by 17 API routes",
+        "Module-level mutable state in src/lib/utils/blizzardTokenCache.ts: identical pattern, called by 5 API routes",
+        "Token cache singleton creates implicit coupling: concurrent requests share cached token, violating request isolation in server environment",
+        "Database initialization correctly per-request: src/lib/db/index.ts and src/lib/db/userDb.ts use getDb()/getUserDb() factories",
+        "Environment variables read inside functions, not at import time",
+        "Auth handler initialization at module scope (src/auth.ts) is framework-standard SvelteKitAuth bootstrap",
+        "Svelte stores in src/stores.ts properly designed (writable per-component)",
+        "No circular initialization dependencies"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Two separate module-level mutable token caches affecting 22+ downstream consumers create cross-request token leakage and race-condition risk"
+    },
+    "design_coherence": {
+      "evidence": [
+        "Foundational architecture is clean: layered structure (routes \u2192 lib \u2192 db), no cycles, auth properly centralized",
+        "31+ orphaned files indicate incomplete prior refactoring; design boundaries not established before implementation",
+        "src/lib/utils/recentCharacters.ts mixes store interface, fallback logic, API communication, error handling in one module",
+        "API route /api/character-score combines source prioritization, async data fetching, timeout management, formatting, validation in single handler",
+        "/api/blizzard combines profile fetch, media fetch, URL encoding, error handling, data merging without extraction",
+        "src/lib/types/realms.ts is 572 LOC of hand-coded realm arrays \u2014 should be data-driven (JSON or fetched from Blizzard GameData)",
+        "src/auth.ts uses 'any' types in critical signIn/session callbacks at security boundary",
+        "src/lib/db/users.ts createOrUpdateUserProfile parameter object mixes 4 optional fields without semantic grouping",
+        "Two database connection patterns (getDb, getUserDb) without documented ownership boundary",
+        "Magic numbers in keystoneCalculations.ts (DUNGEON_COUNT=8, parScore=155, affixBreakpoints) lack semantic externalization",
+        "DESIGN.md emphasizes 'answer-first, always' and 'data earns its pixels'; implementation hides answers behind async fallback chains and orchestrates multiple sources without clear semantics"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Mixed responsibilities across utilities and API routes; 31+ orphaned files; data-as-code patterns; design doc/implementation drift"
+    },
+    "contract_coherence": {
+      "evidence": [
+        "Two exports named addUserRecent with incompatible signatures: recents.ts (userId, item: RecentItem) vs userRecents.ts (userId, type, entityId, entityData, title, subtitle, metadata)",
+        "Exported function getUserProfile(userId: string) lacks return type annotation",
+        "Module-level cache mutation in getValidAccessToken/getBlizzardValidAccessToken: 'get'-prefixed functions mutate module state",
+        "Public API uses Record<string, any> and bare any: RecentItem.entityData: any, updateUserPreferences(preferences: Record<string, any>)",
+        "Unsafe type assertions: row.region as StoredCharacter['region'], r.entityData as Record<string, any>",
+        "Inconsistent error handling: getUserRecents returns [] on error, getUserProfile returns null, others throw",
+        "Mixed API response patterns: raw Response vs json() helper"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Duplicate function exports with incompatible signatures; loose typing in public interfaces; module-level state mutation hidden behind getter naming"
+    },
+    "logic_clarity": {
+      "evidence": [
+        "scoreFormula switch on stars has cases 1, 2, 3 with no default \u2014 implicit fallback to timeAdjustment=0",
+        "recentReports.ts duplicate setLoading(false) when API fallback to localStorage triggers two finally blocks",
+        "shouldStartWheelZoom in damageChart.svelte uses negation-based conditional making intent unclear",
+        "browse-logs duration_ms ? check treats 0 as falsy, potentially skipping legitimate zero-duration",
+        "computeRunLevelsForScore has nested if/else inside loops with multiple early returns",
+        "Most business logic follows direct if/else with early returns; complexity is isolated to edge cases"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": ""
+    },
+    "type_safety": {
+      "evidence": [
+        "Unvalidated JSON parsing in 11+ API routes (cast-events, death-events, damage-events, boss-events, healing-events, fights, player-details, recent-reports, recent-characters, browse-logs, current-state) \u2014 destructured from await request.json() with type annotation but no runtime validation",
+        "External API responses asserted without validation: character-score asserts 'as BlizzardMythicKeystoneProfile', bnetAccount and character-reports likewise",
+        "Record<string, any> overuse in db layer: recents.ts (entityData, metadata), userRecents.ts (entityData, metadata), users.ts (preferences), userSchema.ts JSONB columns",
+        "Auth callbacks receive any: src/auth.ts signIn({user,account}:any), session({session,user}:any)",
+        "Type assertions on database results: row.region as StoredCharacter['region'], r.entityData as Record<string,any>",
+        "Test utilities use any (acceptable per rubric but represents looseness)",
+        "Some routes do partial validation (cast-events typeof checks) \u2014 inconsistently applied",
+        "Svelte components properly typed: Props interfaces consistently defined",
+        "TypeScript strict mode enabled (tsconfig: strict:true, checkJs:true)",
+        "Cloudflare platform binding forces any in app.d.ts (framework limitation)"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "No runtime schema validation at API boundaries; external API responses unvalidated; JSONB fields generic"
+    }
+  },
+  "dimension_judgment": {
+    "cross_module_architecture": {
+      "dimension_character": "The codebase demonstrates generally clean layering with proper separation of concerns across db, utils, types, components, and routes. One notable boundary violation exists where characterData.ts couples a utility layer to client-side Svelte stores, breaking framework-agnostic abstraction. Database organization is well-structured with distinct data and user connection factories, though the 9-file db module acts as a moderate hub.",
+      "score_rationale": "The dependency directions are mostly sound and free from cycles, with clear API boundaries and proper initialization gating. However, the utility-to-store coupling represents a defect that prevents a higher score. The architecture successfully isolates concerns but needs to eliminate the framework-specific dependency in the utils layer to reach 80+."
+    },
+    "high_level_elegance": {
+      "dimension_character": "The codebase has a reasonable foundational structure (lib/utils/types/components/routes separation) and semantically clear directory names, but is significantly undermined by orphaned code, mixed responsibilities in utilities, and fragmented ownership of related concerns.",
+      "score_rationale": "The basic decomposition is sound enough to not be chaotic, but the high volume of orphaned files directly violates the 'new engineer can explain why this exists' core principle. Utils mixing token caching, OAuth, API fetching, and UI helpers makes responsibility boundaries unpredictable."
+    },
+    "convention_outlier": {
+      "dimension_character": "Strong consistent naming conventions and export patterns. However friction in the API routes and SvelteKit route handlers where sibling modules diverge on load signatures and error logging.",
+      "score_rationale": "82 reflects solid baseline consistency with bounded inconsistency. Naming discipline is exemplary, but load signature variance and error-handling divergence in sibling routes create friction. The issues are isolated to specific directories rather than pervasive."
+    },
+    "error_consistency": {
+      "dimension_character": "Error handling is fragmented across the codebase with no consistent strategy. Some functions throw on failure, others return null or empty collections, and still others silently catch and continue.",
+      "score_rationale": "48 reflects the inconsistency of strategies, silent failures, and lost error context. Empty catch in auth.ts and generic error wrapping at API boundaries represent significant anti-patterns."
+    },
+    "naming_quality": {
+      "dimension_character": "Strong fundamentals in naming with clear domain-specific terminology. Isolated instances of generic verbs and one abbreviation inconsistency reduce clarity at specific points.",
+      "score_rationale": "76 reflects well-named codebase with established conventions. Six specific defects prevent higher score but easily correctable without architectural changes."
+    },
+    "abstraction_fitness": {
+      "dimension_character": "Strong type discipline and well-motivated abstractions in utility layers. API route handlers expose meaningful boilerplate maintenance burden through duplicated parameter validation, OAuth provider logic, and GraphQL query construction.",
+      "score_rationale": "Score reflects high baseline quality (88-96 on most sub-axes) tempered by definition_directness issues (78) caused by unabstracted boilerplate."
+    },
+    "dependency_health": {
+      "dimension_character": "Intentional, well-grouped dependency choices with clear purpose separation. All actively-used dependencies serve specific needs without duplication. Two unused production dependencies add unnecessary bloat.",
+      "score_rationale": "Strong foundational dependency health anchors to 80+. Two unused production dependencies pull score into 83 range - isolated issues rather than systemic failures."
+    },
+    "low_level_elegance": {
+      "dimension_character": "Most function internals are direct and intention-revealing. Nested state management in client-side stores reveals pattern repetition and overlapping loading state responsibility, creating redundant mutations.",
+      "score_rationale": "71 reflects solid control flow clarity tempered by redundant nested loading state and dead variable. Functional but signs of unclear responsibility boundaries."
+    },
+    "mid_level_elegance": {
+      "dimension_character": "Competent module organization with proper types and some good translation patterns, but suffers from fragmented responsibility at integration seams. Validation logic duplicated, session lifecycle uses unnecessary HTTP indirection, token caching unsafe.",
+      "score_rationale": "Mixed execution: good patterns undermined by missing abstractions. The system functions but requires understanding multiple validation patterns, session indirection, and varying error semantics."
+    },
+    "test_strategy": {
+      "dimension_character": "Test strategy is severely underdeveloped. While simple utility functions and basic component rendering have shallow tests, all critical business logic - 20+ API routes, authentication flows, database operations, and state management - lacks coverage.",
+      "score_rationale": "Mechanical scan reports 4.6% test_health; evidence confirms. Critical paths are 95%+ untested. Existing tests verify DOM presence rather than behavioral correctness. Codebase is high-risk for regressions."
+    },
+    "api_surface_coherence": {
+      "dimension_character": "API surface exhibits systematic inconsistency across response patterns, parameter conventions, and error handling. Related endpoints use different conventions (GET vs POST, parameter ordering, error shapes), forcing clients to adapt to multiple patterns.",
+      "score_rationale": "Moderate coherence issues that are fixable but widespread. Error response fragmentation and parameter ordering inconsistency are primary drivers. Basic validation prevents this from being lower."
+    },
+    "authorization_consistency": {
+      "dimension_character": "Authorization is well-structured with clear separation between public and protected endpoints, consistent session checks, and proper OAuth configuration. Protected GET endpoints violate consistency by returning HTTP 200 with empty data on auth failure while POST endpoints correctly return 401.",
+      "score_rationale": "Solid foundational auth practices and correct ownership filtering. Primary defect is the inconsistent GET vs POST error-response strategy on protected endpoints, weakening the authorization contract."
+    },
+    "ai_generated_debt": {
+      "dimension_character": "Textbook LLM-generated patterns concentrated in database abstraction layer and component handlers. Boilerplate error handling repeated mechanically; docstrings echo function signatures; generic comments restate code.",
+      "score_rationale": "Significant but contained AI-generated debt. Database module and component error handlers show heavy boilerplate, but rest of codebase is relatively clean. No architectural-scale wrappers."
+    },
+    "incomplete_migration": {
+      "dimension_character": "Two competing database schemas with split imports and dual connection patterns indicate a migration started but never completed. Old tables active alongside new ones; old configuration coexists with new; split migration history confirms incomplete transition.",
+      "score_rationale": "Substantial incomplete migration debt. Actively-used old schemas without deprecation, dual configuration files, orphaned-but-imported contradictions indicate migration that lost momentum."
+    },
+    "package_organization": {
+      "dimension_character": "Foundational structure exists but src/components/ and src/lib/utils/ are flat mixed-concern directories that obscure feature boundaries and ownership. Components naturally cluster by feature but directory layout reflects no affinity.",
+      "score_rationale": "Reasonable separation between src/lib and src/components, typed DB layer, but two critical navigation/ownership axes fail. Flat-directory overload (>10 mixed-concern files) and import-affinity mismatch are measurable structural issues."
+    },
+    "initialization_coupling": {
+      "dimension_character": "Initialization coupling problematic due to module-level mutable token caches shared across concurrent requests, violating request isolation. DB and env init correctly implemented with per-request factories. Auth bootstrap is framework-standard.",
+      "score_rationale": "Two clear high-impact defects (module-level state in token caches affecting 22+ routes) partially offset by correct DB initialization and clean dependency graph."
+    },
+    "design_coherence": {
+      "dimension_character": "Codebase has medium design coherence. Successfully isolates data and auth control flow, maintains correct dependency direction. But developers cannot predict structural patterns: utilities mix concerns inconsistently, API endpoints duplicate orchestration logic, old/new patterns coexist. Type safety erosion at security boundary contradicts brand intent.",
+      "score_rationale": "Score reflects mixed quality. Foundational discipline is good (no cycles, clean layering) but module-level concerns are blurred. The 31+ orphaned files signal mid-flight design without cleanup. DESIGN.md prescriptions diverge from implementation."
+    },
+    "contract_coherence": {
+      "dimension_character": "Partial contract discipline but two significant patterns: duplicate function exports with incompatible signatures, and pervasive loose typing (any, Record<string,any>) in public API boundaries. Module-level state mutation hidden behind getter-named functions further erodes contract reliability.",
+      "score_rationale": "Codebase enforces basic structure (consistent async, typed signatures in some places) but critical gaps: addUserRecent duplication is genuine API contract violation, missing return type annotations on exports, widespread any in public APIs at trust boundaries."
+    },
+    "logic_clarity": {
+      "dimension_character": "Codebase generally follows direct control flow but contains pockets where logic is implicit (missing defaults), duplicated (callback state changes), or unnecessarily complex (nested negation conditionals). Most functions traceable but require careful reading in calculation paths.",
+      "score_rationale": "Mostly clear control flow. Issues isolated to utility functions and API routes. Missing defaults silently apply zero values; callback patterns inadvertently call state changes twice; conditionals rely on negation."
+    },
+    "type_safety": {
+      "dimension_character": "TypeScript strict mode enabled; component Props consistently typed. Critical runtime boundaries (API request handlers, external API responses, JSONB access) lack validation schemas. Database functions use Record<string,any> generically. Framework integration forces any.",
+      "score_rationale": "Strong baseline (~70 points for strict mode + props typing) but loses points for unvalidated JSON in 11+ routes, framework-forced any, JSONB generics, test util looseness. Well-structured foundation with known validation gaps."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "cross_module_architecture",
+      "identifier": "util_store_boundary_violation",
+      "summary": "Utility function (characterData.ts) imports from client-side Svelte stores, violating framework-agnostic abstraction boundary",
+      "confidence": "high",
+      "suggestion": "Refactor characterData.ts to accept store setters as parameters (dependency injection) rather than importing stores directly. Define a callback interface: { onRunsLoaded: (runs) => void; onWowSummaryLoaded: (summary) => void } and pass stores from component layer.",
+      "related_files": [
+        "src/lib/utils/characterData.ts",
+        "src/stores.ts"
+      ],
+      "evidence": [
+        "import { dungeonData, apiPopup, wowSummaryStore } from '../../stores'",
+        "Stores imported are created with writable() from svelte/store, making them SvelteKit-specific",
+        "characterData.ts exports fetchRuns() and fetchWowSummary() which mutate these stores directly inside utility functions",
+        "This couples utility layer to component framework, preventing reuse in non-Svelte contexts"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "high_level_elegance",
+      "identifier": "orphaned_dead_code_volume",
+      "summary": "40+ files with zero importers; ownership and purpose undefined",
+      "confidence": "high",
+      "suggestion": "Audit all orphaned files: delete truly dead code, move legacy files under /_legacy folder with README, enforce no-orphan rule in PR review",
+      "related_files": [
+        "src/lib/db/schema.ts",
+        "src/lib/db/recents.ts",
+        "src/routes/api/character-reports/+server.ts",
+        "src/lib/db/bnetAccount.ts",
+        "src/lib/utils/myWowRoster.ts"
+      ],
+      "evidence": [
+        "Scan shows 40+ files marked 'orphaned' with zero importers",
+        "These files exist in the repo but serve no active function"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "high_level_elegance",
+      "identifier": "utils_mixed_responsibilities",
+      "summary": "src/lib/utils/ mixes 17 files across 5+ unrelated domains",
+      "confidence": "high",
+      "suggestion": "Reorganize into focused modules: src/lib/auth/ (oauth, tokenCache), src/lib/data/ (characterData, warcraftlogs), src/lib/calculations/ (keystoneCalculations), src/lib/ui/ (chartCanvasPlugin, wowheadTooltips)",
+      "related_files": [
+        "src/lib/utils/tokenCache.ts",
+        "src/lib/utils/blizzardTokenCache.ts",
+        "src/lib/utils/oauth.ts",
+        "src/lib/utils/blizzardOauth.ts",
+        "src/lib/utils/warcraftlogs.ts",
+        "src/lib/utils/characterData.ts",
+        "src/lib/utils/keystoneCalculations.ts",
+        "src/lib/utils/chartCanvasPlugin.ts"
+      ],
+      "evidence": [
+        "src/lib/utils/ contains tokenCache, oauth, warcraftlogs API client, characterData transformation, keystoneCalculations, chartCanvasPlugin"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "architectural_change"
+    },
+    {
+      "dimension": "high_level_elegance",
+      "identifier": "schema_split_across_locations",
+      "summary": "Data schema defined in 3 locations, unclear which is current",
+      "confidence": "high",
+      "suggestion": "Consolidate schema into single canonical location; delete or clearly mark legacy",
+      "related_files": [
+        "src/lib/db/schema.ts",
+        "src/lib/db/userSchema.ts",
+        "drizzle/schema.ts"
+      ],
+      "evidence": [
+        "src/lib/db/schema.ts is marked orphaned (zero importers)",
+        "src/lib/db/userSchema.ts is active",
+        "drizzle/schema.ts used by drizzle-kit"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "high_level_elegance",
+      "identifier": "api_endpoint_naming_inconsistency",
+      "summary": "API endpoint naming uses 3 different patterns inconsistently",
+      "confidence": "high",
+      "suggestion": "Adopt consistent scheme; document in README",
+      "related_files": [
+        "src/routes/api/boss-events/+server.ts",
+        "src/routes/api/blizzard/+server.ts",
+        "src/routes/api/raiderio/+server.ts",
+        "src/routes/api/top-players/+server.ts"
+      ],
+      "evidence": [
+        "event-type naming (/boss-events), external-service (/blizzard, /raiderio), aggregation (/top-players)"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "high_level_elegance",
+      "identifier": "database_connection_confusion",
+      "summary": "Two separate database connection functions with unclear distinction",
+      "confidence": "high",
+      "suggestion": "Consolidate or document clearly; rename for clarity",
+      "related_files": [
+        "src/lib/db/index.ts",
+        "src/lib/db/userDb.ts"
+      ],
+      "evidence": [
+        "getDb() and getUserDb() both create fresh connections, comments do not clarify when to use which"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "convention_outlier",
+      "identifier": "load_signature_divergence",
+      "summary": "Sibling routes use inconsistent load() signatures: ServerLoad vs PageServerLoad",
+      "confidence": "high",
+      "suggestion": "Standardize all sibling +page.server.ts to PageServerLoad with consistent destructuring; use ServerLoad only on layout routes.",
+      "related_files": [
+        "src/routes/+layout.server.ts",
+        "src/routes/profile/+page.server.ts",
+        "src/routes/rating-calculator/+page.server.ts",
+        "src/routes/beta-raidtesting/+page.server.ts",
+        "src/routes/raid/boss/+page.server.ts",
+        "src/routes/raid/boss/[bossname]/+page.server.ts"
+      ],
+      "evidence": [
+        "+layout.server.ts uses ServerLoad",
+        "profile uses ServerLoad",
+        "rating-calculator/beta-raidtesting/raid use PageServerLoad",
+        "Inconsistent destructuring (no params, {params}, event)"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "convention_outlier",
+      "identifier": "error_logging_inconsistency",
+      "summary": "Sibling API routes handle GraphQL errors inconsistently",
+      "confidence": "high",
+      "suggestion": "Apply consistent error logging strategy across all API routes",
+      "related_files": [
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/healing-events/+server.ts"
+      ],
+      "evidence": [
+        "damage-events: console.error('GraphQL Errors:', json.errors)",
+        "healing-events: silently returns error without logging"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "convention_outlier",
+      "identifier": "db_initialization_naming",
+      "summary": "Database initialization functions use inconsistent naming despite identical implementation",
+      "confidence": "medium",
+      "suggestion": "Unify naming: getDb('user' | 'main') or rename consistently",
+      "related_files": [
+        "src/lib/db/index.ts",
+        "src/lib/db/userDb.ts"
+      ],
+      "evidence": [
+        "getDb vs getUserDb pattern divergent",
+        "Both have identical try-catch and postgres setup"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "error_consistency",
+      "identifier": "silent_catch_in_auth",
+      "summary": "Empty catch block in auth.ts completely suppresses background roster sync errors",
+      "confidence": "high",
+      "suggestion": "Replace catch {} with catch (error) { console.error('signIn: roster sync failed', error); }",
+      "related_files": [
+        "src/auth.ts"
+      ],
+      "evidence": [
+        "refreshRosterFromBattleNet called in background with catch {} that logs nothing"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "error_consistency",
+      "identifier": "lost_error_context_api_handlers",
+      "summary": "API handlers discard original error details, returning generic 500",
+      "confidence": "high",
+      "suggestion": "Centralize error handler that logs server-side and returns sanitized client error",
+      "related_files": [
+        "src/routes/api/boss-events/+server.ts",
+        "src/routes/api/cast-events/+server.ts",
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/healing-events/+server.ts"
+      ],
+      "evidence": [
+        "catch (error) returns generic 'Internal Server Error' without logging",
+        "Inconsistent: some endpoints log, others do not"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "error_consistency",
+      "identifier": "mixed_error_strategies_similar_paths",
+      "summary": "Similar operations use contradictory strategies: throw vs null vs empty array",
+      "confidence": "high",
+      "suggestion": "Establish codebase-wide error handling convention; document in DESIGN.md",
+      "related_files": [
+        "src/lib/utils/tokenCache.ts",
+        "src/lib/utils/myWowRoster.ts",
+        "src/lib/db/users.ts",
+        "src/lib/utils/currentState.ts"
+      ],
+      "evidence": [
+        "getValidAccessToken throws",
+        "myWowRoster returns empty array",
+        "currentState returns null"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change"
+    },
+    {
+      "dimension": "error_consistency",
+      "identifier": "inconsistent_graphql_error_detection",
+      "summary": "GraphQL errors detected in some handlers but not others",
+      "confidence": "medium",
+      "suggestion": "Extract GraphQL response validation to shared utility",
+      "related_files": [
+        "src/routes/api/death-events/+server.ts",
+        "src/routes/api/cast-events/+server.ts",
+        "src/routes/api/healing-events/+server.ts"
+      ],
+      "evidence": [
+        "death-events logs json.errors",
+        "cast-events does not log details"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "error_consistency",
+      "identifier": "silent_fallback_without_signaling",
+      "summary": "Error handlers fall back to secondary sources without signaling degradation",
+      "confidence": "medium",
+      "suggestion": "Return error state explicitly with source flag",
+      "related_files": [
+        "src/lib/utils/recentReports.ts",
+        "src/lib/utils/currentState.ts"
+      ],
+      "evidence": [
+        "recentReports falls back to localStorage without signaling 'offline' state",
+        "currentState returns null indistinguishable from 'no state'"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "error_consistency",
+      "identifier": "inconsistent_logging_across_error_paths",
+      "summary": "Error logging is inconsistently applied",
+      "confidence": "high",
+      "suggestion": "Implement consistent logger across all error boundaries",
+      "related_files": [
+        "src/routes/api/boss-events/+server.ts",
+        "src/routes/api/cast-events/+server.ts",
+        "src/lib/utils/characterData.ts",
+        "src/routes/api/damage-events/+server.ts"
+      ],
+      "evidence": [
+        "Mixed logging: console.error, no log, structured vs unstructured"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "error_consistency",
+      "identifier": "error_type_shape_inconsistency",
+      "summary": "Error responses returned to clients have inconsistent shapes and status codes",
+      "confidence": "high",
+      "suggestion": "Define standard error response contract",
+      "related_files": [
+        "src/routes/api/current-state/+server.ts"
+      ],
+      "evidence": [
+        "Mixed response shapes and status codes across endpoints"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "naming_quality",
+      "identifier": "gen_verb_do_save",
+      "summary": "Generic 'do' prefix in doSave callback hides intent",
+      "confidence": "high",
+      "suggestion": "Rename to 'save' or 'performSave'",
+      "related_files": [
+        "src/lib/utils/currentState.ts"
+      ],
+      "evidence": [
+        "const doSave = async () => {"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "naming_quality",
+      "identifier": "gen_name_hide_callback",
+      "summary": "Generic callback name 'hide' provides no semantic information",
+      "confidence": "high",
+      "suggestion": "Rename to 'hideAllTooltips'",
+      "related_files": [
+        "src/lib/utils/wowheadTooltips.ts"
+      ],
+      "evidence": [
+        "const hide = () => { composes hideTooltipApis and hideTooltipElements"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "naming_quality",
+      "identifier": "abbrev_inconsist_res",
+      "summary": "Abbreviation 'res' inconsistent with codebase convention 'response'",
+      "confidence": "high",
+      "suggestion": "Change 'res' to 'response'",
+      "related_files": [
+        "src/routes/api/character-score/+server.ts"
+      ],
+      "evidence": [
+        "const res = await fetchWithTimeout - 28 'response' vs 2 'res' in codebase"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "naming_quality",
+      "identifier": "gen_verb_process_series",
+      "summary": "Generic 'process' in processSeriesData masks transformation intent",
+      "confidence": "high",
+      "suggestion": "Rename to 'extractTimestampsAndValues'",
+      "related_files": [
+        "src/components/damageChart.svelte"
+      ],
+      "evidence": [
+        "function processSeriesData(series) extracts timestamps and values"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "naming_quality",
+      "identifier": "gen_verb_process_combined",
+      "summary": "Generic 'process' in processData obscures filtering and aggregation",
+      "confidence": "high",
+      "suggestion": "Rename to 'combineChartData'",
+      "related_files": [
+        "src/components/damageChart.svelte"
+      ],
+      "evidence": [
+        "function processData(damageEvents, healingEvents)"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "naming_quality",
+      "identifier": "gen_prefix_temp_score",
+      "summary": "Generic 'temp' prefix in tempScore unclear",
+      "confidence": "high",
+      "suggestion": "Rename to 'remainingScore' or 'scoreToAllocate'",
+      "related_files": [
+        "src/lib/utils/keystoneCalculations.ts"
+      ],
+      "evidence": [
+        "let tempScore = targetScore tracks remaining score"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "abstraction_fitness",
+      "identifier": "oauth_provider_duplication",
+      "summary": "Identical token request/expiry logic in oauth.ts and blizzardOauth.ts",
+      "confidence": "high",
+      "suggestion": "Extract generic OAuth provider abstraction in oauthBase.ts; both files become thin wrappers with constants",
+      "related_files": [
+        "src/lib/utils/oauth.ts",
+        "src/lib/utils/blizzardOauth.ts"
+      ],
+      "evidence": [
+        "Both export requestBearerToken with identical Base64 encoding, URLSearchParams structure, AccessToken return shape",
+        "Both export isTokenExpired with identical implementation",
+        "No shared base function"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "abstraction_fitness",
+      "identifier": "graphql_event_handler_boilerplate",
+      "summary": "4 event handlers share identical request validation, token fetch, error handling - only query template differs",
+      "confidence": "high",
+      "suggestion": "Extract warcraftLogsGraphQLHandler() factory accepting (query, variablesResolver, responseExtractor)",
+      "related_files": [
+        "src/routes/api/cast-events/+server.ts",
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/healing-events/+server.ts",
+        "src/routes/api/boss-events/+server.ts"
+      ],
+      "evidence": [
+        "All 4 handlers: identical fightID/code/startTime/endTime validation",
+        "All 4: identical fetch to warcraftlogs.com/api/v2/client with Bearer auth",
+        "All 4: identical try-catch wrapping; only query and data extraction differ"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "abstraction_fitness",
+      "identifier": "missing_graphql_query_builder",
+      "summary": "GraphQL query construction repeated across handlers; no shared template",
+      "confidence": "medium",
+      "suggestion": "Create src/lib/utils/warcraftlogsGraphQL.ts exporting executeQuery(queryTemplate, variables, responseExtractor)",
+      "related_files": [
+        "src/routes/api/cast-events/+server.ts",
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/player-details/+server.ts",
+        "src/routes/api/character-reports/+server.ts"
+      ],
+      "evidence": [
+        "All queries follow reportData.report() structure",
+        "Each handler manually constructs URLSearchParams and Base64 auth"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "dependency_health",
+      "identifier": "unused_sharp",
+      "summary": "Unused production dependency 'sharp' (^0.34.4) creates bloat with zero code references",
+      "confidence": "high",
+      "suggestion": "Remove 'sharp' from package.json dependencies",
+      "related_files": [
+        "package.json"
+      ],
+      "evidence": [
+        "sharp listed in dependencies",
+        "No imports of 'sharp' found across src/, routes/, lib/, components/"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "dependency_health",
+      "identifier": "unused_internationalized_date",
+      "summary": "Unused production dependency '@internationalized/date' with zero references",
+      "confidence": "high",
+      "suggestion": "Remove from package.json",
+      "related_files": [
+        "package.json"
+      ],
+      "evidence": [
+        "@internationalized/date in dependencies",
+        "No imports found in src/ tree"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "low_level_elegance",
+      "identifier": "nested_loading_state_characters",
+      "summary": "Double setLoading(false) in nested finally blocks in recentCharacters.ts",
+      "confidence": "high",
+      "suggestion": "Remove inner setLoading from addToLocalStorage or consolidate loading management",
+      "related_files": [
+        "src/lib/utils/recentCharacters.ts"
+      ],
+      "evidence": [
+        "add() finally calls setLoading(false)",
+        "addToLocalStorage() also has finally calling setLoading(false)",
+        "Both finallies execute"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "low_level_elegance",
+      "identifier": "nested_loading_state_reports",
+      "summary": "Double setLoading(false) in nested finally in recentReports.ts",
+      "confidence": "high",
+      "suggestion": "Same as nested_loading_state_characters",
+      "related_files": [
+        "src/lib/utils/recentReports.ts"
+      ],
+      "evidence": [
+        "Same pattern as recentCharacters.ts; both finallies execute redundantly"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "low_level_elegance",
+      "identifier": "overlapping_loading_state_cascade",
+      "summary": "Overlapping loading state mutations when add() calls await loadFromAPI()",
+      "confidence": "medium",
+      "suggestion": "Consolidate loading state responsibility",
+      "related_files": [
+        "src/lib/utils/recentCharacters.ts"
+      ],
+      "evidence": [
+        "add() sets loading=true; loadFromAPI independently sets loading=true; both finallies set loading=false"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "low_level_elegance",
+      "identifier": "unused_variable_tier_suffix",
+      "summary": "Dead variable tierSuffix defined but never referenced",
+      "confidence": "high",
+      "suggestion": "Remove the line",
+      "related_files": [
+        "src/routes/rating-calculator/+page.server.ts"
+      ],
+      "evidence": [
+        "const tierSuffix = reward ? ` for ${reward.tier}` : ''; never used"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "mid_level_elegance",
+      "identifier": "api_input_validation_scatter",
+      "summary": "Input validation repeated across all API routes with no centralized middleware",
+      "confidence": "high",
+      "suggestion": "Create shared validation middleware. Define Zod schemas for each endpoint. Wrapper function that validates before route handler.",
+      "related_files": [
+        "src/routes/api/fights/+server.ts",
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/boss-events/+server.ts",
+        "src/routes/api/healing-events/+server.ts",
+        "src/routes/api/death-events/+server.ts",
+        "src/routes/api/player-details/+server.ts",
+        "src/routes/api/current-state/+server.ts",
+        "src/routes/api/recent-characters/+server.ts"
+      ],
+      "evidence": [
+        "Every POST handler: const { fightID, code, ... } = await request.json() then manual type checks",
+        "Pattern repeated verbatim across handlers"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "mid_level_elegance",
+      "identifier": "session_via_http_indirection",
+      "summary": "Session fetched via HTTP fetch in hooks instead of direct function call",
+      "confidence": "high",
+      "suggestion": "Import session logic directly from auth.ts",
+      "related_files": [
+        "src/hooks.server.ts",
+        "src/routes/+layout.server.ts"
+      ],
+      "evidence": [
+        "hooks.server.ts: event.locals.getSession does HTTP fetch to /auth/session",
+        "Adds network round-trip per request"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "mid_level_elegance",
+      "identifier": "module_level_token_cache",
+      "summary": "Token caching via module-level singleton not safe for serverless",
+      "confidence": "high",
+      "suggestion": "Migrate to request-scoped storage",
+      "related_files": [
+        "src/lib/utils/tokenCache.ts"
+      ],
+      "evidence": [
+        "let cachedToken: AccessToken | null = null persists across requests",
+        "Problematic in serverless contexts"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "mid_level_elegance",
+      "identifier": "db_connection_per_request",
+      "summary": "Fresh postgres client per request - workaround for initialization coupling",
+      "confidence": "medium",
+      "suggestion": "Create singleton connection pool initialized at app startup",
+      "related_files": [
+        "src/lib/db/userDb.ts"
+      ],
+      "evidence": [
+        "function getUserDb creates new postgres for every call with pooling disabled (max:1)"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "architectural_change"
+    },
+    {
+      "dimension": "mid_level_elegance",
+      "identifier": "inconsistent_data_translation",
+      "summary": "Some handlers translate external API responses, others pass raw",
+      "confidence": "high",
+      "suggestion": "Define standard response mapping pattern; create translators consistently",
+      "related_files": [
+        "src/routes/api/boss-events/+server.ts",
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/death-events/+server.ts",
+        "src/routes/api/healing-events/+server.ts"
+      ],
+      "evidence": [
+        "boss-events: enrichAbilityEvent maps to typed CastEvent",
+        "damage-events: returns raw seriesData",
+        "death-events: maps to typed DeathEvent",
+        "healing-events: returns raw"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "test_strategy",
+      "identifier": "untested_api_routes",
+      "summary": "All 20+ API route handlers lack test coverage",
+      "confidence": "high",
+      "suggestion": "Create integration tests for each API route using Vitest with MSW",
+      "related_files": [
+        "src/routes/api/character-reports/+server.ts",
+        "src/routes/api/boss-events/+server.ts",
+        "src/routes/api/death-events/+server.ts",
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/current-state/+server.ts",
+        "src/routes/api/blizzard/+server.ts",
+        "src/routes/api/raiderio/+server.ts",
+        "src/routes/api/calculate-runs/+server.ts"
+      ],
+      "evidence": [
+        "character-reports has 200+ lines of complex logic, no tests",
+        "blizzard endpoint untested",
+        "No error path testing"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change"
+    },
+    {
+      "dimension": "test_strategy",
+      "identifier": "untested_auth_critical_paths",
+      "summary": "OAuth token request, caching, refresh logic completely untested",
+      "confidence": "high",
+      "suggestion": "Add unit tests for auth functions covering success/failure/expiration boundaries",
+      "related_files": [
+        "src/lib/utils/blizzardOauth.ts",
+        "src/lib/utils/blizzardTokenCache.ts",
+        "src/lib/utils/oauth.ts",
+        "src/lib/utils/tokenCache.ts"
+      ],
+      "evidence": [
+        "requestBearerToken, isTokenExpired untested",
+        "Auth failures will silently degrade"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "test_strategy",
+      "identifier": "untested_data_fetching_and_transformation",
+      "summary": "Data fetching utilities and transformations lack coverage",
+      "confidence": "high",
+      "suggestion": "Create unit tests for data transformations and calculations",
+      "related_files": [
+        "src/lib/utils/characterData.ts",
+        "src/lib/utils/myWowRoster.ts",
+        "src/lib/utils/recentCharacters.ts",
+        "src/lib/utils/recentReports.ts",
+        "src/lib/utils/keystoneCalculations.ts"
+      ],
+      "evidence": [
+        "keystoneCalculations score formula untested - risk of incorrect game scoring",
+        "myWowRoster fetching untested"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "test_strategy",
+      "identifier": "shallow_dom_tests_break_on_markup",
+      "summary": "Component tests verify DOM presence but not behavioral correctness",
+      "confidence": "high",
+      "suggestion": "Refactor to behavior tests using user-centric assertions",
+      "related_files": [
+        "src/components/__tests__/dungeonCombobox.test.ts",
+        "src/components/__tests__/contentShowcase.test.ts"
+      ],
+      "evidence": [
+        "Tests use getByText('Select a dungeon...') - breaks on label change",
+        "Tests don't verify keyboard navigation, selection, list rendering"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "test_strategy",
+      "identifier": "no_integration_tests_between_api_and_ui",
+      "summary": "API responses never tested with real component rendering",
+      "confidence": "high",
+      "suggestion": "Create integration tests with Vitest + MSW",
+      "related_files": [
+        "src/routes/api",
+        "src/components",
+        "src/lib/utils"
+      ],
+      "evidence": [
+        "Component tests use mock data only",
+        "No end-to-end data flow tests"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "architectural_change"
+    },
+    {
+      "dimension": "test_strategy",
+      "identifier": "zero_error_path_coverage",
+      "summary": "Error handling branches in API routes never tested",
+      "confidence": "high",
+      "suggestion": "Add error path tests with invalid inputs and external service failures",
+      "related_files": [
+        "src/routes/api/character-reports/+server.ts",
+        "src/routes/api/blizzard/+server.ts",
+        "src/lib/utils/myWowRoster.ts"
+      ],
+      "evidence": [
+        "catch blocks return 500, but never verified",
+        "Validation paths untested"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "test_strategy",
+      "identifier": "missing_database_operation_tests",
+      "summary": "All database CRUD operations and queries lack test coverage",
+      "confidence": "high",
+      "suggestion": "Database tests using test database or in-memory",
+      "related_files": [
+        "src/lib/db/users.ts",
+        "src/lib/db/userRecents.ts",
+        "src/lib/db/userCharacters.ts"
+      ],
+      "evidence": [
+        "createOrUpdateUserProfile upsert untested",
+        "updateUserLastSeen never verified"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "test_strategy",
+      "identifier": "no_state_management_tests",
+      "summary": "Svelte stores managing app state untested",
+      "confidence": "high",
+      "suggestion": "Create store tests verifying initial state, mutations, subscriptions",
+      "related_files": [
+        "src/lib/utils/currentState.ts",
+        "src/lib/utils/myWowCharacters.ts",
+        "src/lib/utils/recentCharacters.ts"
+      ],
+      "evidence": [
+        "currentState writable store untested",
+        "No mutation/subscription verification"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "test_strategy",
+      "identifier": "test_layering_incomplete",
+      "summary": "Test pyramid inverted: shallow unit tests only, no integration/e2e",
+      "confidence": "high",
+      "suggestion": "Build bottom-up: unit + integration with MSW + e2e with Playwright",
+      "related_files": [
+        "vitest.config.ts",
+        "src/__tests__"
+      ],
+      "evidence": [
+        "No integration tests, no e2e tests",
+        "Most valuable tests missing"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change"
+    },
+    {
+      "dimension": "api_surface_coherence",
+      "identifier": "error_response_pattern_split",
+      "summary": "Error responses use two distinct patterns: json({error},{status}) and raw new Response(JSON.stringify({error}),{status,headers})",
+      "confidence": "high",
+      "suggestion": "Standardize on json({error: {message,code?}}, {status}) across all endpoints. Remove raw Response usage in favor of SvelteKit json() helper.",
+      "related_files": [
+        "src/routes/api/boss-events/+server.ts",
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/healing-events/+server.ts",
+        "src/routes/api/cast-events/+server.ts",
+        "src/routes/api/death-events/+server.ts",
+        "src/routes/api/fights/+server.ts",
+        "src/routes/api/blizzard/+server.ts",
+        "src/routes/api/raiderio/+server.ts",
+        "src/routes/api/calculate-runs/+server.ts",
+        "src/routes/api/recent-reports/+server.ts",
+        "src/routes/api/character-score/+server.ts"
+      ],
+      "evidence": [
+        "POST endpoints use new Response(JSON.stringify({error},{status:400,headers:{...}}))",
+        "GET endpoints use json({error},{status:400})",
+        "calculate-runs mixes both styles",
+        "browse-logs uses json(errorResponse,{status:500}) while siblings use raw Response"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "api_surface_coherence",
+      "identifier": "parameter_ordering_inconsistency",
+      "summary": "Similar operations accept parameters in different orders: character-score (region,realm,name) vs blizzard/raiderio (name,region,realm)",
+      "confidence": "high",
+      "suggestion": "Adopt single canonical order (region,realm,characterName) across all character-lookup APIs.",
+      "related_files": [
+        "src/routes/api/character-score/+server.ts",
+        "src/routes/api/blizzard/+server.ts",
+        "src/routes/api/raiderio/+server.ts",
+        "src/lib/utils/characterData.ts"
+      ],
+      "evidence": [
+        "character-score extracts (region,realm,name)",
+        "blizzard extracts (name,region,realm)",
+        "raiderio extracts (name,region,realm)"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "api_surface_coherence",
+      "identifier": "response_shape_variance",
+      "summary": "Similar endpoints return data with inconsistent wrapping: direct arrays, {runs:[]}, {seriesData}, {deathEvents}",
+      "confidence": "medium",
+      "suggestion": "Establish documented response shape convention. Wrap as {data: ...} consistently or document explicit unwrapping rule.",
+      "related_files": [
+        "src/routes/api/recent-characters/+server.ts",
+        "src/routes/api/raiderio/+server.ts",
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/death-events/+server.ts"
+      ],
+      "evidence": [
+        "recent-characters returns direct array",
+        "raiderio returns {runs}",
+        "damage-events returns {seriesData}",
+        "death-events returns {deathEvents}"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "api_surface_coherence",
+      "identifier": "missing_error_contracts",
+      "summary": "API routes lack JSDoc documenting failure modes; character-score has 6+ retry chains with undocumented error behavior",
+      "confidence": "high",
+      "suggestion": "Add JSDoc @throws and @returns to all public API routes documenting status codes, error shapes, and retry semantics.",
+      "related_files": [
+        "src/routes/api/character-score/+server.ts",
+        "src/routes/api/boss-events/+server.ts",
+        "src/lib/utils/characterData.ts",
+        "src/lib/utils/myWowRoster.ts"
+      ],
+      "evidence": [
+        "character-score fromBlizzard/fromRaiderIo have undocumented timeout/retry semantics",
+        "boss-events has multiple async fetch points with no JSDoc"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "api_surface_coherence",
+      "identifier": "untyped_any_boundary",
+      "summary": "addUserRecent and similar db functions accept entityData: any and metadata: any at critical boundaries",
+      "confidence": "high",
+      "suggestion": "Define discriminated-union RecentEntity types and replace any with concrete types parameterized over entity kind.",
+      "related_files": [
+        "src/lib/db/userRecents.ts",
+        "src/routes/api/recent-characters/+server.ts",
+        "src/routes/api/recent-reports/+server.ts",
+        "src/routes/api/current-state/+server.ts"
+      ],
+      "evidence": [
+        "addUserRecent(...,entityData: any,...,metadata: any = {})",
+        "recent-characters passes {characterName,realm,region} but no type enforcement",
+        "current-state passes {urlParams,timestamp} with no schema check"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "authorization_consistency",
+      "identifier": "inconsistent_auth_error_responses",
+      "summary": "Protected GET endpoints return HTTP 200 with empty/null data on auth failure; POST endpoints return HTTP 401 with error",
+      "confidence": "high",
+      "suggestion": "Standardize: all protected endpoints return 401 with {error} on auth failure. Centralize via locals.requireUser() helper or hooks middleware.",
+      "related_files": [
+        "src/routes/api/recent-reports/+server.ts",
+        "src/routes/api/recent-characters/+server.ts",
+        "src/routes/api/current-state/+server.ts",
+        "src/routes/api/character-reports/+server.ts",
+        "src/routes/api/my-wow-characters/+server.ts"
+      ],
+      "evidence": [
+        "GET /api/recent-reports returns json([]) on auth check failure",
+        "GET /api/recent-characters returns json([])",
+        "GET /api/current-state returns json(null)",
+        "GET /api/my-wow-characters returns json({characters:[],hasScope:false})",
+        "POST endpoints consistently return 401 with {error:'Not authenticated'}"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "ai_generated_debt",
+      "identifier": "db_boilerplate_err",
+      "summary": "Identical try-catch-console.error pattern repeated across 20+ database functions",
+      "confidence": "high",
+      "suggestion": "Extract common error wrapper: const dbOperation = <T>(fn: () => Promise<T>, opName: string) => { try { return await fn(); } catch(e){ console.error(`DB error: ${opName}`,e); throw e; } }",
+      "related_files": [
+        "src/lib/db/users.ts",
+        "src/lib/db/recents.ts",
+        "src/lib/db/userRecents.ts",
+        "src/lib/db/index.ts"
+      ],
+      "evidence": [
+        "users.ts updateUserLastSeen, createOrUpdateUserProfile, getUserProfile, updateUserPreferences all have identical try{}catch{console.error;throw}",
+        "recents.ts addUserRecent, getUserRecents, removeUserRecent same pattern",
+        "userRecents.ts same across 4 functions"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "ai_generated_debt",
+      "identifier": "docstring_echoes",
+      "summary": "Docstrings restate function names without adding insight",
+      "confidence": "high",
+      "suggestion": "Remove redundant docstrings; keep only those explaining non-obvious behavior",
+      "related_files": [
+        "src/lib/db/users.ts",
+        "src/lib/db/recents.ts",
+        "src/lib/db/userRecents.ts"
+      ],
+      "evidence": [
+        "'/** Update user's last seen timestamp */' above updateUserLastSeen",
+        "'/** Get user profile by ID */' above getUserProfile",
+        "'/** Update user preferences */' above updateUserPreferences"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "ai_generated_debt",
+      "identifier": "generic_comments",
+      "summary": "Generic comments echo code without explaining intent",
+      "confidence": "high",
+      "suggestion": "Replace with WHY explanations or remove",
+      "related_files": [
+        "src/components/keystoneTable.svelte",
+        "src/routes/raid/+page.svelte",
+        "src/routes/raid/logs=[reportcode]/+page.svelte",
+        "src/routes/api/spec-top-players/+server.ts"
+      ],
+      "evidence": [
+        "keystoneTable.svelte '// Process character parameter' repeated 5x",
+        "'// Handle fight filtering'",
+        "'// Handle page change if needed'"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "ai_generated_debt",
+      "identifier": "generic_handler_names",
+      "summary": "Generic 'handle/load' prefix names bury domain context",
+      "confidence": "medium",
+      "suggestion": "Use domain verbs: signInWithBattleNet, selectFight, searchRaidLogs",
+      "related_files": [
+        "src/components/authButton.svelte",
+        "src/routes/raid/+page.svelte",
+        "src/routes/raid/logs=[reportcode]/+page.svelte",
+        "src/components/keystoneTable.svelte"
+      ],
+      "evidence": [
+        "handleSignIn, handleSignOut",
+        "handleFightSelection",
+        "handleLogSearch",
+        "loadCharacterFromUrl"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "ai_generated_debt",
+      "identifier": "field_mapping_wrapper",
+      "summary": "normalizeAccount() pass-through wrapper renames fields with no semantic value",
+      "confidence": "medium",
+      "suggestion": "Inline the mapping at call sites or justify wrapper with validation",
+      "related_files": [
+        "src/lib/db/bnetAccount.ts"
+      ],
+      "evidence": [
+        "normalizeAccount only maps access_token\u2192accessToken etc. without validation"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "ai_generated_debt",
+      "identifier": "component_error_boilerplate",
+      "summary": "Repeated console.error patterns across components without context enrichment",
+      "confidence": "high",
+      "suggestion": "Centralize via toast/notification utility with structured logging",
+      "related_files": [
+        "src/components/authButton.svelte",
+        "src/components/apiForm.svelte",
+        "src/components/keystoneTable.svelte",
+        "src/components/yourReports.svelte",
+        "src/components/myCharacterReports.svelte",
+        "src/routes/raid/logs=[reportcode]/+page.svelte"
+      ],
+      "evidence": [
+        "yourReports/myCharacterReports both: console.error('Failed to load character reports:',error) (identical)",
+        "keystoneTable.svelte has 9+ console.error calls"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "incomplete_migration",
+      "identifier": "dual_database_schemas",
+      "summary": "Two database schemas coexist without clear migration endpoint or deprecation path",
+      "confidence": "high",
+      "suggestion": "Define migration endpoint: pick authoritative schema, consolidate consumers, remove stale config and migration directory, or add explicit deprecation comments",
+      "related_files": [
+        "src/lib/db/schema.ts",
+        "src/lib/db/userSchema.ts",
+        "drizzle/schema.ts",
+        "drizzle.config.ts",
+        "drizzle.user.config.ts"
+      ],
+      "evidence": [
+        "schema.ts (402 LOC) imported by browse-logs, death-hotspots, damage-average, spec-top-players, top-players",
+        "userSchema.ts imported by users.ts, userRecents.ts, userCharacters.ts, bnetAccount.ts",
+        "Two drizzle configs pointing to different schema sources",
+        "Old schema marked orphaned (0 importers) by static analysis but tables have live consumers"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change"
+    },
+    {
+      "dimension": "incomplete_migration",
+      "identifier": "split_database_connections",
+      "summary": "Two database connection functions (getDb and getUserDb) coexist without documented boundary",
+      "confidence": "high",
+      "suggestion": "Consolidate or document the separation explicitly via TSDoc",
+      "related_files": [
+        "src/lib/db/index.ts",
+        "src/lib/db/userDb.ts"
+      ],
+      "evidence": [
+        "index.ts exports getDb() for old-schema routes",
+        "userDb.ts exports getUserDb() for auth modules",
+        "Both create independent postgres connections with similar config"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "incomplete_migration",
+      "identifier": "mixed_authentication_schemas",
+      "summary": "Authentication tables split between simple Auth.js users and extended userProfiles with Battle.net fields",
+      "confidence": "high",
+      "suggestion": "Consolidate user profile tables or document split clearly; update consumers to single source",
+      "related_files": [
+        "src/lib/db/schema.ts",
+        "src/lib/db/userSchema.ts"
+      ],
+      "evidence": [
+        "Old schema users table is simple Auth.js",
+        "userProfiles in new schema has battletag, battlenetAccessToken, battlenetRefreshToken, battlenetExpiresAt",
+        "userRecents exists in both schemas with different shapes"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "incomplete_migration",
+      "identifier": "dual_drizzle_configs",
+      "summary": "Two drizzle configurations maintain parallel migration tracks",
+      "confidence": "high",
+      "suggestion": "Consolidate to single drizzle config; merge migration timelines or document clear separation",
+      "related_files": [
+        "drizzle.config.ts",
+        "drizzle.user.config.ts",
+        "drizzle/",
+        "drizzle/user/"
+      ],
+      "evidence": [
+        "drizzle.config.ts \u2192 schema.ts \u2192 drizzle/",
+        "drizzle.user.config.ts \u2192 userSchema.ts \u2192 drizzle/user/",
+        "Manual drop_global_recents_and_user_favorites.sql suggests consolidation attempt"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change"
+    },
+    {
+      "dimension": "package_organization",
+      "identifier": "flat_components_dir",
+      "summary": "src/components/ has 22+ Svelte files with mixed concerns at root; should split by feature",
+      "confidence": "high",
+      "suggestion": "Split into components/{layout,keystone-calculator,log-analysis,charts,auth,selection}/. Update relative imports in src/routes/.",
+      "related_files": [
+        "src/components/seo.svelte",
+        "src/components/footer.svelte",
+        "src/components/keystoneTable.svelte",
+        "src/components/scoreExplanation.svelte",
+        "src/components/apiForm.svelte",
+        "src/components/bossPreviewChart.svelte",
+        "src/components/damageChart.svelte",
+        "src/components/averageChart.svelte",
+        "src/components/logBrowser.svelte",
+        "src/components/logBrowserResult.svelte"
+      ],
+      "evidence": [
+        "22+ .svelte files at components/ root",
+        "Components cluster by feature but no subdirectory",
+        "seo/footer used across 8 route pages but located alongside feature components"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "package_organization",
+      "identifier": "utils_mixed_concerns",
+      "summary": "src/lib/utils/ aggregates 17 files with divergent concerns",
+      "confidence": "high",
+      "suggestion": "Reorganize into src/lib/{oauth,abilities,character-data,external,recents,calculations,styling}/ subdirectories",
+      "related_files": [
+        "src/lib/utils/blizzardOauth.ts",
+        "src/lib/utils/blizzardTokenCache.ts",
+        "src/lib/utils/tokenCache.ts",
+        "src/lib/utils/oauth.ts",
+        "src/lib/utils/abilityMetadata.ts",
+        "src/lib/utils/abilityName.ts",
+        "src/lib/utils/characterData.ts",
+        "src/lib/utils/myWowCharacters.ts",
+        "src/lib/utils/myWowRoster.ts",
+        "src/lib/utils/warcraftlogs.ts",
+        "src/lib/utils/wowheadTooltips.ts",
+        "src/lib/utils/recentCharacters.ts",
+        "src/lib/utils/recentReports.ts",
+        "src/lib/utils/keystoneCalculations.ts"
+      ],
+      "evidence": [
+        "17 files no subdir",
+        "OAuth bundled with abilities and character utilities",
+        "External API integrations bundled with local utilities"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "package_organization",
+      "identifier": "types_blizzard_grouping",
+      "summary": "Blizzard API types mixed with domain types at src/lib/types/ root",
+      "confidence": "medium",
+      "suggestion": "Create src/lib/types/blizzard/ for external schema bindings; keep domain types at root",
+      "related_files": [
+        "src/lib/types/blizzard.ts",
+        "src/lib/types/blizzardFull.ts",
+        "src/lib/types/blizzardMedia.ts",
+        "src/lib/types/apiTypes.ts",
+        "src/lib/types/bossData.ts",
+        "src/lib/types/classData.ts",
+        "src/lib/types/dungeons.ts",
+        "src/lib/types/realms.ts"
+      ],
+      "evidence": [
+        "4 Blizzard-specific files alongside 4 domain files; no subdirectory boundary"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "initialization_coupling",
+      "identifier": "wcl_token_cache_singleton",
+      "summary": "Module-level let cachedToken in tokenCache.ts persists across requests, sharing tokens between concurrent users",
+      "confidence": "high",
+      "suggestion": "Migrate to request-scoped storage via event.locals or a per-process keyed cache; alternatively, since this is an app credential (not user-specific), document the singleton pattern explicitly and ensure refresh is concurrency-safe",
+      "related_files": [
+        "src/lib/utils/tokenCache.ts",
+        "src/routes/api/boss-events/+server.ts",
+        "src/routes/api/cast-events/+server.ts",
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/healing-events/+server.ts",
+        "src/routes/api/death-events/+server.ts",
+        "src/routes/api/character-reports/+server.ts",
+        "src/routes/api/player-details/+server.ts",
+        "src/routes/api/fights/+server.ts"
+      ],
+      "evidence": [
+        "let cachedToken at module scope",
+        "getValidAccessToken() reads/writes module-level state",
+        "17 API routes share same instance"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "initialization_coupling",
+      "identifier": "blizzard_token_cache_singleton",
+      "summary": "Module-level let cachedToken in blizzardTokenCache.ts persists across requests",
+      "confidence": "high",
+      "suggestion": "Apply same refactor as wcl_token_cache_singleton; extract common factory to avoid duplication",
+      "related_files": [
+        "src/lib/utils/blizzardTokenCache.ts",
+        "src/routes/api/blizzard/+server.ts",
+        "src/routes/api/character-score/+server.ts"
+      ],
+      "evidence": [
+        "Identical pattern to tokenCache.ts",
+        "5 API routes share single cached token instance"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "design_coherence",
+      "identifier": "mixed_responsibilities_recents",
+      "summary": "src/lib/utils/recentCharacters.ts mixes store management, fallback logic, API communication, error handling",
+      "confidence": "high",
+      "suggestion": "Separate store interface from persistence layer: ApiRecentCharactersStore, LocalStorageRecentCharactersStore, composed by component layer",
+      "related_files": [
+        "src/lib/utils/recentCharacters.ts",
+        "src/lib/utils/recentReports.ts"
+      ],
+      "evidence": [
+        "createRecentCharacters exports store interface mixed with imperative add/remove",
+        "loadFromAPI and loadFromLocalStorage two strategies in one module",
+        "silent degradation to localStorage masks failure"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "design_coherence",
+      "identifier": "mixed_responsibilities_character_score",
+      "summary": "/api/character-score combines source prioritization, fetching, timeout, formatting, validation",
+      "confidence": "high",
+      "suggestion": "Extract ScoreSource interface, TimeoutFetch utility, ScoreOrchestrator for fallback chain",
+      "related_files": [
+        "src/routes/api/character-score/+server.ts"
+      ],
+      "evidence": [
+        "fromBlizzard and fromRaiderIO normalize different sources",
+        "fetchWithTimeout duplicates reusable logic",
+        "titleCaseWords inline",
+        "fallback chain mixes orchestration with source-specific logic"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "design_coherence",
+      "identifier": "data_as_code_realms",
+      "summary": "src/lib/types/realms.ts is 572 LOC of hand-coded realm arrays \u2014 should be data-driven",
+      "confidence": "high",
+      "suggestion": "Move to realms.json or fetch from Blizzard GameData API; export typed loader",
+      "related_files": [
+        "src/lib/types/realms.ts"
+      ],
+      "evidence": [
+        "usRealmOptions ~280 entries",
+        "euRealmOptions ~290 entries",
+        "No source attribution to Blizzard API; no versioning"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "design_coherence",
+      "identifier": "auth_any_types",
+      "summary": "src/auth.ts uses 'any' in signIn/session callbacks at security boundary",
+      "confidence": "high",
+      "suggestion": "Import proper Auth.js callback types or define narrowed local types",
+      "related_files": [
+        "src/auth.ts"
+      ],
+      "evidence": [
+        "signIn({user,account}: any)",
+        "session({session,user}: any)"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "design_coherence",
+      "identifier": "magic_numbers_keystone",
+      "summary": "Magic numbers in keystoneCalculations.ts lack semantic externalization",
+      "confidence": "medium",
+      "suggestion": "Define KeystoneScoring config object with semantic names; export from game-constants module",
+      "related_files": [
+        "src/lib/utils/keystoneCalculations.ts"
+      ],
+      "evidence": [
+        "DUNGEON_COUNT=8 hardcoded",
+        "parScore=155 magic number",
+        "affixBreakpoints {5:15,7:15,10:15,12:15} unexplained"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "contract_coherence",
+      "identifier": "duplicate_addUserRecent",
+      "summary": "Two incompatible function exports named addUserRecent",
+      "confidence": "high",
+      "suggestion": "Remove or deprecate recents.ts; consolidate consumers to userRecents.ts",
+      "related_files": [
+        "src/lib/db/recents.ts",
+        "src/lib/db/userRecents.ts",
+        "src/routes/api/recent-characters/+server.ts",
+        "src/routes/api/recent-reports/+server.ts",
+        "src/routes/api/current-state/+server.ts",
+        "src/routes/api/character-reports/+server.ts"
+      ],
+      "evidence": [
+        "recents.ts addUserRecent(userId,item:RecentItem)",
+        "userRecents.ts addUserRecent(userId,type,entityId,entityData,title,subtitle?,metadata={})",
+        "All API routes import from userRecents.js but recents.ts remains"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "contract_coherence",
+      "identifier": "missing_return_type_getUserProfile",
+      "summary": "Exported getUserProfile lacks return type annotation; returns profile[0] | null implicitly",
+      "confidence": "high",
+      "suggestion": "Add Promise<typeof userProfiles.$inferSelect | null> or typed interface",
+      "related_files": [
+        "src/lib/db/users.ts"
+      ],
+      "evidence": [
+        "getUserProfile(userId:string) has no return type"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "contract_coherence",
+      "identifier": "get_functions_with_side_effects",
+      "summary": "getValidAccessToken/getBlizzardValidAccessToken mutate module-level state, violating 'get' naming contract",
+      "confidence": "medium",
+      "suggestion": "Rename to getOrRefreshAccessToken or move state into a typed cache wrapper that signals mutation",
+      "related_files": [
+        "src/lib/utils/tokenCache.ts",
+        "src/lib/utils/blizzardTokenCache.ts"
+      ],
+      "evidence": [
+        "let cachedToken at module scope",
+        "cachedToken = await requestBearerToken(...) inside 'get' function"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "contract_coherence",
+      "identifier": "loose_typing_any_in_public_api",
+      "summary": "Public API uses any/Record<string,any> in core interfaces",
+      "confidence": "high",
+      "suggestion": "Define typed interfaces per entity (CharacterData, ReportData) or Zod schemas",
+      "related_files": [
+        "src/lib/db/userRecents.ts",
+        "src/lib/db/users.ts",
+        "src/lib/db/recents.ts"
+      ],
+      "evidence": [
+        "RecentItem entityData/metadata: any",
+        "updateUserPreferences preferences: Record<string,any>"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "contract_coherence",
+      "identifier": "inconsistent_error_handling_patterns",
+      "summary": "DB functions use inconsistent error contracts: some return [] on error, some null, some throw",
+      "confidence": "high",
+      "suggestion": "Standardize one pattern (throw or null/empty) and document",
+      "related_files": [
+        "src/lib/db/users.ts",
+        "src/lib/db/userRecents.ts",
+        "src/lib/db/bnetAccount.ts"
+      ],
+      "evidence": [
+        "getUserRecents returns [] on error",
+        "getUserProfile returns null",
+        "updateUserPreferences throws",
+        "refreshBattleNetToken returns null"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "logic_clarity",
+      "identifier": "switch_no_default_keystonecalc",
+      "summary": "scoreFormula switch on 'stars' lacks default case; silent fallback to timeAdjustment=0",
+      "confidence": "high",
+      "suggestion": "Add explicit default case or validate stars range before switch",
+      "related_files": [
+        "src/lib/utils/keystoneCalculations.ts"
+      ],
+      "evidence": [
+        "Switch cases for 1,2,3 only; other values implicitly fall through with timeAdjustment=0"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "logic_clarity",
+      "identifier": "duplicate_setloading_recentreports",
+      "summary": "addReport finally and addToLocalStorage finally both call setLoading(false)",
+      "confidence": "high",
+      "suggestion": "Consolidate setLoading(false) to outer addReport finally only",
+      "related_files": [
+        "src/lib/utils/recentReports.ts"
+      ],
+      "evidence": [
+        "Two separate finally blocks both invoke setLoading(false) when API failure triggers localStorage fallback"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "logic_clarity",
+      "identifier": "complex_wheel_zoom_logic",
+      "summary": "shouldStartWheelZoom returns true as default with negation-based exception, intent unclear",
+      "confidence": "medium",
+      "suggestion": "Restructure to express condition positively or split into explicit branches",
+      "related_files": [
+        "src/components/damageChart.svelte"
+      ],
+      "evidence": [
+        "Returns true except when (isZoomingOut && !isChartZoomed); positive case is the exception"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "logic_clarity",
+      "identifier": "falsy_duration_check_browselogs",
+      "summary": "duration_ms ? check treats 0 as falsy",
+      "confidence": "medium",
+      "suggestion": "Use explicit null check: log.duration_ms != null ? ... : 0",
+      "related_files": [
+        "src/routes/api/browse-logs/+server.ts"
+      ],
+      "evidence": [
+        "log.duration_ms ? Math.floor(log.duration_ms/1000) : 0 \u2014 0 short-circuits to 0 confusingly"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "type_safety",
+      "identifier": "unvalidated_json_api_routes",
+      "summary": "11+ API routes destructure await request.json() with type annotations but no runtime schema validation",
+      "confidence": "high",
+      "suggestion": "Adopt zod for request body validation. Define schemas per route and validate before destructuring; return 400 on parse failure",
+      "related_files": [
+        "src/routes/api/cast-events/+server.ts",
+        "src/routes/api/death-events/+server.ts",
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/boss-events/+server.ts",
+        "src/routes/api/healing-events/+server.ts",
+        "src/routes/api/fights/+server.ts",
+        "src/routes/api/current-state/+server.ts",
+        "src/routes/api/recent-reports/+server.ts",
+        "src/routes/api/recent-characters/+server.ts",
+        "src/routes/api/browse-logs/+server.ts",
+        "src/routes/api/player-details/+server.ts"
+      ],
+      "evidence": [
+        "cast-events: const {fightID,code,startTime,endTime} = await request.json() then manual typeof checks",
+        "current-state: const {urlParams}: Omit<CurrentState,'timestamp'> = await request.json() \u2014 annotation cast not validated",
+        "recent-characters: destructured without guard"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "type_safety",
+      "identifier": "external_api_assertions_unvalidated",
+      "summary": "External API responses asserted with type annotation but never validated against declared shape",
+      "confidence": "high",
+      "suggestion": "Define zod schemas for external API responses and parse with .safeParse() before access",
+      "related_files": [
+        "src/routes/api/character-score/+server.ts",
+        "src/lib/db/bnetAccount.ts",
+        "src/routes/api/character-reports/+server.ts"
+      ],
+      "evidence": [
+        "character-score: const data = (await res.json()) as BlizzardMythicKeystoneProfile",
+        "bnetAccount: const payload = (await response.json()) as { access_token?: string; ...}"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "type_safety",
+      "identifier": "record_string_any_database_fields",
+      "summary": "Record<string, any> used for JSONB database fields, losing type safety",
+      "confidence": "high",
+      "suggestion": "Define typed interfaces per JSONB shape; validate with zod at DB layer",
+      "related_files": [
+        "src/lib/db/recents.ts",
+        "src/lib/db/userRecents.ts",
+        "src/lib/db/users.ts",
+        "src/lib/db/userSchema.ts"
+      ],
+      "evidence": [
+        "recents.ts entityData/metadata: Record<string,any>",
+        "userRecents.ts entityData/metadata: any",
+        "users.ts preferences: Record<string,any>",
+        "JSONB columns lack type definitions"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "type_safety",
+      "identifier": "auth_callbacks_any_params",
+      "summary": "Auth.js callbacks receive any parameters",
+      "confidence": "medium",
+      "suggestion": "Import @auth/core/types or define narrowed local types matching Auth.js shapes",
+      "related_files": [
+        "src/auth.ts"
+      ],
+      "evidence": [
+        "signIn({user,account}: any)",
+        "session({session,user}: any)"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "type_safety",
+      "identifier": "type_assertions_on_db_results",
+      "summary": "DB query results cast with 'as' rather than validated",
+      "confidence": "medium",
+      "suggestion": "Use Drizzle inference or zod to validate JSONB fields and enum values before casting",
+      "related_files": [
+        "src/lib/db/recents.ts",
+        "src/lib/db/userCharacters.ts"
+      ],
+      "evidence": [
+        "recents.ts: type: r.type as RecentType",
+        "userCharacters.ts: region: row.region as StoredCharacter['region']"
+      ],
+      "impact_scope": "local",
+      "fix_scope": "multi_file_refactor"
+    }
+  ],
+  "review_quality": {
+    "batch_count": 20,
+    "dimension_coverage": 0.05,
+    "evidence_density": 2.494,
+    "high_score_missing_issue_note": 0
+  },
+  "context_updates": {
+    "cross_module_architecture": {
+      "add": [
+        {
+          "header": "Clean database layering with dual connection factories",
+          "description": "Separation of getDb() for data and getUserDb() for user/auth tables isolates concerns and enables independent schema evolution. Both are properly gated with build-time checks.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Consistent routes to lib dependency direction",
+          "description": "All route handlers correctly import from lib/db, lib/utils, and lib/types without reverse dependencies. Routes never act as importers to lib modules.",
+          "settled": true,
+          "positive": true
+        }
+      ]
+    },
+    "high_level_elegance": {
+      "add": [
+        {
+          "header": "Dead code inertia",
+          "description": "40+ orphaned files accumulate without clear cleanup criteria. No deprecation strategy. Single largest contributor to ownership blur.",
+          "settled": true,
+          "positive": false
+        },
+        {
+          "header": "Utilities as catch-all directory",
+          "description": "src/lib/utils/ grew into a mixed-concern bin: auth, APIs, transformations, calculations, UI helpers.",
+          "settled": true,
+          "positive": false
+        }
+      ]
+    },
+    "convention_outlier": {
+      "add": [
+        {
+          "header": "Consistent camelCase naming discipline",
+          "description": "Codebase uniformly uses camelCase across modules.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Named export pattern dominance",
+          "description": "UI components and utilities use named exports consistently.",
+          "settled": true,
+          "positive": true
+        }
+      ]
+    },
+    "naming_quality": {
+      "add": [
+        {
+          "header": "Strong prefix convention consistency",
+          "description": "Codebase consistently uses clear prefixes (get, is, has, create, build, fetch, handle).",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Domain-specific naming throughout",
+          "description": "Functions use domain terminology rather than generic terms.",
+          "settled": true,
+          "positive": true
+        }
+      ]
+    },
+    "abstraction_fitness": {
+      "add": [
+        {
+          "header": "Utility helpers earn their indirection",
+          "description": "cn(), reveal(), and token cache abstractions have clear value: centralize library choices, add behavior, manage external integrations.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "API route handler duplication limits definition_directness",
+          "description": "4 WarcraftLogs event handlers share identical structure burying real logic in framework ceremony.",
+          "settled": true,
+          "positive": false
+        },
+        {
+          "header": "OAuth provider logic duplicated across modules",
+          "description": "oauth.ts and blizzardOauth.ts both implement identical token logic for different endpoints.",
+          "settled": true,
+          "positive": false
+        }
+      ]
+    },
+    "dependency_health": {
+      "add": [
+        {
+          "header": "Intentional auth layer composition",
+          "description": "@auth/core, @auth/drizzle-adapter, @auth/sveltekit form cohesive auth framework.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Single ORM strategy eliminates duplication",
+          "description": "drizzle-orm is sole ORM choice. Clear separation with postgres driver.",
+          "settled": true,
+          "positive": true
+        }
+      ]
+    },
+    "low_level_elegance": {
+      "add": [
+        {
+          "header": "Strong helper extraction in DB layer",
+          "description": "normalizeAccount, createCharacterRecent functions well-scoped and reused.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Nested loading state mutations in client stores",
+          "description": "recentCharacters and recentReports use nested addToLocalStorage with own finally blocks managing loading state, creating double-sets.",
+          "settled": true,
+          "positive": false
+        }
+      ]
+    }
+  },
+  "review_scope": {
+    "reviewed_files_count": 0,
+    "successful_batch_count": 20,
+    "full_sweep_included": false,
+    "total_files": 97,
+    "imported_dimensions": [
+      "abstraction_fitness",
+      "ai_generated_debt",
+      "api_surface_coherence",
+      "authorization_consistency",
+      "contract_coherence",
+      "convention_outlier",
+      "cross_module_architecture",
+      "dependency_health",
+      "design_coherence",
+      "error_consistency",
+      "high_level_elegance",
+      "incomplete_migration",
+      "initialization_coupling",
+      "logic_clarity",
+      "low_level_elegance",
+      "mid_level_elegance",
+      "naming_quality",
+      "package_organization",
+      "test_strategy",
+      "type_safety"
+    ]
+  },
+  "provenance": {
+    "kind": "blind_review_batch_import",
+    "blind": true,
+    "runner": "dry-run",
+    "run_stamp": "20260426_072540",
+    "created_at": "2026-04-26T07:42:13+00:00",
+    "batch_count": 20,
+    "batch_indexes": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ],
+    "packet_path": "C:\\Users\\mathi\\Desktop\\Mythical\\SvelteKit\\.desloppify\\review_packet_blind.json",
+    "packet_sha256": "bc06085ab406251f50965f676d574a2c6a457fe40be714b95608bec19c2a5630"
+  },
+  "assessment_coverage": {
+    "scored_dimensions": [
+      "naming_quality",
+      "logic_clarity",
+      "type_safety",
+      "contract_coherence",
+      "error_consistency",
+      "abstraction_fitness",
+      "ai_generated_debt",
+      "high_level_elegance",
+      "mid_level_elegance",
+      "low_level_elegance",
+      "cross_module_architecture",
+      "initialization_coupling",
+      "convention_outlier",
+      "dependency_health",
+      "test_strategy",
+      "api_surface_coherence",
+      "authorization_consistency",
+      "incomplete_migration",
+      "package_organization",
+      "design_coherence"
+    ],
+    "selected_dimensions": [
+      "naming_quality",
+      "logic_clarity",
+      "type_safety",
+      "contract_coherence",
+      "error_consistency",
+      "abstraction_fitness",
+      "ai_generated_debt",
+      "high_level_elegance",
+      "mid_level_elegance",
+      "low_level_elegance",
+      "cross_module_architecture",
+      "initialization_coupling",
+      "convention_outlier",
+      "dependency_health",
+      "test_strategy",
+      "api_surface_coherence",
+      "authorization_consistency",
+      "incomplete_migration",
+      "package_organization",
+      "design_coherence"
+    ],
+    "imported_dimensions": [
+      "abstraction_fitness",
+      "ai_generated_debt",
+      "api_surface_coherence",
+      "authorization_consistency",
+      "contract_coherence",
+      "convention_outlier",
+      "cross_module_architecture",
+      "dependency_health",
+      "design_coherence",
+      "error_consistency",
+      "high_level_elegance",
+      "incomplete_migration",
+      "initialization_coupling",
+      "logic_clarity",
+      "low_level_elegance",
+      "mid_level_elegance",
+      "naming_quality",
+      "package_organization",
+      "test_strategy",
+      "type_safety"
+    ],
+    "missing_dimensions": []
+  }
+}

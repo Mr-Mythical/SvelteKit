@@ -1,0 +1,24 @@
+{
+  "created_at": "2026-04-26T11:18:01+00:00",
+  "run_stamp": "20260426_111759",
+  "runner": "dry-run",
+  "parallel": false,
+  "selected_batches": [
+    1
+  ],
+  "successful_batches": [
+    1
+  ],
+  "failed_batches": [],
+  "immutable_packet": "C:\\Users\\mathi\\Desktop\\Mythical\\SvelteKit\\.desloppify\\review_packets\\holistic_packet_20260426_111759.json",
+  "blind_packet": "C:\\Users\\mathi\\Desktop\\Mythical\\SvelteKit\\.desloppify\\review_packet_blind.json",
+  "run_dir": "C:\\Users\\mathi\\Desktop\\Mythical\\SvelteKit\\.desloppify\\subagents\\runs\\20260426_111759",
+  "logs_dir": "C:\\Users\\mathi\\Desktop\\Mythical\\SvelteKit\\.desloppify\\subagents\\runs\\20260426_111759\\logs",
+  "batches": {
+    "1": {
+      "status": "pending",
+      "prompt_path": "C:\\Users\\mathi\\Desktop\\Mythical\\SvelteKit\\.desloppify\\subagents\\runs\\20260426_111759\\prompts\\batch-1.md",
+      "result_path": "C:\\Users\\mathi\\Desktop\\Mythical\\SvelteKit\\.desloppify\\subagents\\runs\\20260426_111759\\results\\batch-1.raw.txt"
+    }
+  }
+}

@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				subtitle = 'Character state';
 			} else if (params.has('runs')) {
 				const runsData = params.get('runs');
-				const runCount = Math.floor((runsData?.length || 0) / 6);
+				const runCount = Math.floor((runsData?.length ?? 0) / 6);
 				title = 'Custom Runs';
 				subtitle = `${runCount} dungeons configured`;
 			} else if (params.has('score')) {

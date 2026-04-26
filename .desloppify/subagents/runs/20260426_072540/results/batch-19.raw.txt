@@ -1,0 +1,74 @@
+{
+  "batch": "logic_clarity",
+  "batch_index": 19,
+  "assessments": {
+    "logic_clarity": 72.5
+  },
+  "dimension_notes": {
+    "logic_clarity": {
+      "evidence": [
+        "scoreFormula switch on stars has cases 1, 2, 3 with no default — implicit fallback to timeAdjustment=0",
+        "recentReports.ts duplicate setLoading(false) when API fallback to localStorage triggers two finally blocks",
+        "shouldStartWheelZoom in damageChart.svelte uses negation-based conditional making intent unclear",
+        "browse-logs duration_ms ? check treats 0 as falsy, potentially skipping legitimate zero-duration",
+        "computeRunLevelsForScore has nested if/else inside loops with multiple early returns",
+        "Most business logic follows direct if/else with early returns; complexity is isolated to edge cases"
+      ],
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high"
+    }
+  },
+  "dimension_judgment": {
+    "logic_clarity": {
+      "dimension_character": "Codebase generally follows direct control flow but contains pockets where logic is implicit (missing defaults), duplicated (callback state changes), or unnecessarily complex (nested negation conditionals). Most functions traceable but require careful reading in calculation paths.",
+      "score_rationale": "Mostly clear control flow. Issues isolated to utility functions and API routes. Missing defaults silently apply zero values; callback patterns inadvertently call state changes twice; conditionals rely on negation."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "logic_clarity",
+      "identifier": "switch_no_default_keystonecalc",
+      "summary": "scoreFormula switch on 'stars' lacks default case; silent fallback to timeAdjustment=0",
+      "related_files": ["src/lib/utils/keystoneCalculations.ts"],
+      "evidence": ["Switch cases for 1,2,3 only; other values implicitly fall through with timeAdjustment=0"],
+      "suggestion": "Add explicit default case or validate stars range before switch",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "logic_clarity",
+      "identifier": "duplicate_setloading_recentreports",
+      "summary": "addReport finally and addToLocalStorage finally both call setLoading(false)",
+      "related_files": ["src/lib/utils/recentReports.ts"],
+      "evidence": ["Two separate finally blocks both invoke setLoading(false) when API failure triggers localStorage fallback"],
+      "suggestion": "Consolidate setLoading(false) to outer addReport finally only",
+      "confidence": "high",
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "logic_clarity",
+      "identifier": "complex_wheel_zoom_logic",
+      "summary": "shouldStartWheelZoom returns true as default with negation-based exception, intent unclear",
+      "related_files": ["src/components/damageChart.svelte"],
+      "evidence": ["Returns true except when (isZoomingOut && !isChartZoomed); positive case is the exception"],
+      "suggestion": "Restructure to express condition positively or split into explicit branches",
+      "confidence": "medium",
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "logic_clarity",
+      "identifier": "falsy_duration_check_browselogs",
+      "summary": "duration_ms ? check treats 0 as falsy",
+      "related_files": ["src/routes/api/browse-logs/+server.ts"],
+      "evidence": ["log.duration_ms ? Math.floor(log.duration_ms/1000) : 0 — 0 short-circuits to 0 confusingly"],
+      "suggestion": "Use explicit null check: log.duration_ms != null ? ... : 0",
+      "confidence": "medium",
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    }
+  ]
+}

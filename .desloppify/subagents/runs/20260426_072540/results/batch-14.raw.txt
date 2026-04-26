@@ -1,0 +1,78 @@
+{
+  "batch": "incomplete_migration",
+  "batch_index": 14,
+  "assessments": {
+    "incomplete_migration": 32.0
+  },
+  "dimension_notes": {
+    "incomplete_migration": {
+      "evidence": [
+        "Two coexisting database schemas: src/lib/db/schema.ts (402 LOC, marked orphaned but actively imported) and src/lib/db/userSchema.ts (new, 6 importers)",
+        "Old schema tables actively imported: healerCompositions and encounters in browse-logs; deathHotspots in death-hotspots; damageAverages in damage-average; specPerformance in spec-top-players and top-players",
+        "Two drizzle configs: drizzle.config.ts (old) and drizzle.user.config.ts (new) both present",
+        "Dual database connections: getDb() (old routes) and getUserDb() (new modules) without clear boundary documentation",
+        "Separate migration histories: drizzle/ (0000-0002) and drizzle/user/ (0000-0003) parallel tracks",
+        "Manual consolidation file: drizzle/migrations/drop_global_recents_and_user_favorites.sql",
+        "Mixed authentication patterns: simple Auth.js users vs extended userProfiles with Battle.net fields",
+        "40+ orphaned API route files",
+        "MIGRATION_PLAN.md exists for Svelte 5+ upgrade (separate, intentional, tracked)"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Old schema remains with no deprecation path; dual configs create maintenance risk; orphaned-but-imported state; no clear migration endpoint"
+    }
+  },
+  "dimension_judgment": {
+    "incomplete_migration": {
+      "dimension_character": "Two competing database schemas with split imports and dual connection patterns indicate a migration started but never completed. Old tables active alongside new ones; old configuration coexists with new; split migration history confirms incomplete transition.",
+      "score_rationale": "Substantial incomplete migration debt. Actively-used old schemas without deprecation, dual configuration files, orphaned-but-imported contradictions indicate migration that lost momentum."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "incomplete_migration",
+      "identifier": "dual_database_schemas",
+      "summary": "Two database schemas coexist without clear migration endpoint or deprecation path",
+      "related_files": ["src/lib/db/schema.ts","src/lib/db/userSchema.ts","drizzle/schema.ts","drizzle.config.ts","drizzle.user.config.ts"],
+      "evidence": ["schema.ts (402 LOC) imported by browse-logs, death-hotspots, damage-average, spec-top-players, top-players","userSchema.ts imported by users.ts, userRecents.ts, userCharacters.ts, bnetAccount.ts","Two drizzle configs pointing to different schema sources","Old schema marked orphaned (0 importers) by static analysis but tables have live consumers"],
+      "suggestion": "Define migration endpoint: pick authoritative schema, consolidate consumers, remove stale config and migration directory, or add explicit deprecation comments",
+      "confidence": "high",
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change"
+    },
+    {
+      "dimension": "incomplete_migration",
+      "identifier": "split_database_connections",
+      "summary": "Two database connection functions (getDb and getUserDb) coexist without documented boundary",
+      "related_files": ["src/lib/db/index.ts","src/lib/db/userDb.ts"],
+      "evidence": ["index.ts exports getDb() for old-schema routes","userDb.ts exports getUserDb() for auth modules","Both create independent postgres connections with similar config"],
+      "suggestion": "Consolidate or document the separation explicitly via TSDoc",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "incomplete_migration",
+      "identifier": "mixed_authentication_schemas",
+      "summary": "Authentication tables split between simple Auth.js users and extended userProfiles with Battle.net fields",
+      "related_files": ["src/lib/db/schema.ts","src/lib/db/userSchema.ts"],
+      "evidence": ["Old schema users table is simple Auth.js","userProfiles in new schema has battletag, battlenetAccessToken, battlenetRefreshToken, battlenetExpiresAt","userRecents exists in both schemas with different shapes"],
+      "suggestion": "Consolidate user profile tables or document split clearly; update consumers to single source",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "incomplete_migration",
+      "identifier": "dual_drizzle_configs",
+      "summary": "Two drizzle configurations maintain parallel migration tracks",
+      "related_files": ["drizzle.config.ts","drizzle.user.config.ts","drizzle/","drizzle/user/"],
+      "evidence": ["drizzle.config.ts → schema.ts → drizzle/","drizzle.user.config.ts → userSchema.ts → drizzle/user/","Manual drop_global_recents_and_user_favorites.sql suggests consolidation attempt"],
+      "suggestion": "Consolidate to single drizzle config; merge migration timelines or document clear separation",
+      "confidence": "high",
+      "impact_scope": "codebase",
+      "fix_scope": "architectural_change"
+    }
+  ]
+}

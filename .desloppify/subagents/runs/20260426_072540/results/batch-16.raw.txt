@@ -1,0 +1,57 @@
+{
+  "batch": "initialization_coupling",
+  "batch_index": 16,
+  "assessments": {
+    "initialization_coupling": 35.0
+  },
+  "dimension_notes": {
+    "initialization_coupling": {
+      "evidence": [
+        "Module-level mutable state in src/lib/utils/tokenCache.ts: let cachedToken: AccessToken | null = null shared across all requests, called by 17 API routes",
+        "Module-level mutable state in src/lib/utils/blizzardTokenCache.ts: identical pattern, called by 5 API routes",
+        "Token cache singleton creates implicit coupling: concurrent requests share cached token, violating request isolation in server environment",
+        "Database initialization correctly per-request: src/lib/db/index.ts and src/lib/db/userDb.ts use getDb()/getUserDb() factories",
+        "Environment variables read inside functions, not at import time",
+        "Auth handler initialization at module scope (src/auth.ts) is framework-standard SvelteKitAuth bootstrap",
+        "Svelte stores in src/stores.ts properly designed (writable per-component)",
+        "No circular initialization dependencies"
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Two separate module-level mutable token caches affecting 22+ downstream consumers create cross-request token leakage and race-condition risk"
+    }
+  },
+  "dimension_judgment": {
+    "initialization_coupling": {
+      "dimension_character": "Initialization coupling problematic due to module-level mutable token caches shared across concurrent requests, violating request isolation. DB and env init correctly implemented with per-request factories. Auth bootstrap is framework-standard.",
+      "score_rationale": "Two clear high-impact defects (module-level state in token caches affecting 22+ routes) partially offset by correct DB initialization and clean dependency graph."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "initialization_coupling",
+      "identifier": "wcl_token_cache_singleton",
+      "summary": "Module-level let cachedToken in tokenCache.ts persists across requests, sharing tokens between concurrent users",
+      "related_files": ["src/lib/utils/tokenCache.ts","src/routes/api/boss-events/+server.ts","src/routes/api/cast-events/+server.ts","src/routes/api/damage-events/+server.ts","src/routes/api/healing-events/+server.ts","src/routes/api/death-events/+server.ts","src/routes/api/character-reports/+server.ts","src/routes/api/player-details/+server.ts","src/routes/api/fights/+server.ts"],
+      "evidence": ["let cachedToken at module scope","getValidAccessToken() reads/writes module-level state","17 API routes share same instance"],
+      "suggestion": "Migrate to request-scoped storage via event.locals or a per-process keyed cache; alternatively, since this is an app credential (not user-specific), document the singleton pattern explicitly and ensure refresh is concurrency-safe",
+      "confidence": "high",
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor",
+      "root_cause_cluster": "module_level_state_sharing"
+    },
+    {
+      "dimension": "initialization_coupling",
+      "identifier": "blizzard_token_cache_singleton",
+      "summary": "Module-level let cachedToken in blizzardTokenCache.ts persists across requests",
+      "related_files": ["src/lib/utils/blizzardTokenCache.ts","src/routes/api/blizzard/+server.ts","src/routes/api/character-score/+server.ts"],
+      "evidence": ["Identical pattern to tokenCache.ts","5 API routes share single cached token instance"],
+      "suggestion": "Apply same refactor as wcl_token_cache_singleton; extract common factory to avoid duplication",
+      "confidence": "high",
+      "impact_scope": "codebase",
+      "fix_scope": "multi_file_refactor",
+      "root_cause_cluster": "module_level_state_sharing"
+    }
+  ]
+}

@@ -92,7 +92,7 @@
 
 			if (response.ok && data.logs) {
 				browsedLogs = data.logs;
-				totalBrowsedLogs = data.total || 0;
+				totalBrowsedLogs = data.total ?? 0;
 			} else {
 				browsedLogs = [];
 				totalBrowsedLogs = 0;

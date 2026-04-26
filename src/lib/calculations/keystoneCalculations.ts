@@ -37,24 +37,27 @@ export const KEYSTONE_SCORING = {
 
 const DUNGEON_COUNT = KEYSTONE_SCORING.DUNGEONS_PER_SEASON;
 
+// Hoisted out of `scoreFormula` so the lookup table is built once at module
+// load instead of being rebuilt on every call. Maps each affix-unlock level
+// to its bonus.
+const AFFIX_BREAKPOINT_BONUS_BY_LEVEL: Record<number, number> = Object.fromEntries(
+	KEYSTONE_SCORING.AFFIX_BREAKPOINT_LEVELS.map((level) => [
+		level,
+		KEYSTONE_SCORING.AFFIX_BREAKPOINT_BONUS
+	])
+);
+
 export function scoreFormula(keyLevel: number, stars: number = 1): number {
 	if (keyLevel < KEYSTONE_SCORING.MIN_TIMED_LEVEL) {
 		return 0;
 	}
 
-	const affixBreakpoints: Record<number, number> = Object.fromEntries(
-		KEYSTONE_SCORING.AFFIX_BREAKPOINT_LEVELS.map((level) => [
-			level,
-			KEYSTONE_SCORING.AFFIX_BREAKPOINT_BONUS
-		])
-	);
-
 	let parScore = KEYSTONE_SCORING.BASE_SCORE_AT_LEVEL_2;
 	for (let current = KEYSTONE_SCORING.MIN_TIMED_LEVEL; current < keyLevel; current++) {
 		parScore += KEYSTONE_SCORING.SCORE_PER_LEVEL_INCREMENT;
 		const nextLevel = current + 1;
-		if (affixBreakpoints[nextLevel]) {
-			parScore += affixBreakpoints[nextLevel];
+		if (AFFIX_BREAKPOINT_BONUS_BY_LEVEL[nextLevel]) {
+			parScore += AFFIX_BREAKPOINT_BONUS_BY_LEVEL[nextLevel];
 		}
 	}
 
