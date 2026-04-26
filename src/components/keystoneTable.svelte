@@ -37,7 +37,8 @@
 	let totalPulseTimeout: ReturnType<typeof setTimeout> | undefined = $state();
 	let listPulseTimeout: ReturnType<typeof setTimeout> | undefined = $state();
 
-	import { fetchRuns, fetchWowSummary } from '$lib/utils/characterData';
+	import { fetchRuns, fetchWowSummary, emptyDungeonRuns } from '$lib/utils/characterData';
+	import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
 	import { recentCharacters } from '$lib/utils/recentCharacters';
 	import RecentCharacters from './recentCharacters.svelte';
 	import { goto, replaceState, afterNavigate } from '$app/navigation';
@@ -83,7 +84,34 @@
 	async function loadCharacterData(name: string, region: string, realm: string) {
 		currentCharacter = { characterName: name, region, realm };
 
-		await Promise.all([fetchRuns(region, realm, name), fetchWowSummary(region, realm, name)]);
+		dungeonData.set({ runs: emptyDungeonRuns() });
+
+		const [runsResult, summaryResult] = await Promise.all([
+			fetchRuns(region, realm, name),
+			fetchWowSummary<BlizzardCharacterFull>(region, realm, name)
+		]);
+
+		if (runsResult.kind === 'ok') {
+			dungeonData.set({ runs: runsResult.runs });
+			toast.success('Runs fetched successfully.');
+			apiPopup.set(false);
+		} else if (runsResult.kind === 'empty') {
+			toast.error('No runs found for this character.');
+			apiPopup.set(false);
+		} else {
+			logClientError('keystoneTable', 'Failed to fetch Raider.io runs', runsResult.status);
+			toast.error('Failed to fetch data from Raider.io');
+		}
+
+		if (summaryResult.kind === 'ok') {
+			wowSummaryStore.set(summaryResult.summary);
+		} else {
+			logClientError(
+				'keystoneTable',
+				'Failed to fetch WoW character summary',
+				summaryResult.status
+			);
+		}
 
 		if ($page.data.session?.user) {
 			try {

@@ -8,7 +8,7 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { apiPopup } from '../stores';
+	import { apiPopup, dungeonData, wowSummaryStore } from '../stores';
 	import RealmCombobox from './realmCombobox.svelte';
 	import {
 		euRealmOptions,
@@ -16,7 +16,8 @@
 		twRealmOptions,
 		usRealmOptions
 	} from '$lib/types/realms';
-	import { fetchRuns, fetchWowSummary } from '$lib/utils/characterData';
+	import { fetchRuns, fetchWowSummary, emptyDungeonRuns } from '$lib/utils/characterData';
+	import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
 	import { recentCharacters } from '$lib/utils/recentCharacters';
 	import { logClientError } from '$lib/utils/clientLog';
 	import { page } from '$app/stores';
@@ -36,8 +37,31 @@
 				toast.success('Character imported successfully!');
 				const { region, realm, characterName } = f.data;
 
-				fetchRuns(region, realm, characterName);
-				fetchWowSummary(region, realm, characterName);
+				dungeonData.set({ runs: emptyDungeonRuns() });
+				fetchRuns(region, realm, characterName).then((runsResult) => {
+					if (runsResult.kind === 'ok') {
+						dungeonData.set({ runs: runsResult.runs });
+						toast.success('Runs fetched successfully.');
+						apiPopup.set(false);
+					} else if (runsResult.kind === 'empty') {
+						toast.error('No runs found for this character.');
+						apiPopup.set(false);
+					} else {
+						logClientError('apiForm', 'Failed to fetch Raider.io runs', runsResult.status);
+						toast.error('Failed to fetch data from Raider.io');
+					}
+				});
+				fetchWowSummary<BlizzardCharacterFull>(region, realm, characterName).then((summaryResult) => {
+					if (summaryResult.kind === 'ok') {
+						wowSummaryStore.set(summaryResult.summary);
+					} else {
+						logClientError(
+							'apiForm',
+							'Failed to fetch WoW character summary',
+							summaryResult.status
+						);
+					}
+				});
 
 				if (typeof window !== 'undefined') {
 					const currentUrl = new URL(window.location.href);

@@ -1,10 +1,15 @@
+import type { SvelteKitAuthConfig } from '@auth/sveltekit';
 import { SvelteKitAuth } from '@auth/sveltekit';
 import BattleNet from '@auth/core/providers/battlenet';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
+import type { Account, Session, User } from '@auth/core/types';
+import type { AdapterUser } from '@auth/core/adapters';
 import { getUserDb } from '$lib/db/userDb.js';
 import { users, accounts, sessions, verificationTokens } from '$lib/db/userSchema.js';
 import { updateUserLastSeen, createOrUpdateUserProfile } from '$lib/db/users.js';
+import { refreshRosterFromBattleNet } from '$lib/utils/myWowRoster';
 import { env } from '$env/dynamic/private';
+import { and, eq } from 'drizzle-orm';
 
 function createAdapter() {
 	const db = getUserDb();
@@ -19,8 +24,8 @@ function createAdapter() {
 	return adapter;
 }
 
-export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
-	const authRequest = {
+export const { handle, signIn, signOut } = SvelteKitAuth(async () => {
+	const authRequest: SvelteKitAuthConfig = {
 		adapter: createAdapter(),
 		providers: [
 			BattleNet({
@@ -30,7 +35,10 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 				checks: ['pkce', 'nonce', 'state'],
 				authorization: {
 					params: {
-						scope: 'openid'
+						// `wow.profile` is required to read the signed-in user's WoW
+						// character roster via `/profile/user/wow`. Existing users
+						// need to sign in again after this change to re-consent.
+						scope: 'openid wow.profile'
 					}
 				}
 			})
@@ -56,10 +64,61 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 			}
 		},
 		callbacks: {
-			async signIn({ user, account, profile }: any) {
+			async signIn({
+				user,
+				account
+			}: {
+				user: User | AdapterUser;
+				account?: Account | null;
+			}) {
+				// DrizzleAdapter's `linkAccount` only runs on the very first sign-in, so
+				// subsequent logins (e.g. after we changed scopes) never update the
+				// stored tokens / scope. Persist the fresh values here so the roster
+				// endpoint sees the newly-granted `wow.profile` scope.
+				if (account?.provider === 'battlenet' && user?.id) {
+					try {
+						const db = getUserDb();
+						await db
+							.update(accounts)
+							.set({
+								access_token: account.access_token ?? null,
+								refresh_token: account.refresh_token ?? null,
+								expires_at: account.expires_at ?? null,
+								token_type: account.token_type ?? 'bearer',
+								scope: account.scope ?? null,
+								id_token: typeof account.id_token === 'string' ? account.id_token : null,
+								session_state:
+									typeof account.session_state === 'string' ? account.session_state : null
+							})
+							.where(
+								and(
+									eq(accounts.userId, user.id),
+									eq(accounts.provider, 'battlenet')
+								)
+							);
+					} catch {}
+
+					// Kick off a roster sync in the background. Don't await - we don't
+					// want the login flow to hang on Blizzard latency. The DB read path
+					// will pick up the new rows once it completes.
+					const userId = user.id;
+					(async () => {
+						try {
+							await refreshRosterFromBattleNet(userId);
+						} catch {
+							console.error('signIn: roster sync failed');
+						}
+					})();
+				}
 				return true;
 			},
-			async session({ session, user }: any) {
+			async session({
+				session,
+				user
+			}: {
+				session: Session;
+				user: AdapterUser;
+			}) {
 				if (user?.id && session) {
 					try {
 						await createOrUpdateUserProfile(user.id, {

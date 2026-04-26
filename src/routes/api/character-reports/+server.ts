@@ -1,9 +1,9 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { getUserRecents, type CharacterRecentData } from '$lib/db/userRecents.js';
-import { getOrRefreshAccessToken } from '$lib/utils/tokenCache';
 import { getMyWowRoster } from '$lib/utils/myWowRoster';
 import { requireSession } from '$lib/server/requireSession';
+import { executeWclQuery, WclQueryError } from '$lib/server/wclGraphQL';
 
 // Returns a flat list of recent WarcraftLogs reports aggregated across the
 // signed-in user's characters, plus a deduplicated list of the
@@ -112,100 +112,62 @@ const GUILD_REPORTS_QUERY = /* GraphQL */ `
 `;
 
 async function fetchReportsForCharacter(
-	token: string,
 	character: { characterName: string; realm: string; region: string }
 ): Promise<WarcraftLogsReport[]> {
 	try {
-		const response = await fetch('https://www.warcraftlogs.com/api/v2/client', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			},
-			body: JSON.stringify({
-				query: CHARACTER_REPORT_QUERY,
-				variables: {
-					name: character.characterName,
-					server: character.realm,
-					region: character.region.toUpperCase()
-				}
-			})
+		const data = await executeWclQuery<{
+			characterData?: {
+				character?: { recentReports?: { data?: WarcraftLogsReport[] } } | null;
+			};
+		}>(CHARACTER_REPORT_QUERY, {
+			name: character.characterName,
+			server: character.realm,
+			region: character.region.toUpperCase()
 		});
 
-		if (!response.ok) return [];
-
-		const payload = (await response.json()) as {
-			errors?: Array<{ message?: string }>;
-			data?: {
-				characterData?: {
-					character?: {
-						recentReports?: { data?: WarcraftLogsReport[] };
-					} | null;
-				};
-			};
-		};
-
-		if (payload.errors?.length) {
-			console.warn('character-reports: WL returned errors for character', character, payload.errors);
-			return [];
-		}
-
-		return payload.data?.characterData?.character?.recentReports?.data ?? [];
+		return data.characterData?.character?.recentReports?.data ?? [];
 	} catch (error) {
-		console.error('character-reports: WL fetch failed for character', character, error);
+		logWclFailure('character', character, error);
 		return [];
 	}
 }
 
 async function fetchReportsForGuild(
-	token: string,
 	guild: { name: string; realm: string; region: string }
 ): Promise<WarcraftLogsReport[]> {
 	const queries = [GUILD_RECENT_REPORTS_QUERY, GUILD_REPORTS_QUERY];
 
 	for (const query of queries) {
 		try {
-			const response = await fetch('https://www.warcraftlogs.com/api/v2/client', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${token}`
-				},
-				body: JSON.stringify({
-					query,
-					variables: {
-						name: guild.name,
-						server: guild.realm,
-						region: guild.region.toUpperCase()
-					}
-				})
+			const data = await executeWclQuery<{
+				reportData?: { reports?: { data?: WarcraftLogsReport[] } };
+			}>(query, {
+				name: guild.name,
+				server: guild.realm,
+				region: guild.region.toUpperCase()
 			});
 
-			if (!response.ok) continue;
-
-			const payload = (await response.json()) as {
-				errors?: Array<{ message?: string }>;
-				data?: {
-					reportData?: {
-						reports?: { data?: WarcraftLogsReport[] };
-					};
-				};
-			};
-
-			if (payload.errors?.length) {
-				console.warn('character-reports: WL returned errors for guild', guild, payload.errors);
-				continue;
-			}
-
-			const reports = payload.data?.reportData?.reports?.data;
+			const reports = data.reportData?.reports?.data;
 			if (reports?.length) return reports;
 		} catch (error) {
-			console.error('character-reports: WL fetch failed for guild', guild, error);
+			logWclFailure('guild', guild, error);
 			return [];
 		}
 	}
 
 	return [];
+}
+
+function logWclFailure(
+	kind: 'character' | 'guild',
+	target: unknown,
+	error: unknown
+): void {
+	if (error instanceof WclQueryError && error.kind === 'graphql') {
+		console.warn(`character-reports: WCL graphql errors for ${kind}`, target, error.detail);
+		return;
+	}
+	console.error(`character-reports: WCL fetch failed for ${kind}`, target, error);
 }
 
 export const GET: RequestHandler = async ({ locals }) => {
@@ -255,11 +217,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 			return json({ reports: [], guilds: [] } satisfies CharacterReportsResponse);
 		}
 
-		const token = await getOrRefreshAccessToken();
-
 		const perCharacter = await Promise.all(
 			merged.map(async (character) => {
-				const reports = await fetchReportsForCharacter(token, character);
+				const reports = await fetchReportsForCharacter(character);
 				return reports.map<CharacterReport>((report) => ({
 					code: report.code,
 					title: report.title || 'Untitled report',
@@ -295,7 +255,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			Array.from(guildTargets.values())
 				.slice(0, 10)
 				.map(async (guild) => {
-					const reports = await fetchReportsForGuild(token, {
+					const reports = await fetchReportsForGuild({
 						name: guild.name,
 						realm: guild.realm,
 						region: guild.region

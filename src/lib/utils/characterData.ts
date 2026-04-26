@@ -1,98 +1,114 @@
-// src/lib/api/characterData.ts
-import { dungeonData, apiPopup, wowSummaryStore } from '../../stores';
+// src/lib/utils/characterData.ts
+//
+// Framework-agnostic data fetchers for character data. These return raw,
+// normalized data objects and *do not* import any Svelte stores or UI helpers
+// (toast / popup state). Callers in the component layer wire the result into
+// stores or UI feedback as appropriate.
 import { dungeonCount } from '$lib/types/dungeons';
 import type { RaiderIoRun } from '$lib/types/apiTypes';
-import { toast } from 'svelte-sonner';
 
-function resetRuns() {
-	const emptyRuns = Array.from({ length: dungeonCount }, () => ({
-		dungeon: '',
-		short_name: '',
-		mythic_level: 0,
-		par_time_ms: 0,
-		num_keystone_upgrades: 0,
-		score: 0
-	}));
-	dungeonData.set({ runs: emptyRuns });
+export interface DungeonRun {
+	dungeon: string;
+	short_name: string;
+	mythic_level: number;
+	par_time_ms: number;
+	num_keystone_upgrades: number;
+	score: number;
 }
 
+export const EMPTY_DUNGEON_RUN: DungeonRun = {
+	dungeon: '',
+	short_name: '',
+	mythic_level: 0,
+	par_time_ms: 0,
+	num_keystone_upgrades: 0,
+	score: 0
+};
+
+export function emptyDungeonRuns(): DungeonRun[] {
+	return Array.from({ length: dungeonCount }, () => ({ ...EMPTY_DUNGEON_RUN }));
+}
+
+export type FetchRunsResult =
+	| { kind: 'ok'; runs: DungeonRun[] }
+	| { kind: 'empty' }
+	| { kind: 'error'; status: number };
+
 /**
- * Fetches Raider.io mythic plus runs for a character and updates the dungeonData store.
- */
-/**
- * Fetches Mythic+ runs from `/api/raiderio` and updates `dungeonData`.
- * Toasts success/failure to the user; never throws (network errors are
- * caught implicitly by the surrounding fetch and surfaced via toast +
- * `console.error`).
+ * Fetch Mythic+ runs from `/api/raiderio` for the given character.
+ * Returns a discriminated union — the caller decides whether to toast or
+ * update a store. Pure (other than the fetch itself) and store-free.
  *
- * @throws Never — caller does not need a try/catch.
+ * @throws Never — network failures are surfaced as `{ kind: 'error', status: 0 }`.
  */
 export async function fetchRuns(
 	region: string,
 	realm: string,
 	characterName: string
-): Promise<void> {
-	resetRuns();
-
+): Promise<FetchRunsResult> {
 	const url =
 		`/api/raiderio?name=${encodeURIComponent(characterName)}` +
 		`&region=${encodeURIComponent(region)}` +
 		`&realm=${encodeURIComponent(realm)}`;
 
-	const response = await fetch(url);
-
-	if (response.ok) {
-		const data = await response.json();
-		if (data.runs?.length) {
-			const mappedRuns = data.runs.slice(0, dungeonCount).map((run: RaiderIoRun) => ({
-				dungeon: run.dungeon,
-				short_name: run.short_name || '',
-				mythic_level: run.mythic_level || 0,
-				par_time_ms: run.par_time_ms || 0,
-				num_keystone_upgrades: run.num_keystone_upgrades || 0,
-				score: run.score || 0
-			}));
-			while (mappedRuns.length < dungeonCount) {
-				mappedRuns.push({
-					dungeon: '',
-					short_name: '',
-					mythic_level: 0,
-					par_time_ms: 0,
-					num_keystone_upgrades: 0,
-					score: 0
-				});
-			}
-			dungeonData.set({ runs: mappedRuns });
-			toast.success('Runs fetched successfully.');
-		} else {
-			toast.error('No runs found for this character.');
-		}
-		apiPopup.set(false);
-	} else {
-		console.error('Error fetching Raider.io data:', response.status);
-		toast.error('Failed to fetch data from Raider.io');
+	let response: Response;
+	try {
+		response = await fetch(url);
+	} catch {
+		return { kind: 'error', status: 0 };
 	}
+
+	if (!response.ok) {
+		return { kind: 'error', status: response.status };
+	}
+
+	const data = (await response.json()) as { runs?: RaiderIoRun[] };
+	if (!data.runs?.length) return { kind: 'empty' };
+
+	const mappedRuns: DungeonRun[] = data.runs.slice(0, dungeonCount).map((run) => ({
+		dungeon: run.dungeon,
+		short_name: run.short_name || '',
+		mythic_level: run.mythic_level || 0,
+		par_time_ms: run.par_time_ms || 0,
+		num_keystone_upgrades: run.num_keystone_upgrades || 0,
+		score: run.score || 0
+	}));
+
+	while (mappedRuns.length < dungeonCount) {
+		mappedRuns.push({ ...EMPTY_DUNGEON_RUN });
+	}
+
+	return { kind: 'ok', runs: mappedRuns };
 }
 
+export type FetchWowSummaryResult<T = unknown> =
+	| { kind: 'ok'; summary: T }
+	| { kind: 'error'; status: number };
+
 /**
- * Fetches Blizzard WoW character summary (including media) and updates
- * `wowSummaryStore`. Failures are logged to console only — the store is left
- * untouched so the UI keeps showing whatever it had.
+ * Fetch Blizzard WoW character summary from `/api/blizzard`. Returns the
+ * raw summary payload on success; callers decide whether to update a store.
  *
- * @throws Never — non-OK responses are silently dropped.
+ * @throws Never — non-OK responses are surfaced as `{ kind: 'error' }`.
  */
-export async function fetchWowSummary(
+export async function fetchWowSummary<T = unknown>(
 	region: string,
 	realm: string,
 	characterName: string
-): Promise<void> {
+): Promise<FetchWowSummaryResult<T>> {
 	const url = `/api/blizzard?name=${encodeURIComponent(characterName)}&region=${encodeURIComponent(region)}&realm=${encodeURIComponent(realm)}`;
-	const response = await fetch(url);
 
-	if (response.ok) {
-		const summaryData = await response.json();
-		wowSummaryStore.set(summaryData);
-	} else {
-		console.error('Error fetching WoW character summary:', response.status);
+	let response: Response;
+	try {
+		response = await fetch(url);
+	} catch {
+		return { kind: 'error', status: 0 };
 	}
+
+	if (!response.ok) {
+		return { kind: 'error', status: response.status };
+	}
+
+	const summary = (await response.json()) as T;
+	return { kind: 'ok', summary };
 }
