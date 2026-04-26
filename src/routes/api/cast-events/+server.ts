@@ -1,9 +1,7 @@
 import type { RequestHandler } from './$types';
 import type { CastEvent } from '$lib/types/apiTypes';
 import { classSpecAbilities } from '$lib/types/classData';
-import { apiError, apiOk } from '$lib/server/apiResponses';
-import { executeWclQuery, parseFightRequestBody, WclQueryError } from '$lib/server/wclGraphQL';
-import { logServerError } from '$lib/server/logger';
+import { handleWclFightRequest } from '$lib/server/wclGraphQL';
 
 const HEALER_SPECS = '"Holy", "Restoration", "Preservation", "Discipline", "Mistweaver"';
 
@@ -47,33 +45,22 @@ interface CastEventsData {
 	};
 }
 
-export const POST: RequestHandler = async ({ request }) => {
-	const body = parseFightRequestBody(await request.json().catch(() => null));
-	if (!body) return apiError('Invalid or missing fight ID and/or report code.', 400);
-
+export const POST: RequestHandler = ({ request }) => {
 	const abilityIDs = collectHealerAbilityIds();
 	const filter =
 		abilityIDs.length > 0
 			? `ability.id IN (${abilityIDs.join(', ')}) AND source.spec IN (${HEALER_SPECS})`
 			: '';
 
-	try {
-		const data = await executeWclQuery<CastEventsData>(QUERY, {
-			code: body.code,
-			fightID: body.fightID,
-			start: body.startTime,
-			end: body.endTime,
-			filter
-		});
-		const castEvents = data.reportData.report.events.data.filter(
-			(event) => event.type === 'cast'
-		) as unknown as CastEvent[];
-		return apiOk({ castEvents });
-	} catch (error) {
-		if (error instanceof WclQueryError) {
-			return apiError('Failed to fetch cast events from API.');
-		}
-		logServerError('api/cast-events', 'request failed', error);
-		return apiError('Internal Server Error.');
-	}
+	return handleWclFightRequest<CastEventsData, { castEvents: CastEvent[] }>(request, {
+		query: QUERY,
+		operation: 'api/cast-events',
+		fetchErrorMessage: 'Failed to fetch cast events from API.',
+		extraVariables: () => ({ filter }),
+		transform: (data) => ({
+			castEvents: data.reportData.report.events.data.filter(
+				(event) => event.type === 'cast'
+			) as unknown as CastEvent[]
+		})
+	});
 };

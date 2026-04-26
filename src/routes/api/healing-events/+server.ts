@@ -1,8 +1,6 @@
 import type { RequestHandler } from './$types';
 import type { Series } from '$lib/types/apiTypes';
-import { apiError, apiOk } from '$lib/server/apiResponses';
-import { executeWclQuery, parseFightRequestBody, WclQueryError } from '$lib/server/wclGraphQL';
-import { logServerError } from '$lib/server/logger';
+import { handleWclFightRequest } from '$lib/server/wclGraphQL';
 
 const QUERY = `
 	query GetHealingSeries($code: String!, $fightID: Int!, $start: Float!, $end: Float!) {
@@ -26,23 +24,10 @@ interface HealingGraphData {
 	};
 }
 
-export const POST: RequestHandler = async ({ request }) => {
-	const body = parseFightRequestBody(await request.json().catch(() => null));
-	if (!body) return apiError('Invalid or missing fight ID and/or report code.', 400);
-
-	try {
-		const data = await executeWclQuery<HealingGraphData>(QUERY, {
-			code: body.code,
-			fightID: body.fightID,
-			start: body.startTime,
-			end: body.endTime
-		});
-		return apiOk({ seriesData: data.reportData.report.graph.data.series });
-	} catch (error) {
-		if (error instanceof WclQueryError) {
-			return apiError('Failed to fetch healing data from API.');
-		}
-		logServerError('api/healing-events', 'request failed', error);
-		return apiError('Internal Server Error.');
-	}
-};
+export const POST: RequestHandler = ({ request }) =>
+	handleWclFightRequest<HealingGraphData, { seriesData: Series[] }>(request, {
+		query: QUERY,
+		operation: 'api/healing-events',
+		fetchErrorMessage: 'Failed to fetch healing data from API.',
+		transform: (data) => ({ seriesData: data.reportData.report.graph.data.series })
+	});

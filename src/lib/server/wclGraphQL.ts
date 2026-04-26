@@ -1,4 +1,6 @@
 import { getOrRefreshAccessToken } from '$lib/auth/tokenCache';
+import { apiError, apiOk } from '$lib/server/apiResponses';
+import { logServerError } from '$lib/server/logger';
 
 export const WCL_GRAPHQL_URL = 'https://www.warcraftlogs.com/api/v2/client';
 
@@ -75,4 +77,45 @@ export function parseFightRequestBody(body: unknown): FightRequestBody | null {
 		return null;
 	}
 	return { fightID, code, startTime, endTime };
+}
+
+/**
+ * Handle a per-fight WCL POST endpoint end-to-end: parse + validate the body,
+ * run the GraphQL query with `extraVariables` merged in, transform the result,
+ * and translate any failure into the standard `{error}` JSON shape.
+ *
+ * Centralises what every event/graph handler had inlined: 400 on bad body,
+ * 502 on WCL transport/GraphQL error, 500 on anything else.
+ */
+export async function handleWclFightRequest<TData, TBody>(
+	request: Request,
+	options: {
+		query: string;
+		operation: string;
+		fetchErrorMessage: string;
+		transform: (data: TData, body: FightRequestBody) => TBody | Promise<TBody>;
+		extraVariables?: (body: FightRequestBody) => Record<string, unknown>;
+	}
+): Promise<Response> {
+	const body = parseFightRequestBody(await request.json().catch(() => null));
+	if (!body) return apiError('Invalid or missing fight ID and/or report code.', 400);
+
+	try {
+		const variables = {
+			code: body.code,
+			fightID: body.fightID,
+			start: body.startTime,
+			end: body.endTime,
+			...(options.extraVariables?.(body) ?? {})
+		};
+		const data = await executeWclQuery<TData>(options.query, variables);
+		const result = await options.transform(data, body);
+		return apiOk(result);
+	} catch (error) {
+		if (error instanceof WclQueryError) {
+			return apiError(options.fetchErrorMessage, 502);
+		}
+		logServerError(options.operation, 'request failed', error);
+		return apiError('Internal Server Error.');
+	}
 }
