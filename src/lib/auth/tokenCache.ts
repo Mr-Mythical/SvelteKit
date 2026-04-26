@@ -1,25 +1,18 @@
 import { env } from '$env/dynamic/private';
-import type { AccessToken } from '$lib/types/apiTypes';
-import { requestBearerToken, isTokenExpired } from './oauth';
-
-let cachedToken: AccessToken | null = null;
+import { requestBearerToken } from './oauth';
+import { createTokenCache } from './tokenCacheBase';
 
 /**
- * Retrieves a valid Access Token, refreshing it if necessary.
- * @returns A promise that resolves to a valid Access Token.
+ * In-memory cached Warcraft Logs access token. See `tokenCacheBase.ts` for
+ * the shared factory; this module just supplies WCL-specific config.
  */
-export async function getOrRefreshAccessToken(): Promise<string> {
-	if (cachedToken && !isTokenExpired(cachedToken)) {
-		return cachedToken.token;
-	}
-
-	const clientId = env.WCL_CLIENT_ID;
-	const clientSecret = env.WCL_CLIENT_SECRET;
-
-	if (!clientId || !clientSecret) {
-		throw new Error('Client ID or Client Secret is not configured.');
-	}
-
-	cachedToken = await requestBearerToken(clientId, clientSecret);
-	return cachedToken.token;
-}
+export const getOrRefreshAccessToken = createTokenCache({
+	providerLabel: 'WCL',
+	readCredentials: () => {
+		const clientId = env.WCL_CLIENT_ID;
+		const clientSecret = env.WCL_CLIENT_SECRET;
+		if (!clientId || !clientSecret) return null;
+		return { clientId, clientSecret };
+	},
+	requestToken: requestBearerToken
+});

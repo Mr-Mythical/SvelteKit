@@ -1,25 +1,18 @@
 import { env } from '$env/dynamic/private';
-import type { AccessToken } from '$lib/types/apiTypes';
-import { requestBlizzardBearerToken, isTokenExpired } from './blizzardOauth';
-
-let cachedToken: AccessToken | null = null;
+import { requestBlizzardBearerToken } from './blizzardOauth';
+import { createTokenCache } from './tokenCacheBase';
 
 /**
- * Retrieves a valid Access Token, refreshing it if necessary.
- * @returns A promise that resolves to a valid Access Token.
+ * In-memory cached Battle.net access token. See `tokenCacheBase.ts` for the
+ * shared factory; this module just supplies Blizzard-specific config.
  */
-export async function getOrRefreshBlizzardAccessToken(): Promise<string> {
-	if (cachedToken && !isTokenExpired(cachedToken)) {
-		return cachedToken.token;
-	}
-
-	const clientId = env.BLIZZARD_CLIENT_ID;
-	const clientSecret = env.BLIZZARD_CLIENT_SECRET;
-
-	if (!clientId || !clientSecret) {
-		throw new Error('Blizzard Client ID or Client Secret is not configured.');
-	}
-
-	cachedToken = await requestBlizzardBearerToken(clientId, clientSecret);
-	return cachedToken.token;
-}
+export const getOrRefreshBlizzardAccessToken = createTokenCache({
+	providerLabel: 'Blizzard',
+	readCredentials: () => {
+		const clientId = env.BLIZZARD_CLIENT_ID;
+		const clientSecret = env.BLIZZARD_CLIENT_SECRET;
+		if (!clientId || !clientSecret) return null;
+		return { clientId, clientSecret };
+	},
+	requestToken: requestBlizzardBearerToken
+});
