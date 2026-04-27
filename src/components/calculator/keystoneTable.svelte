@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { run as run_1 } from 'svelte/legacy';
+
 
 	import DungeonCombobox from '../combobox/dungeonCombobox.svelte';
 	import * as Table from '$lib/components/ui/table';
@@ -42,7 +42,7 @@
 	import { recentCharacters } from '$lib/stores/recentCharacters';
 	import RecentCharacters from '../raid/recentCharacters.svelte';
 	import { goto, replaceState, afterNavigate } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { currentState } from '$lib/data/currentState';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -70,7 +70,7 @@
 		try {
 			replaceState(currentUrl.pathname + currentUrl.search, {});
 
-			if ($page.data.session?.user) {
+			if (page.data.session?.user) {
 				const newUrlParams = currentUrl.search.substring(1);
 				if (newUrlParams.length > 0) {
 					currentState.save(newUrlParams);
@@ -113,7 +113,7 @@
 			);
 		}
 
-		if ($page.data.session?.user) {
+		if (page.data.session?.user) {
 			try {
 				await recentCharacters.add({ characterName: name, region, realm });
 			} catch (error) {
@@ -122,9 +122,9 @@
 		}
 	} // Helper function to get character info from URL
 	function getCharacterFromUrl(): string {
-		const name = $page.url.searchParams.get('char');
-		const region = $page.url.searchParams.get('region');
-		const realm = $page.url.searchParams.get('realm');
+		const name = page.url.searchParams.get('char');
+		const region = page.url.searchParams.get('region');
+		const realm = page.url.searchParams.get('realm');
 
 		if (name && region && realm) {
 			return `${name}-${region}-${realm}`;
@@ -133,9 +133,9 @@
 	}
 
 	async function loadCharacterFromUrl() {
-		const name = $page.url.searchParams.get('char');
-		const region = $page.url.searchParams.get('region');
-		const realm = $page.url.searchParams.get('realm');
+		const name = page.url.searchParams.get('char');
+		const region = page.url.searchParams.get('region');
+		const realm = page.url.searchParams.get('realm');
 
 		if (name && region && realm) {
 			await loadCharacterData(name, region, realm);
@@ -144,7 +144,7 @@
 
 	// Load score goal from URL parameters
 	function loadScoreFromUrl() {
-		const scoreParam = $page.url.searchParams.get('score');
+		const scoreParam = page.url.searchParams.get('score');
 		if (scoreParam) {
 			const score = parseInt(scoreParam);
 			if (!isNaN(score) && score > 0) {
@@ -269,7 +269,7 @@
 
 	function loadFromUrl() {
 		try {
-			const runsParam = $page.url.searchParams.get('runs');
+			const runsParam = page.url.searchParams.get('runs');
 			if (runsParam) {
 				loadRunsFromParam(runsParam);
 			}
@@ -385,8 +385,8 @@
 	onMount(async () => {
 		// First, check for URL parameters (takes priority)
 		const urlChar = getCharacterFromUrl();
-		const urlRuns = $page.url.searchParams.get('runs');
-		const urlScore = $page.url.searchParams.get('score');
+		const urlRuns = page.url.searchParams.get('runs');
+		const urlScore = page.url.searchParams.get('score');
 
 		// If we have URL parameters, load them instead of saved state
 		if (urlChar || urlRuns || urlScore) {
@@ -411,7 +411,7 @@
 			return;
 		}
 
-		if ($page.data.session?.user) {
+		if (page.data.session?.user) {
 			try {
 				const savedState = await currentState.load();
 				if (savedState) {
@@ -662,7 +662,7 @@
 
 			// Persist a cleared state so saved-state restore doesn't resurrect
 			// previous runs/character after reset.
-			if ($page.data.session?.user) {
+			if (page.data.session?.user) {
 				currentState.save('');
 			}
 
@@ -712,15 +712,15 @@
 		isCalculatingFromScore = false;
 		updateUrlWithScore(target);
 	}
-	run_1(() => {
-		const isAuthenticated = !!$page.data.session?.user;
+	$effect(() => {
+		const isAuthenticated = !!page.data.session?.user;
 		const justSignedIn = !previousAuthState && isAuthenticated && isMounted && !hasLoadedSavedState;
 
 		if (justSignedIn) {
 			// Check if we have URL parameters - if so, don't load saved state
 			const urlChar = getCharacterFromUrl();
-			const urlRuns = $page.url.searchParams.get('runs');
-			const urlScore = $page.url.searchParams.get('score');
+			const urlRuns = page.url.searchParams.get('runs');
+			const urlScore = page.url.searchParams.get('score');
 
 			if (!urlChar && !urlRuns && !urlScore) {
 				// No URL parameters, load saved state

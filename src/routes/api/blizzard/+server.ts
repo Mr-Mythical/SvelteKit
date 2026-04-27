@@ -2,7 +2,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { getOrRefreshBlizzardAccessToken } from '$lib/auth/blizzardTokenCache';
 import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
 import { apiError, apiOk } from '$lib/server/apiResponses';
-import { logServerError } from '$lib/server/logger';
+import { handleApiError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const name = url.searchParams.get('name');
@@ -43,7 +43,6 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		return apiOk(combinedData);
 	} catch (error) {
-		logServerError('api/blizzard', 'request failed', error);
-		return apiError('Failed to fetch character data from Blizzard.', 502);
+		return handleApiError('api/blizzard', error, 'Failed to fetch character data from Blizzard.', 502);
 	}
 };

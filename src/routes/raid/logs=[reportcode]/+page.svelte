@@ -18,7 +18,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { recentReports as recentReportsStore } from '$lib/stores/recentReports';
 	import { goto } from '$app/navigation';
-	import { page as pageStore } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -56,10 +56,10 @@
 	let initialFightIdFromUrl: number | null = null;
 
 	onMount(async () => {
-		const params = $pageStore.params as { reportcode?: string };
+		const params = page.params as { reportcode?: string };
 		initialReportCodeFromUrl = params?.reportcode ?? null;
 
-		const urlParams = $pageStore.url.searchParams;
+		const urlParams = page.url.searchParams;
 		const fightIdParam = urlParams.get('fight');
 		initialFightIdFromUrl = fightIdParam ? parseInt(fightIdParam, 10) : null;
 
@@ -105,7 +105,7 @@
 	// URL management functions
 	function updateUrlParams(reportCode: string | null = null, fightId: number | null = null) {
 		const url = new URL(window.location.href);
-		const code = reportCode ?? ($pageStore.params as { reportcode?: string }).reportcode ?? '';
+		const code = reportCode ?? (page.params as { reportcode?: string }).reportcode ?? '';
 
 		if (fightId) {
 			url.searchParams.set('fight', fightId.toString());

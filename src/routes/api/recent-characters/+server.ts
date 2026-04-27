@@ -4,9 +4,10 @@ import {
 	addUserRecent,
 	type CharacterRecentData
 } from '$lib/db/userRecents.js';
-import { apiError, apiOk } from '$lib/server/apiResponses';
+import { apiOk } from '$lib/server/apiResponses';
 import { requireSession } from '$lib/server/requireSession';
-import { logServerError } from '$lib/server/logger';
+import { handleApiError } from '$lib/server/logger';
+import { parseJsonBody, parseRecentCharacterBody } from '$lib/server/requestBody';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const auth = await requireSession(locals);
@@ -27,8 +28,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		return apiOk(characters);
 	} catch (error) {
-		logServerError('api/recent-characters', 'fetch failed', error);
-		return apiError('Failed to fetch recent characters');
+		return handleApiError('api/recent-characters', error, 'Failed to fetch recent characters');
 	}
 };
 
@@ -37,7 +37,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if ('response' in auth) return auth.response;
 
 	try {
-		const { characterName, realm, region } = await request.json();
+		const parsed = await parseJsonBody(request, parseRecentCharacterBody);
+		if (parsed instanceof Response) return parsed;
+		const { characterName, realm, region } = parsed;
 
 		await addUserRecent(
 			auth.session.user.id,
@@ -59,7 +61,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return apiOk({ success: true });
 	} catch (error) {
-		logServerError('api/recent-characters', 'add failed', error);
-		return apiError('Failed to add character');
+		return handleApiError('api/recent-characters', error, 'Failed to add character');
 	}
 };

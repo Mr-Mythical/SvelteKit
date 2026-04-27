@@ -4,9 +4,10 @@ import {
 	addUserRecent,
 	type CurrentStateRecentData
 } from '$lib/db/userRecents.js';
-import { apiError, apiOk } from '$lib/server/apiResponses';
+import { apiOk } from '$lib/server/apiResponses';
 import { requireSession } from '$lib/server/requireSession';
-import { logServerError } from '$lib/server/logger';
+import { handleApiError } from '$lib/server/logger';
+import { parseJsonBody, parseCurrentStateBody } from '$lib/server/requestBody';
 
 export interface CurrentState {
 	urlParams: string;
@@ -36,8 +37,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			timestamp: latestState.entityData.timestamp
 		});
 	} catch (error) {
-		logServerError('api/current-state', 'fetch failed', error);
-		return apiError('Failed to fetch current state');
+		return handleApiError('api/current-state', error, 'Failed to fetch current state');
 	}
 };
 
@@ -47,7 +47,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if ('response' in auth) return auth.response;
 
 	try {
-		const { urlParams }: Omit<CurrentState, 'timestamp'> = await request.json();
+		const parsed = await parseJsonBody(request, parseCurrentStateBody);
+		if (parsed instanceof Response) return parsed;
+		const { urlParams } = parsed;
 
 		const timestamp = Date.now();
 
@@ -87,7 +89,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return apiOk({ success: true, timestamp });
 	} catch (error) {
-		logServerError('api/current-state', 'save failed', error);
-		return apiError('Failed to save state');
+		return handleApiError('api/current-state', error, 'Failed to save state');
 	}
 };

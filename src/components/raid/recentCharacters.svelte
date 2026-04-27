@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { recentCharacters, type RecentCharacter } from '$lib/stores/recentCharacters';
 	import { onMount, onDestroy } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import {
 		usRealmOptions,
 		euRealmOptions,
@@ -23,7 +23,7 @@
 		isLoading = value;
 	});
 
-	let session = $derived($page.data.session);
+	let session = $derived(page.data.session);
 
 	onMount(async () => {
 		// Initialize by loading from API

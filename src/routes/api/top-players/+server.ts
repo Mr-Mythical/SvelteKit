@@ -46,7 +46,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		const TANK_SPECS = ['Blood', 'Protection', 'Brewmaster', 'Guardian', 'Vengeance'];
 
 		let roleSpecs: string[] = [];
-		let orderByColumn = metric === 'hps' ? specPerformance.hps : specPerformance.dps;
+		const orderByColumn = metric === 'hps' ? specPerformance.hps : specPerformance.dps;
 
 		switch (role) {
 			case 'healer':
@@ -61,71 +61,38 @@ export const GET: RequestHandler = async ({ url }) => {
 				return apiError('Invalid role', 400);
 		}
 
-		let query;
+		// DPS leaderboard is high-volume; cap at 2000 rows for the dedup pass.
+		// Tank/healer pools are small enough that we can scan the full set.
+		const baseQuery = database
+			.select({
+				id: specPerformance.id,
+				player_name: specPerformance.playerName,
+				spec_icon: specPerformance.specIcon,
+				dps: specPerformance.dps,
+				hps: specPerformance.hps,
+				damage_done: specPerformance.damageDone,
+				healing_done: specPerformance.healingDone,
+				report_code: specPerformance.reportCode,
+				fight_id: specPerformance.fightId,
+				is_kill: specPerformance.isKill,
+				death_count: specPerformance.deathCount
+			})
+			.from(specPerformance)
+			.where(and(...whereConditions))
+			.orderBy(desc(orderByColumn));
 
-		if (role === 'dps') {
-			query = database
-				.select({
-					id: specPerformance.id,
-					player_name: specPerformance.playerName,
-					spec_icon: specPerformance.specIcon,
-					dps: specPerformance.dps,
-					hps: specPerformance.hps,
-					damage_done: specPerformance.damageDone,
-					healing_done: specPerformance.healingDone,
-					report_code: specPerformance.reportCode,
-					fight_id: specPerformance.fightId,
-					is_kill: specPerformance.isKill,
-					death_count: specPerformance.deathCount
-				})
-				.from(specPerformance)
-				.where(and(...whereConditions))
-				.orderBy(desc(orderByColumn))
-				.limit(2000);
-		} else {
-			query = database
-				.select({
-					id: specPerformance.id,
-					player_name: specPerformance.playerName,
-					spec_icon: specPerformance.specIcon,
-					dps: specPerformance.dps,
-					hps: specPerformance.hps,
-					damage_done: specPerformance.damageDone,
-					healing_done: specPerformance.healingDone,
-					report_code: specPerformance.reportCode,
-					fight_id: specPerformance.fightId,
-					is_kill: specPerformance.isKill,
-					death_count: specPerformance.deathCount
-				})
-				.from(specPerformance)
-				.where(and(...whereConditions))
-				.orderBy(desc(orderByColumn));
-			// No limit here - get ALL players of this role for the encounter
-		}
-
-		const results = await query;
+		const results = role === 'dps' ? await baseQuery.limit(2000) : await baseQuery;
 
 		// Deduplicate by player_name + spec_icon, keeping the best performance for each unique player
 		type TopPlayerRow = (typeof results)[number];
 		const playerMap = new Map<string, TopPlayerRow>();
-		const duplicatesFound: string[] = [];
+		const metricKey = metric === 'hps' ? 'hps' : 'dps';
 
-		for (const result of results) {
-			const key = `${result.player_name}-${result.spec_icon}`;
+		for (const row of results) {
+			const key = `${row.player_name}-${row.spec_icon}`;
 			const existing = playerMap.get(key);
-
-			if (!existing) {
-				playerMap.set(key, result);
-			} else {
-				duplicatesFound.push(`${result.player_name} (${result.spec_icon})`);
-				// Keep the better performance based on the ordering metric
-				const metricKey = metric === 'hps' ? 'hps' : 'dps';
-				const currentValue = result[metricKey] ?? 0;
-				const existingValue = existing[metricKey] ?? 0;
-
-				if (currentValue > existingValue) {
-					playerMap.set(key, result);
-				}
+			if (!existing || (row[metricKey] ?? 0) > (existing[metricKey] ?? 0)) {
+				playerMap.set(key, row);
 			}
 		}
 

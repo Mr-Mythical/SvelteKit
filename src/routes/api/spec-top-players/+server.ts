@@ -33,6 +33,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			whereConditions.push(eq(specPerformance.isKill, false));
 		} else if (fightFilter === 'kills_no_deaths') {
 			whereConditions.push(eq(specPerformance.isKill, true));
+			whereConditions.push(eq(specPerformance.deathCount, 0));
 		} else if (fightFilter === 'kills_all') {
 			whereConditions.push(eq(specPerformance.isKill, true));
 		} else if (fightFilter === 'all') {

@@ -13,7 +13,7 @@ interface CalculateRunsResponse {
 	breakdown: KeystoneBreakdown[];
 }
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = ({ url }) => {
 	const scoreParam = url.searchParams.get('score');
 
 	if (!scoreParam) {

@@ -4,9 +4,10 @@ import {
 	addUserRecent,
 	type ReportRecentData
 } from '$lib/db/userRecents.js';
-import { apiError, apiOk } from '$lib/server/apiResponses';
+import { apiOk } from '$lib/server/apiResponses';
 import { requireSession } from '$lib/server/requireSession';
-import { logServerError } from '$lib/server/logger';
+import { handleApiError } from '$lib/server/logger';
+import { parseJsonBody, parseRecentReportBody } from '$lib/server/requestBody';
 
 // GET: Fetch user's recent reports
 export const GET: RequestHandler = async ({ locals }) => {
@@ -31,8 +32,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		return apiOk(reports);
 	} catch (error) {
-		logServerError('api/recent-reports', 'fetch failed', error);
-		return apiError('Failed to fetch recent reports');
+		return handleApiError('api/recent-reports', error, 'Failed to fetch recent reports');
 	}
 };
 
@@ -42,7 +42,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if ('response' in auth) return auth.response;
 
 	try {
-		const { code, title, guild, owner } = await request.json();
+		const parsed = await parseJsonBody(request, parseRecentReportBody);
+		if (parsed instanceof Response) return parsed;
+		const { code, title, guild, owner } = parsed;
 
 		await addUserRecent(
 			auth.session.user.id,
@@ -64,7 +66,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return apiOk({ success: true });
 	} catch (error) {
-		logServerError('api/recent-reports', 'add failed', error);
-		return apiError('Failed to add report');
+		return handleApiError('api/recent-reports', error, 'Failed to add report');
 	}
 };

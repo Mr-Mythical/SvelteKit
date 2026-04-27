@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
+
 
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
@@ -119,7 +119,7 @@
 		specFilters = { ...specFilters };
 	}
 
-	run(() => {
+	$effect(() => {
 		if (allHealers) initializeSpecFilters();
 	});
 
@@ -127,7 +127,7 @@
 	let bossAbilityFilters: Record<number, boolean> = $state({});
 	let detectedBossAbilities: Set<number> = $state(new Set());
 	let previousBossId: number | null = $state(null);
-	run(() => {
+	$effect(() => {
 		if (currentBoss) {
 			if (previousBossId !== currentBoss.id) {
 				previousBossId = currentBoss.id;
@@ -318,7 +318,7 @@
 		}
 	});
 
-	run(() => {
+	$effect(() => {
 		if (zoomPluginLoaded) {
 			options.plugins.zoom = {
 				pan: {
@@ -447,7 +447,7 @@
 		}
 	});
 
-	run(() => {
+	$effect(() => {
 		if (damageEvents.length > 0 || healingEvents.length > 0) {
 			const processedData = buildChartSeries(damageEvents, healingEvents);
 			updateChartData(processedData);

@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { apiOk } from '$lib/server/apiResponses';
+import { apiError, apiOk } from '$lib/server/apiResponses';
 import {
 	blizzardScoreSource,
 	raiderIoScoreSource,
@@ -25,8 +25,8 @@ const SCORE_SOURCES = [blizzardScoreSource, raiderIoScoreSource] as const;
  * Returns:
  * - 200 `ScoreResult` (`source` is `'blizzard'`, `'raiderio'`, or `null` if
  *   neither provider returned a score).
- * - 400 `ScoreResult` with all fields null when params are missing or
- *   `region` is not in {@link VALID_REGIONS}.
+ * - 400 standard `{ error }` envelope when params are missing or `region`
+ *   is not in {@link VALID_REGIONS}.
  *
  * @throws Never — provider/network errors are swallowed by each source and
  *         surfaced as a null score so the UI can render a fallback.
@@ -38,7 +38,7 @@ export const GET: RequestHandler = async ({ url, setHeaders }) => {
 	const debug = url.searchParams.get('debug') === '1';
 
 	if (!name || !region || !realm || !VALID_REGIONS.has(region)) {
-		return apiOk({ score: null, color: null, source: null } satisfies ScoreResult, 400);
+		return apiError('Missing or invalid name/region/realm', 400);
 	}
 
 	const { result, attemptsBySource } = await resolveScore(SCORE_SOURCES, region, realm, name);

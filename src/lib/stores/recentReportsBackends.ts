@@ -7,6 +7,8 @@
  * don't mirror to localStorage"; a network/5xx means "API down, fall back".
  */
 
+import { logClientError } from '$lib/utils/clientLog';
+
 export interface RecentReport {
 	code: string;
 	timestamp: number;
@@ -37,7 +39,7 @@ export const apiRecentReportsBackend: RecentReportsBackend = {
 			if (!response.ok) return null;
 			return (await response.json()) as RecentReport[];
 		} catch (error) {
-			console.error('Error loading recent reports from API:', error);
+			logClientError('recentReports/api', 'load failed', error);
 			return null;
 		}
 	},
@@ -50,10 +52,14 @@ export const apiRecentReportsBackend: RecentReportsBackend = {
 			});
 			if (response.ok) return { status: 'ok' };
 			if (response.status === 401) return { status: 'unauthorized' };
-			console.error('Failed to add report to API (status', response.status, ')');
+			logClientError(
+				'recentReports/api',
+				`add rejected status=${response.status}`,
+				new Error(`status ${response.status}`)
+			);
 			return { status: 'unavailable' };
 		} catch (error) {
-			console.error('Error adding report to API:', error);
+			logClientError('recentReports/api', 'add failed', error);
 			return { status: 'unavailable' };
 		}
 	}
@@ -66,7 +72,7 @@ function readLocalStorage(): RecentReport[] {
 		const parsed = JSON.parse(stored);
 		return Array.isArray(parsed) ? (parsed as RecentReport[]) : [];
 	} catch (error) {
-		console.error('Error parsing recent reports from localStorage', error);
+		logClientError('recentReports/localStorage', 'parse failed', error);
 		return [];
 	}
 }
@@ -85,7 +91,7 @@ export const localStorageRecentReportsBackend: RecentReportsBackend = {
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
 			return { status: 'ok', reports: next };
 		} catch (error) {
-			console.error('Error saving to localStorage:', error);
+			logClientError('recentReports/localStorage', 'save failed', error);
 			return { status: 'unavailable' };
 		}
 	}

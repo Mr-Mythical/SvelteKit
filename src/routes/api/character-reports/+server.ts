@@ -4,7 +4,7 @@ import { getUserRecents, type CharacterRecentData } from '$lib/db/userRecents.js
 import { getMyWowRoster } from '$lib/data/myWowRoster';
 import { requireSession } from '$lib/server/requireSession';
 import { executeWclQuery, WclQueryError } from '$lib/server/wclGraphQL';
-import { logServerError, logServerWarn } from '$lib/server/logger';
+import { logServerError, logServerWarn, handleApiError } from '$lib/server/logger';
 
 // Returns a flat list of recent WarcraftLogs reports aggregated across the
 // signed-in user's characters, plus a deduplicated list of the
@@ -269,7 +269,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		return apiOk({ reports, guilds } satisfies CharacterReportsResponse);
 	} catch (error) {
-		logServerError('api/character-reports', 'request failed', error);
-		return apiOk({ reports: [], guilds: [] } satisfies CharacterReportsResponse);
+		return handleApiError('api/character-reports', error);
 	}
 };

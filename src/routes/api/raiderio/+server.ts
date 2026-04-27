@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { apiError, apiOk } from '$lib/server/apiResponses';
-import { logServerError } from '$lib/server/logger';
+import { handleApiError } from '$lib/server/logger';
 
 interface RaiderIoResponse {
 	name: string;
@@ -51,7 +51,6 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		return apiOk({ runs: bestRuns });
 	} catch (error) {
-		logServerError('api/raiderio', 'request failed', error);
-		return apiError('Failed to fetch data');
+		return handleApiError('api/raiderio', error, 'Failed to fetch data');
 	}
 };

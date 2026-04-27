@@ -24,6 +24,25 @@ vi.mock('$app/navigation', () => ({
 	replaceState: vi.fn()
 }));
 
+vi.mock('$app/state', () => {
+	const mockPage = {
+		url: new URL('http://localhost/'),
+		params: {},
+		route: { id: null },
+		status: 200,
+		error: null,
+		data: {},
+		form: undefined,
+		state: {}
+	};
+
+	return {
+		page: mockPage,
+		navigating: { from: null, to: null, type: null, willUnload: false, delta: 0, complete: Promise.resolve() },
+		updated: { current: false, check: vi.fn(async () => false) }
+	};
+});
+
 vi.mock('$app/stores', () => {
 	const mockPage = {
 		url: {

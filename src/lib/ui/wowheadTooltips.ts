@@ -45,12 +45,12 @@ export function hideWowheadTooltips(): void {
 	if (typeof window === 'undefined') return;
 
 	const wowheadWindow = window as WowheadWindow;
-	const hide = () => {
+	const runHidePass = () => {
 		hideTooltipApis(wowheadWindow);
 		hideTooltipElements(wowheadWindow);
 	};
 
-	hide();
-	wowheadWindow.requestAnimationFrame(hide);
-	wowheadWindow.setTimeout(hide, 80);
+	runHidePass();
+	wowheadWindow.requestAnimationFrame(runHidePass);
+	wowheadWindow.setTimeout(runHidePass, 80);
 }

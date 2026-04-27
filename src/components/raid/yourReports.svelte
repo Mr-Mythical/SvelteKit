@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Card } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { recentReports, type RecentReport } from '$lib/stores/recentReports';
@@ -29,7 +29,7 @@
 
 	let { onSelectReport }: Props = $props();
 
-	let session = $derived($page.data.session);
+	let session = $derived(page.data.session);
 
 	let recent: RecentReport[] = $state([]);
 	let recentLoading = $state(true);

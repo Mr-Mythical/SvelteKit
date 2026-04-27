@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
+
 
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
@@ -71,7 +71,7 @@
 		}
 	}
 
-	run(() => {
+	$effect(() => {
 		if (initialBossId || initialHealerSpecs.length > 0) {
 			handleSearch();
 		}

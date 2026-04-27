@@ -33,12 +33,12 @@
 		error = null;
 		rows = [];
 		try {
-			const res = await fetch(`/api/death-hotspots?bossId=${id}`);
-			if (!res.ok) {
+			const response = await fetch(`/api/death-hotspots?bossId=${id}`);
+			if (!response.ok) {
 				error = 'Failed to load death hotspots.';
 				return;
 			}
-			const data = (await res.json()) as HotspotRow[];
+			const data = (await response.json()) as HotspotRow[];
 			if (fetchId !== activeFetchId) return;
 			rows = Array.isArray(data) ? data : [];
 		} catch (err) {

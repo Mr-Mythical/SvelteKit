@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
+
 
 	import { onMount } from 'svelte';
 	import { Chart } from 'svelte-chartjs';
@@ -194,7 +194,7 @@
 		}
 	});
 
-	run(() => {
+	$effect(() => {
 		if (zoomPluginLoaded) {
 			if (!options.plugins) {
 				options.plugins = {};
@@ -330,7 +330,7 @@
 		}
 	}
 
-	run(() => {
+	$effect(() => {
 		if (encounterId) {
 			fetchData();
 		}

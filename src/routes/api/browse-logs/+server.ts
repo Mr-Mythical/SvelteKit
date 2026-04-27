@@ -1,10 +1,10 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { healerCompositions, encounters } from '$lib/db/schema';
-import { eq, gte, lte, desc, and } from 'drizzle-orm';
+import { eq, gte, lte, desc, and, type SQL } from 'drizzle-orm';
 import type { BrowseLogsParams, BrowsedLog, BrowseLogsResponse } from '$lib/types/apiTypes';
 import { bosses as bossList } from '$lib/types/bossData';
-import { apiError, apiOk } from '$lib/server/apiResponses';
+import { apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const params: BrowseLogsParams = await request.json();
 
 		// Build the where conditions
-		let whereConditions = [];
+		const whereConditions: SQL[] = [];
 
 		if (params.bossId) {
 			whereConditions.push(eq(healerCompositions.encounterId, params.bossId));
@@ -28,7 +28,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		// The live DB stores report_code/fight_id/encounter_id/region directly on
 		// healer_compositions (no separate unified_reports table), so we sort by
 		// last_updated as a recency proxy and leave guild_name/start_time empty.
-		let query = getRaidDb()
+		const query = getRaidDb()
 			.select({
 				reportCode: healerCompositions.reportCode,
 				fightId: healerCompositions.fightId,
@@ -46,7 +46,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const compositionsData = await query;
 
 		// Transform data to match expected format
-		let filteredLogsData = compositionsData.map((row) => ({
+		const mappedLogsData = compositionsData.map((row) => ({
 			report_code: row.reportCode,
 			fight_id: row.fightId,
 			encounter_id: row.encounterId,
@@ -58,12 +58,13 @@ export const POST: RequestHandler = async ({ request }) => {
 		}));
 
 		// Filter by healer specs if specified
-		if (params.healerSpecs && params.healerSpecs.length > 0) {
-			filteredLogsData = filteredLogsData.filter((comp) => {
-				const actualSpecsInLog = comp.healer_specs;
-				return params.healerSpecs!.every((requiredSpec) => actualSpecsInLog.includes(requiredSpec));
-			});
-		}
+		const filteredLogsData =
+			params.healerSpecs && params.healerSpecs.length > 0
+				? mappedLogsData.filter((comp) => {
+						const actualSpecsInLog = comp.healer_specs;
+						return params.healerSpecs!.every((requiredSpec) => actualSpecsInLog.includes(requiredSpec));
+					})
+				: mappedLogsData;
 
 		const totalFilteredCount = filteredLogsData.length;
 

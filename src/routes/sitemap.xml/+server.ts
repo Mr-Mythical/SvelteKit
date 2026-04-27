@@ -1,4 +1,4 @@
-export const GET = async () => {
+export const GET = () => {
 	const baseUrl = 'https://mrmythical.com';
 
 	const routes = [

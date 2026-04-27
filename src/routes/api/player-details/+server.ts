@@ -2,7 +2,7 @@ import type { RequestHandler } from './$types';
 import type { Player } from '$lib/types/apiTypes';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { executeWclQuery, WclQueryError } from '$lib/server/wclGraphQL';
-import { logServerError } from '$lib/server/logger';
+import { handleApiError } from '$lib/server/logger';
 
 const QUERY = `
 	query GetPlayerDetails($code: String!, $fightID: Int!) {
@@ -37,9 +37,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		return apiOk({ healerData });
 	} catch (error) {
 		if (error instanceof WclQueryError) {
-			return apiError('Failed to fetch healing data from API.');
+			return apiError('Failed to fetch healing data from API.', 502);
 		}
-		logServerError('api/player-details', 'request failed', error);
-		return apiError('Internal Server Error.');
+		return handleApiError('api/player-details', error);
 	}
 };

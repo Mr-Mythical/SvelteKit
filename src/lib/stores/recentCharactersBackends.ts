@@ -11,6 +11,8 @@
  * localStorage", but a network/5xx is "API is down, fall back".
  */
 
+import { logClientError } from '$lib/utils/clientLog';
+
 export interface RecentCharacter {
 	region: string;
 	realm: string;
@@ -39,7 +41,7 @@ export const apiRecentCharactersBackend: RecentCharactersBackend = {
 			if (!response.ok) return null;
 			return (await response.json()) as RecentCharacter[];
 		} catch (error) {
-			console.error('Error loading recent characters from API:', error);
+			logClientError('recentCharacters/api', 'load failed', error);
 			return null;
 		}
 	},
@@ -52,10 +54,14 @@ export const apiRecentCharactersBackend: RecentCharactersBackend = {
 			});
 			if (response.ok) return { status: 'ok' };
 			if (response.status === 401) return { status: 'unauthorized' };
-			console.error('Failed to add character to API (status', response.status, ')');
+			logClientError(
+				'recentCharacters/api',
+				`add rejected status=${response.status}`,
+				new Error(`status ${response.status}`)
+			);
 			return { status: 'unavailable' };
 		} catch (error) {
-			console.error('Error adding character to API:', error);
+			logClientError('recentCharacters/api', 'add failed', error);
 			return { status: 'unavailable' };
 		}
 	}
@@ -68,7 +74,7 @@ function readLocalStorage(): RecentCharacter[] {
 		const parsed = JSON.parse(stored);
 		return Array.isArray(parsed) ? (parsed as RecentCharacter[]) : [];
 	} catch (error) {
-		console.error('Error parsing recent characters from localStorage', error);
+		logClientError('recentCharacters/localStorage', 'parse failed', error);
 		return [];
 	}
 }
@@ -95,7 +101,7 @@ export const localStorageRecentCharactersBackend: RecentCharactersBackend = {
 			localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(next));
 			return { status: 'ok', characters: next };
 		} catch (error) {
-			console.error('Error saving to localStorage:', error);
+			logClientError('recentCharacters/localStorage', 'save failed', error);
 			return { status: 'unavailable' };
 		}
 	}

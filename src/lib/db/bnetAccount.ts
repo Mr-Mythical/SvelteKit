@@ -3,6 +3,7 @@ import { env } from '$env/dynamic/private';
 import { getUserDb } from './userDb';
 import { accounts } from './userSchema';
 import { dbOperation } from './_helpers';
+import { logServerError } from '$lib/server/logger';
 
 // Safety margin so we refresh slightly before Battle.net actually rejects the
 // token. Bnet tokens are typically valid for 24h.
@@ -64,13 +65,17 @@ async function refreshBattleNetToken(
 			},
 			body
 		});
-	} catch {
-		console.error('battlenet: refresh fetch failed');
+	} catch (error) {
+		logServerError('db/bnetAccount', 'refresh fetch failed', error);
 		return null;
 	}
 
 	if (!response.ok) {
-		console.error('battlenet: refresh rejected', response.status);
+		logServerError(
+			'db/bnetAccount',
+			`refresh rejected status=${response.status}`,
+			new Error(`status ${response.status}`)
+		);
 		return null;
 	}
 
@@ -97,8 +102,12 @@ async function refreshBattleNetToken(
 				token_type: payload.token_type ?? 'bearer'
 			})
 			.where(and(eq(accounts.userId, userId), eq(accounts.provider, 'battlenet')));
-	} catch {
-		// Ignore persistence failures here; callers can still use the fresh token.
+	} catch (error) {
+		// Persistence is best-effort: callers can still use the fresh access
+		// token even if writing the new expiry/refresh fails. We log so a
+		// recurring write failure (and the resulting stale `expires_at`) is
+		// observable rather than silent.
+		logServerError('db/bnetAccount', 'token-row update failed', error);
 	}
 
 	return payload.access_token;

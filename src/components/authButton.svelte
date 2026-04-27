@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
+
 
 	import { signIn, signOut } from '@auth/sveltekit/client';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { fly, fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -27,12 +27,12 @@
 	let isSigningIn = $state(false);
 	let isSigningOut = $state(false);
 
-	let session = $derived($page.data.session as AppSession | undefined);
+	let session = $derived(page.data.session as AppSession | undefined);
 	let userBattletag = $derived(session?.user?.battletag ?? null);
 	let isLoading = $derived(isSigningIn || isSigningOut);
 
 	// Check if we're in the middle of an OAuth flow
-	run(() => {
+	$effect(() => {
 		if (typeof window !== 'undefined') {
 			const urlParams = new URLSearchParams(window.location.search);
 			// If we have OAuth callback parameters, we're returning from Battle.net

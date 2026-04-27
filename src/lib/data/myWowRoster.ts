@@ -4,6 +4,7 @@ import {
 	replaceStoredCharacters,
 	type CharacterUpsertInput
 } from '$lib/db/userCharacters';
+import { logServerError } from '$lib/server/logger';
 
 // Server-only helper that returns the signed-in user's WoW character roster.
 //
@@ -92,7 +93,7 @@ async function fetchRegion(
 		}
 		return characters;
 	} catch (error) {
-		console.error(`myWowRoster: region ${region} failed`, error);
+		logServerError('myWowRoster', `region ${region} failed`, error);
 		return [];
 	} finally {
 		clearTimeout(timeout);
@@ -127,7 +128,7 @@ function dedupe(list: RosterCharacter[]): RosterCharacter[] {
  * in-memory roster even if the DB write fails.
  *
  * @throws Never — token, network, and DB errors are swallowed and surfaced as
- *         `null` or via `console.error`.
+ *         `null` or via `logServerError`.
  */
 export async function refreshRosterFromBattleNet(
 	userId: string
@@ -157,7 +158,7 @@ export async function refreshRosterFromBattleNet(
 			}))
 		);
 	} catch (error) {
-		console.error('myWowRoster: failed to persist roster', error);
+		logServerError('myWowRoster', 'failed to persist roster', error);
 	}
 
 	rosterCache.set(userId, { value: merged, fetchedAt: Date.now() });
@@ -211,7 +212,7 @@ export async function getMyWowRoster(
 			}))
 		);
 	} catch (error) {
-		console.error('myWowRoster: DB read failed', error);
+		logServerError('myWowRoster', 'DB read failed', error);
 	}
 
 	if (stored.length > 0) {

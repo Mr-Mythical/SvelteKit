@@ -20,7 +20,7 @@
 	import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
 	import { recentCharacters } from '$lib/stores/recentCharacters';
 	import { logClientError } from '$lib/utils/clientLog';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 
 	interface Props {
@@ -74,7 +74,7 @@
 					goto(currentUrl.pathname + currentUrl.search, { replaceState: true, noScroll: true });
 				}
 
-				if ($page?.data?.session?.user) {
+				if (page?.data?.session?.user) {
 					try {
 						await recentCharacters.add({ region, realm, characterName });
 					} catch (error) {
