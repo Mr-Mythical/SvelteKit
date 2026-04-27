@@ -131,6 +131,28 @@ export const deathHotspots = pgTable(
 );
 
 // =============================================================================
+// DEATH_RATE TABLE
+// =============================================================================
+// Per-second death counts across analyzed mythic kills, parallel to
+// damage_averages. Mirrors a production-aggregated table populated by the
+// data pipeline; no Drizzle migration is shipped from this repo.
+export const deathRate = pgTable(
+	'death_rate',
+	{
+		id: serial('id').primaryKey(),
+		encounterId: integer('encounter_id')
+			.notNull()
+			.references(() => encounters.encounterId),
+		timeSeconds: integer('time_seconds').notNull(),
+		deathCount: integer('death_count').notNull(),
+		sampleCount: integer('sample_count').notNull()
+	},
+	(table) => ({
+		encounterIdx: index('idx_death_rate_encounter').on(table.encounterId)
+	})
+);
+
+// =============================================================================
 // DAMAGE_DATA TABLE
 // =============================================================================
 // Stores damage-over-time data points for analysis

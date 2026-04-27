@@ -2,6 +2,8 @@
 	import type {
 		Fight,
 		CastEvent,
+		DeathEvent,
+		BossAbility,
 		Series,
 		Player,
 		ReportOwner,
@@ -10,20 +12,27 @@
 		BrowseLogsParams
 	} from '$lib/types/apiTypes';
 	import DamageChart from '../../../components/charts/damageChart.svelte';
+	import LogBrowserFilters from '../../../components/raid/logBrowser.svelte';
+	import LogBrowserResults from '../../../components/raid/logBrowserResult.svelte';
 	import SEO from '../../../components/seo.svelte';
 	import Footer from '../../../components/layout/footer.svelte';
-	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
-	import { Separator } from '$lib/components/ui/separator';
+	import {
+		Table,
+		TableBody,
+		TableCell,
+		TableHead,
+		TableHeader,
+		TableRow
+	} from '$lib/components/ui/table';
 	import { recentReports as recentReportsStore } from '$lib/stores/recentReports';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
 	import EncounterSkeleton from '../../../components/skeletons/encounterSkeleton.svelte';
 	import { logClientError } from '$lib/clientLog';
+	import { bosses } from '$lib/types/bossData';
 
 	let reportURL: string = $state('');
 	let fights: Fight[] = $state([]);
@@ -32,13 +41,37 @@
 	let healingEvents: Series[] = $state([]);
 	let castEvents: CastEvent[] = $state([]);
 	let bossEvents: CastEvent[] = $state([]);
+	let deathEvents: DeathEvent[] = $state([]);
+	let bossAbilities: BossAbility[] = $state([]);
 	let allHealers: Player[] = $state([]);
 	let error: string = $state('');
 	let loadingFights = false;
 	let loadingData = $state(false);
+	let loadingAverageSummary = $state(false);
+	let loadingSimilarLogs = $state(false);
 	let killsOnly = $state(false);
 	let showFightSelection = true;
 	let initializing = $state(false);
+	let averageDamageSummary: {
+		peakAverageDamage: number;
+		peakAverageTime: number;
+		fightPeakDamage: number;
+		fightPeakTime: number;
+	} | null = $state(null);
+	let averageDamageTimeline: { time_seconds: number; avg: number }[] = $state([]);
+	let similarLogs: BrowsedLog[] = $state([]);
+	let totalSimilarLogs = $state(0);
+	let currentSimilarPage = $state(1);
+	const similarLogsItemsPerPage = 5;
+
+	interface AverageRecord {
+		time_seconds: number;
+		avg: number;
+		std: number;
+		n: number;
+		ci: number;
+		encounter_id: number;
+	}
 
 	let reportTitle: string | undefined = $state();
 	let reportOwner: ReportOwner | undefined = $state();
@@ -54,6 +87,81 @@
 
 	let initialReportCodeFromUrl: string | null = null;
 	let initialFightIdFromUrl: number | null = null;
+
+	function getCache<T>(key: string): T | null {
+		try {
+			const raw = localStorage.getItem(key);
+			if (!raw) return null;
+			const parsed = JSON.parse(raw);
+			if (!parsed || typeof parsed !== 'object') return null;
+			const { ts, ttl, value } = parsed as { ts: number; ttl: number; value: T };
+			if (!ts || !ttl) return null;
+			if (Date.now() - ts > ttl) {
+				localStorage.removeItem(key);
+				return null;
+			}
+			return value;
+		} catch {
+			return null;
+		}
+	}
+
+	function setCache<T>(key: string, value: T, ttlMs: number) {
+		try {
+			localStorage.setItem(key, JSON.stringify({ ts: Date.now(), ttl: ttlMs, value }));
+		} catch {
+			// ignore storage failures
+		}
+	}
+
+	function getFightHealerSpecs(players: Player[]): string[] {
+		return [...new Set(
+			players
+				.map((player) => {
+					const spec = player.specs?.[0]?.spec;
+					return spec ? `${player.type}-${spec}` : null;
+				})
+				.filter((value): value is string => Boolean(value))
+		)];
+	}
+
+	function buildBrowseLogsCacheKey(params: BrowseLogsParams) {
+		const sortedSpecs = [...(params.healerSpecs ?? [])].sort();
+		return `browse-logs:${params.bossId ?? 'any'}:${params.minDuration ?? 'none'}:${params.maxDuration ?? 'none'}:${params.page ?? 1}:${params.limit ?? similarLogsItemsPerPage}:${sortedSpecs.join(',')}`;
+	}
+
+	function formatTimeFromSeconds(totalSeconds: number) {
+		const minutes = Math.floor(totalSeconds / 60);
+		const seconds = Math.floor(totalSeconds % 60);
+		return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+	}
+
+	function formatDamageValue(value: number) {
+		if (value >= 1000000) return `${(value / 1000000).toFixed(2)}M`;
+		if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+		return Math.round(value).toLocaleString();
+	}
+
+	function formatRelativeTimestamp(timestamp: number) {
+		if (!damageEvents[0]) return '0:00';
+		const totalSeconds = Math.max(0, Math.round((timestamp - damageEvents[0].pointStart) / 1000));
+		const minutes = Math.floor(totalSeconds / 60);
+		const seconds = totalSeconds % 60;
+		return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+	}
+
+	let selectedBoss = $derived.by(() => {
+		const encounterId = selectedFight?.encounterID;
+		if (encounterId == null) return null;
+		return bosses.find((boss) => boss.id === encounterId) ?? null;
+	});
+	let selectedFightHealerSpecs = $derived(selectedFight ? getFightHealerSpecs(allHealers) : []);
+	let damageChartExtraProps = $derived(
+		({ averageDamageLine: averageDamageTimeline } as Record<string, { time_seconds: number; avg: number }[]>)
+	);
+	let sortedDeathEvents = $derived(
+		[...deathEvents].sort((a, b) => a.timestamp - b.timestamp)
+	);
 
 	onMount(async () => {
 		const params = page.params as { reportcode?: string };
@@ -100,6 +208,9 @@
 		fights = [];
 		showFightSelection = true;
 		resetEvents();
+		averageDamageSummary = null;
+		similarLogs = [];
+		totalSimilarLogs = 0;
 	}
 
 	// URL management functions
@@ -166,16 +277,61 @@
 
 	async function handleFightSelection(fight: Fight) {
 		const codeToFetch = extractReportCode(reportURL.trim());
+		const cacheKey = `raid-log:${codeToFetch}:${fight.id}`;
+		const cachedFightData = getCache<{
+			damageEvents: Series[];
+			healingEvents: Series[];
+			castEvents: CastEvent[];
+			bossEvents: CastEvent[];
+			bossAbilities: BossAbility[];
+			deathEvents: DeathEvent[];
+			allHealers: Player[];
+		}>(cacheKey);
 		selectedFight = fight;
 		resetEvents();
+		averageDamageSummary = null;
+		similarLogs = [];
+		totalSimilarLogs = 0;
+		currentSimilarPage = 1;
 		error = '';
 		loadingData = true;
+		loadingAverageSummary = true;
+		loadingSimilarLogs = true;
 		showFightSelection = false;
 
 		updateUrlParams(codeToFetch, fight.id);
 
 		try {
-			const [damageResponse, healingResponse, castResponse, bossResponse, playerDetailsResponse] =
+			if (cachedFightData) {
+				damageEvents = cachedFightData.damageEvents;
+				healingEvents = cachedFightData.healingEvents;
+				castEvents = cachedFightData.castEvents;
+				bossEvents = cachedFightData.bossEvents;
+				bossAbilities = cachedFightData.bossAbilities;
+				deathEvents = cachedFightData.deathEvents;
+				allHealers = cachedFightData.allHealers;
+
+				if (
+					damageEvents.length === 0 &&
+					healingEvents.length === 0 &&
+					castEvents.length === 0 &&
+					bossEvents.length === 0
+				) {
+					error = 'No data found for the selected fight.';
+				}
+
+				loadingData = false;
+				void fetchAverageDamageSummary(fight, damageEvents);
+				void fetchSimilarLogs({
+					bossId: fight.encounterID,
+					healerSpecs: getFightHealerSpecs(allHealers),
+					page: 1,
+					limit: similarLogsItemsPerPage
+				});
+				return;
+			}
+
+			const [damageResponse, healingResponse, castResponse, bossResponse, deathResponse, playerDetailsResponse] =
 				await Promise.all([
 					fetch('/api/damage-events', {
 						method: 'POST',
@@ -217,6 +373,16 @@
 							endTime: fight.endTime
 						})
 					}),
+					fetch('/api/death-events', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							fightID: fight.id,
+							code: codeToFetch,
+							startTime: fight.startTime,
+							endTime: fight.endTime
+						})
+					}),
 					fetch('/api/player-details', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
@@ -231,6 +397,7 @@
 			const healingData = await healingResponse.json();
 			const castData = await castResponse.json();
 			const bossData = await bossResponse.json();
+			const deathData = await deathResponse.json();
 			const playerDetailsData = await playerDetailsResponse.json();
 
 			if (
@@ -238,13 +405,30 @@
 				healingResponse.ok &&
 				castResponse.ok &&
 				bossResponse.ok &&
+					deathResponse.ok &&
 				playerDetailsResponse.ok
 			) {
 				damageEvents = damageData.seriesData || [];
 				healingEvents = healingData.seriesData || [];
 				castEvents = castData.castEvents || [];
 				bossEvents = bossData.castEvents || [];
+				bossAbilities = bossData.abilities || [];
+				deathEvents = deathData.deathEvents || [];
 				allHealers = playerDetailsData.healerData || [];
+
+				setCache(
+					cacheKey,
+					{
+						damageEvents,
+						healingEvents,
+						castEvents,
+						bossEvents,
+						bossAbilities,
+						deathEvents,
+						allHealers
+					},
+					15 * 60 * 1000
+				);
 
 				if (
 					damageEvents.length === 0 &&
@@ -254,12 +438,21 @@
 				) {
 					error = 'No data found for the selected fight.';
 				}
+
+				void fetchAverageDamageSummary(fight, damageData.seriesData || []);
+				void fetchSimilarLogs({
+					bossId: fight.encounterID,
+					healerSpecs: getFightHealerSpecs(playerDetailsData.healerData || []),
+					page: 1,
+					limit: similarLogsItemsPerPage
+				});
 			} else {
 				const failed = [
 					!damageResponse.ok && 'damage-events',
 					!healingResponse.ok && 'healing-events',
 					!castResponse.ok && 'cast-events',
 					!bossResponse.ok && 'boss-events',
+					!deathResponse.ok && 'death-events',
 					!playerDetailsResponse.ok && 'player-details'
 				].filter(Boolean);
 				error = 'Failed to fetch some data for the selected fight.';
@@ -319,7 +512,121 @@
 		healingEvents = [];
 		castEvents = [];
 		bossEvents = [];
+		deathEvents = [];
+		bossAbilities = [];
 		allHealers = [];
+		averageDamageTimeline = [];
+	}
+
+	async function fetchAverageDamageSummary(fight: Fight, seriesData: Series[]) {
+		loadingAverageSummary = true;
+		try {
+			const cacheKey = `damage-average:${fight.encounterID}`;
+			let records = getCache<AverageRecord[]>(cacheKey);
+			if (!records) {
+				const response = await fetch(`/api/damage-average?bossId=${fight.encounterID}`);
+				const apiData = await response.json();
+				if (!Array.isArray(apiData)) {
+					averageDamageSummary = null;
+					return;
+				}
+				records = apiData as AverageRecord[];
+				setCache(cacheKey, records, 24 * 60 * 60 * 1000);
+			}
+
+			const filtered = records.filter((record) => record.n >= 5);
+			averageDamageTimeline = filtered.map((record) => ({
+				time_seconds: record.time_seconds,
+				avg: record.avg
+			}));
+			if (filtered.length === 0) {
+				averageDamageSummary = null;
+				return;
+			}
+
+			const peakAverage = filtered.reduce((best, record) =>
+				record.avg > best.avg ? record : best
+			);
+			const fightSeries = seriesData.find((entry) => entry.name === 'Total') ?? seriesData[0];
+			if (!fightSeries || fightSeries.data.length === 0) {
+				averageDamageSummary = null;
+				return;
+			}
+
+			const fightPeakValue = Math.max(...fightSeries.data);
+			const fightPeakIndex = fightSeries.data.findIndex((value) => value === fightPeakValue);
+			averageDamageSummary = {
+				peakAverageDamage: peakAverage.avg,
+				peakAverageTime: peakAverage.time_seconds,
+				fightPeakDamage: fightPeakValue,
+				fightPeakTime: (fightPeakIndex * fightSeries.pointInterval) / 1000
+			};
+		} catch (err) {
+			logClientError('raid/logs', 'damage-average summary failed', err);
+			averageDamageSummary = null;
+			averageDamageTimeline = [];
+		} finally {
+			loadingAverageSummary = false;
+		}
+	}
+
+	async function fetchSimilarLogs(params: BrowseLogsParams) {
+		loadingSimilarLogs = true;
+		currentSimilarPage = params.page ?? 1;
+		const cacheKey = buildBrowseLogsCacheKey(params);
+		try {
+			const cached = getCache<{ logs: BrowsedLog[]; total: number; page: number; limit: number }>(cacheKey);
+			if (cached) {
+				similarLogs = cached.logs;
+				totalSimilarLogs = cached.total;
+				currentSimilarPage = cached.page;
+				return;
+			}
+
+			const response = await fetch('/api/browse-logs', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(params)
+			});
+			const data = await response.json();
+			if (response.ok && data.logs) {
+				similarLogs = data.logs;
+				totalSimilarLogs = data.total ?? 0;
+				currentSimilarPage = data.page ?? params.page ?? 1;
+				setCache(cacheKey, data, 10 * 60 * 1000);
+			} else {
+				similarLogs = [];
+				totalSimilarLogs = 0;
+			}
+		} catch (err) {
+			logClientError('raid/logs', 'browse-logs fetch failed', err);
+			similarLogs = [];
+			totalSimilarLogs = 0;
+		} finally {
+			loadingSimilarLogs = false;
+		}
+	}
+
+	async function handleSimilarLogSearch(detail: BrowseLogsParams) {
+		await fetchSimilarLogs({
+			...detail,
+			bossId: detail.bossId ?? selectedFight?.encounterID,
+			page: 1,
+			limit: similarLogsItemsPerPage
+		});
+	}
+
+	async function handleSimilarLogsPageChange(detail: { page: number }) {
+		await fetchSimilarLogs({
+			bossId: selectedFight?.encounterID,
+			healerSpecs: selectedFightHealerSpecs,
+			page: detail.page,
+			limit: similarLogsItemsPerPage
+		});
+	}
+
+	function analyzeLogFromBrowse(log: BrowsedLog) {
+		goto(`/raid/logs=${log.log_code}?fight=${log.fight_id}`);
 	}
 	let groupedFights = $derived(groupFightsByNameAndDifficulty(
 		killsOnly ? fights.filter((fight) => fight.kill) : fights
@@ -490,14 +797,77 @@
 			{#if loadingData}
 				<EncounterSkeleton />
 			{:else if damageEvents.length > 0 || healingEvents.length > 0}
-				<DamageChart
-					{damageEvents}
-					{healingEvents}
-					{castEvents}
-					{bossEvents}
-					{allHealers}
-					encounterId={selectedFight.encounterID}
-				/>
+				<div class="space-y-6">
+					<DamageChart
+						{damageEvents}
+						{healingEvents}
+						{castEvents}
+						{bossEvents}
+						{deathEvents}
+						{bossAbilities}
+						{...damageChartExtraProps}
+						{allHealers}
+						encounterId={selectedFight.encounterID}
+						showDeathsSection={false}
+					/>
+
+					<div class="grid gap-6 lg:grid-cols-[1fr_1fr]">
+						<!-- Deaths section on the left -->
+						<section class="rounded-xl border border-border bg-card/80 p-4 md:p-6">
+							<div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+								<div>
+									<h3 class="text-xl font-semibold">Deaths in this pull</h3>
+									<p class="text-sm text-muted-foreground">
+										Each row shows when the death happened and which player died.
+									</p>
+								</div>
+								<p class="text-sm text-muted-foreground">{deathEvents.length} total deaths</p>
+							</div>
+
+							{#if deathEvents.length > 0}
+								<div class="mt-4 overflow-x-auto">
+									<Table>
+										<TableHeader>
+											<TableRow>
+												<TableHead>Time</TableHead>
+												<TableHead>Player</TableHead>
+												<TableHead>Class</TableHead>
+											</TableRow>
+										</TableHeader>
+										<TableBody>
+											{#each sortedDeathEvents as event (event.timestamp + '-' + event.targetID)}
+												<TableRow>
+													<TableCell class="font-medium">{formatRelativeTimestamp(event.timestamp)}</TableCell>
+													<TableCell>{event.targetName}</TableCell>
+													<TableCell>{event.targetClass ?? 'Unknown'}</TableCell>
+												</TableRow>
+											{/each}
+										</TableBody>
+									</Table>
+								</div>
+							{:else}
+								<p class="mt-4 text-sm text-muted-foreground">No death events were reported for this pull.</p>
+							{/if}
+						</section>
+
+						<!-- Similar healer comps on the right -->
+						<section class="rounded-xl border border-border bg-card/60 p-4 md:p-6">
+							<h3 class="text-xl font-semibold">Similar healer comps</h3>
+							<p class="text-sm text-muted-foreground">
+								Public kills for this boss, seeded with the healers present in your selected pull.
+							</p>
+							<LogBrowserResults
+								logs={similarLogs}
+								loading={loadingSimilarLogs}
+								totalLogs={totalSimilarLogs}
+								currentPage={currentSimilarPage}
+								itemsPerPage={similarLogsItemsPerPage}
+								onpageChange={handleSimilarLogsPageChange}
+								onanalyzeLog={(log) => analyzeLogFromBrowse(log)}
+							/>
+						</section>
+					</div>
+				</div>
 			{:else}
 				<p class="py-10 text-center text-destructive">
 					{error || 'No visualization data found for this fight.'}

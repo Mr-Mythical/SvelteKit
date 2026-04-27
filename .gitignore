@@ -10,6 +10,7 @@
 /.toml
 /.dev.vars
 /.wrangler
+/.desloppify
 
 # Test outputs and coverage
 /coverage

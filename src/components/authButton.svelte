@@ -118,7 +118,7 @@
 				size="sm"
 				onclick={handleSignIn}
 				disabled={isSigningIn}
-				class="w-full justify-center bg-gradient-to-r from-blue-600 to-blue-700 text-white transition-all duration-200 hover:scale-[1.02] hover:from-blue-700 hover:to-blue-800 hover:shadow-lg active:scale-95"
+				class="w-full justify-center"
 			>
 				{#if isSigningIn}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
@@ -173,7 +173,7 @@
 					size="sm"
 					onclick={handleSignIn}
 					disabled={isSigningIn}
-					class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md transition-all duration-300 hover:scale-[1.02] hover:from-blue-700 hover:to-blue-800 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-70"
+					class="flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-70"
 				>
 					{#if isSigningIn}
 						<Loader2 class="h-4 w-4 animate-spin" />

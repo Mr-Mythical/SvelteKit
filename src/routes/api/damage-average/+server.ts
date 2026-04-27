@@ -5,6 +5,8 @@ import { eq, asc } from 'drizzle-orm';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
 
+const minimumSampleCount = 5;
+
 export const GET: RequestHandler = async ({ url }) => {
 	try {
 		const bossId = url.searchParams.get('bossId');
@@ -20,7 +22,6 @@ export const GET: RequestHandler = async ({ url }) => {
 				time_seconds: damageAverages.timeSeconds,
 				avg_damage: damageAverages.avgDamage,
 				std_dev: damageAverages.stdDev,
-				count: damageAverages.count,
 				confidence_interval: damageAverages.confidenceInterval,
 				encounter_id: damageAverages.encounterId
 			})
@@ -32,7 +33,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			time_seconds: row.time_seconds,
 			avg: row.avg_damage,
 			std: row.std_dev,
-			n: row.count,
+			n: minimumSampleCount,
 			ci: row.confidence_interval,
 			encounter_id: row.encounter_id
 		}));

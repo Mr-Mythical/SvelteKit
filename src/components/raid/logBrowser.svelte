@@ -22,6 +22,9 @@
 		loading?: boolean;
 		initialBossId?: number | undefined;
 		initialHealerSpecs?: string[];
+		title?: string;
+		description?: string;
+		emptySelectionText?: string;
 		onsearch?: (detail: {
 			bossId?: number;
 			minDuration?: number;
@@ -30,15 +33,24 @@
 		}) => void;
 	}
 
-	let { loading = false, initialBossId = undefined, initialHealerSpecs = [], onsearch }: Props = $props();
+	let {
+		loading = false,
+		initialBossId = undefined,
+		initialHealerSpecs = [],
+		title = 'Browse Raid Logs',
+		description = 'Search through logs to find specific boss fights and healer compositions',
+		emptySelectionText = 'Select healers to filter by composition',
+		onsearch
+	}: Props = $props();
 
-	let selectedBossId: number | undefined = $state(initialBossId);
+	let selectedBossId: number | undefined = $state();
 	let selectedBossLabel = $derived(
 		selectedBossId ? (bossList.find((b) => b.id === selectedBossId)?.name ?? '') : ''
 	);
 	let minDuration: number | undefined = $state(undefined);
 	let maxDuration: number | undefined = $state(undefined);
-	let selectedHealerSpecs: string[] = $state(initialHealerSpecs);
+	let selectedHealerSpecs: string[] = $state([]);
+	let lastInitialSearchKey = $state('');
 
 	const healerOptions: { value: string; label: string }[] = [];
 	for (const className in classSpecAbilities) {
@@ -72,7 +84,15 @@
 	}
 
 	$effect(() => {
-		if (initialBossId || initialHealerSpecs.length > 0) {
+		const sortedSpecs = [...initialHealerSpecs].sort();
+		const nextKey = `${initialBossId ?? 'any'}|${sortedSpecs.join(',')}`;
+		if (nextKey === lastInitialSearchKey) return;
+
+		lastInitialSearchKey = nextKey;
+		selectedBossId = initialBossId;
+		selectedHealerSpecs = [...sortedSpecs];
+
+		if (initialBossId || sortedSpecs.length > 0) {
 			handleSearch();
 		}
 	});
@@ -80,10 +100,8 @@
 
 <Card class="w-full">
 	<CardHeader>
-		<CardTitle>Browse Raid Logs</CardTitle>
-		<CardDescription
-			>Search through logs to find specific boss fights and healer compositions</CardDescription
-		>
+		<CardTitle>{title}</CardTitle>
+		<CardDescription>{description}</CardDescription>
 	</CardHeader>
 	<CardContent class="space-y-6">
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -172,7 +190,7 @@
 			<p class="text-sm text-muted-foreground">
 				{selectedHealerSpecs.length
 					? `Selected: ${selectedHealerSpecs.length} healer${selectedHealerSpecs.length > 1 ? 's' : ''}`
-					: 'Select healers to filter by composition'}
+					: emptySelectionText}
 			</p>
 		</div>
 

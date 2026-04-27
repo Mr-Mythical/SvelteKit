@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { Chart } from 'svelte-chartjs';
 	import {
 		Chart as ChartJS,
@@ -95,19 +94,24 @@
 		}
 	};
 
-	onMount(async () => {
+	async function loadChart(id: number) {
+		loading = true;
+		chartData = null;
 		try {
-			const cacheKey = `damage-average:${bossId}`;
+			const cacheKey = `damage-average:${id}`;
 			const cached = getCache<AverageRecord[]>(cacheKey);
 			let data: AverageRecord[] | null = cached;
 
 			if (!data) {
-				const response = await fetch(`/api/damage-average?bossId=${bossId}`);
+				const response = await fetch(`/api/damage-average?bossId=${id}`);
 				if (!response.ok) throw new Error('Failed to fetch data');
 				data = await response.json();
 				// Cache for 7 days
 				setCache(cacheKey, data, 7 * 24 * 60 * 60 * 1000);
 			}
+
+			// Bail if bossId changed while we were fetching
+			if (id !== bossId) return;
 
 			chartData = {
 				labels: (data ?? []).map((d) => d.time_seconds.toString()),
@@ -115,8 +119,8 @@
 					{
 						label: 'Average Damage',
 						data: (data ?? []).map((d) => d.avg),
-						borderColor: 'rgb(59, 130, 246)',
-						backgroundColor: 'rgba(59, 130, 246, 0.1)',
+						borderColor: 'hsl(348, 80%, 35%)',
+						backgroundColor: 'hsla(348, 75%, 81%, 0.22)',
 						borderWidth: 2,
 						fill: true
 					}
@@ -125,8 +129,13 @@
 		} catch (err) {
 			logClientError('bossPreviewChart', 'failed to load preview chart', err);
 		} finally {
-			loading = false;
+			if (id === bossId) loading = false;
 		}
+	}
+
+	$effect(() => {
+		// Re-fetch whenever bossId changes (covers initial mount too).
+		void loadChart(bossId);
 	});
 </script>
 

@@ -93,14 +93,14 @@
 	schemas={[appSchema, faqSchema]}
 />
 <main class="container mx-auto px-4 py-8">
-	<div class="mb-6 text-center">
-		<h1 class="mb-2 text-4xl font-bold">Mythic+ Score Calculator</h1>
-		<p class="text-lg text-muted-foreground">
-			Calculate the required keystones to reach your desired World of Warcraft Mythic+ score, plan
-			dungeon runs, and optimize your m+ score with this interactive score calculator. Import your
-			character, set score goals, and share your setup with shareable URLs.
+	<header class="page-header">
+		<p class="page-eyebrow">Score calculator</p>
+		<h1 class="page-title">Mythic+ score calculator.</h1>
+		<p class="page-lede">
+			Calculate the keystones to reach your target Mythic+ score, plan dungeon runs, and
+			share your setup by URL.
 		</p>
-	</div>
+	</header>
 	<KeystoneTable />
 	<ScoreExplanation />
 	<ApiForm data={data.form} />
@@ -118,3 +118,41 @@
 	<Toaster richColors />
 </main>
 <Footer />
+
+<style>
+	.page-header {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		max-width: 72ch;
+		padding-bottom: clamp(20px, 3vw, 32px);
+	}
+
+	.page-eyebrow {
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: hsl(var(--link));
+		margin: 0;
+	}
+
+	.page-title {
+		font-family: var(--font-heading);
+		font-size: clamp(1.75rem, 4vw, 2.5rem);
+		font-weight: 700;
+		line-height: 1.08;
+		letter-spacing: -0.02em;
+		color: hsl(var(--foreground));
+		margin: 0;
+	}
+
+	.page-lede {
+		font-family: var(--font-body);
+		font-size: 0.9375rem;
+		line-height: 1.45;
+		color: hsl(var(--muted-foreground));
+		margin: 0;
+	}
+</style>

@@ -2,8 +2,6 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { handle as authHandle } from './auth';
 import type { Handle } from '@sveltejs/kit';
 
-const handleAuth: Handle = authHandle;
-
 const CSP_HEADER = [
 	"default-src 'self'",
 	"script-src 'self' 'unsafe-inline' 'unsafe-eval' https: https://pagead2.googlesyndication.com https://googlesyndication.com",
@@ -59,7 +57,7 @@ const handleSession: Handle = async ({ event, resolve }) => {
 
 // Exported for tests so the response-header contract can be exercised
 // without booting Auth.js. Production wiring still uses `handle` below.
-export const handle = sequence(handleAuth, handleSecurity, handleSession);
+export const handle = sequence(authHandle, handleSecurity, handleSession);
 
 export const __securityHandlerForTests: Handle = handleSecurity;
 export const __cspHeaderForTests = CSP_HEADER;
