@@ -1,0 +1,68 @@
+{
+  "batch": "dependency_health",
+  "batch_index": 7,
+  "assessments": {"dependency_health": 91.0},
+  "dimension_notes": {
+    "dependency_health": {
+      "evidence": [
+        "package.json runtime deps are small and purposeful: 12 entries (@auth/core, @auth/drizzle-adapter, @auth/sveltekit, chart.js, chartjs-plugin-annotation, chartjs-plugin-zoom, clsx, drizzle-orm, postgres, sveltekit-superforms, tailwind-merge, zod). Each is referenced by source code under src/.",
+        "Chart stack is internally consistent — chart.js is the single charting engine, svelte-chartjs is its Svelte wrapper, and chartjs-plugin-annotation / chartjs-plugin-zoom are first-party plugins. No competing chart libraries.",
+        "clsx and tailwind-merge are paired in src/lib/utils.ts (`cn()` helper) — the canonical shadcn pattern, not duplicate libraries with the same purpose.",
+        "chartjs-plugin-zoom is loaded via dynamic `await import('chartjs-plugin-zoom')` in src/components/charts/averageChart.svelte and damageChart.svelte, reflecting deliberate weight management for an optional plugin.",
+        "Auth stack is single-vendor: @auth/core, @auth/sveltekit, @auth/drizzle-adapter from the Auth.js family — no overlap with another auth library.",
+        "Database stack is single-vendor: drizzle-orm + postgres (postgres-js driver). drizzle-kit is correctly placed in devDependencies.",
+        "Forms stack is coherent: zod (schema) + sveltekit-superforms (server/client form runtime, imported via `zod4` adapter) + formsnap (UI primitives). No competing validation library.",
+        "No imports found for any package outside the declared dependency list (spot-checked via grep). No usage of moment, dayjs, lodash, axios, or other common heavyweights.",
+        "@types/better-sqlite3 is declared in devDependencies but no runtime better-sqlite3 is installed and no source imports it. Per dimension's `skip` rule for dev dependencies this is excluded from scoring; it appears to be a transitive type peer for drizzle-kit's optional sqlite path.",
+        "package-lock.json shows multiple resolved tslib versions (2.4.0, 2.8.0, 2.8.1) but these are transitive across separate dependency trees — no top-level pinning conflict.",
+        "No circular cross-module cycles surfaced in scan_evidence, and no cross-package dependency redirection issues visible from the import graph aids in holistic_context."
+      ],
+      "impact_scope": "codebase",
+      "fix_scope": "single_edit",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Nothing material; the only observable drift is a stale @types/better-sqlite3 devDep entry, which the rubric's skip rule excludes from scoring."
+    }
+  },
+  "dimension_judgment": {
+    "dependency_health": {
+      "dimension_character": "The runtime dependency set is small (12 packages), single-vendor per concern (Auth.js for auth, Drizzle for DB, Chart.js family for charts, Zod + Superforms + Formsnap for forms), and every entry is actually imported by src/. Standard shadcn pairings (clsx + tailwind-merge) are complementary rather than duplicative, and the optional chartjs-plugin-zoom is lazy-loaded — showing weight awareness. There are no observed unused runtime deps, no competing libraries for the same purpose, and no top-level version conflicts in the lockfile.",
+      "score_rationale": "A developer encounters a cohesive, purposeful dependency set with no duplication or evident bloat, which sits between the 90 (mostly healthy with minor overlap or weight concerns) and 100 (exemplary) anchors. The chart stack is the heaviest cluster but is justified by direct chart usage and is partially deferred via dynamic import. A small notch below 100 reflects that this review is bounded to declared deps without a bundle-size audit, not any concrete drift signal."
+    }
+  },
+  "issues": [],
+  "retrospective": {
+    "root_causes": [],
+    "likely_symptoms": [],
+    "possible_false_positives": []
+  },
+  "context_updates": {
+    "dependency_health": {
+      "add": [
+        {
+          "header": "Single-vendor stacks per concern",
+          "description": "Auth (Auth.js trio), DB (Drizzle + postgres-js), charts (chart.js + svelte-chartjs + plugins), and forms (zod + sveltekit-superforms + formsnap) each pick one ecosystem with no competing library, keeping the dependency surface small and predictable.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Lazy-loaded chartjs-plugin-zoom",
+          "description": "averageChart.svelte and damageChart.svelte import chartjs-plugin-zoom via `await import(...)` rather than statically, deferring the plugin's weight until the chart actually needs interactivity.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "clsx + tailwind-merge are complementary, not duplicate",
+          "description": "Both are used together in src/lib/utils.ts to build the `cn()` helper — clsx joins class names, tailwind-merge resolves Tailwind conflicts. This is the canonical shadcn pattern and not a sign of redundancy.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "All runtime deps actively imported",
+          "description": "Each of the 12 entries in `dependencies` resolves to at least one src/ import, with no stale runtime packages observed. Drift, when it exists, is contained to devDependencies (e.g. @types/better-sqlite3) which the rubric excludes from scoring.",
+          "settled": true,
+          "positive": true
+        }
+      ]
+    }
+  }
+}

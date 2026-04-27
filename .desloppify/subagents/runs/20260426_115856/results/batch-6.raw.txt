@@ -1,0 +1,101 @@
+{
+  "batch": "abstraction_fitness",
+  "batch_index": 6,
+  "assessments": {"abstraction_fitness": 89.0},
+  "dimension_notes": {
+    "abstraction_fitness": {
+      "evidence": [
+        "src/lib/auth/oauthBase.ts and src/lib/auth/tokenCacheBase.ts are earned shared abstractions: requestClientCredentialsToken() + createTokenCache() factory each have two real callers (WCL and Battle.net) at src/lib/auth/oauth.ts, blizzardOauth.ts, tokenCache.ts, blizzardTokenCache.ts. The previous duplication finding is genuinely resolved.",
+        "src/lib/server/wclGraphQL.ts exposes executeWclQuery + parseFightRequestBody + handleWclFightRequest. The factory is consumed by cast-events, damage-events, healing-events, and boss-events route handlers (4 callers, real polymorphic substitution via the options object), so the abstraction pays for itself.",
+        "Holistic abstractions evidence shows wrapper_rate 0.026, total_wrappers 1, one_impl_interface_count 0, facade_module_count 0, typed_dict_violation_count 0, enum_bypass_count 0 — almost no ceremonial indirection across the codebase.",
+        "The single detected pass-through wrapper, cn() in src/lib/utils.ts, intentionally composes clsx + twMerge — this is the canonical shadcn-svelte utility, not gratuitous indirection.",
+        "src/lib/components/ui/* button/index.ts etc. are barrel re-export facades, but they are intentional package entry points for a third-party-style UI kit (shadcn-svelte), which the rubric explicitly excludes.",
+        "Outlier: src/routes/api/death-events/+server.ts uses parseFightRequestBody + executeWclQuery + bespoke try/catch instead of handleWclFightRequest, despite having the exact body shape and error mapping that the factory was designed for — a genuine consistency gap rather than added behavior.",
+        "wide_param_bags signals are false positives in this codebase: chartCanvasPlugin.ts dereferences a Chart.js plugin context object (framework contract), and browse-logs/+server.ts dereferences a typed BrowseLogsParams request body inside a single handler — neither passes a bag through layers.",
+        "indirection_hotspots are mostly chain depth 3 inside individual route handlers (parse → execute → transform), not cross-feature wrapper chains; max chain depth 6 is concentrated in one file and reflects sequential local steps, not stacked indirection.",
+        "Generic options on handleWclFightRequest<TData, TBody> are exercised with multiple distinct concrete pairs (CastEventsData, DamageGraphData, HealingGraphData, BossEventsData), so the generic surface is justified."
+      ],
+      "impact_scope": "local",
+      "fix_scope": "single_edit",
+      "confidence": "high",
+      "issues_preventing_higher_score": "death-events/+server.ts bypasses handleWclFightRequest, leaving one feature inconsistent with the established abstraction; otherwise the abstraction layer is unusually clean for a project this size.",
+      "sub_axes": {
+        "abstraction_leverage": 92.0,
+        "indirection_cost": 5.0,
+        "interface_honesty": 96.0,
+        "delegation_density": 95.0,
+        "definition_directness": 92.0,
+        "type_discipline": 95.0
+      }
+    }
+  },
+  "dimension_judgment": {
+    "abstraction_fitness": {
+      "dimension_character": "The codebase keeps abstractions earned and minimal: shared OAuth/token-cache factories each serve two providers, and a single WCL GraphQL handler factory cleanly absorbs validation/error mapping for the per-fight event endpoints. Indirection hotspots and 'wide param bag' signals reduce, on inspection, to local request-body parsing and Chart.js framework contracts rather than ceremonial wrappers, and there are no one-implementation interfaces or pass-through type shells of note.",
+      "score_rationale": "Anchors at the 90-tier (mostly strong with a few layers that feel slightly overbuilt but don't slow the developer) — every shared abstraction has multiple real callers and the only consistency miss is death-events not adopting the WCL fight-request factory. The score sits a hair under 90 because that miss is visible to anyone reading the per-fight endpoints side by side."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "abstraction_fitness",
+      "identifier": "death_events_skips_wcl_factory",
+      "summary": "death-events/+server.ts duplicates handleWclFightRequest plumbing instead of calling the shared factory.",
+      "related_files": [
+        "src/routes/api/death-events/+server.ts",
+        "src/lib/server/wclGraphQL.ts"
+      ],
+      "evidence": [
+        "death-events imports executeWclQuery + parseFightRequestBody + WclQueryError and re-implements: parseFightRequestBody check → 400, executeWclQuery call with the standard {code, fightID, start, end} variables, try/catch mapping WclQueryError→502 and other errors→500.",
+        "Sibling endpoints cast-events, damage-events, healing-events, boss-events all delegate the same shape to handleWclFightRequest<TData, TBody>(request, { query, operation, fetchErrorMessage, transform }).",
+        "death-events' transform step (filter + actor lookup) fits the existing transform: (data, body) => result signature with no additional behavior, auth, or telemetry that would justify the bespoke handler."
+      ],
+      "suggestion": "Refactor death-events/+server.ts to call handleWclFightRequest<DeathsData, { deathEvents: DeathEvent[] }>(request, { query: QUERY, operation: 'api/death-events', fetchErrorMessage: 'Failed to fetch death events from API.', transform: (data) => ({ deathEvents: ... }) }), removing the local try/catch and parseFightRequestBody usage.",
+      "confidence": "high",
+      "impact_scope": "local",
+      "fix_scope": "single_edit",
+      "root_cause_cluster": "wcl_fight_handler_factory_adoption"
+    }
+  ],
+  "retrospective": {
+    "root_causes": [
+      "Per-fight WCL handler factory (handleWclFightRequest) is established but adoption is incomplete by one endpoint; remaining historical 'GraphQL query construction repeated' concerns are mostly addressed by executeWclQuery + the factory."
+    ],
+    "likely_symptoms": [
+      "wcl_query_template_duplication"
+    ],
+    "possible_false_positives": [
+      "wide_param_bags (chartCanvasPlugin Chart.js context, browse-logs typed request body)",
+      "indirection_hotspots (in-handler chain depth, not cross-layer)"
+    ]
+  },
+  "context_updates": {
+    "abstraction_fitness": {
+      "add": [
+        {
+          "header": "Earned shared OAuth/token-cache factories",
+          "description": "oauthBase.ts and tokenCacheBase.ts each have two real provider callers (WCL + Battle.net) and add concurrency-safe in-flight de-dup, so the indirection clearly pays for itself rather than being ceremonial.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "WCL GraphQL handler factory used across event endpoints",
+          "description": "handleWclFightRequest in src/lib/server/wclGraphQL.ts is consumed by cast/damage/healing/boss event handlers with distinct generic type pairs, so the generics and options bag are exercised polymorphically instead of being a single-use shell.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "shadcn-svelte UI barrels are intentional facades",
+          "description": "src/lib/components/ui/*/index.ts re-exports define a stable shadcn-style component package surface; they are explicitly out of scope per the rubric and should not be flagged as facade indirection.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "death-events bypasses the WCL fight handler factory",
+          "description": "death-events/+server.ts inlines parseFightRequestBody + try/catch + WclQueryError mapping rather than calling handleWclFightRequest, even though its shape matches the factory exactly — a single consistency outlier that prevents this dimension from scoring higher.",
+          "settled": false,
+          "positive": false
+        }
+      ]
+    }
+  }
+}

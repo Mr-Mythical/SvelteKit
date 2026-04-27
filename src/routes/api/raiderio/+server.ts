@@ -1,5 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { apiError, apiOk } from '$lib/server/apiResponses';
+import { logServerError } from '$lib/server/logger';
 
 interface RaiderIoResponse {
 	name: string;
@@ -38,14 +39,19 @@ export const GET: RequestHandler = async ({ url }) => {
 		`&name=${encodeURIComponent(name)}` +
 		`&fields=mythic_plus_best_runs`;
 
-	const response = await fetch(apiUrl);
-	if (!response.ok) {
-		return apiError('Failed to fetch data', response.status);
+	try {
+		const response = await fetch(apiUrl);
+		if (!response.ok) {
+			return apiError('Failed to fetch data', response.status);
+		}
+
+		const rawData: RaiderIoResponse = await response.json();
+		const bestRuns = rawData.mythic_plus_best_runs ?? [];
+		bestRuns.sort((a, b) => b.score - a.score);
+
+		return apiOk({ runs: bestRuns });
+	} catch (error) {
+		logServerError('api/raiderio', 'request failed', error);
+		return apiError('Failed to fetch data');
 	}
-
-	const rawData: RaiderIoResponse = await response.json();
-	const bestRuns = rawData.mythic_plus_best_runs ?? [];
-	bestRuns.sort((a, b) => b.score - a.score);
-
-	return apiOk({ runs: bestRuns });
 };

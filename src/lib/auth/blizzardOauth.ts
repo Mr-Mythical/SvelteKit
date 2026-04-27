@@ -1,5 +1,5 @@
 import type { AccessToken } from '$lib/types/apiTypes';
-import { requestClientCredentialsToken, isTokenExpired as baseIsTokenExpired } from './oauthBase';
+import { requestClientCredentialsToken } from './oauthBase';
 
 /** Battle.net OAuth2 client-credentials grant. */
 export function requestBlizzardBearerToken(
@@ -13,5 +13,3 @@ export function requestBlizzardBearerToken(
 		'Blizzard'
 	);
 }
-
-export const isTokenExpired = baseIsTokenExpired;

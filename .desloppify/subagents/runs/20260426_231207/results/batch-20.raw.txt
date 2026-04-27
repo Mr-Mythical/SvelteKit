@@ -1,0 +1,145 @@
+{
+  "batch": "type_safety",
+  "batch_index": 20,
+  "assessments": {
+    "type_safety": 87.5
+  },
+  "dimension_notes": {
+    "type_safety": {
+      "evidence": [
+        "tsconfig.json sets strict: true, and most production modules rely on inferred Drizzle types or hand-written interfaces in src/lib/types/* rather than `any` (only ~5 production hits for explicit `any`).",
+        "src/lib/server/wclGraphQL.ts is a well-typed boundary: executeWclQuery<T>, parseFightRequestBody(body: unknown): FightRequestBody | null, and handleWclFightRequest<TData,TBody> validate runtime shapes before exposing typed data to callers.",
+        "src/lib/db/userRecents.ts:160 — getUserRecents<T = unknown>(...): Promise<RecentItem<T>[]> returns `recents as unknown as RecentItem<T>[]`; the generic promises a typed `entityData: T` to callers, but the JSONB column is never validated, so the annotation lies about runtime shape (callers think they hold T, they actually hold unknown).",
+        "src/routes/api/top-players/+server.ts:112 uses `new Map<string, any>()` and indexes results with `result[metricKey]` even though the surrounding Drizzle `select({...})` produces a fully inferred row type that would type the metric lookups.",
+        "src/components/charts/damageChart.svelte uses 7 `as any` casts (lines 178, 243-265, 547-548) to reach into Chart.js plugin internals — Chart.js has typings, but the chart options bag is hand-typed as `ChartOptions<'line'> & { plugins: { annotation: { annotations: any[] } } }` which loses precision for `annotations`.",
+        "src/app.d.ts:21 declares `waitUntil: (promise: Promise<any>) => void` and lines 28-30 contain a real (non-declaration) `export async function post(context) { ... }` with an implicit-any `context` parameter — leftover Cloudflare Workers template noise inside a `.d.ts` file.",
+        "src/routes/api/cast-events/+server.ts:63 and src/routes/api/boss-events/+server.ts:74 both bridge GraphQL `Array<{type:string} & Record<string,unknown>>` data into `CastEvent[]` via `as unknown as CastEvent` — pragmatic, but the cast is asserted not validated.",
+        "Public APIs in $lib (calculations/, server/, auth/, db/) consistently carry explicit parameter and return types; `unknown` is used uniformly for caught errors and external JSON (logger.ts, clientLog.ts, fights/+server.ts, player-details/+server.ts).",
+        "No TypeScript `enum`s exist in the codebase, so the enum-bypass anti-pattern is structurally absent; role/metric/spec lists are typed as `string[]` literals in src/routes/api/top-players/+server.ts, which is a minor missed opportunity for `as const` / union narrowing but not a contradiction with runtime."
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Boundary-level cast in getUserRecents<T> turns the generic into a runtime fiction; the Map<string, any> in top-players abandons recoverable Drizzle row typing; app.d.ts ships an implicit-any function body in a declaration file."
+    }
+  },
+  "dimension_judgment": {
+    "type_safety": {
+      "dimension_character": "TypeScript is strict, `any` in production code is rare (a handful of sites), and external data is consistently funnelled through `unknown`-typed boundary helpers (parseFightRequestBody, executeWclQuery, logger error params) before being narrowed — a developer can generally trust signatures as documentation. The soft spots are concentrated and shape-recognisable: a generic `getUserRecents<T>` whose body lies about its return shape, a Map<string, any> that throws away a recoverable Drizzle row type, and a Chart.js plugin options bag that escapes into `any` to reach plugin internals.",
+      "score_rationale": "The codebase comfortably clears the 80-anchor (strict mode, well-typed cores, narrow boundaries) but a developer would still hit two recurring frictions: a generic return-type that isn't enforced (userRecents) and a few targeted any-escapes inside otherwise typed modules (top-players Map, damageChart Chart.js plugin, app.d.ts leftover). That keeps it in the 'generally accurate with a few soft spots that don't cause real confusion' band rather than at the 90+ trust-the-types level."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "type_safety",
+      "identifier": "user_recents_generic_lies",
+      "summary": "getUserRecents<T> casts unvalidated JSONB to RecentItem<T>[], so the generic promises a shape the runtime never checks",
+      "related_files": ["src/lib/db/userRecents.ts"],
+      "evidence": [
+        "Lines 138-163: getUserRecents<T = unknown>(...): Promise<RecentItem<T>[]> performs `getUserDb().select().from(userRecents)...` and returns `recents as unknown as RecentItem<T>[]`.",
+        "The `entityData` column is JSONB and is written by addUserRecent with `entityData: unknown`; nothing in the read path narrows it to T, so callers passing e.g. `getUserRecents<CharacterRecentData>` receive items typed as CharacterRecentData but holding arbitrary parsed JSON."
+      ],
+      "suggestion": "Either drop the <T> generic and return `RecentItem<unknown>[]` so callers must narrow with the existing RecentEntityData discriminated union, or have getUserRecents accept the discriminator (`type: RecentEntityType`) and at runtime tag each row with the matching union variant before returning. Concretely: change the signature to `getUserRecents(userId: string, type?: RecentEntityType, limit?: number): Promise<RecentItem<unknown>[]>` and let callers `switch` on `r.type` against RecentEntityData.",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "single_edit",
+      "root_cause_cluster": "boundary_type_lies"
+    },
+    {
+      "dimension": "type_safety",
+      "identifier": "top_players_map_any",
+      "summary": "Map<string, any> discards the Drizzle row type that the surrounding select() already provides",
+      "related_files": ["src/routes/api/top-players/+server.ts"],
+      "evidence": [
+        "Line 112: `const playerMap = new Map<string, any>();`",
+        "Lines 64-99: both `query` branches use `database.select({ id: ..., player_name: ..., dps: ..., hps: ..., ... })`, producing a fully-inferred row type accessible via `Awaited<typeof query>[number]`.",
+        "Lines 122-125 then do `result[metricKey] ?? 0` where `metricKey: 'dps' | 'hps'` — the `any` exists only to make this index access compile."
+      ],
+      "suggestion": "Define `type SpecRow = Awaited<typeof query>[number]` (or extract the select shape into a named type) and replace `Map<string, any>` with `Map<string, SpecRow>`. The `result[metricKey]` access works because both keys exist on the row type as `number | null`.",
+      "confidence": "high",
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "type_safety",
+      "identifier": "app_d_ts_implicit_any_body",
+      "summary": "src/app.d.ts contains an implementation function with an implicit-any `context` parameter inside a declaration file",
+      "related_files": ["src/app.d.ts"],
+      "evidence": [
+        "Lines 21: `waitUntil: (promise: Promise<any>) => void;` uses `any` for the platform context contract.",
+        "Lines 28-30: `export async function post(context) { const counter = context.platform.env.COUNTER.idFromName('A'); }` is a real function body in a `.d.ts` file with no parameter type — leftover from the Cloudflare Workers template that has no SvelteKit role."
+      ],
+      "suggestion": "Delete the `export async function post(context) {...}` block from src/app.d.ts (it is dead and shouldn't live in a declaration file at all), and tighten `waitUntil: (promise: Promise<any>) => void` to `waitUntil: (promise: Promise<unknown>) => void` since callers never read its resolved value.",
+      "confidence": "high",
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "type_safety",
+      "identifier": "damage_chart_plugin_any_escape",
+      "summary": "damageChart.svelte threads Chart.js plugin internals through repeated `as any` casts instead of typing the annotation plugin",
+      "related_files": ["src/components/charts/damageChart.svelte"],
+      "evidence": [
+        "Line 178: `const options: ChartOptions<'line'> & { plugins: { annotation: { annotations: any[] } } } = $state({...})`.",
+        "Lines 243-265: `(this as any).chart.getDatasetMeta(...)`, `(this as any).chart.data.datasets[...].hidden`, `(this as any).chart.update()` inside legend onClick — these are typed by Chart.js's `LegendItem` callbacks.",
+        "Lines 547-548: `(options.plugins as any).annotation = (options.plugins as any).annotation || { annotations: [] };` and `(options.plugins as any).annotation.annotations = annotations as any;`."
+      ],
+      "suggestion": "Import the chartjs-plugin-annotation types (`AnnotationOptions` from `chartjs-plugin-annotation`) and type `annotations: AnnotationOptions[]`. Inside the legend onClick, type the receiver as `LegendElement<'line'>` (the `this` context Chart.js documents) so the four `(this as any)` casts disappear; the `options.plugins as any` block can then be replaced by initialising `plugins.annotation` once in the literal.",
+      "confidence": "medium",
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    }
+  ],
+  "retrospective": {
+    "root_causes": [
+      "Generic-as-promise without runtime validation at the JSONB boundary (userRecents).",
+      "Reaching for `any` to avoid restating Drizzle's already-inferred row types (top-players)."
+    ],
+    "likely_symptoms": [
+      "damage_chart_plugin_any_escape"
+    ],
+    "possible_false_positives": []
+  },
+  "context_updates": {
+    "type_safety": {
+      "add": [
+        {
+          "header": "Strict TS with unknown-first boundaries",
+          "description": "tsconfig.json enables strict mode and production modules consistently use `unknown` (not `any`) for caught errors and inbound JSON — logger.ts, clientLog.ts, parseFightRequestBody, executeWclQuery, fights and player-details handlers all narrow `unknown` before exposing typed data, so the typed core is genuinely typed.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Generic WCL request helper carries types end-to-end",
+          "description": "src/lib/server/wclGraphQL.ts threads `<TData, TBody>` from query through transform with a custom WclQueryError, so every per-fight route handler stays in typed land without per-route casts — the boundary helper does the unsafe work once.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "No enums in codebase",
+          "description": "There are zero TypeScript `enum` declarations; domain values like roles, metrics, and spec names use string literals or `as const` arrays. The enum-bypass anti-pattern is structurally impossible here, though a few string[] could be tightened to literal unions for narrowing (e.g. role/metric in top-players).",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Generic-as-promise lie at JSONB boundary",
+          "description": "getUserRecents<T> in src/lib/db/userRecents.ts promises `RecentItem<T>[]` but never validates the JSONB `entityData` against T — the discriminated union RecentEntityData is defined right above but unused in the read path. Callers think they hold T; the runtime holds unparsed JSON.",
+          "settled": false,
+          "positive": false
+        },
+        {
+          "header": "Chart.js plugin path escapes types",
+          "description": "damageChart.svelte uses ~7 `as any` casts to reach into Chart.js legend `this.chart` and the chartjs-plugin-annotation options. The pragma is local but recurring; the plugin's own types would remove most of them.",
+          "settled": true,
+          "positive": false
+        },
+        {
+          "header": "app.d.ts holds Workers template leftover",
+          "description": "src/app.d.ts contains a real `export async function post(context)` body with implicit-any context — a Cloudflare Workers template fragment that doesn't belong in a SvelteKit declaration file.",
+          "settled": true,
+          "positive": false
+        }
+      ]
+    }
+  }
+}

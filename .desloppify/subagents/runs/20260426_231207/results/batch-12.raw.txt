@@ -1,0 +1,98 @@
+{
+  "batch": "authorization_consistency",
+  "batch_index": 12,
+  "assessments": {
+    "authorization_consistency": 87.0
+  },
+  "dimension_notes": {
+    "authorization_consistency": {
+      "evidence": [
+        "Single shared helper src/lib/server/requireSession.ts is used by every user-scoped API route: character-reports, current-state (GET+POST), my-wow-characters, recent-characters (GET+POST), recent-reports (GET+POST). All 10 handlers follow the identical 'const auth = await requireSession(locals); if (\"response\" in auth) return auth.response; const userId = auth.session.user.id;' pattern.",
+        "All 401 responses go through apiError('Not authenticated', 401) inside requireSession, so clients see one consistent shape ({error}) and status across the protected surface.",
+        "User identity for writes is always taken from auth.session.user.id, never from the request body — no IDOR surface. e.g. recent-characters POST (line 36-38) and recent-reports POST (line 41-46) both pass auth.session.user.id into addUserRecent.",
+        "Page-level protection at src/routes/profile/+page.server.ts uses event.locals.getSession with throw redirect(302, '/auth/signin'), which is the appropriate per-layer divergence (page → redirect, API → 401) rather than a convention violation.",
+        "Public, unauthenticated API routes (top-players, spec-top-players, spec-statistics, browse-logs, boss-events, cast-events, damage-events, healing-events, death-events, death-hotspots, damage-average, fights, player-details, character-score, calculate-runs, blizzard, raiderio) read public WoW analytics from the shared raid DB or proxy public upstreams keyed by query params (name/realm/region) — no user-scoped state is ever read or written, so the absence of auth is principled rather than a gap.",
+        "Auth model is intentionally single-bit (signed-in vs anonymous): there are no roles, permission strings, RLS policies, or service-role bypasses anywhere in the codebase, which removes whole classes of magic-string and admin-bypass inconsistencies the rubric warns about.",
+        "Input-validation trust boundary is uneven across siblings: the three authenticated POST handlers destructure request.json() with no validation or try/catch around parsing — current-state/+server.ts:50 (`const { urlParams }: Omit<CurrentState, 'timestamp'> = await request.json();`), recent-characters/+server.ts:40 (`const { characterName, realm, region } = await request.json();`), recent-reports/+server.ts:45 (`const { code, title, guild, owner } = await request.json();`) — while public POST siblings under the same routes/api/ tree consistently use the safer pattern `await request.json().catch(() => null)` plus a parse helper (death-events/+server.ts:66, fights/+server.ts:38, player-details/+server.ts:26).",
+        "hooks.server.ts re-implements event.locals.getSession by issuing an in-process fetch to '/auth/session' (handleSession, lines 39-50). This is fragile but uniform — every consumer (requireSession, layout, profile page) reads via the same locals.getSession?.() optional-chain, so the indirection does not create per-route inconsistency."
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Auth gating itself is uniform via requireSession, but user-input validation at the same trust boundary is not: authenticated POST handlers (current-state, recent-characters, recent-reports) accept any JSON shape without parse-error handling or runtime checks, while their public POST siblings (death-events, fights, player-details) consistently apply `request.json().catch(() => null)` plus a typed parser. Closing that gap with a small shared body-parsing helper would make the trust boundary symmetrical and earn a higher score."
+    }
+  },
+  "dimension_judgment": {
+    "authorization_consistency": {
+      "dimension_character": "Authorization in this codebase is small, simple, and applied through a single chokepoint: requireSession is the only auth primitive, every protected API handler uses it identically, and user identity for writes is always pulled from the session rather than the request body. The model is single-bit (signed-in vs not — no roles, no RLS, no service-role bypass) which removes whole categories of inconsistency the rubric warns about; the only real unevenness is at the input-validation half of the trust boundary, where authenticated JSON-body POSTs skip the parse-error handling and shape checks their public siblings apply.",
+      "score_rationale": "A developer auditing protected routes would find auth coverage trustworthy — one helper, one error shape, one identity source — which sits above the 80 'recurring gaps' anchor and into the 90 'mostly consistent with limited exceptions' band. The input-validation asymmetry at authenticated POST endpoints is a recurring, observable inconsistency at the same trust boundary, which keeps the score off the 90 anchor and lands it at 87."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "authorization_consistency",
+      "identifier": "auth_post_input_validation_gap",
+      "summary": "Authenticated POST handlers skip request-body validation that public POST siblings apply, splitting the trust boundary",
+      "related_files": [
+        "src/routes/api/current-state/+server.ts",
+        "src/routes/api/recent-characters/+server.ts",
+        "src/routes/api/recent-reports/+server.ts",
+        "src/routes/api/death-events/+server.ts",
+        "src/routes/api/fights/+server.ts",
+        "src/routes/api/player-details/+server.ts"
+      ],
+      "evidence": [
+        "current-state/+server.ts:50 — `const { urlParams }: Omit<CurrentState, 'timestamp'> = await request.json();` — no try/catch around parse, no shape check; a non-JSON or malformed body throws an unhandled SyntaxError that the surrounding try/catch then logs as a generic 'save failed'.",
+        "recent-characters/+server.ts:40 — `const { characterName, realm, region } = await request.json();` — values flow straight into addUserRecent without any type/length checks; characterName is also interpolated into the entity key `${characterName}-${realm}` (line 43).",
+        "recent-reports/+server.ts:45 — `const { code, title, guild, owner } = await request.json();` — same shape, no validation.",
+        "Public siblings consistently use the safer pattern: death-events/+server.ts:66 `const body = parseFightRequestBody(await request.json().catch(() => null));`, fights/+server.ts:38 `const body = (await request.json().catch(() => null)) as { code?: unknown } | null;`, player-details/+server.ts:26 same pattern."
+      ],
+      "suggestion": "Add a tiny shared helper in src/lib/server/ (e.g., `parseJsonBody<T>(request, validate): Promise<T | Response>`) that wraps `request.json().catch(() => null)` and returns apiError('Invalid request body', 400) on failure, then thread it through the three authenticated POST handlers (current-state, recent-characters, recent-reports). This matches what the public sibling endpoints already do and makes the trust boundary symmetric without introducing a new validation framework.",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    }
+  ],
+  "context_updates": {
+    "authorization_consistency": {
+      "add": [
+        {
+          "header": "Single requireSession chokepoint for protected APIs",
+          "description": "Every user-scoped API handler (10 handlers across 5 files) routes through src/lib/server/requireSession.ts, which returns either {session} or {response: 401 apiError}. Centralising the check into one helper means a developer reviewing security only has to verify one primitive and grep for one import to enumerate the protected surface.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Identity always sourced from session, never the body",
+          "description": "User-scoped writes (recent-characters POST, recent-reports POST, current-state POST) pass auth.session.user.id into the data layer. The request body never carries user identity, so the IDOR class of bug is structurally avoided rather than relying on per-route discipline.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Single-bit auth model — no roles or RLS",
+          "description": "There are no permission strings, role checks, RLS policies, or service-role bypasses anywhere in the codebase; the only authorization decision is signed-in-vs-anonymous via Battle.net OAuth. This is a deliberate scope choice that eliminates whole categories of inconsistency (magic permission literals, admin bypass without audit logging) the rubric flags.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Public analytics endpoints are principled, not gaps",
+          "description": "Unauthenticated routes under src/routes/api/ (top-players, browse-logs, boss-events, fights, damage/healing/death events, character-score, blizzard/raiderio proxies, calculate-runs) read public WoW raid analytics from the shared raid DB or proxy public upstreams keyed by query params. None of them read or write user-scoped state, so their lack of auth is by design rather than a sibling-inconsistency defect.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Page vs API auth divergence is layer-appropriate",
+          "description": "src/routes/profile/+page.server.ts uses event.locals.getSession + throw redirect(302, '/auth/signin'), while API routes use requireSession returning a 401 JSON. This is the right per-layer split (UX redirect for HTML, machine-readable error for fetch) rather than convention drift.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Input-validation asymmetry at the trust boundary",
+          "description": "Authenticated POST handlers (current-state, recent-characters, recent-reports) destructure request.json() with no parse-error handling or shape check, while public POST siblings (death-events, fights, player-details) consistently use `await request.json().catch(() => null)` plus a typed parser. Auth gating is uniform; the validation half of the trust boundary is not.",
+          "settled": false,
+          "positive": false
+        }
+      ]
+    }
+  }
+}

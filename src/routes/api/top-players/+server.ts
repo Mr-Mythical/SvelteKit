@@ -104,12 +104,10 @@ export const GET: RequestHandler = async ({ url }) => {
 		}
 
 		const results = await query;
-		if (results.length > 0) {
-			// Sample record available for debugging if needed
-		}
 
 		// Deduplicate by player_name + spec_icon, keeping the best performance for each unique player
-		const playerMap = new Map<string, any>();
+		type TopPlayerRow = (typeof results)[number];
+		const playerMap = new Map<string, TopPlayerRow>();
 		const duplicatesFound: string[] = [];
 
 		for (const result of results) {

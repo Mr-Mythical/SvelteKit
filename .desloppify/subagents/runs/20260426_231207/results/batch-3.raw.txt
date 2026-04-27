@@ -1,0 +1,130 @@
+{
+  "batch": "convention_outlier",
+  "batch_index": 3,
+  "assessments": {
+    "convention_outlier": 78.0
+  },
+  "dimension_notes": {
+    "convention_outlier": {
+      "evidence": [
+        "Naming is uniformly camelCase across src/, lib/auth/, lib/calculations/, lib/data/, lib/db/, lib/server/, lib/stores/, lib/ui/ (244 names sampled, 0 snake_case functions). Verb prefixes are consistent (get/create/fetch/load/is/...).",
+        "Module exports are uniformly named exports across all lib/ subdirectories (no default-export islands); class-based modules are limited to specific places (server/, types/, ui/) and used deliberately, not as drift.",
+        "Sibling outlier among WCL fight endpoints: src/routes/api/death-events/+server.ts hand-rolls parseFightRequestBody + executeWclQuery + try/catch/WclQueryError/logServerError, while peer endpoints cast-events, damage-events, healing-events, boss-events, damage-average all delegate to the shared handleWclFightRequest helper in src/lib/server/wclGraphQL.ts (which centralises exactly that 400/502/500 contract).",
+        "Convention drift in API response field naming: DB-backed endpoints (spec-statistics, spec-top-players, top-players, browse-logs, damage-average, death-hotspots) project snake_case keys (encounter_id, spec_icon, player_name, fight_id, death_count, sample_count) while WCL-backed endpoints (cast-events, damage-events, healing-events, boss-events, death-events) return camelCase keys (castEvents, seriesData, targetID, abilityGameID). Both styles share /api/* with no documented rationale, and downstream consumers (src/routes/api/top-players/+server.ts:160) re-spread the snake_case rows into the response, propagating the drift.",
+        "auth/blizzardTokenCache.ts and auth/tokenCache.ts intentionally contain no `type` declaration: they are 17-line config wrappers around the createTokenCache factory in tokenCacheBase.ts, where the shared TokenCacheConfig type lives. The sibling-behavior 'missing type' signal is a false positive of a deliberate factory pattern.",
+        "Shared API-response helpers (apiOk/apiError) and logging helpers (logServerError/handleApiError) are reused across both API clusters, so the surface is consistent at the HTTP-shape level even where field-naming and orchestration diverge."
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high"
+    }
+  },
+  "dimension_judgment": {
+    "convention_outlier": {
+      "dimension_character": "The codebase is broadly very consistent: uniform camelCase, a small fixed verb vocabulary, named-export modules everywhere, and a deliberate factory pattern in lib/auth that explains its sibling-behavior anomalies. The remaining drift is concentrated in src/routes/api: one WCL endpoint (death-events) bypasses the shared handler its peers use, and DB-backed endpoints expose snake_case response fields while WCL endpoints expose camelCase, with no documented contract.",
+      "score_rationale": "The dimension sits in the upper-middle band: there are no codebase-wide style islands or naming-convention drifts, but the API route folder has two real, navigable inconsistencies (one orchestration outlier, one response-shape split across ~6 endpoints) that a new contributor would notice within minutes and would have to ask about. That keeps the score below the 'reliably consistent' tier (~85+) but well above codebases with mixed casing or export styles."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "convention_outlier",
+      "identifier": "death_events_bypasses_shared_handler",
+      "summary": "death-events POST hand-rolls the WCL request lifecycle while every sibling WCL endpoint delegates to handleWclFightRequest.",
+      "related_files": [
+        "src/routes/api/death-events/+server.ts",
+        "src/routes/api/cast-events/+server.ts",
+        "src/routes/api/damage-events/+server.ts",
+        "src/routes/api/healing-events/+server.ts",
+        "src/routes/api/boss-events/+server.ts",
+        "src/lib/server/wclGraphQL.ts"
+      ],
+      "evidence": [
+        "src/routes/api/death-events/+server.ts:65-108 calls parseFightRequestBody + executeWclQuery + a manual try/catch with WclQueryError handling and logServerError — the exact contract handleWclFightRequest centralises (src/lib/server/wclGraphQL.ts:90-126).",
+        "Peer endpoints under src/routes/api/{cast-events,damage-events,healing-events,boss-events}/+server.ts all consist of a QUERY constant plus a one-line POST = handleWclFightRequest(...) with a transform; death-events is the only WCL fight endpoint that does not."
+      ],
+      "suggestion": "Convert death-events to the same handleWclFightRequest(transform: ...) shape used by its siblings; the death-vs-actor join in the current try-block fits cleanly inside the transform callback, eliminating the duplicated 400/502/500 ladder.",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "convention_outlier",
+      "identifier": "api_response_field_casing_split",
+      "summary": "DB-backed /api endpoints emit snake_case response fields while WCL-backed /api endpoints emit camelCase, with no documented contract.",
+      "related_files": [
+        "src/routes/api/spec-statistics/+server.ts",
+        "src/routes/api/spec-top-players/+server.ts",
+        "src/routes/api/top-players/+server.ts",
+        "src/routes/api/browse-logs/+server.ts",
+        "src/routes/api/damage-average/+server.ts",
+        "src/routes/api/death-hotspots/+server.ts",
+        "src/routes/api/cast-events/+server.ts",
+        "src/routes/api/damage-events/+server.ts"
+      ],
+      "evidence": [
+        "spec-statistics/+server.ts:55-77 aliases drizzle columns into encounter_id/spec_icon/death_filter/sample_count/last_updated for the response payload.",
+        "spec-top-players/+server.ts:47-55 and top-players/+server.ts:70-98 do the same for player_name/spec_icon/fight_id/death_count.",
+        "By contrast cast-events/+server.ts and damage-events/+server.ts return castEvents/seriesData/targetID/abilityGameID (camelCase, matching the rest of the TypeScript codebase).",
+        "There is no comment, README, or response-typing layer (e.g. apiResponses.ts is style-agnostic) marking the snake_case fields as a deliberate public-API contract."
+      ],
+      "suggestion": "Pick one casing for /api response fields (camelCase aligns with the rest of the codebase and with the TS DB schema's camelCase column properties) and either migrate the DB-backed routes or document the snake_case set as the stable external contract — whichever, capture the rule in src/lib/server/apiResponses.ts so siblings stop drifting.",
+      "confidence": "high",
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor"
+    }
+  ],
+  "retrospective": {
+    "root_causes": [
+      "Two API clusters (DB-backed vs WCL-backed) grew independently; only the WCL cluster gained a shared helper (handleWclFightRequest), so its conventions converged while the DB cluster kept ad-hoc try/catch + raw column aliasing.",
+      "snake_case response fields appear to mirror past raw-SQL row shapes from before the drizzle migration; the camelCase TS schema landed but the response contract was never reconciled."
+    ],
+    "likely_symptoms": [
+      "boilerplate_duplication findings concentrated under src/routes/api/* are the surface manifestation of the missing per-cluster handler / response-shaping convention rather than independent issues."
+    ],
+    "possible_false_positives": [
+      "sibling_conventions outlier flagging lib/auth/blizzardTokenCache.ts and lib/auth/tokenCache.ts as missing 'type' — these are intentionally minimal config files for the createTokenCache factory in tokenCacheBase.ts and should not be treated as convention drift."
+    ]
+  },
+  "context_updates": {
+    "convention_outlier": {
+      "add": [
+        {
+          "header": "Uniform camelCase across lib/ subdirectories",
+          "description": "All 244 sampled function names across src/, auth/, calculations/, data/, db/, server/, stores/, ui/ are camelCase with a small consistent verb vocabulary (get/create/fetch/load/is). There is no casing island in the production code.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Named-export-only module pattern",
+          "description": "Every lib/ subdirectory uses named exports; class-based modules are restricted to a few intentional places (server/, types/, ui/). New contributors can rely on `import { X } from '$lib/...'` without checking export style per file.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Token cache factory pattern is deliberate",
+          "description": "lib/auth/tokenCacheBase.ts is the single source for the OAuth client-credentials cache; tokenCache.ts and blizzardTokenCache.ts are intentionally tiny config files with no `type` declaration. The mechanical sibling-behavior 'missing type' signal here is a false positive of the factory layout, not drift.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Shared WCL handler centralises route lifecycle",
+          "description": "handleWclFightRequest in src/lib/server/wclGraphQL.ts captures the 400/502/500 ladder for WCL-backed endpoints; four of five WCL endpoints use it, making the convention clear by repetition.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "death-events bypasses the shared WCL handler",
+          "description": "src/routes/api/death-events/+server.ts hand-rolls parseFightRequestBody + executeWclQuery + a manual WclQueryError try/catch instead of using handleWclFightRequest like its siblings. Single-file outlier in an otherwise consistent cluster.",
+          "settled": true,
+          "positive": false
+        },
+        {
+          "header": "snake_case vs camelCase split in /api response shapes",
+          "description": "DB-backed /api routes (spec-statistics, spec-top-players, top-players, browse-logs, damage-average, death-hotspots) project snake_case fields; WCL-backed routes return camelCase. The split is undocumented and downstream code re-spreads the snake_case keys, propagating drift.",
+          "settled": true,
+          "positive": false
+        }
+      ]
+    }
+  }
+}

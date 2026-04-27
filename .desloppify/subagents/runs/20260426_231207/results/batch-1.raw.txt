@@ -1,0 +1,148 @@
+{
+  "batch": "cross_module_architecture",
+  "batch_index": 1,
+  "assessments": {
+    "cross_module_architecture": 83.0
+  },
+  "dimension_notes": {
+    "cross_module_architecture": {
+      "evidence": [
+        "structure.coupling_matrix has only two cross-directory edges in the entire src tree: src/lib/auth/ -> src/lib/types/ (1) and src/lib/db/ -> src/lib/server/ (1); the second edge comes solely from src/lib/db/connection.ts (dead/unused factory) importing logServerError, so real db modules do not depend on server.",
+        "Layer direction is consistent: routes/api/* import from $lib/db, $lib/server, $lib/types, $lib/calculations, $lib/auth; $lib/db, $lib/server, $lib/auth are leaf-style (auth only depends on $lib/types). No cycles surfaced in the directory profiles.",
+        "Documented two-database boundary (src/lib/db/schema.ts header comment + connection.ts module doc) is partially eroded at runtime: src/lib/db/index.ts exports getRaidDb AND barrel re-exports the user-DB modules (export * from './userSchema'; './users'; './userRecents'; export { getUserDb } from './userDb'), so '$lib/db' resolves to both databases.",
+        "Real consumers split asymmetrically against that barrel: raid handlers use `import { getRaidDb } from '$lib/db'` (7 sites), but user-DB consumers reach past the barrel directly (`$lib/db/userRecents.js`, `$lib/db/bnetAccount`, `$lib/db/userCharacters`, `$lib/db/userDb.js`, `$lib/db/users.js`), so the user side of the barrel exists without an active need and only blurs ownership.",
+        "Architecture-contract drift: src/lib/db/connection.ts exports createDrizzlePostgres with full module-doc justifying it as the single factory both wrappers should call, but src/lib/db/index.ts (getRaidDb) and src/lib/db/userDb.ts (getUserDb) inline the same ~15-option postgres() config independently. The contract documents intent that runtime ignores.",
+        "Two store roots without a documented boundary: src/stores.ts (apiPopup, dungeonData, wowSummaryStore) sits at top-level src/, while src/lib/stores/ holds recentCharacters/recentReports stores. Calculator components reach the top-level file via `import ... from '../../stores'` (apiForm.svelte, keystoneTable.svelte), creating a 2-level relative import that crosses the lib/non-lib boundary.",
+        "'God modules' flagged by the scanner (seo.svelte and layout/footer.svelte at 8 importers each) are intentional shared layout/SEO facades with thin contracts, not coupling hubs that create blast radius for common changes; treating them as architectural hubs would be a false positive.",
+        "module_level_io evidence shows side-effect-free imports: hooks.server.ts CSP/cookie reads occur inside request handlers, and api/* request.json() calls are inside RequestHandler bodies, so cross-module coordination via import-time side effects is absent.",
+        "data/myWowRoster.ts crosses from $lib/data into $lib/db (bnetAccount, userCharacters); this is a server-side composition pattern (called from auth.ts and api/character-reports), not a UI-layer reach into the DB layer, so the direction stays coherent.",
+        "package_size_census reports src as 100% of LOC because there is a single source package; no disproportionate sub-package emerges (db is the largest at 1216 LOC across 10 files, which is proportionate to its responsibility)."
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high"
+    }
+  },
+  "dimension_judgment": {
+    "cross_module_architecture": {
+      "dimension_character": "Layering is genuinely clean: a developer reading the directory profiles and coupling matrix sees a near-leaf graph (auth -> types only; db is independent except via a dead-code edge), no cycles, and consistent route -> lib direction. The friction is concentrated at the db boundary, where the documented two-database split is blurred by db/index.ts's barrel re-exporting user-DB modules and by getRaidDb/getUserDb each inlining the connection-factory contract that connection.ts was created to centralise. A secondary store-root split (src/stores.ts vs $lib/stores/) leaks across the lib boundary via ../../stores imports, but the blast radius is small.",
+      "score_rationale": "The codebase sits between the 90 anchor ('mostly coherent with isolated boundary drift') and the 80 anchor ('recurring boundary violations or hub modules'). The structural backbone earns the high anchor — only two cross-directory edges, no cycles, leaf-style db/server/auth — but two genuine drifts (documented connection-factory contract not enforced; db barrel mixing two databases against its own header comment) plus the lib/non-lib store split keep it from sitting cleanly at 90. Drift is localised rather than systemic, hence 83.0."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "cross_module_architecture",
+      "identifier": "db_index_barrel_blurs_two_database_boundary",
+      "summary": "src/lib/db/index.ts barrel re-exports user-DB modules, eroding the documented two-database boundary at the import surface",
+      "related_files": [
+        "src/lib/db/index.ts",
+        "src/lib/db/schema.ts",
+        "src/lib/db/userSchema.ts",
+        "src/lib/db/userDb.ts"
+      ],
+      "evidence": [
+        "src/lib/db/index.ts ends with `export * from './userSchema'; export * from './users'; export * from './userRecents'; export { getUserDb } from './userDb'`, so `$lib/db` is both the raid-DB factory entry and a user-DB barrel.",
+        "src/lib/db/schema.ts module doc explicitly defines two intentionally separate databases (DATABASE_URL raid analytics vs DATABASE_USER_URL user/auth) and points at userSchema.ts for the user side, contradicting the unified barrel.",
+        "Real user-DB consumers do not use the barrel: api/character-reports, api/current-state, api/recent-reports, api/recent-characters all import directly from `$lib/db/userRecents.js`; data/myWowRoster.ts imports directly from `$lib/db/bnetAccount` and `$lib/db/userCharacters`; auth.ts imports `$lib/db/userDb.js`, `$lib/db/userSchema.js`, `$lib/db/users.js`. The user-DB half of the barrel has no active external need."
+      ],
+      "suggestion": "Make src/lib/db/index.ts the raid-DB entry only — export getRaidDb plus a curated re-export of schema.ts (raid tables) — and remove the user-DB re-exports. Either keep the existing direct imports for user-DB modules, or add a sibling barrel `src/lib/db/user/index.ts` that re-exports getUserDb + userSchema + users + userRecents and migrate the four user-DB consumers to it. Either way restores the documented two-database boundary at the import surface.",
+      "confidence": "high",
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "root_cause_cluster": "db_two_database_boundary_drift"
+    },
+    {
+      "dimension": "cross_module_architecture",
+      "identifier": "connection_factory_contract_drift",
+      "summary": "Documented single-factory architecture in src/lib/db/connection.ts is not enforced — getRaidDb and getUserDb each inline the full client config",
+      "related_files": [
+        "src/lib/db/connection.ts",
+        "src/lib/db/index.ts",
+        "src/lib/db/userDb.ts"
+      ],
+      "evidence": [
+        "src/lib/db/connection.ts module doc states 'Both databases ... connect with identical client settings ... This module owns those settings so the two getXxxDb() wrappers ... differ only by the env var they read and the scope tag used for logging.' and exports createDrizzlePostgres for that purpose.",
+        "src/lib/db/index.ts getRaidDb (lines ~7-50) and src/lib/db/userDb.ts getUserDb (lines ~7-52) each call postgres() directly with the same prepare/max/idle_timeout/connect_timeout/transform/types/onnotice/debug/fetch_types/max_lifetime block instead of calling createDrizzlePostgres.",
+        "createDrizzlePostgres has zero importers in the workspace, making connection.ts a documented contract that runtime ignores — exactly the 'documented architecture contracts drifting from runtime' look-for of this dimension."
+      ],
+      "suggestion": "Either adopt the factory (rewrite getRaidDb in db/index.ts to `return createDrizzlePostgres({ label: 'raid', connectionString: env.DATABASE_URL, connectionStringSource: 'DATABASE_URL' })` and getUserDb similarly with DATABASE_USER_URL || DATABASE_URL), or delete connection.ts and update its module doc claim. Adopting is preferred — the factory already owns logServerError-based error reporting, which would also remove the lone `src/lib/db/ -> src/lib/server/` cross-directory edge once the dead file is removed from the import graph.",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor",
+      "root_cause_cluster": "db_two_database_boundary_drift"
+    },
+    {
+      "dimension": "cross_module_architecture",
+      "identifier": "top_level_src_stores_split",
+      "summary": "src/stores.ts at the top-level src/ duplicates the role of $lib/stores/, forcing components to cross the lib boundary via ../../stores imports",
+      "related_files": [
+        "src/stores.ts",
+        "src/lib/stores/recentCharacters.ts",
+        "src/lib/stores/recentReports.ts",
+        "src/components/calculator/apiForm.svelte",
+        "src/components/calculator/keystoneTable.svelte"
+      ],
+      "evidence": [
+        "src/stores.ts (writable apiPopup, dungeonData, wowSummaryStore) lives at the top-level src/ root, while src/lib/stores/ already hosts recentCharacters/recentReports plus their backends — two store roots with no documented dividing line.",
+        "Components reach the top-level file with two-level relative imports that cross the lib boundary: apiForm.svelte line 11 `import { apiPopup, dungeonData, wowSummaryStore } from '../../stores';`, keystoneTable.svelte lines 17-19 same pattern. No other production module imports from `../../` past src/ except these two.",
+        "structure.directory_profiles for src/ shows it as a mixed directory of unrelated concerns (auth.ts, hooks.server.ts, stores.ts, test-setup.ts, test-utils.ts) — the only one of those five that is non-entry-point production code is stores.ts."
+      ],
+      "suggestion": "Move src/stores.ts contents into src/lib/stores/ — e.g. a new src/lib/stores/calculatorState.ts (or split into apiPopup.ts/dungeonData.ts/wowSummary.ts to match the recentCharacters/recentReports granularity) — and update apiForm.svelte and keystoneTable.svelte to `import { ... } from '$lib/stores/calculatorState'`. This collapses the two store roots into one, removes the lib-crossing relative import, and aligns calculator state with the existing stores convention.",
+      "confidence": "medium",
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    }
+  ],
+  "retrospective": {
+    "root_causes": [
+      "Two-database architecture was documented in module headers but enforcement points (db/index.ts barrel, db/connection.ts factory) never tightened, leaving the boundary semi-open."
+    ],
+    "likely_symptoms": [
+      "connection_factory_contract_drift",
+      "db_index_barrel_blurs_two_database_boundary"
+    ],
+    "possible_false_positives": []
+  },
+  "context_updates": {
+    "cross_module_architecture": {
+      "add": [
+        {
+          "header": "Near-leaf coupling matrix with no cycles",
+          "description": "structure.coupling_matrix shows only two cross-directory edges in the entire src tree (auth->types, db->server via a single dead file). Layer direction is uniform routes -> lib, and lib/db, lib/server, lib/auth are effectively leaves — a developer can change a leaf without ripple risk.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Routes consume lib via stable barrel and direct imports",
+          "description": "Raid handlers consistently use `$lib/db` for getRaidDb and `$lib/server/apiResponses`/`$lib/server/logger` for response/error plumbing, giving cross-module handoffs a predictable shape per route family.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Documented two-DB boundary partially eroded at db/index.ts",
+          "description": "schema.ts and connection.ts headers describe a strict two-database split, but db/index.ts barrel re-exports user-DB modules and consumers reach past it for user-DB needs, so the boundary lives in docs but not at the import surface.",
+          "settled": true,
+          "positive": false
+        },
+        {
+          "header": "createDrizzlePostgres factory has no callers",
+          "description": "db/connection.ts documents itself as the owner of connection settings, yet getRaidDb (db/index.ts) and getUserDb (db/userDb.ts) each inline the same postgres() option block. The factory is a documented contract that runtime ignores, and it is also the sole reason db -> server appears in the coupling matrix.",
+          "settled": true,
+          "positive": false
+        },
+        {
+          "header": "Two store roots: src/stores.ts vs $lib/stores/",
+          "description": "Calculator state (apiPopup, dungeonData, wowSummaryStore) sits at the top-level src/ root and is imported via ../../stores, while recentCharacters/recentReports live under $lib/stores/. There is no documented rule for the split, and only calculator components cross the boundary.",
+          "settled": false,
+          "positive": false
+        },
+        {
+          "header": "seo.svelte and footer.svelte are facades, not hubs",
+          "description": "Both components hit 8 importers in the structure summary, but they are thin shared layout/SEO surfaces with stable contracts. Treating their fan-in as architectural hub-ness would mistake intentional reuse for coupling debt.",
+          "settled": true,
+          "positive": true
+        }
+      ]
+    }
+  }
+}

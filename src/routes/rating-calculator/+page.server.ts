@@ -23,6 +23,7 @@ export const load: PageServerLoad = async (event) => {
 				? parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1]
 				: parts[0];
 
+		seoTitle = `${score} Mythic+ Rating Calculator`;
 		seoDescription = `Achieve your ${score} Mythic+ score with ${breakdownStr}. Try the interactive m+ calculator to see which keystones you need for your desired Mythic+ score in WoW. Import your character and plan your runs!`;
 		seoKeywords = `mythic+ calculator, mythic rating calculator, mythic score calculator, mythic+ score calculator, mythic plus rating calculator, mythic+ rating calculator, mythic plus calculator, mythic planner, mythic dungeon planner, m+ calculator, ${score} mythic rating, ${score} mythic+ rating, ${score} mythic score, ${score} mythic+ score`;
 	}

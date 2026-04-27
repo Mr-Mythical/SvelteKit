@@ -1,12 +1,12 @@
 {
   "command": "show",
-  "query": "score_formula_recomputed_lookup_and_dead_tail",
+  "query": "subjective",
   "status_filter": "open",
   "total": 0,
   "issues": [],
   "narrative": {
     "phase": "middle_grind",
-    "headline": "\u26a0 1 security issue \u2014 review before other cleanup. 347 issues open. Test health (4.5%) needs attention \u2014 run `desloppify next` to start. (63 review work items \u2014 run `desloppify show review --status open`)",
+    "headline": "348 issues open. Test health (4.5%) needs attention \u2014 run `desloppify next` to start. (66 review work items \u2014 run `desloppify show review --status open`)",
     "dimensions": {
       "lowest_dimensions": [
         {
@@ -17,16 +17,16 @@
         },
         {
           "name": "Test strategy",
-          "strict": 18.0,
-          "failing": 9,
+          "strict": 32.0,
+          "failing": 3,
           "impact": 0.0,
           "subjective": true,
           "impact_description": "re-review to improve"
         },
         {
-          "name": "AI generated debt",
-          "strict": 32.0,
-          "failing": 4,
+          "name": "High elegance",
+          "strict": 54.0,
+          "failing": 8,
           "impact": 0.0,
           "subjective": true,
           "impact_description": "re-review to improve"
@@ -97,24 +97,13 @@
       },
       {
         "type": "reorganize",
-        "detector": "cycles",
-        "count": 1,
-        "description": "1 cycles issues \u2014 break cycles by extracting shared code or using `desloppify move`",
-        "command": "desloppify show cycles --status open",
-        "impact": 0.0,
-        "dimension": "Security",
-        "priority": 4,
-        "lane": "restructure"
-      },
-      {
-        "type": "reorganize",
         "detector": "facade",
         "count": 1,
         "description": "1 facade issues \u2014 flatten re-export facades or consolidate barrel files",
         "command": "desloppify show facade --status open",
         "impact": 0.0,
         "dimension": "Code quality",
-        "priority": 5,
+        "priority": 4,
         "lane": "restructure"
       },
       {
@@ -125,7 +114,7 @@
         "command": "desloppify show structural --status open",
         "impact": 0.0,
         "dimension": "File health",
-        "priority": 6,
+        "priority": 5,
         "lane": "refactor_0"
       },
       {
@@ -136,7 +125,7 @@
         "command": "desloppify show test_coverage --status open",
         "impact": 0.0,
         "dimension": "Test health",
-        "priority": 7,
+        "priority": 6,
         "lane": "test_coverage"
       },
       {
@@ -147,7 +136,7 @@
         "command": "desloppify show signature --status open",
         "impact": 0.0,
         "dimension": "Unknown",
-        "priority": 8,
+        "priority": 7,
         "lane": "refactor_1"
       },
       {
@@ -158,18 +147,18 @@
         "command": "desloppify show boilerplate_duplication --status open",
         "impact": 0.0,
         "dimension": "Duplication",
-        "priority": 9,
+        "priority": 8,
         "lane": "refactor_2"
       },
       {
         "type": "refactor",
         "detector": "review",
-        "count": 63,
-        "description": "63 review work items need investigation \u2014 run `desloppify show review --status open` to see them",
+        "count": 66,
+        "description": "66 review work items need investigation \u2014 run `desloppify show review --status open` to see them",
         "command": "desloppify show review --status open",
         "impact": 0.0,
         "dimension": "Unknown",
-        "priority": 10,
+        "priority": 9,
         "lane": "refactor_3"
       },
       {
@@ -180,7 +169,7 @@
         "command": "desloppify show smells --status open",
         "impact": 0.0,
         "dimension": "Code quality",
-        "priority": 11,
+        "priority": 10,
         "lane": "refactor_2"
       },
       {
@@ -191,25 +180,14 @@
         "command": "desloppify show stale_exclude --status open",
         "impact": 0.0,
         "dimension": "Code quality",
-        "priority": 12,
+        "priority": 11,
         "lane": "refactor_4"
-      },
-      {
-        "type": "manual_fix",
-        "detector": "security",
-        "count": 1,
-        "description": "1 security work items \u2014 review and fix security issues \u2014 prioritize by severity",
-        "command": "desloppify show security --status open",
-        "impact": 0.0,
-        "dimension": "Security",
-        "priority": 13,
-        "lane": "refactor_2"
       }
     ],
     "strategy": {
       "fixer_leverage": {
         "auto_fixable_count": 1,
-        "total_count": 473,
+        "total_count": 480,
         "coverage": 0.002,
         "impact_ratio": 0.0,
         "recommendation": "none"
@@ -228,17 +206,16 @@
           "actions": [
             2,
             3,
-            4,
-            5
+            4
           ],
-          "file_count": 74,
+          "file_count": 73,
           "total_impact": 0.0,
           "automation": "manual",
           "run_first": false
         },
         "refactor_0": {
           "actions": [
-            6
+            5
           ],
           "file_count": 1,
           "total_impact": 0.0,
@@ -247,7 +224,7 @@
         },
         "refactor_1": {
           "actions": [
-            8
+            7
           ],
           "file_count": 1,
           "total_impact": 0.0,
@@ -256,9 +233,8 @@
         },
         "refactor_2": {
           "actions": [
-            9,
-            11,
-            13
+            8,
+            10
           ],
           "file_count": 56,
           "total_impact": 0.0,
@@ -267,7 +243,7 @@
         },
         "refactor_3": {
           "actions": [
-            10
+            9
           ],
           "file_count": 1,
           "total_impact": 0.0,
@@ -276,7 +252,7 @@
         },
         "refactor_4": {
           "actions": [
-            12
+            11
           ],
           "file_count": 2,
           "total_impact": 0.0,
@@ -285,7 +261,7 @@
         },
         "test_coverage": {
           "actions": [
-            7
+            6
           ],
           "file_count": 70,
           "total_impact": 0.0,
@@ -294,7 +270,7 @@
         }
       },
       "can_parallelize": true,
-      "hint": "7 independent workstreams, safe to parallelize. Rescan after each phase to verify. Review: 63 issue(s) \u2014 `desloppify show review --status open`."
+      "hint": "7 independent workstreams, safe to parallelize. Rescan after each phase to verify. Review: 66 issue(s) \u2014 `desloppify show review --status open`."
     },
     "tools": {
       "fixers": [
@@ -348,9 +324,9 @@
     },
     "debt": {
       "overall_gap": 0.0,
-      "wontfix_count": 25,
-      "worst_dimension": null,
-      "worst_gap": 0.0,
+      "wontfix_count": 27,
+      "worst_dimension": "Security",
+      "worst_gap": 0.5,
       "trend": "stable"
     },
     "milestone": null,
@@ -358,7 +334,7 @@
       "command": "desloppify autofix unused-imports --dry-run",
       "description": "1 unused issues \u2014 run `desloppify autofix unused-imports --dry-run` to preview, then apply"
     },
-    "why_now": "7 independent workstreams, safe to parallelize. Rescan after each phase to verify. Review: 63 issue(s) \u2014 `desloppify show review --status open`.",
+    "why_now": "7 independent workstreams, safe to parallelize. Rescan after each phase to verify. Review: 66 issue(s) \u2014 `desloppify show review --status open`.",
     "verification_step": {
       "command": "desloppify scan",
       "reason": "revalidate after changes"
@@ -367,20 +343,20 @@
       {
         "type": "wontfix_gap",
         "severity": "medium",
-        "message": "Strict/lenient gap is 0.0 pts with 25 wontfix issues"
+        "message": "Strict/lenient gap is 0.0 pts with 27 wontfix issues"
       }
     ],
     "strict_target": {
       "target": 85.0,
-      "current": 68.1,
-      "gap": 16.9,
+      "current": 74.8,
+      "gap": 10.2,
       "state": "below",
       "warning": null
     },
     "reminders": [
       {
         "type": "review_issues_pending",
-        "message": "63 review work item(s) need investigation. Run `desloppify show review --status open` to see the work queue.",
+        "message": "66 review work item(s) need investigation. Run `desloppify show review --status open` to see the work queue.",
         "command": "desloppify show review --status open",
         "priority": 1,
         "severity": "high"

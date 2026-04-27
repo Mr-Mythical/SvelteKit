@@ -46,7 +46,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async () => {
 		],
 		secret: env.AUTH_SECRET,
 		trustHost: true,
-		debug: true,
+		debug: process.env.NODE_ENV !== 'production',
 		session: {
 			strategy: 'database' as const,
 			maxAge: 30 * 24 * 60 * 60, // 30 days in seconds

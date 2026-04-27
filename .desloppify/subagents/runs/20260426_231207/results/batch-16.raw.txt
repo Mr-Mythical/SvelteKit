@@ -1,0 +1,70 @@
+{
+  "batch": "initialization_coupling",
+  "batch_index": 16,
+  "assessments": {"initialization_coupling": 89.0},
+  "dimension_notes": {
+    "initialization_coupling": {
+      "evidence": [
+        "src/lib/db/index.ts and src/lib/db/userDb.ts defer all Postgres client construction behind getRaidDb()/getUserDb() factory functions; env vars (DATABASE_URL, DATABASE_USER_URL) are read inside the factory, not at module scope.",
+        "src/lib/db/connection.ts centralizes the postgres-js client config and includes an explicit `if (building) throw new Error(...)` guard so a build-time import never opens a connection.",
+        "src/lib/auth/tokenCacheBase.ts createTokenCache() is the single source of truth for OAuth client-credentials caching. Module-level state (`cachedToken`, `inFlight`) lives inside a closure; readCredentials is a deferred callback so env.WCL_CLIENT_ID / env.BLIZZARD_CLIENT_ID are not read at import time. The doc-comment explicitly justifies the per-isolate singleton choice.",
+        "src/auth.ts wraps SvelteKitAuth in an async config factory `SvelteKitAuth(async () => { ... })`, so env.AUTH_BATTLENET_ID/SECRET/AUTH_SECRET are pulled when SvelteKit invokes the factory rather than at import. Framework bootstrap pattern (skip per rubric).",
+        "src/hooks.server.ts is a thin sequence(handleAuth, handleSecurity, handleSession) and contains no import-time side effects.",
+        "src/stores.ts only exports `writable(...)` initializations and a pure `new Dungeons()` (synchronous loop populating an in-memory array) — no I/O, no env, no boot order dependency.",
+        "src/lib/data/myWowRoster.ts declares a module-level `const rosterCache = new Map(...)` as a documented per-isolate cache layered above the DB; no other module mutates this map and there is no creation-order dependency.",
+        "Only one direct `process.env` read in src (`src/auth.ts` line 62 `process.env.NODE_ENV === 'production'` for cookie.secure); all other env access goes through `$env/dynamic/private` consistently.",
+        "No top-level `await`, no `await import(...)` workarounds, and no circular-init lazy-import patterns found across src/lib (grep for `await import(` outside tests returned nothing).",
+        "The SvelteKitAuth factory destructures into module-level exports `export const { handle, signIn, signOut } = SvelteKitAuth(...)` — a one-time framework bootstrap. The dependent modules (auth/tokenCache, db/userDb) all expose lazy getters, so the destructure does not chain expensive init."
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit",
+      "confidence": "high",
+      "issues_preventing_higher_score": "Minor convention drift: src/auth.ts reads `process.env.NODE_ENV` directly inside the cookie config while the rest of the codebase consistently uses `$env/dynamic/private`. In Cloudflare Workers, `process.env` is shimmed but not the documented contract — same value could be sourced via `dev` or env-aware helper. Also the SvelteKitAuth factory pattern means a single failing dependency import (e.g. logger -> apiResponses) would taint the whole hook chain; a per-handle late-bind would be more isolation-friendly but is unidiomatic for SvelteKit Auth. Neither rises to a real defect."
+    }
+  },
+  "dimension_judgment": {
+    "initialization_coupling": {
+      "dimension_character": "Initialization is deliberately lazy and isolated: every database client, OAuth token, and external-credential read is hidden behind a factory or closure that runs at call time, not at module load. The few module-level singletons that exist (token caches, the roster Map) are documented per-isolate decisions with clear concurrency notes, and a `building` guard prevents accidental connections during prerender.",
+      "score_rationale": "A developer can import any module in this codebase without worrying about boot-order side effects, environment timing, or hidden cross-module init coupling — matching the 90 anchor. One minor `process.env.NODE_ENV` outlier and the unavoidable framework-level SvelteKitAuth bootstrap keep it from a higher score, but there is no fragility, no circular-init shimming, and no creation-order dependency between modules."
+    }
+  },
+  "issues": [],
+  "retrospective": {
+    "root_causes": [
+      "Centralized factory pattern (createDrizzlePostgres, createTokenCache) makes deferred init the path of least resistance.",
+      "Consistent use of $env/dynamic/private + `building` guards reflects a deliberate Cloudflare Workers initialization model."
+    ],
+    "likely_symptoms": [],
+    "possible_false_positives": []
+  },
+  "context_updates": {
+    "initialization_coupling": {
+      "add": [
+        {
+          "header": "DB clients constructed per-request behind factories",
+          "description": "getRaidDb() and getUserDb() build a fresh postgres-js client on each call with `max: 1`, short idle/lifetime timeouts, and a `building` guard. This deliberately avoids module-level connections to dodge a Cloudflare Workers connection-state bug documented in connection.ts.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Env reads deferred inside closures, not at module scope",
+          "description": "Token caches and OAuth helpers expose `readCredentials: () => env.X` callbacks rather than reading env at import. This keeps modules importable in test harnesses without setting every secret and avoids fragile boot-order from $env/dynamic/private.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Per-isolate singleton caches are documented and bounded",
+          "description": "createTokenCache() and rosterCache (myWowRoster.ts) are intentional process-local singletons with explicit comments explaining the per-isolate fan-out, in-flight Promise sharing, and TTL. Creation order across modules does not matter because each closure owns its own state.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Sole process.env read is in auth cookie config",
+          "description": "src/auth.ts uses `process.env.NODE_ENV === 'production'` for cookie.secure while the rest of the code uses $env/dynamic/private. Minor consistency drift but it is read inside the SvelteKitAuth factory callback, so it remains deferred.",
+          "settled": false,
+          "positive": false
+        }
+      ]
+    }
+  }
+}

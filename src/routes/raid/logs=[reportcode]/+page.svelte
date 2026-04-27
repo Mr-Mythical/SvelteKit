@@ -23,6 +23,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import EncounterSkeleton from '../../../components/skeletons/encounterSkeleton.svelte';
+	import { logClientError } from '$lib/utils/clientLog';
 
 	let reportURL: string = $state('');
 	let fights: Fight[] = $state([]);
@@ -171,7 +172,6 @@
 		loadingData = true;
 		showFightSelection = false;
 
-		// Update URL with fight parameter
 		updateUrlParams(codeToFetch, fight.id);
 
 		try {
@@ -255,8 +255,18 @@
 					error = 'No data found for the selected fight.';
 				}
 			} else {
-				error = 'Failed to fetch some data for the selected fight. Check console for details.';
-				console.error({ damageData, healingData, castData, bossData, playerDetailsData });
+				const failed = [
+					!damageResponse.ok && 'damage-events',
+					!healingResponse.ok && 'healing-events',
+					!castResponse.ok && 'cast-events',
+					!bossResponse.ok && 'boss-events',
+					!playerDetailsResponse.ok && 'player-details'
+				].filter(Boolean);
+				error = 'Failed to fetch some data for the selected fight.';
+				logClientError('raid/logs', `fight fetch failed: ${failed.join(', ')}`, {
+					fightId: fight.id,
+					report: codeToFetch
+				});
 			}
 		} catch (err) {
 			console.error('Fetch Events Error:', err);
@@ -270,7 +280,6 @@
 		selectedFight = null;
 		showFightSelection = true;
 		resetEvents();
-		// Remove fight parameter but keep report parameter
 		const currentReport = extractReportCode(reportURL.trim());
 		updateUrlParams(currentReport, null);
 	}
@@ -283,7 +292,6 @@
 		reportTitle = undefined;
 		reportOwner = undefined;
 		reportGuild = undefined;
-		// Clear all URL parameters when going back to start
 		clearUrlParams();
 	}
 

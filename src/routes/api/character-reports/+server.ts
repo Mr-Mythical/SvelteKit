@@ -90,28 +90,6 @@ const GUILD_RECENT_REPORTS_QUERY = /* GraphQL */ `
 	}
 `;
 
-const GUILD_REPORTS_QUERY = /* GraphQL */ `
-	query GuildReports($name: String!, $server: String!, $region: String!) {
-		reportData {
-			reports(guildName: $name, guildServerSlug: $server, guildServerRegion: $region, limit: 8) {
-				data {
-					code
-					title
-					startTime
-					endTime
-					guild {
-						id
-						name
-					}
-					owner {
-						name
-					}
-				}
-			}
-		}
-	}
-`;
-
 async function fetchReportsForCharacter(
 	character: { characterName: string; realm: string; region: string }
 ): Promise<WarcraftLogsReport[]> {
@@ -136,27 +114,20 @@ async function fetchReportsForCharacter(
 async function fetchReportsForGuild(
 	guild: { name: string; realm: string; region: string }
 ): Promise<WarcraftLogsReport[]> {
-	const queries = [GUILD_RECENT_REPORTS_QUERY, GUILD_REPORTS_QUERY];
+	try {
+		const data = await executeWclQuery<{
+			reportData?: { reports?: { data?: WarcraftLogsReport[] } };
+		}>(GUILD_RECENT_REPORTS_QUERY, {
+			name: guild.name,
+			server: guild.realm,
+			region: guild.region.toUpperCase()
+		});
 
-	for (const query of queries) {
-		try {
-			const data = await executeWclQuery<{
-				reportData?: { reports?: { data?: WarcraftLogsReport[] } };
-			}>(query, {
-				name: guild.name,
-				server: guild.realm,
-				region: guild.region.toUpperCase()
-			});
-
-			const reports = data.reportData?.reports?.data;
-			if (reports?.length) return reports;
-		} catch (error) {
-			logWclFailure('guild', guild, error);
-			return [];
-		}
+		return data.reportData?.reports?.data ?? [];
+	} catch (error) {
+		logWclFailure('guild', guild, error);
+		return [];
 	}
-
-	return [];
 }
 
 function logWclFailure(

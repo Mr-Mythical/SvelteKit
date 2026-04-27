@@ -39,7 +39,7 @@ function createCurrentStateStore() {
 	function saveToAPI(urlParams: string) {
 		if (!browser) return;
 
-		const doSave = async () => {
+		const postCurrentState = async () => {
 			try {
 				const response = await fetch('/api/current-state', {
 					method: 'POST',
@@ -62,7 +62,7 @@ function createCurrentStateStore() {
 			}
 		};
 
-		doSave();
+		postCurrentState();
 	}
 
 	return {

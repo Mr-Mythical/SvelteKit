@@ -1,0 +1,116 @@
+{
+  "batch": "abstraction_fitness",
+  "batch_index": 6,
+  "assessments": {"abstraction_fitness": 84.0},
+  "dimension_notes": {
+    "abstraction_fitness": {
+      "evidence": [
+        "src/lib/server/wclGraphQL.ts defines handleWclFightRequest as a real factory: 4 sibling routes (boss-events, cast-events, damage-events, healing-events) all delegate body parsing, executeWclQuery, 400/502/500 mapping, and logging to it.",
+        "src/routes/api/death-events/+server.ts is the lone holdout — it inlines parseFightRequestBody, executeWclQuery, WclQueryError handling, and logServerError instead of calling handleWclFightRequest, duplicating the exact plumbing the factory already encapsulates (lines 62-105).",
+        "src/lib/auth/oauth.ts:14 and src/lib/auth/blizzardOauth.ts:17 each `export const isTokenExpired = baseIsTokenExpired;`. Grep across src/** shows the only consumer of isTokenExpired is tokenCacheBase.ts, which imports directly from oauthBase. The two re-exports have no callers and are pass-through ceremony.",
+        "src/lib/auth/tokenCacheBase.ts createTokenCache is a justified factory with two real implementations (tokenCache.ts for WCL, blizzardTokenCache.ts for Blizzard) that supply different env reads and token endpoints — leverage > ceremony.",
+        "src/lib/db/_helpers.ts dbOperation wraps Drizzle calls to add labelled logging on failure. Falls under the 'wrappers that add telemetry' skip — earned indirection.",
+        "src/lib/server/requireSession.ts collapses the duplicated 401 / { error } shape across protected endpoints — single behavioural translation, callers benefit.",
+        "src/lib/server/apiResponses.ts apiOk is a thin wrapper over SvelteKit json(), but the symmetry with apiError standardises a single response shape across all routes — semantic value, not pass-through.",
+        "src/lib/utils.ts cn is the standard shadcn-svelte clsx+twMerge helper used throughout components — conventional one-impl helper, not ceremony.",
+        "Indirection hotspots flagged in mechanical evidence (max_chain_depth 5–6 in damage/cast/healing/player-details) are SvelteKit route → handleWclFightRequest → executeWclQuery → fetch chains, i.e. earned layering rather than gratuitous wrappers.",
+        "wide_param_bags signal on src/lib/ui/chartCanvasPlugin.ts is a false positive — the file has a single Chart.js plugin object whose beforeDraw takes the standard chart param; 'config_bag_mentions: 21' counts literal `padding + width/height` arithmetic, not a propagated option bag (wide_functions: 0).",
+        "No one-implementation interface ecosystem: data/types interfaces (DungeonRun, RosterCharacter, MyWowCharacter, FightRequestBody, AccessToken) are data shapes, not polymorphic protocols.",
+        "delegation_heavy_class_count 0, facade_module_count 0, one_impl_interface_count 0 in mechanical summary — corroborated by reading the lib tree (src/lib/index.ts is empty; no barrel re-exports)."
+      ],
+      "impact_scope": "module",
+      "fix_scope": "single_edit",
+      "confidence": "high",
+      "issues_preventing_higher_score": "death-events/+server.ts duplicating the WCL fight-handler plumbing while four siblings adopt the factory keeps the pattern from being uniformly applied; two dead `isTokenExpired` re-exports in the auth layer add naming ceremony with no consumers.",
+      "sub_axes": {
+        "abstraction_leverage": 88.0,
+        "indirection_cost": 86.0,
+        "interface_honesty": 95.0,
+        "delegation_density": 95.0,
+        "definition_directness": 85.0,
+        "type_discipline": 90.0
+      }
+    }
+  },
+  "dimension_judgment": {
+    "abstraction_fitness": {
+      "dimension_character": "Abstractions in this codebase are mostly earned: the WCL request factory, token-cache factory, requireSession helper, and dbOperation each remove real duplication or standardise a behaviour, and there is no one-implementation interface sprawl or facade re-export entropy. The remaining cost is small but visible — one sibling route opts out of the established factory and two auth modules expose dead pass-through re-exports — which keeps the pattern from feeling uniformly trusted.",
+      "score_rationale": "Solidly in the 80s: a developer benefits from most layers and rarely navigates ceremony. It is not 90+ because handleWclFightRequest is the established pattern across four siblings yet death-events still inlines the same plumbing, and isTokenExpired is re-exported from two auth modules with zero callers — both are concrete instances of indirection that does not pay for itself."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "abstraction_fitness",
+      "identifier": "death-events-skips-factory",
+      "summary": "death-events/+server.ts duplicates handleWclFightRequest plumbing instead of using the shared factory the four sibling event routes adopt.",
+      "related_files": [
+        "src/routes/api/death-events/+server.ts",
+        "src/lib/server/wclGraphQL.ts"
+      ],
+      "evidence": [
+        "Lines 62-105 inline parseFightRequestBody, executeWclQuery, WclQueryError → apiError(502), and the catch-all logServerError → apiError(500).",
+        "boss-events, cast-events, damage-events, healing-events all reduce to a handleWclFightRequest call with { query, operation, fetchErrorMessage, transform } — the same shape death-events open-codes.",
+        "The factory's transform signature already supports the actor-map enrichment death-events performs (boss-events does the same kind of post-query reshape inside transform)."
+      ],
+      "suggestion": "Refactor POST in death-events/+server.ts to call handleWclFightRequest<DeathsData, { deathEvents: DeathEvent[] }> and move the actor-map + filter/map projection into the transform callback. Set fetchErrorMessage to the existing 'Failed to fetch death events.' string and operation to 'api/death-events'.",
+      "confidence": "high",
+      "impact_scope": "local",
+      "fix_scope": "single_edit",
+      "root_cause_cluster": "wcl_fight_handler_factory_uniformity"
+    },
+    {
+      "dimension": "abstraction_fitness",
+      "identifier": "auth-istokenexpired-deadreexport",
+      "summary": "oauth.ts and blizzardOauth.ts each re-export isTokenExpired with no consumers — pass-through indirection that adds ceremony without value.",
+      "related_files": [
+        "src/lib/auth/oauth.ts",
+        "src/lib/auth/blizzardOauth.ts",
+        "src/lib/auth/oauthBase.ts",
+        "src/lib/auth/tokenCacheBase.ts"
+      ],
+      "evidence": [
+        "src/lib/auth/oauth.ts:14 — `export const isTokenExpired = baseIsTokenExpired;`",
+        "src/lib/auth/blizzardOauth.ts:17 — same re-export.",
+        "Workspace grep for `isTokenExpired` shows the only call site is src/lib/auth/tokenCacheBase.ts:56, which imports directly from './oauthBase'. Neither re-export is referenced anywhere in src/**.",
+        "Each provider module's only legitimate export is its requestBearerToken / requestBlizzardBearerToken function; the isTokenExpired re-export is leftover boilerplate."
+      ],
+      "suggestion": "Delete the two `export const isTokenExpired = baseIsTokenExpired;` lines (and the corresponding `isTokenExpired as baseIsTokenExpired` import aliases) from src/lib/auth/oauth.ts and src/lib/auth/blizzardOauth.ts. Consumers already import from oauthBase directly.",
+      "confidence": "high",
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    }
+  ],
+  "retrospective": {
+    "root_causes": [
+      "wcl_fight_handler_factory_uniformity: factory was introduced after the original event handlers were written; one sibling was missed during the migration."
+    ],
+    "possible_false_positives": [
+      "wide_param_bags::src/lib/ui/chartCanvasPlugin.ts (Chart.js plugin protocol, not a real option-bag).",
+      "wide_param_bags::src/routes/api/browse-logs/+server.ts (mechanical wide_functions count is 0; mentions are domain field references)."
+    ]
+  },
+  "context_updates": {
+    "abstraction_fitness": {
+      "add": [
+        {
+          "header": "WCL fight handler factory pattern",
+          "description": "handleWclFightRequest in src/lib/server/wclGraphQL.ts standardises body parsing, query execution, and 400/502/500 error mapping for per-fight WCL endpoints. Adoption by 4 of 5 sibling routes makes the abstraction earned rather than ceremonial.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Token cache factory has two real implementations",
+          "description": "createTokenCache in tokenCacheBase.ts is consumed by both WCL (tokenCache.ts) and Blizzard (blizzardTokenCache.ts) with distinct env reads and endpoints, so the indirection delivers genuine reuse and concurrency safety rather than single-implementation ceremony.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Auth modules carry dead isTokenExpired re-exports",
+          "description": "oauth.ts and blizzardOauth.ts each re-export isTokenExpired from oauthBase but no caller imports those symbols — tokenCacheBase reaches for the original. The re-exports add naming surface without substitution value and should be pruned.",
+          "settled": true,
+          "positive": false
+        }
+      ]
+    }
+  }
+}

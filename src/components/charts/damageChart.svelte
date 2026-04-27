@@ -17,7 +17,8 @@
 		Title,
 		Filler
 	} from 'chart.js';
-	import type { ChartOptions, ChartData } from 'chart.js';
+	import type { ChartOptions, ChartData, LegendElement } from 'chart.js';
+	import type { AnnotationOptions } from 'chartjs-plugin-annotation';
 	import type { CastEvent, Series, Player } from '$lib/types/apiTypes';
 	import { backgroundColorPlugin } from '$lib/ui/chartCanvasPlugin';
 	import { abilityColors } from '$lib/ui/classColors';
@@ -174,7 +175,9 @@
 	let lastXValue = 0;
 	const pointInterval = damageEvents[0]?.pointInterval || healingEvents[0]?.pointInterval;
 
-	const options: ChartOptions<'line'> & { plugins: { annotation: { annotations: any[] } } } = $state({
+	const options: ChartOptions<'line'> & {
+		plugins: { annotation: { annotations: AnnotationOptions[] } };
+	} = $state({
 		responsive: true,
 		plugins: {
 			title: {
@@ -239,30 +242,26 @@
 				labels: {
 					color: '#FFF9F5'
 				},
-				onClick: function (event, legendItem) {
-					const meta = (this as any).chart.getDatasetMeta(legendItem.datasetIndex);
-					if (legendItem.datasetIndex !== undefined) {
-						meta.hidden =
-							meta.hidden === null
-								? !(this as any).chart.data.datasets[legendItem.datasetIndex].hidden
-								: null;
-					}
+				onClick: function (this: LegendElement<'line'>, event, legendItem) {
+					if (legendItem.datasetIndex === undefined) return;
+					const meta = this.chart.getDatasetMeta(legendItem.datasetIndex);
+					meta.hidden =
+						meta.hidden === null
+							? !this.chart.data.datasets[legendItem.datasetIndex].hidden
+							: !meta.hidden;
 					// Update specFilters for healer datasets
-					let label: string | undefined;
-					if (legendItem.datasetIndex !== undefined) {
-						label = (this as any).chart.data.datasets[legendItem.datasetIndex].label;
-						if (label && label.includes(' (')) {
-							const healerName = label.split(' (')[0];
-							const specKey = Object.keys(specFilters).find((key) =>
-								key.startsWith(healerName + ' (')
-							);
-							if (specKey) {
-								specFilters[specKey] = !meta.hidden;
-								specFilters = { ...specFilters };
-							}
+					const label = this.chart.data.datasets[legendItem.datasetIndex].label;
+					if (label && label.includes(' (')) {
+						const healerName = label.split(' (')[0];
+						const specKey = Object.keys(specFilters).find((key) =>
+							key.startsWith(healerName + ' (')
+						);
+						if (specKey) {
+							specFilters[specKey] = !meta.hidden;
+							specFilters = { ...specFilters };
 						}
 					}
-					(this as any).chart.update();
+					this.chart.update();
 				}
 			},
 			annotation: {
@@ -544,8 +543,8 @@
 
 	$effect(() => {
 		options.plugins = options.plugins || {};
-		(options.plugins as any).annotation = (options.plugins as any).annotation || { annotations: [] };
-		(options.plugins as any).annotation.annotations = annotations as any;
+		options.plugins.annotation = options.plugins.annotation || { annotations: [] };
+		options.plugins.annotation.annotations = annotations as AnnotationOptions[];
 	});
 </script>
 

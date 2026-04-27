@@ -85,8 +85,9 @@ export const unifiedReports = pgTable(
 // identifiers (report_code/fight_id/encounter_id/region) and `last_updated`
 // directly onto the row instead of joining via `unified_reports`. The schema
 // below mirrors the live table so Drizzle types match production. The
-// `unifiedReports` table is retained for legacy migration history but is not
-// referenced at runtime.
+// `unifiedReports` table is still the FK target for `healer_compositions.report_id`
+// (cascade-on-delete) but the join path through it is no longer used at
+// runtime — production reads use the denormalised columns above.
 export const healerCompositions = pgTable(
 	'healer_compositions',
 	{

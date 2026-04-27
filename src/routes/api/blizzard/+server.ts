@@ -30,10 +30,10 @@ export const GET: RequestHandler = async ({ url }) => {
 		]);
 
 		if (!summaryResponse.ok) {
-			throw new Error(`Summary endpoint error: ${await summaryResponse.text()}`);
+			throw new Error(`Summary endpoint error: status ${summaryResponse.status}`);
 		}
 		if (!mediaResponse.ok) {
-			throw new Error(`Media endpoint error: ${await mediaResponse.text()}`);
+			throw new Error(`Media endpoint error: status ${mediaResponse.status}`);
 		}
 
 		const summaryData = await summaryResponse.json();
@@ -44,6 +44,6 @@ export const GET: RequestHandler = async ({ url }) => {
 		return apiOk(combinedData);
 	} catch (error) {
 		logServerError('api/blizzard', 'request failed', error);
-		return apiError(error instanceof Error ? error.message : 'Internal Server Error.');
+		return apiError('Failed to fetch character data from Blizzard.', 502);
 	}
 };

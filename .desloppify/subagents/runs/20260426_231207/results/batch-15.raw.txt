@@ -1,0 +1,179 @@
+{
+  "batch": "package_organization",
+  "batch_index": 15,
+  "assessments": {
+    "package_organization": 76.0
+  },
+  "dimension_notes": {
+    "package_organization": {
+      "evidence": [
+        "src/lib/ contains both a file utils.ts (cn helper, shadcn type aliases) and a folder utils/ (clientLog.ts) — two siblings sharing the same name with unrelated contents force a developer to disambiguate before importing.",
+        "src/stores.ts lives at the src/ root (3 global Svelte stores) while src/lib/stores/ holds 4 recent-character/report stores — store concerns are split across two locations with no naming clue which to use.",
+        "src/lib/db/ is a flat 10-file directory mixing two distinct databases: raid-analytics (schema.ts 402 LOC, connection.ts, index.ts, _helpers.ts) and user/auth (userSchema.ts, userDb.ts, users.ts, userCharacters.ts, userRecents.ts, bnetAccount.ts). The naming prefix 'user*' is the only signal; a db/raid/ + db/user/ split would let directory structure carry the distinction.",
+        "Single-file directories fragment src/lib/: actions/ (reveal.ts), calculations/ (keystoneCalculations.ts), utils/ (clientLog.ts). hooks/ is an empty placeholder directory. directory_profiles confirms several dirs with file_count <= 1 sitting alongside healthier groupings.",
+        "Two parallel component roots exist: src/components/ (product features: calculator/, charts/, combobox/, layout/, raid/, skeletons/, plus authButton.svelte and seo.svelte at root) and src/lib/components/ui/ (shadcn primitives only, 20 subfolders). The convention is defensible (vendor primitives vs product components) but the split is undocumented at the source root.",
+        "Positive: src/lib/auth/ (6 files), src/lib/server/ (5 files), src/lib/data/ (5 files), src/lib/types/ (8 files), and src/lib/components/ui/ are cohesive, purpose-named directories with consistent membership.",
+        "Positive: SvelteKit framework-imposed layout (src/routes/api/<endpoint>/+server.ts, +layout.svelte, hooks.server.ts) is followed without deviation, so the bulk of the route tree maps predictably to URLs.",
+        "src/lib/types/realms.ts is 572 LOC of realm constant data (largest file in the codebase per scan_evidence) sitting in types/ alongside true type definitions like apiTypes.ts and bossData.ts — content/role mismatch within the dir.",
+        "Coupling matrix is sparse (only auth/→types/ and db/→server/ recorded), and no cross-directory cycles were detected — boundaries between the cohesive packages are clean."
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "medium",
+      "issues_preventing_higher_score": ""
+    }
+  },
+  "dimension_judgment": {
+    "package_organization": {
+      "dimension_character": "The repository follows SvelteKit conventions cleanly at the route layer and has several well-scoped, cohesive packages under src/lib/ (auth/, server/, data/, types/, components/ui/), so most navigation is predictable. However, the lib/ root itself shows recurring placement friction: a utils.ts file collides in name with a utils/ folder, stores live in two places, single-file folders sit next to populated ones, and the db/ directory flattens two distinct databases into one bag of files. A developer can navigate the framework parts confidently but has to read each file under src/ and src/lib/ to know which db, store, or util module is the right one.",
+      "score_rationale": "The dimension sits between the 80 and 70 anchors: cohesive packages and consistent route structure pull it toward 'solid but uneven', while the utils name collision, dual store homes, fragmented single-file folders, and the unsplit dual-database db/ are the kind of structural mismatches the 80 anchor describes ('files that don't belong where they are, flat directories mixing unrelated concerns'). With multiple recurring mismatches but no widespread search-rather-than-navigate problem, 76.0 reflects a codebase that mostly serves navigation but routinely surprises within src/lib/."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "package_organization",
+      "identifier": "lib_utils_name_collision",
+      "summary": "src/lib/utils.ts (file) and src/lib/utils/ (folder) share a name with unrelated contents",
+      "related_files": [
+        "src/lib/utils.ts",
+        "src/lib/utils/clientLog.ts"
+      ],
+      "evidence": [
+        "src/lib/utils.ts exports the shadcn-style cn() helper plus WithoutChild/WithElementRef type aliases (UI utilities).",
+        "src/lib/utils/clientLog.ts is an unrelated client-side logger (no imports from utils.ts and no inverse).",
+        "Both resolve under $lib/utils — autocomplete on '$lib/utils' returns the file first, hiding the folder; tooling and humans must look twice to know which is which."
+      ],
+      "suggestion": "Rename the directory to a purpose name (e.g. src/lib/logging/ or merge clientLog.ts into src/lib/server/logger.ts as its client counterpart) so the utils.ts file owns the $lib/utils import path unambiguously. Single-file move + import-path update; verify with `npm run check` and `git grep \"\\$lib/utils\"`.",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "package_organization",
+      "identifier": "stores_split_homes",
+      "summary": "Svelte stores split across src/stores.ts and src/lib/stores/ with no rule for which goes where",
+      "related_files": [
+        "src/stores.ts",
+        "src/lib/stores/recentCharacters.ts",
+        "src/lib/stores/recentReports.ts"
+      ],
+      "evidence": [
+        "src/stores.ts (root) defines wowSummaryStore, apiPopup, dungeonData — global UI stores imported via the relative path '../../stores' from components.",
+        "src/lib/stores/ contains 4 recent-* stores accessed via the $lib/stores alias.",
+        "Both files use the same writable() pattern and serve the same role; their directory placement does not predict which store lives where."
+      ],
+      "suggestion": "Move src/stores.ts into src/lib/stores/ (e.g. src/lib/stores/global.ts or split into stores/wowSummary.ts, stores/uiPopup.ts, stores/dungeons.ts), then update the small number of components/calculator/* and routes/auth/[...rest]/* importers to '$lib/stores/...'. Verify with `npm run check` and grep for `from '../../stores'`.",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "single_edit"
+    },
+    {
+      "dimension": "package_organization",
+      "identifier": "db_dual_database_flat_dir",
+      "summary": "src/lib/db/ flattens two distinct databases (raid analytics + user/auth) into one 10-file directory",
+      "related_files": [
+        "src/lib/db/schema.ts",
+        "src/lib/db/userSchema.ts",
+        "src/lib/db/userDb.ts",
+        "src/lib/db/users.ts",
+        "src/lib/db/userCharacters.ts",
+        "src/lib/db/userRecents.ts",
+        "src/lib/db/bnetAccount.ts",
+        "src/lib/db/connection.ts",
+        "src/lib/db/index.ts",
+        "src/lib/db/_helpers.ts"
+      ],
+      "evidence": [
+        "Two Drizzle configs (drizzle.config.ts + drizzle.user.config.ts) and two migration trees (drizzle/ + drizzle/user/) confirm two distinct databases.",
+        "Inside src/lib/db/, the only signal of which DB a file belongs to is a 'user' filename prefix (userSchema.ts, userDb.ts, userCharacters.ts, userRecents.ts) plus bnetAccount.ts; raid-analytics tables sit in schema.ts/index.ts/connection.ts with no matching prefix.",
+        "directory_profiles shows db/ at file_count=10 with mixed concerns — above the rubric's 'flat directory overload' guidance once the 'two databases' role is known."
+      ],
+      "suggestion": "Split into src/lib/db/raid/ (schema.ts, connection.ts, index.ts, _helpers.ts) and src/lib/db/user/ (userSchema.ts→schema.ts, userDb.ts→db.ts, users.ts, userCharacters.ts→characters.ts, userRecents.ts→recents.ts, bnetAccount.ts). Stage the move: (1) create subfolders and move files with `git mv`, (2) update imports via search-and-replace on `$lib/db/(user)?` patterns, (3) run `npm run check` and the db tests. The rename also removes the redundant 'user' prefix on every file inside db/user/.",
+      "confidence": "medium",
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "root_cause_cluster": "dual_database_layout"
+    },
+    {
+      "dimension": "package_organization",
+      "identifier": "lib_singleton_dirs",
+      "summary": "src/lib/ contains several single-file folders and one empty folder that fragment the library root",
+      "related_files": [
+        "src/lib/actions/reveal.ts",
+        "src/lib/calculations/keystoneCalculations.ts",
+        "src/lib/utils/clientLog.ts",
+        "src/lib/hooks/"
+      ],
+      "evidence": [
+        "src/lib/actions/ holds one file (reveal.ts).",
+        "src/lib/calculations/ holds one file (keystoneCalculations.ts).",
+        "src/lib/utils/ holds one file (clientLog.ts) and conflicts with the sibling utils.ts file.",
+        "src/lib/hooks/ is an empty placeholder directory with no .ts files.",
+        "scan_evidence and directory_profiles both show no other files queued for these folders, so they remain thin wrappers rather than growing groupings."
+      ],
+      "suggestion": "Inline the contents and delete the wrapper folders until they earn their own home: keep reveal.ts at src/lib/actions/reveal.ts only if you expect 3+ Svelte actions soon (otherwise move to src/lib/ui/reveal.ts alongside other UI helpers); move keystoneCalculations.ts to src/lib/calculations/ only when a second calculation file lands (today, place beside its caller in src/components/calculator/ or src/lib/data/); delete the empty src/lib/hooks/ directory. Apply renames with `git mv`, run `npm run check`.",
+      "confidence": "medium",
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor"
+    },
+    {
+      "dimension": "package_organization",
+      "identifier": "realms_constants_in_types_dir",
+      "summary": "src/lib/types/realms.ts is a 572-LOC constants table living in a directory named for type definitions",
+      "related_files": [
+        "src/lib/types/realms.ts"
+      ],
+      "evidence": [
+        "scan_evidence flags realms.ts at 572 LOC — the largest file in the codebase — and notes zero importers.",
+        "Sibling files in src/lib/types/ (apiTypes.ts, bossData.ts, blizzard.ts, dungeons.ts) are pure type/interface definitions.",
+        "A developer scanning src/lib/types/ would not expect a multi-hundred-line static data table at that path."
+      ],
+      "suggestion": "Move src/lib/types/realms.ts to src/lib/data/realms.ts (sibling of characterData.ts, currentState.ts which already group static data fetchers) and re-export any embedded type aliases back through src/lib/types/realms.ts as a single one-line type re-export, or split the file into realms-data.ts (data) and realms.ts (types) if both are needed. Single `git mv` plus import-path update; run `npm run check`.",
+      "confidence": "medium",
+      "impact_scope": "local",
+      "fix_scope": "single_edit"
+    }
+  ],
+  "context_updates": {
+    "package_organization": {
+      "add": [
+        {
+          "header": "SvelteKit route layout followed cleanly",
+          "description": "src/routes/ adheres to SvelteKit conventions: each src/routes/api/<endpoint>/+server.ts maps directly to a URL, +layout.svelte/+page.svelte placement is consistent, and hooks.server.ts sits at the framework-mandated src/ root. A developer who knows SvelteKit can navigate the route tree without inspecting code.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Cohesive lib subpackages by concern",
+          "description": "src/lib/auth/, src/lib/server/, src/lib/data/, src/lib/types/, and src/lib/components/ui/ each contain files that share a single role (OAuth, server-only utilities, data fetchers, type defs, shadcn primitives). Membership is predictable and the coupling_matrix shows clean inter-package edges (auth/→types/, db/→server/) with no cycles.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "lib/utils.ts file vs lib/utils/ folder collision",
+          "description": "src/lib/utils.ts (shadcn cn() + type aliases) and src/lib/utils/clientLog.ts coexist as siblings sharing the 'utils' name with unrelated contents, forcing developers to disambiguate which $lib/utils path they want.",
+          "settled": false,
+          "positive": false
+        },
+        {
+          "header": "Stores split between src/ root and lib/stores/",
+          "description": "src/stores.ts (global UI stores) lives at the package root while src/lib/stores/ holds the recent-* stores. The directory layout offers no rule for where a new Svelte store should go, and import paths differ accordingly.",
+          "settled": false,
+          "positive": false
+        },
+        {
+          "header": "db/ flattens two distinct databases",
+          "description": "src/lib/db/ holds 10 files spanning two separate Drizzle databases (raid analytics + user/auth). The only signal which database a file targets is a 'user' filename prefix; the directory itself does not encode the boundary that drizzle.config.ts and drizzle.user.config.ts already make explicit.",
+          "settled": false,
+          "positive": false
+        },
+        {
+          "header": "Single-file and empty folders under lib/",
+          "description": "src/lib/actions/, src/lib/calculations/, and src/lib/utils/ each hold a single file, and src/lib/hooks/ is empty. These thin wrappers fragment the library root without carrying their weight as groupings.",
+          "settled": false,
+          "positive": false
+        }
+      ]
+    }
+  }
+}

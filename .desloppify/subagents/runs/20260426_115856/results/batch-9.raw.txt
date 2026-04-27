@@ -1,0 +1,131 @@
+{
+  "batch": "mid_level_elegance",
+  "batch_index": 9,
+  "assessments": {
+    "mid_level_elegance": 81.5
+  },
+  "dimension_notes": {
+    "mid_level_elegance": {
+      "evidence": [
+        "requireSession (src/lib/server/requireSession.ts) + apiError/apiOk (src/lib/server/apiResponses.ts) define a single, narrow auth seam: every protected /api/* handler I sampled (recent-characters, recent-reports, current-state, my-wow-characters) follows the exact same `const auth = await requireSession(locals); if ('response' in auth) return auth.response; try { ... } catch (e) { logServerError(...); return apiError(...) }` shape",
+        "handleWclFightRequest (src/lib/server/wclGraphQL.ts) collapses 5 per-fight endpoints (damage-events, healing-events, death-events, cast-events, boss-events) into ~30-line files by composing query + transform around a shared body parser, query runner, and error→Response translator (e.g. src/routes/api/damage-events/+server.ts is just a query string + transform)",
+        "WclQueryError carries a typed `kind: 'http' | 'graphql'` discriminant and is caught once at the seam (src/routes/api/fights/+server.ts maps to 502 vs 500); error propagation across the WCL boundary is predictable",
+        "createTokenCache (src/lib/auth/tokenCacheBase.ts) factors the WCL and Battle.net token caches into one closure with documented concurrency contract; tokenCache.ts and blizzardTokenCache.ts each just supply provider config",
+        "Recent-reports and recent-characters store backends (src/lib/stores/recentReportsBackends.ts, recentCharactersBackends.ts) expose a discriminated AddOutcome union ('ok'|'unauthorized'|'unavailable') so the composition layer (recentReports.ts) reacts to backend-specific failure modes via a small switch — clean, explicit boundary contract",
+        "characterData.ts uses discriminated FetchRunsResult / FetchWowSummaryResult unions ({kind:'ok'|'empty'|'error',status}) and is documented as framework-agnostic so callers wire stores at the call site rather than threading them across the seam",
+        "Defect: src/lib/db/connection.ts exports `createDrizzlePostgres({label, connectionString, connectionStringSource})` and its module doc states the two getXxxDb wrappers should differ only by env var + label — but neither caller uses it. getRaidDb (src/lib/db/index.ts) and getUserDb (src/lib/db/userDb.ts) each inline a verbatim copy of the full postgres client config (prepare:false, max:1, idle_timeout:5, max_lifetime:30, types:{}, ...). The seam exists but is bypassed",
+        "Defect: src/hooks.server.ts handleSession resolves event.locals.getSession by issuing `fetch(event.url.origin + '/auth/session', { headers: { cookie: ... }})` — a self-HTTP round trip back into the same SvelteKit app to read the session, instead of calling Auth.js directly. This crosses an unnecessary network seam on every request and forces re-serialising the cookie across it",
+        "Defect: src/routes/api/browse-logs/+server.ts casts `await request.json()` directly to `BrowseLogsParams` with no validation, while sibling per-fight handlers go through `parseFightRequestBody` and `fights/+server.ts` does explicit `typeof code !== 'string'` checks before trusting the body. Boundary-validation contract is inconsistent across siblings",
+        "Minor seam-overload: src/routes/api/current-state/+server.ts POST embeds title/subtitle synthesis from URL params alongside auth + persistence at the API seam — translation logic that could live with the consumer; not pulled into a finding because it is localised to a single handler"
+      ],
+      "impact_scope": "subsystem",
+      "fix_scope": "multi_file_refactor",
+      "confidence": "high"
+    }
+  },
+  "dimension_judgment": {
+    "mid_level_elegance": {
+      "dimension_character": "Boundary design is the strongest sustained quality dimension in this codebase: the API surface, auth, WCL GraphQL, OAuth token caches, and store/backend split each expose narrow, discriminated, well-documented seams that compose cleanly (`requireSession`, `apiError/apiOk`, `handleWclFightRequest`, `createTokenCache`, `AddOutcome`/`FetchRunsResult` unions). Friction shows up in three localised places — an extracted DB-connection factory that callers ignore, a self-HTTP hop for session retrieval inside hooks.server.ts, and one route-handler that skips the validation contract its siblings honour — so a developer mostly trusts the seams but occasionally hits a boundary that betrays the prevailing pattern.",
+      "score_rationale": "The dominant experience is 'good seams with minor friction at a few boundaries' (anchor ~90) rather than the 'mostly well-served but recurring friction' of 80, but the bypassed `createDrizzlePostgres` factory and the cross-process self-fetch in hooks.server.ts are visible enough — and the validation inconsistency at browse-logs concrete enough — to pull this below the 90 anchor. I land at 81.5 because the issues are real and recurring (one per major seam family) yet none are structural; they are isolated against a backdrop of unusually deliberate seam composition."
+    }
+  },
+  "issues": [
+    {
+      "dimension": "mid_level_elegance",
+      "identifier": "db_connection_factory_bypassed",
+      "summary": "createDrizzlePostgres factory in src/lib/db/connection.ts is unused; both DB wrappers inline the full client config",
+      "related_files": [
+        "src/lib/db/connection.ts",
+        "src/lib/db/index.ts",
+        "src/lib/db/userDb.ts"
+      ],
+      "evidence": [
+        "src/lib/db/connection.ts exports `createDrizzlePostgres({label, connectionString, connectionStringSource})` and its module doc explicitly says the raid/user wrappers should differ only by env var + log label",
+        "src/lib/db/index.ts getRaidDb() inlines the full postgres client config (prepare:false, max:1, idle_timeout:5, connect_timeout:10, transform:undefined, types:{}, onnotice:()=>{}, debug:false, fetch_types:false, max_lifetime:30) and a try/catch with its own console.error message",
+        "src/lib/db/userDb.ts getUserDb() inlines the same block verbatim with a different env-var lookup and a different error string",
+        "Net effect: the seam is duplicated three times (factory + two callers) and any future tweak to the client config has to be made in three places, even though the codebase already paid for the factory"
+      ],
+      "suggestion": "Replace the bodies of getRaidDb (src/lib/db/index.ts) and getUserDb (src/lib/db/userDb.ts) with a call to createDrizzlePostgres: `return createDrizzlePostgres({ label: 'raid', connectionString: env.DATABASE_URL, connectionStringSource: 'DATABASE_URL' })` and `{ label: 'user', connectionString: env.DATABASE_USER_URL || env.DATABASE_URL, connectionStringSource: 'DATABASE_USER_URL or DATABASE_URL' }` respectively. Drop the duplicated postgres({...}) literal and try/catch from both files",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "multi_file_refactor",
+      "root_cause_cluster": "extracted_seam_not_adopted"
+    },
+    {
+      "dimension": "mid_level_elegance",
+      "identifier": "session_via_self_http_indirection",
+      "summary": "hooks.server.ts reads the session by self-fetching /auth/session over HTTP instead of calling Auth.js directly",
+      "related_files": [
+        "src/hooks.server.ts",
+        "src/auth.ts"
+      ],
+      "evidence": [
+        "src/hooks.server.ts handleSession sets event.locals.getSession to a closure that issues `fetch(`${event.url.origin}/auth/session`, { headers: { cookie: event.request.headers.get('cookie') || '' } })` and parses the JSON response",
+        "Auth.js (./auth) is already imported at the top of hooks.server.ts as the auth handler, so the session is reachable in-process without crossing the network seam",
+        "Every protected handler that calls `await locals.getSession()` (via requireSession) therefore pays a re-entrant HTTP round trip — re-serialising cookies, re-running middleware, re-parsing JSON — to obtain data that is already in memory"
+      ],
+      "suggestion": "Replace the self-fetch in handleSession with a direct call to Auth.js's session helper. With @auth/sveltekit, expose the auth() helper from src/auth.ts and call it from inside the hook (e.g. `event.locals.getSession = () => auth(event)`), or fold the session resolution into the existing handleAuth so locals.session is populated in one pass. Eliminates the HTTP boundary and the cookie hand-off",
+      "confidence": "high",
+      "impact_scope": "subsystem",
+      "fix_scope": "single_edit",
+      "root_cause_cluster": "boundary_choreography"
+    },
+    {
+      "dimension": "mid_level_elegance",
+      "identifier": "inconsistent_request_body_validation",
+      "summary": "browse-logs casts request.json() directly to its typed shape while sibling routes validate before trusting the body",
+      "related_files": [
+        "src/routes/api/browse-logs/+server.ts",
+        "src/routes/api/fights/+server.ts",
+        "src/lib/server/wclGraphQL.ts"
+      ],
+      "evidence": [
+        "src/routes/api/browse-logs/+server.ts: `const params: BrowseLogsParams = await request.json();` — no shape check, no try around the parse, the cast pretends the boundary is typed",
+        "src/routes/api/fights/+server.ts: `const body = (await request.json().catch(() => null)) as { code?: unknown } | null; ... if (typeof code !== 'string' || !code) return apiError('Invalid or missing report code.', 400);`",
+        "src/lib/server/wclGraphQL.ts exports parseFightRequestBody() and handleWclFightRequest() and 5 per-fight endpoints flow through them; browse-logs is the obvious sibling that opted out",
+        "A malformed POST to /api/browse-logs will throw an uncaught SyntaxError or coerce undefined fields into the SQL builder, where a sibling handler would have returned a clean 400"
+      ],
+      "suggestion": "Mirror the fights/+server.ts pattern in browse-logs: read the body as `unknown`, narrow each field (`typeof params.bossId === 'number'`, etc.) and return `apiError('Invalid browse-logs body', 400)` on failure. If this validation pattern keeps recurring, add a `parseBrowseLogsBody()` next to parseFightRequestBody in src/lib/server/wclGraphQL.ts (or a sibling validators module) so request-body parsing for /api routes lives in one place",
+      "confidence": "high",
+      "impact_scope": "module",
+      "fix_scope": "single_edit",
+      "root_cause_cluster": "boundary_validation_drift"
+    }
+  ],
+  "context_updates": {
+    "mid_level_elegance": {
+      "add": [
+        {
+          "header": "Unified protected-route seam",
+          "description": "Every authenticated /api/* handler composes the same three pieces — requireSession (returns {session}|{response}), apiError/apiOk for response shape, and logServerError for telemetry. The seam is narrow, discriminated, and used uniformly across recent-characters, recent-reports, current-state, my-wow-characters, character-reports.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "WCL fight endpoints share one boundary helper",
+          "description": "handleWclFightRequest in src/lib/server/wclGraphQL.ts owns body validation, GraphQL execution, transform, and error translation for all 5 per-fight POST endpoints. Each route file is a query string + a transform — composition of collaborators, not glue.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "Discriminated outcomes at store/backend seams",
+          "description": "Backends (recentReportsBackends, recentCharactersBackends) return AddOutcome unions ('ok'|'unauthorized'|'unavailable') and data fetchers (characterData.ts) return {kind:'ok'|'empty'|'error',status} unions. Composition layers branch on the tag rather than inspecting payload shapes, keeping seam contracts explicit.",
+          "settled": true,
+          "positive": true
+        },
+        {
+          "header": "DB connection factory exists but is bypassed",
+          "description": "src/lib/db/connection.ts createDrizzlePostgres documents itself as the single owner of the postgres client config, yet getRaidDb (db/index.ts) and getUserDb (db/userDb.ts) each inline the full config block. The seam was extracted but neither caller migrated, so the duplication persists.",
+          "settled": true,
+          "positive": false
+        },
+        {
+          "header": "Session resolved via self-HTTP in hooks.server.ts",
+          "description": "handleSession reads the session by fetching `${event.url.origin}/auth/session` from inside the same SvelteKit server, hand-passing the cookie header, instead of calling Auth.js directly. Adds a network round-trip seam where an in-process call would suffice.",
+          "settled": true,
+          "positive": false
+        }
+      ]
+    }
+  }
+}

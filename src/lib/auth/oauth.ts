@@ -1,5 +1,5 @@
 import type { AccessToken } from '../types/apiTypes';
-import { requestClientCredentialsToken, isTokenExpired as baseIsTokenExpired } from './oauthBase';
+import { requestClientCredentialsToken } from './oauthBase';
 
 /** Warcraft Logs OAuth2 client-credentials grant. */
 export function requestBearerToken(clientId: string, clientSecret: string): Promise<AccessToken> {
@@ -10,5 +10,3 @@ export function requestBearerToken(clientId: string, clientSecret: string): Prom
 		'WarcraftLogs'
 	);
 }
-
-export const isTokenExpired = baseIsTokenExpired;
