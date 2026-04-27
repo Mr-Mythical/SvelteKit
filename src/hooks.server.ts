@@ -57,4 +57,9 @@ const handleSession: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
+// Exported for tests so the response-header contract can be exercised
+// without booting Auth.js. Production wiring still uses `handle` below.
 export const handle = sequence(handleAuth, handleSecurity, handleSession);
+
+export const __securityHandlerForTests: Handle = handleSecurity;
+export const __cspHeaderForTests = CSP_HEADER;

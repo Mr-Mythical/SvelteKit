@@ -1,13 +1,15 @@
 {
   "version": 8,
   "created": "2026-04-26T07:05:13+00:00",
-  "updated": "2026-04-27T03:12:26+00:00",
+  "updated": "2026-04-27T03:13:26+00:00",
   "queue_order": [
-    "triage::strategize",
-    "triage::organize",
-    "triage::enrich",
-    "triage::sense-check",
-    "triage::commit",
+    "subjective::convention_outlier",
+    "subjective::cross_module_architecture",
+    "subjective::dependency_health",
+    "subjective::design_coherence",
+    "subjective::error_consistency",
+    "subjective::logic_clarity",
+    "subjective::package_organization",
     "review::.::holistic::high_level_elegance::empty_readme",
     "review::.::holistic::abstraction_fitness::auth-istokenexpired-deadreexport",
     "review::.::holistic::abstraction_fitness::death-events-skips-factory",
@@ -82,7 +84,18 @@
     "review::.::holistic::test_strategy::untested_api_routes",
     "review::.::holistic::test_strategy::untested_auth_critical_paths",
     "review::.::holistic::test_strategy::untested_data_fetching_and_transformation",
-    "review::.::holistic::test_strategy::zero_error_path_coverage"
+    "review::.::holistic::test_strategy::zero_error_path_coverage",
+    "subjective::abstraction_fitness",
+    "subjective::api_surface_coherence",
+    "subjective::contract_coherence",
+    "subjective::high_level_elegance",
+    "subjective::low_level_elegance",
+    "subjective::mid_level_elegance",
+    "subjective::test_strategy",
+    "triage::organize",
+    "triage::enrich",
+    "triage::sense-check",
+    "triage::commit"
   ],
   "deferred": [],
   "skipped": {
@@ -1608,7 +1621,7 @@
       "action": null,
       "action_type": "manual_fix",
       "execution_policy": "planned_only",
-      "execution_status": "active",
+      "execution_status": "done",
       "user_modified": true,
       "action_steps": [
         {
@@ -1650,7 +1663,7 @@
       "action": null,
       "action_type": "manual_fix",
       "execution_policy": "planned_only",
-      "execution_status": "active",
+      "execution_status": "done",
       "user_modified": true,
       "action_steps": [
         {
@@ -1687,7 +1700,7 @@
       "action": null,
       "action_type": "manual_fix",
       "execution_policy": "planned_only",
-      "execution_status": "active",
+      "execution_status": "done",
       "user_modified": true,
       "action_steps": [
         {
@@ -1732,7 +1745,7 @@
       "action": null,
       "action_type": "manual_fix",
       "execution_policy": "planned_only",
-      "execution_status": "active",
+      "execution_status": "done",
       "user_modified": true,
       "action_steps": [
         {
@@ -1773,7 +1786,7 @@
       "action": null,
       "action_type": "manual_fix",
       "execution_policy": "planned_only",
-      "execution_status": "active",
+      "execution_status": "done",
       "user_modified": true,
       "action_steps": [
         {
@@ -1826,7 +1839,7 @@
       "action": null,
       "action_type": "manual_fix",
       "execution_policy": "planned_only",
-      "execution_status": "active",
+      "execution_status": "done",
       "user_modified": true,
       "action_steps": [
         {
@@ -1852,7 +1865,7 @@
       "action": null,
       "action_type": "manual_fix",
       "execution_policy": "planned_only",
-      "execution_status": "active",
+      "execution_status": "done",
       "user_modified": true,
       "action_steps": [
         {
@@ -2251,10 +2264,10 @@
   },
   "promoted_ids": [],
   "plan_start_scores": {
-    "strict": 66.7,
-    "overall": 66.7,
+    "strict": 74.2,
+    "overall": 74.8,
     "objective": 74.6,
-    "verified": 74.2
+    "verified": 74.1
   },
   "refresh_state": {
     "_subjective_migration_pruned": true,
@@ -7940,6 +7953,196 @@
       "actor": "user",
       "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
       "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:13:26+00:00",
+      "action": "cluster_done",
+      "issue_ids": [
+        "review::.::holistic::mid_level_elegance::api_input_validation_scatter",
+        "review::.::holistic::mid_level_elegance::inconsistent_data_translation",
+        "review::.::holistic::abstraction_fitness::graphql_event_handler_boilerplate",
+        "review::.::holistic::error_consistency::error_type_shape_inconsistency",
+        "review::.::holistic::error_consistency::inconsistent_logging_across_error_paths",
+        "review::.::holistic::error_consistency::lost_error_context_api_handlers",
+        "review::.::holistic::error_consistency::mixed_error_strategies_similar_paths",
+        "review::.::holistic::error_consistency::silent_catch_in_auth",
+        "review::.::holistic::abstraction_fitness::missing_graphql_query_builder",
+        "review::.::holistic::error_consistency::inconsistent_graphql_error_detection",
+        "review::.::holistic::api_surface_coherence::error_response_pattern_split",
+        "review::.::holistic::api_surface_coherence::missing_error_contracts",
+        "review::.::holistic::api_surface_coherence::parameter_ordering_inconsistency",
+        "review::.::holistic::api_surface_coherence::untyped_any_boundary",
+        "review::.::holistic::authorization_consistency::inconsistent_auth_error_responses",
+        "review::.::holistic::contract_coherence::inconsistent_error_handling_patterns",
+        "review::.::holistic::convention_outlier::error_logging_inconsistency",
+        "review::.::holistic::low_level_elegance::browse_logs_loose_local_mutability",
+        "review::.::holistic::ai_generated_debt::field_mapping_wrapper",
+        "review::.::holistic::api_surface_coherence::response_shape_variance"
+      ],
+      "cluster_name": "route_handler_boilerplate",
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "reason": "all items resolved in state"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:13:26+00:00",
+      "action": "cluster_done",
+      "issue_ids": [
+        "review::.::holistic::ai_generated_debt::component_error_boilerplate",
+        "review::.::holistic::ai_generated_debt::generic_comments",
+        "review::.::holistic::design_coherence::mixed_responsibilities_character_score",
+        "review::.::holistic::design_coherence::mixed_responsibilities_recents",
+        "review::.::holistic::package_organization::flat_components_dir"
+      ],
+      "cluster_name": "component_responsibility",
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "reason": "all items resolved in state"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:13:26+00:00",
+      "action": "cluster_done",
+      "issue_ids": [
+        "review::.::holistic::contract_coherence::loose_typing_any_in_public_api",
+        "review::.::holistic::design_coherence::auth_any_types",
+        "review::.::holistic::type_safety::external_api_assertions_unvalidated",
+        "review::.::holistic::type_safety::record_string_any_database_fields",
+        "review::.::holistic::type_safety::unvalidated_json_api_routes",
+        "review::.::holistic::package_organization::types_blizzard_grouping",
+        "review::.::holistic::type_safety::auth_callbacks_any_params",
+        "review::.::holistic::type_safety::type_assertions_on_db_results"
+      ],
+      "cluster_name": "type_discipline",
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "reason": "all items resolved in state"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:13:26+00:00",
+      "action": "cluster_done",
+      "issue_ids": [
+        "review::.::holistic::mid_level_elegance::session_via_http_indirection",
+        "review::.::holistic::naming_quality::abbrev_inconsist_res",
+        "review::.::holistic::naming_quality::gen_name_hide_callback",
+        "review::.::holistic::naming_quality::gen_prefix_temp_score",
+        "review::.::holistic::naming_quality::gen_verb_do_save",
+        "review::.::holistic::naming_quality::gen_verb_process_combined",
+        "review::.::holistic::naming_quality::gen_verb_process_series",
+        "review::.::holistic::high_level_elegance::api_endpoint_naming_inconsistency",
+        "review::.::holistic::convention_outlier::load_signature_divergence",
+        "review::.::holistic::cross_module_architecture::util_store_boundary_violation",
+        "review::.::holistic::design_coherence::data_as_code_realms",
+        "review::.::holistic::low_level_elegance::current_state_unneeded_iife_indirection",
+        "review::.::holistic::ai_generated_debt::generic_handler_names",
+        "review::.::holistic::contract_coherence::get_functions_with_side_effects",
+        "review::.::holistic::convention_outlier::db_initialization_naming",
+        "review::.::holistic::design_coherence::magic_numbers_keystone"
+      ],
+      "cluster_name": "convention_drift",
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "reason": "all items resolved in state"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:13:26+00:00",
+      "action": "cluster_done",
+      "issue_ids": [
+        "review::.::holistic::test_strategy::missing_database_operation_tests",
+        "review::.::holistic::test_strategy::no_integration_tests_between_api_and_ui",
+        "review::.::holistic::test_strategy::no_state_management_tests",
+        "review::.::holistic::test_strategy::shallow_dom_tests_break_on_markup",
+        "review::.::holistic::test_strategy::test_layering_incomplete",
+        "review::.::holistic::test_strategy::untested_api_routes",
+        "review::.::holistic::test_strategy::untested_auth_critical_paths",
+        "review::.::holistic::test_strategy::untested_data_fetching_and_transformation",
+        "review::.::holistic::test_strategy::zero_error_path_coverage"
+      ],
+      "cluster_name": "tests_dedicated_session",
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "reason": "all items resolved in state"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:13:26+00:00",
+      "action": "cluster_done",
+      "issue_ids": [
+        "review::.::holistic::error_consistency::silent_fallback_without_signaling",
+        "review::.::holistic::low_level_elegance::score_formula_recomputed_lookup_and_dead_tail"
+      ],
+      "cluster_name": "logic_clarity_falsy_sweep",
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "reason": "all items resolved in state"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:13:26+00:00",
+      "action": "cluster_done",
+      "issue_ids": [
+        "review::.::holistic::high_level_elegance::orphaned_dead_code_volume"
+      ],
+      "cluster_name": "dead_code_sweep",
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "reason": "all items resolved in state"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:13:26+00:00",
+      "action": "reconcile",
+      "issue_ids": [],
+      "cluster_name": null,
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "superseded_count": 0,
+        "pruned_count": 0,
+        "resurfaced_count": 0,
+        "clusters_completed_count": 7
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:13:26+00:00",
+      "action": "sync_subjective",
+      "issue_ids": [],
+      "cluster_name": null,
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "changes": true
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:13:26+00:00",
+      "action": "sync_triage",
+      "issue_ids": [],
+      "cluster_name": null,
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "injected": true
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:13:26+00:00",
+      "action": "seed_start_scores",
+      "issue_ids": [],
+      "cluster_name": null,
+      "actor": "system",
+      "note": null,
+      "detail": {}
     }
   ],
   "epic_triage_meta": {
@@ -9129,5 +9332,11 @@
   ],
   "uncommitted_issues": [],
   "commit_tracking_branch": null,
-  "scan_count_at_plan_start": 12
+  "scan_count_at_plan_start": 16,
+  "previous_plan_start_scores": {
+    "strict": 66.7,
+    "overall": 66.7,
+    "objective": 74.6,
+    "verified": 74.2
+  }
 }
