@@ -11,7 +11,7 @@
 		Filler
 	} from 'chart.js';
 	import type { ChartData, ChartOptions } from 'chart.js';
-	import { logClientError } from '$lib/utils/clientLog';
+	import { logClientError } from '$lib/clientLog';
 
 	interface Props {
 		bossId: number;

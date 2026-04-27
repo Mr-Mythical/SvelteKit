@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
-import { getUserDb } from './userDb';
-import { userCharacters } from './userSchema';
-import { dbOperation } from './_helpers';
+import { getUserDb } from '../../db/userDb';
+import { userCharacters } from '../../db/userSchema';
+import { dbOperation } from '../../db/_helpers';
 
 export interface StoredCharacter {
 	region: 'us' | 'eu' | 'kr' | 'tw';

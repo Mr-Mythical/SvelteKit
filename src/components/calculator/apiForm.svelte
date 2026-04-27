@@ -8,7 +8,7 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { apiPopup, dungeonData, wowSummaryStore } from '../../stores';
+	import { apiPopup, dungeonData, wowSummaryStore } from '$lib/stores/calculator';
 	import RealmCombobox from '../combobox/realmCombobox.svelte';
 	import {
 		euRealmOptions,
@@ -19,7 +19,7 @@
 	import { fetchRuns, fetchWowSummary, emptyDungeonRuns } from '$lib/data/characterData';
 	import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
 	import { recentCharacters } from '$lib/stores/recentCharacters';
-	import { logClientError } from '$lib/utils/clientLog';
+	import { logClientError } from '$lib/clientLog';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 

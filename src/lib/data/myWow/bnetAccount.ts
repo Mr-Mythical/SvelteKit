@@ -1,8 +1,8 @@
 import { and, eq } from 'drizzle-orm';
 import { env } from '$env/dynamic/private';
-import { getUserDb } from './userDb';
-import { accounts } from './userSchema';
-import { dbOperation } from './_helpers';
+import { getUserDb } from '../../db/userDb';
+import { accounts } from '../../db/userSchema';
+import { dbOperation } from '../../db/_helpers';
 import { logServerError } from '$lib/server/logger';
 
 // Safety margin so we refresh slightly before Battle.net actually rejects the

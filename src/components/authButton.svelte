@@ -10,7 +10,7 @@
 	import LogOut from '@lucide/svelte/icons/log-out';
 	import User from '@lucide/svelte/icons/user';
 	import Loader2 from '@lucide/svelte/icons/loader-2';
-	import { logClientError } from '$lib/utils/clientLog';
+	import { logClientError } from '$lib/clientLog';
 	import type { Session } from '@auth/core/types';
 
 	type AppSession = Session & {

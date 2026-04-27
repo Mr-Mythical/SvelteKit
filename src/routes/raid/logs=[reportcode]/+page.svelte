@@ -23,7 +23,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import EncounterSkeleton from '../../../components/skeletons/encounterSkeleton.svelte';
-	import { logClientError } from '$lib/utils/clientLog';
+	import { logClientError } from '$lib/clientLog';
 
 	let reportURL: string = $state('');
 	let fights: Fight[] = $state([]);

@@ -1,9 +1,9 @@
-import { getValidBattleNetUserToken } from '$lib/db/bnetAccount';
+import { getValidBattleNetUserToken } from '$lib/data/myWow/bnetAccount';
 import {
 	getStoredCharacters,
 	replaceStoredCharacters,
 	type CharacterUpsertInput
-} from '$lib/db/userCharacters';
+} from '$lib/data/myWow/userCharacters';
 import { logServerError } from '$lib/server/logger';
 
 // Server-only helper that returns the signed-in user's WoW character roster.

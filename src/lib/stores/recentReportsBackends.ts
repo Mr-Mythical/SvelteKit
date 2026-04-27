@@ -7,7 +7,7 @@
  * don't mirror to localStorage"; a network/5xx means "API down, fall back".
  */
 
-import { logClientError } from '$lib/utils/clientLog';
+import { logClientError } from '$lib/clientLog';
 
 export interface RecentReport {
 	code: string;

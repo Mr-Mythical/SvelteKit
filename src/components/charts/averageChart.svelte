@@ -17,7 +17,7 @@
 	} from 'chart.js';
 	import type { ChartData, ChartOptions } from 'chart.js';
 	import { backgroundColorPlugin } from '$lib/ui/chartCanvasPlugin';
-	import { logClientError } from '$lib/utils/clientLog';
+	import { logClientError } from '$lib/clientLog';
 
 	let zoomPluginLoaded = $state(false);
 

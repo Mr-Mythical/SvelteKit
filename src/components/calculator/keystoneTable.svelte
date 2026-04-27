@@ -14,11 +14,11 @@
 	import { Button } from '$lib/components/ui/button/';
 	import { dungeonCount } from '$lib/types/dungeons';
 	import { dungeons } from '$lib/types/dungeons';
-	import { apiPopup } from '../../stores';
-	import { dungeonData } from '../../stores';
-	import { wowSummaryStore } from '../../stores';
+	import { apiPopup } from '$lib/stores/calculator';
+	import { dungeonData } from '$lib/stores/calculator';
+	import { wowSummaryStore } from '$lib/stores/calculator';
 	import { scoreFormula, computeRunLevelsForScore } from '$lib/calculations/keystoneCalculations';
-	import { logClientError } from '$lib/utils/clientLog';
+	import { logClientError } from '$lib/clientLog';
 
 	let edit = true;
 	let scoreGoal: number | undefined = $state();

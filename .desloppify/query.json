@@ -1,6 +1,6 @@
 {
   "command": "show",
-  "query": "Test health",
+  "query": "test_coverage",
   "status_filter": "open",
   "total": 10,
   "summary": {
@@ -226,8 +226,103 @@
           "stuck_scans": 5
         },
         {
+          "name": "Abstraction fit",
+          "strict": 84.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "AI generated debt",
+          "strict": 86.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "API coherence",
+          "strict": 78.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Auth consistency",
+          "strict": 87.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Contracts",
+          "strict": 80.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Convention drift",
+          "strict": 78.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Cross-module arch",
+          "strict": 83.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Dep health",
+          "strict": 91.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Design coherence",
+          "strict": 72.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Error consistency",
+          "strict": 73.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "High elegance",
+          "strict": 54.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Stale migration",
+          "strict": 85.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Init coupling",
+          "strict": 89.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Logic clarity",
+          "strict": 85.5,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Low elegance",
+          "strict": 84.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Mid elegance",
+          "strict": 73.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Naming quality",
+          "strict": 88.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Structure nav",
+          "strict": 76.0,
+          "stuck_scans": 5
+        },
+        {
           "name": "Test strategy",
           "strict": 32.0,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Type safety",
+          "strict": 87.5,
           "stuck_scans": 5
         }
       ]
@@ -563,7 +658,7 @@
       "auto_fixers_available": 3,
       "zone_classification": 3,
       "dry_run_first": 3,
-      "report_scores": 14,
+      "report_scores": 15,
       "feedback_nudge": 3,
       "stagnant_nudge": 24,
       "review_issues_pending": 3,

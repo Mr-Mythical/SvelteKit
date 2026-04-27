@@ -5,7 +5,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { recentReports, type RecentReport } from '$lib/stores/recentReports';
 	import Loader2 from '@lucide/svelte/icons/loader-2';
-	import { logClientError } from '$lib/utils/clientLog';
+	import { logClientError } from '$lib/clientLog';
 
 	interface CharacterReport {
 		code: string;

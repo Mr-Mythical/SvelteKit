@@ -11,7 +11,7 @@
  * localStorage", but a network/5xx is "API is down, fall back".
  */
 
-import { logClientError } from '$lib/utils/clientLog';
+import { logClientError } from '$lib/clientLog';
 
 export interface RecentCharacter {
 	region: string;
