@@ -1,7 +1,7 @@
 {
   "version": 8,
   "created": "2026-04-26T07:05:13+00:00",
-  "updated": "2026-04-27T03:48:40+00:00",
+  "updated": "2026-04-27T03:56:12+00:00",
   "queue_order": [
     "subjective::convention_outlier",
     "subjective::cross_module_architecture",
@@ -2267,7 +2267,7 @@
     "strict": 74.3,
     "overall": 74.8,
     "objective": 74.7,
-    "verified": 74.1
+    "verified": 74.2
   },
   "refresh_state": {
     "_subjective_migration_pruned": true,
@@ -8236,6 +8236,37 @@
       "actor": "system",
       "note": null,
       "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:56:12+00:00",
+      "action": "sync_subjective",
+      "issue_ids": [],
+      "cluster_name": null,
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "changes": true
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:56:12+00:00",
+      "action": "sync_triage",
+      "issue_ids": [],
+      "cluster_name": null,
+      "actor": "system",
+      "note": null,
+      "detail": {
+        "injected": true
+      }
+    },
+    {
+      "timestamp": "2026-04-27T03:56:12+00:00",
+      "action": "seed_start_scores",
+      "issue_ids": [],
+      "cluster_name": null,
+      "actor": "system",
+      "note": null,
+      "detail": {}
     }
   ],
   "epic_triage_meta": {
@@ -9425,7 +9456,7 @@
   ],
   "uncommitted_issues": [],
   "commit_tracking_branch": null,
-  "scan_count_at_plan_start": 19,
+  "scan_count_at_plan_start": 20,
   "previous_plan_start_scores": {
     "strict": 74.3,
     "overall": 74.8,
