@@ -1,7 +1,7 @@
 {
   "version": 8,
   "created": "2026-04-26T07:05:13+00:00",
-  "updated": "2026-04-26T23:25:49+00:00",
+  "updated": "2026-04-27T03:12:26+00:00",
   "queue_order": [
     "triage::strategize",
     "triage::organize",
@@ -1476,6 +1476,12 @@
       "created_at": "2026-04-26T23:25:49+00:00",
       "cluster": "error-shape-consolidation",
       "updated_at": "2026-04-26T23:25:49+00:00"
+    },
+    "review::.::holistic::error_consistency::manual_logserver_apierror_pairs": {
+      "issue_id": "review::.::holistic::error_consistency::manual_logserver_apierror_pairs",
+      "created_at": "2026-04-26T23:25:49+00:00",
+      "cluster": "error-shape-consolidation",
+      "updated_at": "2026-04-26T23:25:49+00:00"
     }
   },
   "clusters": {
@@ -1916,7 +1922,8 @@
         "review::.::holistic::authorization_consistency::auth_post_input_validation_gap",
         "review::.::holistic::convention_outlier::death_events_bypasses_shared_handler",
         "review::.::holistic::convention_outlier::api_response_field_casing_split",
-        "review::.::holistic::error_consistency::character_reports_silent_success"
+        "review::.::holistic::error_consistency::character_reports_silent_success",
+        "review::.::holistic::error_consistency::manual_logserver_apierror_pairs"
       ],
       "created_at": "2026-04-26T23:24:47+00:00",
       "updated_at": "2026-04-26T23:25:49+00:00",
@@ -7745,6 +7752,193 @@
       "cluster_name": "error-shape-consolidation",
       "actor": "user",
       "note": null,
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-26T23:25:49+00:00",
+      "action": "cluster_add",
+      "issue_ids": [
+        "review::.::holistic::error_consistency::manual_logserver_apierror_pairs"
+      ],
+      "cluster_name": "error-shape-consolidation",
+      "actor": "user",
+      "note": null,
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:08+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::ai_generated_debt::auth_debug_always_on"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:09+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::logic_clarity::top_players_empty_debug_branch"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:11+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::type_safety::top_players_map_any"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:12+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::type_safety::damage_chart_plugin_any_escape"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:13+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::logic_clarity::rating_calculator_dead_seo_title"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:14+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::incomplete_migration::unified_reports_stale_legacy_comment"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:15+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::high_level_elegance::dead_connection_factory"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:18+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::high_level_elegance::db_index_crosses_db_boundary"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:19+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::abstraction_fitness::auth-istokenexpired-deadreexport"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:20+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::logic_clarity::char_reports_duplicate_fallback_query"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:21+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::error_consistency::blizzard_raw_error_leak"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:22+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::api_surface_coherence::raiderio_proxy_no_error_handling"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:23+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::api_surface_coherence::blizzard_leaks_upstream_error_text"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:24+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::naming_quality::doSave_generic_verb"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:25+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::ai_generated_debt::raid_logs_full_object_dump"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
+      "detail": {}
+    },
+    {
+      "timestamp": "2026-04-27T03:12:26+00:00",
+      "action": "done",
+      "issue_ids": [
+        "review::.::holistic::ai_generated_debt::restating_url_param_comments"
+      ],
+      "cluster_name": null,
+      "actor": "user",
+      "note": "Implemented per finding suggestion in commit on desloppify/code-health branch; svelte-check 0 errors, vitest 49/49 pass.",
       "detail": {}
     }
   ],
