@@ -4,7 +4,7 @@ import {
 	parseRecentCharacterBody,
 	parseRecentReportBody,
 	parseCurrentStateBody
-} from '$lib/server/requestBody';
+} from '../requestBody';
 
 const makeRequest = (body: unknown, raw = false): Request => {
 	const init = raw

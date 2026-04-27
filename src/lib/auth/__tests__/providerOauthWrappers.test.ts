@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { requestBlizzardBearerToken } from '$lib/auth/blizzardOauth';
-import { requestBearerToken } from '$lib/auth/oauth';
+import { requestBlizzardBearerToken } from '../blizzardOauth';
+import { requestBearerToken } from '../oauth';
 
 beforeEach(() => {
 	(global.fetch as ReturnType<typeof vi.fn>).mockReset();

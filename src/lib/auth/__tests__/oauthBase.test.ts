@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { isTokenExpired, requestClientCredentialsToken } from '$lib/auth/oauthBase';
+import { isTokenExpired, requestClientCredentialsToken } from '../oauthBase';
 import type { AccessToken } from '$lib/types/apiTypes';
 
 describe('isTokenExpired', () => {

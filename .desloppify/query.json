@@ -164,8 +164,8 @@
   "noise_budget": 10,
   "noise_global_budget": 0,
   "narrative": {
-    "phase": "middle_grind",
-    "headline": "\u26a0 1 security issue \u2014 review before other cleanup. 356 issues open. Test health (0.0%) needs attention \u2014 run `desloppify next` to start. (66 review work items \u2014 run `desloppify show review --status open`)",
+    "phase": "stagnation",
+    "headline": "\u26a0 1 security issue \u2014 review before other cleanup. Score plateaued at 74.3 for 5 scans. Test health (0.0%) is where the breakthrough is. 27 wontfix items may also be worth revisiting. (66 review work items \u2014 run `desloppify show review --status open`)",
     "dimensions": {
       "lowest_dimensions": [
         {
@@ -223,6 +223,11 @@
         {
           "name": "File health",
           "strict": 99.3,
+          "stuck_scans": 5
+        },
+        {
+          "name": "Test strategy",
+          "strict": 32.0,
           "stuck_scans": 5
         }
       ]
@@ -319,8 +324,8 @@
       {
         "type": "refactor",
         "detector": "signature",
-        "count": 1,
-        "description": "1 signature work items \u2014 consolidate inconsistent function signatures",
+        "count": 2,
+        "description": "2 signature work items \u2014 consolidate inconsistent function signatures",
         "command": "desloppify show signature --status open",
         "impact": 0.0,
         "dimension": "Unknown",
@@ -336,7 +341,7 @@
         "impact": 0.0,
         "dimension": "Duplication",
         "priority": 10,
-        "lane": "refactor_2"
+        "lane": "refactor_1"
       },
       {
         "type": "refactor",
@@ -347,18 +352,18 @@
         "impact": 0.0,
         "dimension": "Unknown",
         "priority": 11,
-        "lane": "refactor_3"
+        "lane": "refactor_2"
       },
       {
         "type": "manual_fix",
         "detector": "smells",
-        "count": 97,
-        "description": "97 smells issues \u2014 inspect with `desloppify next` and fix manually",
+        "count": 102,
+        "description": "102 smells issues \u2014 inspect with `desloppify next` and fix manually",
         "command": "desloppify show smells --status open",
         "impact": 0.0,
         "dimension": "Code quality",
         "priority": 12,
-        "lane": "refactor_2"
+        "lane": "refactor_1"
       },
       {
         "type": "manual_fix",
@@ -369,7 +374,7 @@
         "impact": 0.0,
         "dimension": "Code quality",
         "priority": 13,
-        "lane": "refactor_4"
+        "lane": "refactor_3"
       },
       {
         "type": "manual_fix",
@@ -380,13 +385,13 @@
         "impact": 0.0,
         "dimension": "Security",
         "priority": 14,
-        "lane": "refactor_2"
+        "lane": "refactor_1"
       }
     ],
     "strategy": {
       "fixer_leverage": {
         "auto_fixable_count": 8,
-        "total_count": 488,
+        "total_count": 494,
         "coverage": 0.016,
         "impact_ratio": 0.0,
         "recommendation": "none"
@@ -425,25 +430,17 @@
         },
         "refactor_1": {
           "actions": [
-            9
+            9,
+            10,
+            12,
+            14
           ],
-          "file_count": 1,
+          "file_count": 61,
           "total_impact": 0.0,
           "automation": "manual",
           "run_first": false
         },
         "refactor_2": {
-          "actions": [
-            10,
-            12,
-            14
-          ],
-          "file_count": 55,
-          "total_impact": 0.0,
-          "automation": "manual",
-          "run_first": false
-        },
-        "refactor_3": {
           "actions": [
             11
           ],
@@ -452,7 +449,7 @@
           "automation": "manual",
           "run_first": false
         },
-        "refactor_4": {
+        "refactor_3": {
           "actions": [
             13
           ],
@@ -472,7 +469,7 @@
         }
       },
       "can_parallelize": true,
-      "hint": "7 independent workstreams, safe to parallelize. Rescan after each phase to verify. Review: 66 issue(s) \u2014 `desloppify show review --status open`."
+      "hint": "6 independent workstreams, safe to parallelize. Rescan after each phase to verify. Review: 66 issue(s) \u2014 `desloppify show review --status open`."
     },
     "tools": {
       "fixers": [
@@ -503,13 +500,13 @@
         {
           "name": "dead-useeffect",
           "detector": "smells",
-          "open_count": 97,
+          "open_count": 102,
           "command": "desloppify autofix dead-useeffect --dry-run"
         },
         {
           "name": "empty-if-chain",
           "detector": "smells",
-          "open_count": 97,
+          "open_count": 102,
           "command": "desloppify autofix empty-if-chain --dry-run"
         }
       ],
@@ -542,7 +539,7 @@
       "command": "desloppify autofix unused-imports --dry-run",
       "description": "7 unused issues \u2014 run `desloppify autofix unused-imports --dry-run` to preview, then apply"
     },
-    "why_now": "7 independent workstreams, safe to parallelize. Rescan after each phase to verify. Review: 66 issue(s) \u2014 `desloppify show review --status open`.",
+    "why_now": "6 independent workstreams, safe to parallelize. Rescan after each phase to verify. Review: 66 issue(s) \u2014 `desloppify show review --status open`.",
     "verification_step": {
       "command": "desloppify scan",
       "reason": "revalidate after changes"
@@ -566,7 +563,7 @@
       "auto_fixers_available": 3,
       "zone_classification": 3,
       "dry_run_first": 3,
-      "report_scores": 13,
+      "report_scores": 14,
       "feedback_nudge": 3,
       "stagnant_nudge": 24,
       "review_issues_pending": 3,

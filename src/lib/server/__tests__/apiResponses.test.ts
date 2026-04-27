@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { apiError, apiOk } from '$lib/server/apiResponses';
+import { apiError, apiOk } from '../apiResponses';
 
 describe('apiError', () => {
 	it('returns a JSON Response with default 500 status', async () => {

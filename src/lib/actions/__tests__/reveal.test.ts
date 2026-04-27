@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { reveal } from '$lib/actions/reveal';
+import { reveal } from '../reveal';
 
 class MockIntersectionObserver {
 	public static instances: MockIntersectionObserver[] = [];

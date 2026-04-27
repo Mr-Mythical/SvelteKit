@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
-import { logServerError, logServerWarn, handleApiError } from '$lib/server/logger';
+import { logServerError, logServerWarn, handleApiError } from '../logger';
 
 afterEach(() => {
 	vi.restoreAllMocks();

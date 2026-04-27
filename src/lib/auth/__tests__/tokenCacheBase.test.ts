@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createTokenCache } from '$lib/auth/tokenCacheBase';
+import { createTokenCache } from '../tokenCacheBase';
 
 const baseToken = (overrides: Partial<{ token: string; expiresIn: number; obtainedAt: number }> = {}) => ({
 	token: 'tok',
