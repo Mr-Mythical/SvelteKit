@@ -184,7 +184,7 @@
 		<p class="tool-eyebrow">About</p>
 		<h2 class="tool-title">Built by a player, for keys and pulls.</h2>
 		<p class="about-body">
-			Mr. Mythical turns Warcraft Logs and keystone math into fast answers between runs. It's built by a Mythic+ player who wanted better tools to plan keys and understand raid logs, and is maintained with ongoing input from the community. The goal is to surface insights from the data that help you make informed decisions about your gameplay, whether that's which keystone to run next or how to approach a tricky boss mechanic.
+			Mr. Mythical turns Warcraft Logs and keystone math into fast answers between runs. It's built by a player who wanted better tools to plan keys and understand raid logs, and is maintained with ongoing input from the community. The goal is to surface insights from the data that help you make informed decisions about your gameplay, whether that's which keystone to run next or how to approach a tricky boss mechanic.
 		</p>
 		<a href="/about" class="tool-link">
 			Read more

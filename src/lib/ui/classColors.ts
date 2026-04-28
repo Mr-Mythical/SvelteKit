@@ -16,6 +16,15 @@ export const classColors: Record<string, string> = {
 	Warrior: '#C69B6D'
 };
 
+export function getClassColor(className?: string | null, fallback = 'inherit'): string {
+	if (!className) return fallback;
+	const compactClassName = className.replace(/[\s_-]/g, '').toLowerCase();
+	const matchedClass = Object.entries(classColors).find(
+		([name]) => name.toLowerCase() === compactClassName
+	);
+	return matchedClass?.[1] ?? fallback;
+}
+
 export const abilityColors: Record<number, string> = {};
 
 Object.entries(classSpecAbilities).forEach(([className, specs]) => {
@@ -59,5 +68,5 @@ export function getClassColorFromSpec(specIcon: string): string {
 	};
 
 	const className = classMap[classNamePart];
-	return className ? classColors[className] : '#808080';
+	return className ? getClassColor(className, '#808080') : getClassColor(classNamePart, '#808080');
 }

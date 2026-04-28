@@ -24,6 +24,11 @@
 		totalLogs?: number;
 		currentPage?: number;
 		itemsPerPage?: number;
+		title?: string;
+		description?: string;
+		cardClass?: string;
+		titleClass?: string;
+		bare?: boolean;
 		onpageChange?: (detail: { page: number }) => void;
 		onanalyzeLog?: (log: BrowsedLog) => void;
 	}
@@ -34,6 +39,11 @@
 		totalLogs = 0,
 		currentPage = 1,
 		itemsPerPage = 10,
+		title = `Found Logs (${totalLogs})`,
+		description,
+		cardClass = 'mt-6',
+		titleClass = '',
+		bare = false,
 		onpageChange,
 		onanalyzeLog
 	}: Props = $props();
@@ -55,61 +65,80 @@
 	}
 </script>
 
-<Card class="mt-6">
-	<CardHeader>
-		<CardTitle>Found Logs ({totalLogs})</CardTitle>
-		{#if logs.length === 0 && !loading}
-			<CardDescription
-				>No logs found matching your criteria. Try broadening your search.</CardDescription
-			>
-		{/if}
-	</CardHeader>
-	<CardContent>
-		{#if loading}
-			<p class="py-4 text-center">Loading results...</p>
-		{:else if logs.length > 0}
-			<Table>
-				<TableHeader>
+{#snippet ResultsContent()}
+	{#if loading}
+		<p class="py-4 text-center">Loading results...</p>
+	{:else if logs.length > 0}
+		<Table>
+			<TableHeader>
+				<TableRow>
+					<TableHead>Boss</TableHead>
+					<TableHead>Duration</TableHead>
+					<TableHead>Healer Comp</TableHead>
+					<TableHead class="text-right">Actions</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				{#each logs as log (log.log_code + log.fight_id)}
 					<TableRow>
-						<TableHead>Boss</TableHead>
-						<TableHead>Duration</TableHead>
-						<TableHead>Healer Comp</TableHead>
-						<TableHead class="text-right">Actions</TableHead>
+						<TableCell>{log.boss_name}</TableCell>
+						<TableCell>{formatDuration(log.duration_seconds)}</TableCell>
+						<TableCell class="space-x-1">
+							{#each log.healer_composition as spec, index (spec + index)}
+								<Badge variant="outline">{spec.replace('-', ' ')}</Badge>
+							{/each}
+						</TableCell>
+						<TableCell class="space-x-2 text-right">
+							<Button variant="outline" size="sm" onclick={() => analyzeLog(log)}>Analyze</Button>
+							<a href={log.log_url} target="_blank" rel="noopener noreferrer">
+								<Button variant="link" size="sm">View on WCL</Button>
+							</a>
+						</TableCell>
 					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{#each logs as log (log.log_code + log.fight_id)}
-						<TableRow>
-							<TableCell>{log.boss_name}</TableCell>
-							<TableCell>{formatDuration(log.duration_seconds)}</TableCell>
-							<TableCell class="space-x-1">
-								{#each log.healer_composition as spec, index (spec + index)}
-									<Badge variant="outline">{spec.replace('-', ' ')}</Badge>
-								{/each}
-							</TableCell>
-							<TableCell class="space-x-2 text-right">
-								<Button variant="outline" size="sm" onclick={() => analyzeLog(log)}>Analyze</Button
-								>
-								<a href={log.log_url} target="_blank" rel="noopener noreferrer">
-									<Button variant="link" size="sm">View on WCL</Button>
-								</a>
-							</TableCell>
-						</TableRow>
-					{/each}
-				</TableBody>
-			</Table>
-			{#if totalLogs > itemsPerPage}
-				<div class="mt-6 flex items-center justify-center space-x-2">
-					<Button onclick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}
-						>Previous</Button
-					>
-					<span>Page {currentPage} of {Math.ceil(totalLogs / itemsPerPage)}</span>
-					<Button
-						onclick={() => handlePageChange(currentPage + 1)}
-						disabled={currentPage * itemsPerPage >= totalLogs}>Next</Button
-					>
-				</div>
-			{/if}
+				{/each}
+			</TableBody>
+		</Table>
+		{#if totalLogs > itemsPerPage}
+			<div class="mt-6 flex items-center justify-center space-x-2">
+				<Button onclick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</Button>
+				<span>Page {currentPage} of {Math.ceil(totalLogs / itemsPerPage)}</span>
+				<Button
+					onclick={() => handlePageChange(currentPage + 1)}
+					disabled={currentPage * itemsPerPage >= totalLogs}>Next</Button>
+			</div>
 		{/if}
-	</CardContent>
-</Card>
+	{:else if !description}
+		<p class="py-4 text-center text-muted-foreground">
+			No logs found matching your criteria. Try broadening your search.
+		</p>
+	{/if}
+{/snippet}
+
+{#if bare}
+	{#if description}
+		<div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+			<div>
+				<h3 class={titleClass || 'text-xl font-semibold'}>{title}</h3>
+				<p class="text-sm text-muted-foreground">{description}</p>
+			</div>
+			<p class="text-sm text-muted-foreground">{totalLogs} total logs</p>
+		</div>
+	{/if}
+	<div class={description ? 'mt-4' : ''}>
+		{@render ResultsContent()}
+	</div>
+{:else}
+	<Card class={cardClass}>
+		<CardHeader>
+			<CardTitle class={titleClass}>{title}</CardTitle>
+			{#if description}
+				<CardDescription>{description}</CardDescription>
+			{:else if logs.length === 0 && !loading}
+				<CardDescription>No logs found matching your criteria. Try broadening your search.</CardDescription>
+			{/if}
+		</CardHeader>
+		<CardContent>
+			{@render ResultsContent()}
+		</CardContent>
+	</Card>
+{/if}

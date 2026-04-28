@@ -22,8 +22,7 @@
 	import type { AnnotationOptions } from 'chartjs-plugin-annotation';
 	import type { CastEvent, Series, Player, DeathEvent, BossAbility } from '$lib/types/apiTypes';
 	import { backgroundColorPlugin } from '$lib/ui/chartCanvasPlugin';
-	import { abilityColors } from '$lib/ui/classColors';
-	import { classColors } from '$lib/ui/classColors';
+	import { abilityColors, classColors, getClassColor } from '$lib/ui/classColors';
 	import { buildBossAbilityGroups } from '$lib/ui/abilityMetadata';
 	import { Label } from '$lib/components/ui/label/index';
 	import * as RadioGroup from '$lib/components/ui/radio-group/index';
@@ -163,6 +162,19 @@
 
 	function formatDeathCause(event: DeathEvent) {
 		return event.abilityName || (event.abilityGameID ? `Ability ${event.abilityGameID}` : 'Unknown source');
+	}
+
+	function formatDeathLabelName(event: DeathEvent) {
+		const trimmedName = event.targetName?.trim();
+		if (trimmedName && trimmedName.length > 0) {
+			return trimmedName;
+		}
+
+		if (typeof event.targetID === 'number') {
+			return `Player ${event.targetID}`;
+		}
+
+		return 'Unknown Player';
 	}
 
 	function shouldStartWheelZoom({ chart, event }: { chart: ZoomAwareChart; event: Event }) {
@@ -347,6 +359,10 @@
 			return found ? found.name : null;
 		}
 		return null;
+	}
+
+	function getDeathClassColor(className?: string): string {
+		return getClassColor(className);
 	}
 
 	let indexOffset = 0;
@@ -647,7 +663,7 @@
 		processedData.healingSeries.forEach((healing) => {
 			// Find the corresponding healer by guid
 			const healer = allHealers.find((h) => h.guid === healing.guid);
-			const healerName = healer ? `${healer.name} (${healer.type})` : healing.name;
+			const healerName = healer ? healer.name : healing.name;
 			const classColor = healer ? classColors[healer.type] || '#ffffff' : '#ffffff';
 			datasets.push({
 				label: healerName,
@@ -763,27 +779,30 @@
 					}),
 				...(showDeathEvents
 					? deathTableRows.map((event: DeathEvent) => {
-							const eventsAtSameTime = deathEventsByIndex.get(
-								Math.round((event.timestamp - damageTimelineStart) / damageTimelineInterval)
-							) ?? [];
-							const stackedIndex = eventsAtSameTime.findIndex(
-								(candidate) => candidate.timestamp === event.timestamp && candidate.targetID === event.targetID
-							);
 							const xValue: number = Math.round(
 								(event.timestamp - damageTimelineStart) / damageTimelineInterval
 							);
+							const deathLabelName = formatDeathLabelName(event);
 							return {
 								type: 'line',
 								xMin: xValue,
 								xMax: xValue,
+								clip: false,
+								drawTime: 'afterDatasetsDraw',
 								borderColor: deathLegendStroke,
 								borderWidth: 2,
 								borderDash: [6, 4],
 								label: {
-									content: `☠ ${event.targetName}`,
+									content: deathLabelName,
 									display: true,
 									position: 'start',
-								yAdjust: 40 + stackedIndex * 18,
+									yAdjust: 0,
+									xAdjust: 0,
+									textAlign: 'center',
+									font: {
+										size: 11,
+										weight: '600'
+									},
 									padding: { top: 3, right: 6, bottom: 3, left: 6 },
 									backgroundColor: 'rgba(127, 29, 29, 0.92)',
 									borderRadius: 999,
@@ -840,7 +859,7 @@
 </div>
 
 <div
-	class="chart-container relative mx-auto flex h-[32rem] w-full items-center justify-center p-4 xl:h-[40rem] 2xl:h-[50rem]"
+	class="container relative mx-auto flex h-[32rem] w-full items-center justify-center p-4 xl:h-[40rem] 2xl:h-[50rem]"
 >
 	<div class="zoom-controls">
 		<button class="zoom-btn" onclick={zoomOut} title="Zoom out" aria-label="Zoom out">−</button>
@@ -870,15 +889,15 @@
 						<TableRow>
 							<TableHead>Time</TableHead>
 							<TableHead>Player</TableHead>
-							<TableHead>Class</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{#each deathTableRows as event (event.timestamp + '-' + event.targetID)}
 							<TableRow>
 								<TableCell class="font-medium">{formatRelativeTimestamp(event.timestamp)}</TableCell>
-								<TableCell>{event.targetName}</TableCell>
-								<TableCell>{event.targetClass ?? 'Unknown'}</TableCell>
+								<TableCell style={`color: ${getDeathClassColor(event.targetClass)};`}>
+									{event.targetName}
+								</TableCell>
 							</TableRow>
 						{/each}
 					</TableBody>
@@ -891,15 +910,10 @@
 {/if}
 
 <style>
-	.chart-container {
-		background-color: transparent;
-		overflow: hidden;
-	}
-
 	.zoom-controls {
 		position: absolute;
-		top: 3rem;
-		right: 1.5rem;
+		top: clamp(0.5rem, 5%, 2.5rem);
+		right: clamp(1rem, 5%, 2.5rem);
 		z-index: 10;
 		display: flex;
 		align-items: center;

@@ -33,6 +33,7 @@
 	import EncounterSkeleton from '../../../components/skeletons/encounterSkeleton.svelte';
 	import { logClientError } from '$lib/clientLog';
 	import { bosses } from '$lib/types/bossData';
+	import { getClassColor } from '$lib/ui/classColors';
 
 	let reportURL: string = $state('');
 	let fights: Fight[] = $state([]);
@@ -831,15 +832,15 @@
 											<TableRow>
 												<TableHead>Time</TableHead>
 												<TableHead>Player</TableHead>
-												<TableHead>Class</TableHead>
 											</TableRow>
 										</TableHeader>
 										<TableBody>
 											{#each sortedDeathEvents as event (event.timestamp + '-' + event.targetID)}
 												<TableRow>
 													<TableCell class="font-medium">{formatRelativeTimestamp(event.timestamp)}</TableCell>
-													<TableCell>{event.targetName}</TableCell>
-													<TableCell>{event.targetClass ?? 'Unknown'}</TableCell>
+													<TableCell style={`color: ${getClassColor(event.targetClass)};`}>
+														{event.targetName}
+													</TableCell>
 												</TableRow>
 											{/each}
 										</TableBody>
@@ -851,17 +852,17 @@
 						</section>
 
 						<!-- Similar healer comps on the right -->
-						<section class="rounded-xl border border-border bg-card/60 p-4 md:p-6">
-							<h3 class="text-xl font-semibold">Similar healer comps</h3>
-							<p class="text-sm text-muted-foreground">
-								Public kills for this boss, seeded with the healers present in your selected pull.
-							</p>
+						<section class="self-start rounded-xl border border-border bg-card/80 p-4 md:p-6">
 							<LogBrowserResults
 								logs={similarLogs}
 								loading={loadingSimilarLogs}
 								totalLogs={totalSimilarLogs}
 								currentPage={currentSimilarPage}
 								itemsPerPage={similarLogsItemsPerPage}
+								title="Similar healer comps"
+								description="Public kills for this boss, seeded with the healers present in your selected pull."
+								titleClass="text-xl font-semibold"
+								bare={true}
 								onpageChange={handleSimilarLogsPageChange}
 								onanalyzeLog={(log) => analyzeLogFromBrowse(log)}
 							/>
