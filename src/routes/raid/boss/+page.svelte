@@ -12,7 +12,7 @@
 </script>
 
 <SEO
-	title="Boss damage and death profile - Mr. Mythical"
+	title="Boss damage and death profile | Mr. Mythical"
 	description="Per-second damage and death timing for every Midnight Season 1 mythic raid boss, aggregated from public progression logs."
 	image="https://mrmythical.com/Logo.png"
 	keywords="Midnight raid, mythic raid, boss damage charts, raid death timings, Voidspire, Dreamrift, Quel'Danas"
