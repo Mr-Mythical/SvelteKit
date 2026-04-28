@@ -36,28 +36,35 @@ describe('reveal action', () => {
 			observe = observe;
 			disconnect = disconnect;
 			trigger() {
-				this.callback([{ isIntersecting: true } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
+				this.callback(
+					[{ isIntersecting: true } as IntersectionObserverEntry],
+					this as unknown as IntersectionObserver
+				);
 			}
 		}
 
 		const originalMatchMedia = window.matchMedia;
-		const originalObserver = (window as unknown as { IntersectionObserver?: unknown }).IntersectionObserver;
+		const originalObserver = (window as unknown as { IntersectionObserver?: unknown })
+			.IntersectionObserver;
 		(window as Window & { matchMedia: typeof window.matchMedia }).matchMedia = vi
 			.fn()
 			.mockReturnValue({ matches: false });
-		(window as unknown as { IntersectionObserver: typeof MockIntersectionObserver }).IntersectionObserver =
-			MockIntersectionObserver;
+		(
+			window as unknown as { IntersectionObserver: typeof MockIntersectionObserver }
+		).IntersectionObserver = MockIntersectionObserver;
 
 		const action = reveal(node);
 		expect(observe).toHaveBeenCalledWith(node);
 
-		const instance = (MockIntersectionObserver as unknown as { prototype: { trigger: () => void } }).prototype;
+		const instance = (MockIntersectionObserver as unknown as { prototype: { trigger: () => void } })
+			.prototype;
 		expect(typeof instance.trigger).toBe('function');
 		(action as { destroy?: () => void }).destroy?.();
 		expect(disconnect).toHaveBeenCalled();
 
 		(window as Window & { matchMedia: typeof window.matchMedia }).matchMedia = originalMatchMedia;
-		(window as unknown as { IntersectionObserver?: unknown }).IntersectionObserver = originalObserver;
+		(window as unknown as { IntersectionObserver?: unknown }).IntersectionObserver =
+			originalObserver;
 	});
 });
 
@@ -88,14 +95,18 @@ describe('wowhead tooltip helpers', () => {
 		const hideC = vi.fn();
 		const hideD = vi.fn();
 
-		(window as Window & {
-			Tooltips?: { hide?: () => void };
-			WH?: { Tooltip?: { hide?: () => void }; Tooltips?: { hide?: () => void } };
-			$WowheadPower?: { hideTooltip?: () => void };
-		}).Tooltips = { hide: hideA };
-		(window as Window & {
-			WH?: { Tooltip?: { hide?: () => void }; Tooltips?: { hide?: () => void } };
-		}).WH = { Tooltip: { hide: hideB }, Tooltips: { hide: hideC } };
+		(
+			window as Window & {
+				Tooltips?: { hide?: () => void };
+				WH?: { Tooltip?: { hide?: () => void }; Tooltips?: { hide?: () => void } };
+				$WowheadPower?: { hideTooltip?: () => void };
+			}
+		).Tooltips = { hide: hideA };
+		(
+			window as Window & {
+				WH?: { Tooltip?: { hide?: () => void }; Tooltips?: { hide?: () => void } };
+			}
+		).WH = { Tooltip: { hide: hideB }, Tooltips: { hide: hideC } };
 		(window as Window & { $WowheadPower?: { hideTooltip?: () => void } }).$WowheadPower = {
 			hideTooltip: hideD
 		};

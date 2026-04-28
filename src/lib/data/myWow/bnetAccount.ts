@@ -41,10 +41,7 @@ export async function getBattleNetAccount(userId: string): Promise<BattleNetAcco
  * persist the new values on the `accounts` row. Returns the fresh access token,
  * or null when the refresh failed (user must reauthenticate).
  */
-async function refreshBattleNetToken(
-	userId: string,
-	refreshToken: string
-): Promise<string | null> {
+async function refreshBattleNetToken(userId: string, refreshToken: string): Promise<string | null> {
 	const clientId = env.AUTH_BATTLENET_ID;
 	const clientSecret = env.AUTH_BATTLENET_SECRET;
 	if (!clientId || !clientSecret) return null;
@@ -126,8 +123,7 @@ export async function getValidBattleNetUserToken(userId: string): Promise<{
 	if (!account?.accessToken) return null;
 
 	const now = Math.floor(Date.now() / 1000);
-	const stillValid =
-		account.expiresAt !== null && account.expiresAt - EXPIRY_BUFFER_SECONDS > now;
+	const stillValid = account.expiresAt !== null && account.expiresAt - EXPIRY_BUFFER_SECONDS > now;
 
 	if (stillValid) {
 		return { token: account.accessToken, scope: account.scope };

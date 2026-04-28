@@ -138,7 +138,9 @@ export async function refreshRosterFromBattleNet(
 	const hasScope = (tokenInfo.scope ?? '').split(/\s+/).includes('wow.profile');
 	if (!hasScope) return null;
 
-	const perRegion = await Promise.all(REGIONS.map((region) => fetchRegion(tokenInfo.token, region)));
+	const perRegion = await Promise.all(
+		REGIONS.map((region) => fetchRegion(tokenInfo.token, region))
+	);
 	const merged = sortRoster(dedupe(perRegion.flat()));
 
 	if (merged.length === 0) return null;

@@ -100,15 +100,18 @@
 		</Table>
 		{#if totalLogs > itemsPerPage}
 			<div class="mt-6 flex items-center justify-center space-x-2">
-				<Button onclick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</Button>
+				<Button onclick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}
+					>Previous</Button
+				>
 				<span>Page {currentPage} of {Math.ceil(totalLogs / itemsPerPage)}</span>
 				<Button
 					onclick={() => handlePageChange(currentPage + 1)}
-					disabled={currentPage * itemsPerPage >= totalLogs}>Next</Button>
+					disabled={currentPage * itemsPerPage >= totalLogs}>Next</Button
+				>
 			</div>
 		{/if}
 	{:else if !description}
-		<p class="py-4 text-center text-muted-foreground">
+		<p class="text-muted-foreground py-4 text-center">
 			No logs found matching your criteria. Try broadening your search.
 		</p>
 	{/if}
@@ -119,9 +122,9 @@
 		<div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
 			<div>
 				<h3 class={titleClass || 'text-xl font-semibold'}>{title}</h3>
-				<p class="text-sm text-muted-foreground">{description}</p>
+				<p class="text-muted-foreground text-sm">{description}</p>
 			</div>
-			<p class="text-sm text-muted-foreground">{totalLogs} total logs</p>
+			<p class="text-muted-foreground text-sm">{totalLogs} total logs</p>
 		</div>
 	{/if}
 	<div class={description ? 'mt-4' : ''}>
@@ -134,7 +137,9 @@
 			{#if description}
 				<CardDescription>{description}</CardDescription>
 			{:else if logs.length === 0 && !loading}
-				<CardDescription>No logs found matching your criteria. Try broadening your search.</CardDescription>
+				<CardDescription
+					>No logs found matching your criteria. Try broadening your search.</CardDescription
+				>
 			{/if}
 		</CardHeader>
 		<CardContent>

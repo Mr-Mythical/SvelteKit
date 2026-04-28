@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createTokenCache } from '../tokenCacheBase';
 
-const baseToken = (overrides: Partial<{ token: string; expiresIn: number; obtainedAt: number }> = {}) => ({
+const baseToken = (
+	overrides: Partial<{ token: string; expiresIn: number; obtainedAt: number }> = {}
+) => ({
 	token: 'tok',
 	expiresIn: 3600,
 	obtainedAt: Date.now(),
@@ -35,7 +37,9 @@ describe('createTokenCache', () => {
 	it('refreshes the token after expiry', async () => {
 		const requestToken = vi
 			.fn()
-			.mockResolvedValueOnce(baseToken({ token: 'first', expiresIn: 1, obtainedAt: Date.now() - 5000 }))
+			.mockResolvedValueOnce(
+				baseToken({ token: 'first', expiresIn: 1, obtainedAt: Date.now() - 5000 })
+			)
 			.mockResolvedValueOnce(baseToken({ token: 'second' }));
 		const get = createTokenCache({
 			providerLabel: 'P',
@@ -51,7 +55,10 @@ describe('createTokenCache', () => {
 	it('shares one in-flight refresh between concurrent callers', async () => {
 		let resolveToken!: (value: ReturnType<typeof baseToken>) => void;
 		const requestToken = vi.fn().mockImplementationOnce(
-			() => new Promise((resolve) => { resolveToken = resolve; })
+			() =>
+				new Promise((resolve) => {
+					resolveToken = resolve;
+				})
 		);
 		const get = createTokenCache({
 			providerLabel: 'P',

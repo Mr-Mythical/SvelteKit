@@ -101,7 +101,7 @@
 					<rect width="100" height="545.799988" fill="currentColor" />
 				</svg>
 				<div class="text-left">
-					<p class="text-lg font-bold leading-tight text-purple-700 dark:text-purple-300">
+					<p class="text-lg leading-tight font-bold text-purple-700 dark:text-purple-300">
 						Support on Patreon
 					</p>
 					<p class="text-xs leading-tight text-gray-700 dark:text-gray-200">

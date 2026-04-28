@@ -23,9 +23,9 @@ describe('extractWarcraftLogsReportCode', () => {
 	});
 
 	it('extracts report code from host-only URL', () => {
-		expect(
-			extractWarcraftLogsReportCode('warcraftlogs.com/reports/k2yZ8HzKgBRxt9NX?fight=5')
-		).toBe('k2yZ8HzKgBRxt9NX');
+		expect(extractWarcraftLogsReportCode('warcraftlogs.com/reports/k2yZ8HzKgBRxt9NX?fight=5')).toBe(
+			'k2yZ8HzKgBRxt9NX'
+		);
 	});
 
 	it('returns null for invalid input', () => {

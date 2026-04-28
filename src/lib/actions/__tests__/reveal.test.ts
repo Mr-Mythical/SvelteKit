@@ -5,13 +5,22 @@ class MockIntersectionObserver {
 	public static instances: MockIntersectionObserver[] = [];
 	public observed: Element[] = [];
 	public disconnected = false;
-	constructor(public callback: IntersectionObserverCallback, public options?: IntersectionObserverInit) {
+	constructor(
+		public callback: IntersectionObserverCallback,
+		public options?: IntersectionObserverInit
+	) {
 		MockIntersectionObserver.instances.push(this);
 	}
-	observe(el: Element) { this.observed.push(el); }
-	disconnect() { this.disconnected = true; }
+	observe(el: Element) {
+		this.observed.push(el);
+	}
+	disconnect() {
+		this.disconnected = true;
+	}
 	unobserve() {}
-	takeRecords(): IntersectionObserverEntry[] { return []; }
+	takeRecords(): IntersectionObserverEntry[] {
+		return [];
+	}
 }
 
 describe('reveal action', () => {
@@ -20,8 +29,10 @@ describe('reveal action', () => {
 
 	beforeEach(() => {
 		MockIntersectionObserver.instances = [];
-		originalIO = (window as unknown as { IntersectionObserver?: typeof IntersectionObserver }).IntersectionObserver;
-		(window as unknown as { IntersectionObserver: unknown }).IntersectionObserver = MockIntersectionObserver as unknown;
+		originalIO = (window as unknown as { IntersectionObserver?: typeof IntersectionObserver })
+			.IntersectionObserver;
+		(window as unknown as { IntersectionObserver: unknown }).IntersectionObserver =
+			MockIntersectionObserver as unknown;
 		originalMatchMedia = window.matchMedia;
 		window.matchMedia = vi.fn().mockImplementation((q: string) => ({
 			matches: false,
@@ -36,7 +47,9 @@ describe('reveal action', () => {
 	});
 
 	afterEach(() => {
-		(window as unknown as { IntersectionObserver?: typeof IntersectionObserver }).IntersectionObserver = originalIO;
+		(
+			window as unknown as { IntersectionObserver?: typeof IntersectionObserver }
+		).IntersectionObserver = originalIO;
 		window.matchMedia = originalMatchMedia;
 	});
 

@@ -142,7 +142,7 @@
 {#if loading}
 	<div class="flex h-full w-full items-center justify-center">
 		<div
-			class="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+			class="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
 		></div>
 	</div>
 {:else if chartData}

@@ -23,10 +23,10 @@ See `PRODUCT.md` for the product brief and `DESIGN.md` (and `DESIGN.json`) for t
 
 The app talks to **two** Postgres databases:
 
-| Database         | Purpose                                                | Env var              | Schema                  | Accessor                                  |
-| ---------------- | ------------------------------------------------------ | -------------------- | ----------------------- | ----------------------------------------- |
-| **Raid analytics** | Public spec/healer/composition aggregates, encounters | `DATABASE_URL`       | `src/lib/db/schema.ts`  | `getRaidDb()` from `$lib/db`              |
-| **User**         | Auth.js accounts/sessions, recents, linked characters | `DATABASE_USER_URL` (falls back to `DATABASE_URL`) | `src/lib/db/userSchema.ts` | `getUserDb()` from `$lib/db/userDb`       |
+| Database           | Purpose                                               | Env var                                            | Schema                     | Accessor                            |
+| ------------------ | ----------------------------------------------------- | -------------------------------------------------- | -------------------------- | ----------------------------------- |
+| **Raid analytics** | Public spec/healer/composition aggregates, encounters | `DATABASE_URL`                                     | `src/lib/db/schema.ts`     | `getRaidDb()` from `$lib/db`        |
+| **User**           | Auth.js accounts/sessions, recents, linked characters | `DATABASE_USER_URL` (falls back to `DATABASE_URL`) | `src/lib/db/userSchema.ts` | `getUserDb()` from `$lib/db/userDb` |
 
 Both go through the shared `createDrizzlePostgres` factory in `src/lib/db/connection.ts`. Drizzle config files are split: `drizzle.config.ts` (raid) and `drizzle.user.config.ts` (user). Migrations live in `drizzle/` and `drizzle/user/` respectively.
 

@@ -61,15 +61,15 @@
 	<div class="space-y-2">
 		{#if isLoading && session}
 			<div class="py-4 text-center">
-				<Loader2 class="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-				<p class="mt-2 text-sm text-muted-foreground">Loading recent characters...</p>
+				<Loader2 class="text-muted-foreground mx-auto h-6 w-6 animate-spin" />
+				<p class="text-muted-foreground mt-2 text-sm">Loading recent characters...</p>
 			</div>
 		{:else if !session}
-			<div class="py-4 text-center text-muted-foreground">
+			<div class="text-muted-foreground py-4 text-center">
 				<p class="text-sm">Login to sync recent characters across devices</p>
 			</div>
 		{:else if characters.length === 0}
-			<div class="py-4 text-center text-muted-foreground">
+			<div class="text-muted-foreground py-4 text-center">
 				<p class="text-sm">No recent character searches yet</p>
 			</div>
 		{:else}
@@ -86,7 +86,7 @@
 							</span>
 							<span class="text-muted"> - {getRealmLabel(char.region, char.realm)}</span>
 						</div>
-						<span class="text-sm text-muted">({char.region.toUpperCase()})</span>
+						<span class="text-muted text-sm">({char.region.toUpperCase()})</span>
 					</Button>
 				</div>
 			{/each}

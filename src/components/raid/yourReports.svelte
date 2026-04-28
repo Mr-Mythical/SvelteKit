@@ -115,9 +115,9 @@
 					<h3 class="report-title">From your characters</h3>
 
 					{#if characterLoading}
-					<div class="py-2 text-center">
-						<Loader2 class="mx-auto h-4 w-4 animate-spin text-muted-foreground" />
-					</div>
+						<div class="py-2 text-center">
+							<Loader2 class="text-muted-foreground mx-auto h-4 w-4 animate-spin" />
+						</div>
 					{:else if characterReports.length === 0}
 						<p class="report-note">No reports found from your imported characters.</p>
 					{:else}
@@ -155,14 +155,16 @@
 										class="h-auto w-full justify-start px-2.5 py-2 text-left"
 										onclick={() => onSelectReport(report.code)}
 									>
-										<div class="min-w-0 w-full">
+										<div class="w-full min-w-0">
 											<div class="flex items-start justify-between gap-2">
 												<span class="truncate text-sm font-medium">{report.title}</span>
-												<span class="shrink-0 text-[10px] text-muted-foreground">
+												<span class="text-muted-foreground shrink-0 text-[10px]">
 													{formatTimestamp(report.timestamp)}
 												</span>
 											</div>
-											<div class="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+											<div
+												class="text-muted-foreground flex items-center justify-between gap-2 text-xs"
+											>
 												<span class="truncate">
 													{#if report.guild?.name}
 														Guild: {report.guild.name}
@@ -188,7 +190,7 @@
 
 					{#if recentLoading}
 						<div class="py-2 text-center">
-							<Loader2 class="mx-auto h-4 w-4 animate-spin text-muted-foreground" />
+							<Loader2 class="text-muted-foreground mx-auto h-4 w-4 animate-spin" />
 						</div>
 					{:else if recent.length === 0}
 						<p class="report-note">No recent reports yet.</p>
@@ -200,14 +202,16 @@
 									class="h-auto w-full justify-start px-2.5 py-2 text-left"
 									onclick={() => onSelectReport(report.code)}
 								>
-									<div class="min-w-0 w-full">
+									<div class="w-full min-w-0">
 										<div class="flex items-start justify-between gap-2">
 											<span class="truncate text-sm font-medium">{report.title}</span>
-											<span class="shrink-0 text-[10px] text-muted-foreground">
+											<span class="text-muted-foreground shrink-0 text-[10px]">
 												{formatTimestamp(report.timestamp)}
 											</span>
 										</div>
-										<div class="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+										<div
+											class="text-muted-foreground flex items-center justify-between gap-2 text-xs"
+										>
 											<span class="truncate">
 												{#if report.guild?.name}
 													Guild: {report.guild.name}

@@ -1,12 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
-import {
-	getTopPlayers,
-	type FightFilter,
-	type Metric,
-	type Role
-} from '$lib/server/topPlayers';
+import { getTopPlayers, type FightFilter, type Metric, type Role } from '$lib/server/topPlayers';
 
 const VALID_ROLES = new Set<Role>(['dps', 'tank', 'healer']);
 const VALID_METRICS = new Set<Metric>(['dps', 'hps']);
@@ -42,8 +37,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			return apiError('encounterId must be an integer', 400);
 		}
 
-		const difficulty =
-			difficultyParam !== null ? Number.parseInt(difficultyParam, 10) : null;
+		const difficulty = difficultyParam !== null ? Number.parseInt(difficultyParam, 10) : null;
 		if (difficulty !== null && !Number.isFinite(difficulty)) {
 			return apiError('difficulty must be an integer', 400);
 		}

@@ -43,6 +43,11 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		return apiOk(combinedData);
 	} catch (error) {
-		return handleApiError('api/blizzard', error, 'Failed to fetch character data from Blizzard.', 502);
+		return handleApiError(
+			'api/blizzard',
+			error,
+			'Failed to fetch character data from Blizzard.',
+			502
+		);
 	}
 };

@@ -68,7 +68,13 @@
 		<a href="/rating-calculator" class="footer-link">
 			Open full calculator
 			<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
-				<path d="M3 2l5 4-5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+				<path
+					d="M3 2l5 4-5 4"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
 			</svg>
 		</a>
 		<span class="footer-meta">Import character, share plans, and tune by affix.</span>

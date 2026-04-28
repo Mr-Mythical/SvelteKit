@@ -1,6 +1,4 @@
 <script lang="ts">
-
-
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
@@ -16,7 +14,6 @@
 	import { classSpecAbilities } from '$lib/types/classData';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Separator } from '$lib/components/ui/separator';
-
 
 	interface Props {
 		loading?: boolean;
@@ -116,7 +113,7 @@
 						{selectedBossLabel || 'Any Boss'}
 					</Select.Trigger>
 					<Select.Content>
-						<Select.Item value="" label="Any Boss" class="italic text-muted-foreground">
+						<Select.Item value="" label="Any Boss" class="text-muted-foreground italic">
 							Any Boss
 						</Select.Item>
 						{#each bossList as boss (boss.id)}
@@ -136,7 +133,7 @@
 						bind:value={minDuration}
 						class="w-full"
 					/>
-					<span class="whitespace-nowrap text-sm text-muted-foreground">minutes</span>
+					<span class="text-muted-foreground text-sm whitespace-nowrap">minutes</span>
 				</div>
 			</div>
 
@@ -150,7 +147,7 @@
 						bind:value={maxDuration}
 						class="w-full"
 					/>
-					<span class="whitespace-nowrap text-sm text-muted-foreground">minutes</span>
+					<span class="text-muted-foreground text-sm whitespace-nowrap">minutes</span>
 				</div>
 			</div>
 		</div>
@@ -187,7 +184,7 @@
 					</div>
 				{/each}
 			</div>
-			<p class="text-sm text-muted-foreground">
+			<p class="text-muted-foreground text-sm">
 				{selectedHealerSpecs.length
 					? `Selected: ${selectedHealerSpecs.length} healer${selectedHealerSpecs.length > 1 ? 's' : ''}`
 					: emptySelectionText}

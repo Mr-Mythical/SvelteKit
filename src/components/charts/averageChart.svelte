@@ -1,6 +1,4 @@
 <script lang="ts">
-
-
 	import { onDestroy, onMount } from 'svelte';
 	import { Chart } from 'svelte-chartjs';
 	import {
@@ -527,13 +525,18 @@
 		<div class="error-message">{error}</div>
 	{:else}
 		<div
-			class="container relative mx-auto flex h-[32rem] w-full items-center justify-center p-4 xl:h-[40rem] 2xl:h-[50rem]"
+			class="relative container mx-auto flex h-[32rem] w-full items-center justify-center p-4 xl:h-[40rem] 2xl:h-[50rem]"
 		>
 			<div class="zoom-controls">
 				<button class="zoom-btn" onclick={zoomOut} title="Zoom out" aria-label="Zoom out">−</button>
 				<div bind:this={zoomLabelElement} class="zoom-label" aria-live="polite">Zoom 100%</div>
 				<button class="zoom-btn" onclick={zoomIn} title="Zoom in" aria-label="Zoom in">+</button>
-				<button class="zoom-btn zoom-reset" onclick={resetZoom} title="Reset zoom" aria-label="Reset zoom">↺</button>
+				<button
+					class="zoom-btn zoom-reset"
+					onclick={resetZoom}
+					title="Reset zoom"
+					aria-label="Reset zoom">↺</button
+				>
 			</div>
 			<Chart type="line" data={chartData} {options} bind:chart={chartInstance} />
 		</div>

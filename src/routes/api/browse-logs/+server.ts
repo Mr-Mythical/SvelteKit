@@ -62,7 +62,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			params.healerSpecs && params.healerSpecs.length > 0
 				? mappedLogsData.filter((comp) => {
 						const actualSpecsInLog = comp.healer_specs;
-						return params.healerSpecs!.every((requiredSpec) => actualSpecsInLog.includes(requiredSpec));
+						return params.healerSpecs!.every((requiredSpec) =>
+							actualSpecsInLog.includes(requiredSpec)
+						);
 					})
 				: mappedLogsData;
 
@@ -79,7 +81,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			);
 
 		const browsedLogsResult: BrowsedLog[] = paginatedLogsData.map((log) => {
-			const bossData = log.encounter_id != null ? bossList.find((b) => b.id === log.encounter_id) : null;
+			const bossData =
+				log.encounter_id != null ? bossList.find((b) => b.id === log.encounter_id) : null;
 			const durationInSeconds = log.duration_ms != null ? Math.floor(log.duration_ms / 1000) : 0;
 
 			return {

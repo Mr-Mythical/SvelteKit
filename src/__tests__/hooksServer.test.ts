@@ -1,20 +1,21 @@
 import { describe, expect, it, vi } from 'vitest';
 import { __securityHandlerForTests, __cspHeaderForTests } from '../hooks.server';
 
-const baseEvent = () => ({
-	url: new URL('http://localhost/'),
-	request: new Request('http://localhost/'),
-	cookies: { get: vi.fn(), set: vi.fn() } as unknown,
-	fetch: vi.fn() as unknown,
-	getClientAddress: () => '127.0.0.1',
-	locals: {} as App.Locals,
-	params: {},
-	platform: undefined,
-	route: { id: null },
-	setHeaders: vi.fn(),
-	isDataRequest: false,
-	isSubRequest: false
-}) as unknown as Parameters<typeof __securityHandlerForTests>[0]['event'];
+const baseEvent = () =>
+	({
+		url: new URL('http://localhost/'),
+		request: new Request('http://localhost/'),
+		cookies: { get: vi.fn(), set: vi.fn() } as unknown,
+		fetch: vi.fn() as unknown,
+		getClientAddress: () => '127.0.0.1',
+		locals: {} as App.Locals,
+		params: {},
+		platform: undefined,
+		route: { id: null },
+		setHeaders: vi.fn(),
+		isDataRequest: false,
+		isSubRequest: false
+	}) as unknown as Parameters<typeof __securityHandlerForTests>[0]['event'];
 
 describe('handleSecurity', () => {
 	it('attaches the full set of security headers to every response', async () => {

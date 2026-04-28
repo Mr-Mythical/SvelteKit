@@ -62,10 +62,7 @@
 
 	<section class="chart-section" aria-label="Damage and death profile chart">
 		{#if currentBoss}
-			<AverageChart
-				encounterId={currentBoss.id}
-				encounterName={`Mythic ${currentBoss.name}`}
-			/>
+			<AverageChart encounterId={currentBoss.id} encounterName={`Mythic ${currentBoss.name}`} />
 		{/if}
 	</section>
 
@@ -173,53 +170,51 @@
 			<div class="block">
 				<h3 class="block-title">Average damage taken</h3>
 				<p class="block-body">
-					The primary line shows the average damage taken across all logged pulls at each
-					second of the fight. Use it as a baseline to find the consistent spike windows.
+					The primary line shows the average damage taken across all logged pulls at each second of
+					the fight. Use it as a baseline to find the consistent spike windows.
 				</p>
 			</div>
 
 			<div class="block">
 				<h3 class="block-title">Standard deviation band</h3>
 				<p class="block-body">
-					The wider band covers one standard deviation either side of the average. About
-					68% of pulls fall inside it. A wide band points to mechanics with variable
-					outcomes: avoidable damage some players miss, random targeting, or differences
-					in mitigation.
+					The wider band covers one standard deviation either side of the average. About 68% of
+					pulls fall inside it. A wide band points to mechanics with variable outcomes: avoidable
+					damage some players miss, random targeting, or differences in mitigation.
 				</p>
 			</div>
 
 			<div class="block">
 				<h3 class="block-title">95% confidence interval</h3>
 				<p class="block-body">
-					The narrower band is our confidence in the average estimate. A tight band means
-					a lot of consistent logs at that second. A wider band points to thinner data or
-					inconsistent execution.
+					The narrower band is our confidence in the average estimate. A tight band means a lot of
+					consistent logs at that second. A wider band points to thinner data or inconsistent
+					execution.
 				</p>
 			</div>
 
 			<div class="block">
 				<h3 class="block-title">Deaths per pull</h3>
 				<p class="block-body">
-					The death bars on the right axis show the average number of player deaths
-					logged at each second. They usually trail the damage spike by a few seconds,
-					since deaths follow whatever just hit the raid.
+					The death bars on the right axis show the average number of player deaths logged at each
+					second. They usually trail the damage spike by a few seconds, since deaths follow whatever
+					just hit the raid.
 				</p>
 			</div>
 
 			<div class="block">
 				<h3 class="block-title">Hotspot windows</h3>
 				<p class="block-body">
-					The table under the chart picks the top death seconds and groups them into
-					windows. Useful for matching cooldowns to the moments where pulls actually fall
-					apart.
+					The table under the chart picks the top death seconds and groups them into windows. Useful
+					for matching cooldowns to the moments where pulls actually fall apart.
 				</p>
 			</div>
 
 			<div class="block">
 				<h3 class="block-title">Source and selection</h3>
 				<p class="block-body">
-					Data is aggregated from public progression logs (first successful kills) and is
-					anonymized before display.
+					Data is aggregated from public progression logs (first successful kills) and is anonymized
+					before display.
 				</p>
 			</div>
 		</section>

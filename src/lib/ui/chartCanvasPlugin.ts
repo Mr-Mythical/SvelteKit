@@ -1,6 +1,11 @@
 export const backgroundColorPlugin = {
 	id: 'customBackgroundColor',
-	beforeDraw: (chart: { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D; width: number; height: number }) => {
+	beforeDraw: (chart: {
+		canvas: HTMLCanvasElement;
+		ctx: CanvasRenderingContext2D;
+		width: number;
+		height: number;
+	}) => {
 		const { ctx, canvas } = chart;
 		const borderRadius = 20;
 		const padding = 1;

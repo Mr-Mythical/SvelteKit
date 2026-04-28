@@ -6,7 +6,7 @@ product
 
 ## Users
 
-Mid-tier World of Warcraft Mythic+ players running keys in roughly the +10 to +15 range. They arrive with a concrete question — *"what keystones do I need to hit X score?"* or *"where did our pull go wrong on boss Y?"* — and they want the answer now, between dungeon runs or while their raid waits. Secondary audiences: high-key pushers who grade tools on data density, and raid leaders reviewing encounters post-pull. Usage context is split between a second monitor during gameplay and a phone mid-queue.
+Mid-tier World of Warcraft Mythic+ players running keys in roughly the +10 to +15 range. They arrive with a concrete question — _"what keystones do I need to hit X score?"_ or _"where did our pull go wrong on boss Y?"_ — and they want the answer now, between dungeon runs or while their raid waits. Secondary audiences: high-key pushers who grade tools on data density, and raid leaders reviewing encounters post-pull. Usage context is split between a second monitor during gameplay and a phone mid-queue.
 
 ## Product Purpose
 
@@ -14,7 +14,7 @@ Mr. Mythical turns raw Warcraft data (scores, logs, keystone math, encounter tel
 
 ## Brand Personality
 
-Sharp, precise, competitive. Tone is that of a veteran teammate in voice chat at 2 AM: confident, concise, no filler. Numbers are the hero; prose is scaffolding. The brand acknowledges this is WoW (pink/crimson palette, League Spartan display face) without LARPing the game's UI. Emotional goal: the user feels *capable*, not *sold to*.
+Sharp, precise, competitive. Tone is that of a veteran teammate in voice chat at 2 AM: confident, concise, no filler. Numbers are the hero; prose is scaffolding. The brand acknowledges this is WoW (pink/crimson palette, League Spartan display face) without LARPing the game's UI. Emotional goal: the user feels _capable_, not _sold to_.
 
 ## Anti-references
 
@@ -23,7 +23,7 @@ Sharp, precise, competitive. Tone is that of a veteran teammate in voice chat at
 - **RGB / cyberpunk / tryhard gaming.** Neon edges, glitch effects, angular clip-paths, "game UI" pastiche.
 - **Corporate analytics dashboards.** Flat gray-and-blue, dead typography, rectangles on rectangles.
 
-**Positive references:** Linear — dense, confident, restrained; use it as the rhythm model. Everything else should feel *game-literate* but *tool-disciplined*.
+**Positive references:** Linear — dense, confident, restrained; use it as the rhythm model. Everything else should feel _game-literate_ but _tool-disciplined_.
 
 ## Design Principles
 

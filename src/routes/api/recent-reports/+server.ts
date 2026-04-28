@@ -1,9 +1,5 @@
 import type { RequestHandler } from './$types';
-import {
-	getUserRecents,
-	addUserRecent,
-	type ReportRecentData
-} from '$lib/db/userRecents.js';
+import { getUserRecents, addUserRecent, type ReportRecentData } from '$lib/db/userRecents.js';
 import { apiOk } from '$lib/server/apiResponses';
 import { requireSession } from '$lib/server/requireSession';
 import { handleApiError } from '$lib/server/logger';
@@ -15,11 +11,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	if ('response' in auth) return auth.response;
 
 	try {
-		const recentReports = await getUserRecents<ReportRecentData>(
-			auth.session.user.id,
-			'report',
-			6
-		);
+		const recentReports = await getUserRecents<ReportRecentData>(auth.session.user.id, 'report', 6);
 
 		// Transform to match the expected RecentReport format
 		const reports = recentReports.map((recent) => ({

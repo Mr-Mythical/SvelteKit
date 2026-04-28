@@ -64,8 +64,17 @@
 		</div>
 
 		<div class="legal">
-			<p class="legal-line">© {currentYear} Mr. Mythical. Data via <a href="https://www.warcraftlogs.com" target="_blank" rel="noopener noreferrer">Warcraft Logs</a> and <a href="https://raider.io" target="_blank" rel="noopener noreferrer">Raider.io</a>.</p>
-			<p class="legal-disclaimer">World of Warcraft is a trademark of Blizzard Entertainment. This site is not affiliated with or endorsed by Blizzard.</p>
+			<p class="legal-line">
+				© {currentYear} Mr. Mythical. Data via
+				<a href="https://www.warcraftlogs.com" target="_blank" rel="noopener noreferrer"
+					>Warcraft Logs</a
+				>
+				and <a href="https://raider.io" target="_blank" rel="noopener noreferrer">Raider.io</a>.
+			</p>
+			<p class="legal-disclaimer">
+				World of Warcraft is a trademark of Blizzard Entertainment. This site is not affiliated with
+				or endorsed by Blizzard.
+			</p>
 		</div>
 	</div>
 </footer>

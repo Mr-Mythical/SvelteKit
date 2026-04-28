@@ -73,8 +73,8 @@ describe('requestClientCredentialsToken', () => {
 			json: async () => ({})
 		});
 
-		await expect(
-			requestClientCredentialsToken(url, 'cid', 'csecret', 'Blizzard')
-		).rejects.toThrow(/Blizzard.*503/);
+		await expect(requestClientCredentialsToken(url, 'cid', 'csecret', 'Blizzard')).rejects.toThrow(
+			/Blizzard.*503/
+		);
 	});
 });

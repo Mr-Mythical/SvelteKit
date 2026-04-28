@@ -90,9 +90,11 @@ const GUILD_RECENT_REPORTS_QUERY = /* GraphQL */ `
 	}
 `;
 
-async function fetchReportsForCharacter(
-	character: { characterName: string; realm: string; region: string }
-): Promise<WarcraftLogsReport[]> {
+async function fetchReportsForCharacter(character: {
+	characterName: string;
+	realm: string;
+	region: string;
+}): Promise<WarcraftLogsReport[]> {
 	try {
 		const data = await executeWclQuery<{
 			characterData?: {
@@ -111,9 +113,11 @@ async function fetchReportsForCharacter(
 	}
 }
 
-async function fetchReportsForGuild(
-	guild: { name: string; realm: string; region: string }
-): Promise<WarcraftLogsReport[]> {
+async function fetchReportsForGuild(guild: {
+	name: string;
+	realm: string;
+	region: string;
+}): Promise<WarcraftLogsReport[]> {
 	try {
 		const data = await executeWclQuery<{
 			reportData?: { reports?: { data?: WarcraftLogsReport[] } };
@@ -130,13 +134,12 @@ async function fetchReportsForGuild(
 	}
 }
 
-function logWclFailure(
-	kind: 'character' | 'guild',
-	target: unknown,
-	error: unknown
-): void {
+function logWclFailure(kind: 'character' | 'guild', target: unknown, error: unknown): void {
 	if (error instanceof WclQueryError && error.kind === 'graphql') {
-		logServerWarn('api/character-reports', `WCL GraphQL errors for ${kind}`, { target, detail: error.detail });
+		logServerWarn('api/character-reports', `WCL GraphQL errors for ${kind}`, {
+			target,
+			detail: error.detail
+		});
 		return;
 	}
 	logServerError('api/character-reports', `WCL fetch failed for ${kind}`, { target, error });
@@ -209,7 +212,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		const guildTargets = new Map<
 			string,
-			{ name: string; realm: string; region: string; sourceCharacter: CharacterReport['sourceCharacter'] }
+			{
+				name: string;
+				realm: string;
+				region: string;
+				sourceCharacter: CharacterReport['sourceCharacter'];
+			}
 		>();
 		for (const report of perCharacter.flat()) {
 			if (!report.guild?.name) continue;

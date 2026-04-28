@@ -48,4 +48,3 @@ export function handleApiError(
 	logServerError(scope, 'request failed', error);
 	return apiError(clientMessage, status);
 }
-

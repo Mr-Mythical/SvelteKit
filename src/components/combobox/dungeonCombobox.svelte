@@ -13,12 +13,7 @@
 		triggerId?: string;
 	}
 
-	let {
-		dungeons = [],
-		selectedValue = '',
-		onSelect,
-		triggerId = ''
-	}: Props = $props();
+	let { dungeons = [], selectedValue = '', onSelect, triggerId = '' }: Props = $props();
 
 	let open = $state(false);
 
@@ -49,7 +44,7 @@
 		aria-haspopup="listbox"
 		aria-labelledby={`${triggerId}-label`}
 		class={cn(
-			'inline-flex h-8 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:h-10 md:px-4 md:text-base'
+			'border-input bg-background ring-offset-background focus:ring-ring inline-flex h-8 w-full items-center justify-between rounded-md border px-3 py-2 text-sm whitespace-nowrap focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:h-10 md:px-4 md:text-base'
 		)}
 	>
 		<span id={`${triggerId}-label`}>
@@ -77,7 +72,7 @@
 						value={dungeon.value}
 						onSelect={() => handleSelect(dungeon.value)}
 						class={cn(
-							'flex cursor-pointer select-none items-center px-2 py-1.5 text-sm md:py-2',
+							'flex cursor-pointer items-center px-2 py-1.5 text-sm select-none md:py-2',
 							selectedValue === dungeon.value ? 'bg-secondary' : ''
 						)}
 					>

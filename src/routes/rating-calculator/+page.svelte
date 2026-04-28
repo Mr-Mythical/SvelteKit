@@ -97,8 +97,8 @@
 		<p class="page-eyebrow">Score calculator</p>
 		<h1 class="page-title">Mythic+ score calculator.</h1>
 		<p class="page-lede">
-			Calculate the keystones to reach your target Mythic+ score, plan dungeon runs, and
-			share your setup by URL.
+			Calculate the keystones to reach your target Mythic+ score, plan dungeon runs, and share your
+			setup by URL.
 		</p>
 	</header>
 	<KeystoneTable />

@@ -1,207 +1,375 @@
 {
-  "schemaVersion": 2,
-  "generatedAt": "2026-04-24T00:00:00.000Z",
-  "title": "Design System: Mr. Mythical",
-  "extensions": {
-    "colorMeta": {
-      "primary": {
-        "role": "primary",
-        "displayName": "Tyrande Rose",
-        "canonical": "hsl(348 75% 81%)",
-        "tonalRamp": ["#1a0a0f", "#3a141e", "#6b1f33", "#9c3050", "#c96478", "#e89aaa", "#f2afbe", "#fbe0e6"]
-      },
-      "mythic-crimson": {
-        "role": "primary-deep",
-        "displayName": "Mythic Crimson",
-        "canonical": "#86132a",
-        "tonalRamp": ["#18040a", "#2e0712", "#4a0c1c", "#6a1224", "#86132a", "#ad2c45", "#d4526a", "#eea6b6"]
-      },
-      "tyrande-rose": {
-        "role": "primary-light",
-        "displayName": "Tyrande Rose (Anchor)",
-        "canonical": "#ec7990",
-        "tonalRamp": ["#2e0a14", "#4e1220", "#7a1d33", "#aa2a49", "#d1455f", "#ec7990", "#f4a3b3", "#fbdde3"]
-      },
-      "background": {
-        "role": "neutral-bg",
-        "displayName": "Rose Parchment",
-        "canonical": "hsl(0 60% 99%)",
-        "tonalRamp": ["#0a0404", "#1c0d0d", "#3b1d1d", "#663434", "#a26969", "#d9bcbc", "#f4e2e2", "#fefafa"]
-      },
-      "foreground": {
-        "role": "neutral-fg",
-        "displayName": "Ink Umber",
-        "canonical": "hsl(24 100% 2%)",
-        "tonalRamp": ["#0a0400", "#1a0a00", "#331300", "#5c2400", "#8c3800", "#c87329", "#eab68c", "#fbe8d5"]
-      },
-      "card": {
-        "role": "surface",
-        "displayName": "Petal Card",
-        "canonical": "hsl(0 60% 95%)",
-        "tonalRamp": ["#1a0a0c", "#331517", "#5e2428", "#8f383e", "#c16167", "#e09a9f", "#f0c8cb", "#fbe7e7"]
-      },
-      "muted": {
-        "role": "neutral-muted",
-        "displayName": "Ash Rose",
-        "canonical": "hsl(0 20% 80%)",
-        "tonalRamp": ["#1a1414", "#2e2424", "#4e3c3c", "#735959", "#967a7a", "#b7a0a0", "#d6cccc", "#f0e8e8"]
-      },
-      "muted-foreground": {
-        "role": "neutral-muted-fg",
-        "displayName": "Clay Rose",
-        "canonical": "hsl(0 20% 30%)",
-        "tonalRamp": ["#140e0e", "#2a1e1e", "#412e2e", "#5c3d3d", "#7d5a5a", "#a18080", "#c4a9a9", "#e2d2d2"]
-      },
-      "ring": {
-        "role": "focus-ring",
-        "displayName": "Ember Ring",
-        "canonical": "hsl(19 49% 40%)",
-        "tonalRamp": ["#1a0e07", "#331c10", "#5c341e", "#7f472a", "#985939", "#ba7c5a", "#d4a487", "#eecfbb"]
-      },
-      "link": {
-        "role": "link",
-        "displayName": "Link Crimson",
-        "canonical": "hsl(348 80% 35%)",
-        "tonalRamp": ["#1c040a", "#3d0917", "#600e24", "#83132f", "#a01231", "#c43a58", "#dd6c82", "#f3b6c4"]
-      },
-      "destructive": {
-        "role": "destructive",
-        "displayName": "Soft Destructive",
-        "canonical": "hsl(0 62% 70%)",
-        "tonalRamp": ["#1a0808", "#331010", "#5e1d1d", "#8f2e2e", "#c14a4a", "#dc6f6f", "#e48a8a", "#f3c5c5"]
-      },
-      "progress": {
-        "role": "success",
-        "displayName": "Jade Progress",
-        "canonical": "hsl(126 75% 81%)",
-        "tonalRamp": ["#061a0b", "#0c3317", "#155c28", "#1e853a", "#2db154", "#6fd087", "#aeeebf", "#dff7e6"]
-      }
-    },
-    "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Homepage hero and rare brand moments only." },
-      "headline": { "displayName": "Headline", "purpose": "Marketing section openers, /about page leads." },
-      "title": { "displayName": "Title", "purpose": "Page-level titles in-product; card titles on the homepage." },
-      "body": { "displayName": "Body", "purpose": "All paragraph copy. Cap line length 65-75ch." },
-      "label": { "displayName": "Label", "purpose": "Form labels, table headers, helper text, badges." }
-    },
-    "shadows": [
-      { "name": "overlay-popover", "value": "0 10px 15px -3px rgba(10, 4, 0, 0.10), 0 4px 6px -4px rgba(10, 4, 0, 0.08)", "purpose": "Bits-ui popover and dropdown-menu only. Overlays that genuinely lift off the page." },
-      { "name": "overlay-dialog", "value": "0 25px 50px -12px rgba(10, 4, 0, 0.25)", "purpose": "Dialog / modal backdrop lift. Never on cards or buttons." }
-    ],
-    "motion": [
-      { "name": "ease-out-quart", "value": "cubic-bezier(0.25, 1, 0.5, 1)", "purpose": "Default easing for state transitions. Exponential ease-out." },
-      { "name": "duration-fast", "value": "150ms", "purpose": "Button hover, link underline, input focus." },
-      { "name": "duration-standard", "value": "200ms", "purpose": "Accordion open/close, tab switch." },
-      { "name": "duration-number", "value": "180ms", "purpose": "Numeric tweens in the calculator." }
-    ],
-    "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" },
-      { "name": "xl", "value": "1280px" },
-      { "name": "2xl", "value": "1536px" }
-    ]
-  },
-  "components": [
-    {
-      "name": "Primary Button",
-      "kind": "button",
-      "refersTo": "button-primary",
-      "description": "The default action. Tyrande Rose background, Ink Umber foreground, rounded-lg.",
-      "html": "<button class=\"ds-btn-primary\">Calculate score</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 10px; border-radius: 8px; background: #f2afbe; color: #0a0400; font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; border: 1px solid transparent; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1), transform 150ms cubic-bezier(0.25, 1, 0.5, 1); outline: none; } .ds-btn-primary:hover { background: #e89aaa; } .ds-btn-primary:focus-visible { border-color: #985939; box-shadow: 0 0 0 3px rgba(152, 89, 57, 0.5); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:disabled { opacity: 0.5; pointer-events: none; }"
-    },
-    {
-      "name": "Outline Button",
-      "kind": "button",
-      "refersTo": "button-outline",
-      "description": "Secondary action. Border-only, no fill at rest.",
-      "html": "<button class=\"ds-btn-outline\">Import character</button>",
-      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 10px; border-radius: 8px; background: #fefafa; color: #0a0400; font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; border: 1px solid #f6d8d8; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1); outline: none; } .ds-btn-outline:hover { background: #d6cccc; } .ds-btn-outline:focus-visible { border-color: #985939; box-shadow: 0 0 0 3px rgba(152, 89, 57, 0.5); }"
-    },
-    {
-      "name": "Ghost Button",
-      "kind": "button",
-      "refersTo": "button-ghost",
-      "description": "Tertiary action. No border, no fill at rest.",
-      "html": "<button class=\"ds-btn-ghost\">Cancel</button>",
-      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 10px; border-radius: 8px; background: transparent; color: #0a0400; font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; border: 1px solid transparent; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1); outline: none; } .ds-btn-ghost:hover { background: #d6cccc; } .ds-btn-ghost:focus-visible { border-color: #985939; box-shadow: 0 0 0 3px rgba(152, 89, 57, 0.5); }"
-    },
-    {
-      "name": "Input",
-      "kind": "input",
-      "refersTo": "input",
-      "description": "Text field with warm focus ring.",
-      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Target score\" />",
-      "css": ".ds-input { display: block; width: 100%; height: 36px; padding: 0 12px; border-radius: 6px; background: #fefafa; color: #0a0400; font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 1rem; border: 1px solid #edb3b3; outline: none; transition: border-color 150ms cubic-bezier(0.25, 1, 0.5, 1), box-shadow 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-input::placeholder { color: #5c3d3d; } .ds-input:focus-visible { border-color: #985939; box-shadow: 0 0 0 3px rgba(152, 89, 57, 0.35); } .ds-input:disabled { opacity: 0.5; cursor: not-allowed; }"
-    },
-    {
-      "name": "Card",
-      "kind": "card",
-      "refersTo": "card",
-      "description": "Flat content container using tonal separation, not shadow.",
-      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Mythic+ Score Calculator</h3><p class=\"ds-card-body\">Plan the keys you need to hit your target score.</p></div>",
-      "css": ".ds-card { background: #fbe7e7; color: #0a0400; border-radius: 8px; padding: 24px; border: none; } .ds-card-title { font-family: 'League Spartan', ui-sans-serif, system-ui, sans-serif; font-size: 2.369rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 8px 0; } .ds-card-body { font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 1rem; line-height: 1.6; margin: 0; color: #5c3d3d; }"
-    },
-    {
-      "name": "Badge",
-      "kind": "chip",
-      "refersTo": "badge",
-      "description": "Tag or status marker.",
-      "html": "<span class=\"ds-badge\">Mythic</span>",
-      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; background: #f6d8d8; color: #0a0400; font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; line-height: 1.3; }"
-    },
-    {
-      "name": "Header Nav Link",
-      "kind": "nav",
-      "refersTo": null,
-      "description": "Top-bar navigation link with Link Crimson active state.",
-      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link ds-nav-link-active\" href=\"#\">Calculator</a><a class=\"ds-nav-link\" href=\"#\">Raid logs</a><a class=\"ds-nav-link\" href=\"#\">Addon</a></nav>",
-      "css": ".ds-nav { display: inline-flex; gap: 24px; align-items: center; } .ds-nav-link { font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 400; color: #0a0400; text-decoration: none; padding: 4px 0; transition: color 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-nav-link:hover { color: #a01231; } .ds-nav-link-active { font-weight: 700; color: #a01231; border-bottom: 2px solid #a01231; }"
-    }
-  ],
-  "narrative": {
-    "northStar": "The Raid Night Console",
-    "overview": "Mr. Mythical's visual system is the tool an experienced player opens at 2 AM between pulls. The screen is warm, not hostile. The typography is confident, not loud. Pink and crimson run through every surface because the game does — this is a World of Warcraft product and it owns that heritage without cosplaying the game's UI. League Spartan carries headings with geometric authority; Roboto carries body and data with neutral discipline. The system is Restrained in-product and earns Committed on the homepage, where the pink becomes the material, not the accent. Cards exist but aren't the first reach; borders and tonal layers do most of the work. Motion is reserved for state feedback.",
-    "keyCharacteristics": [
-      "Warm-neutral backgrounds tinted toward the brand hue, never pure white",
-      "Soft rose primary that feels inviting without losing precision",
-      "Type pairing of geometric display + humanist body, with an exaggerated 1.333 scale ratio",
-      "Flat surfaces; depth comes from borders, tonal layers, and weight",
-      "Full light/dark parity via mode-watcher; dark mode is a shift, not an afterthought"
-    ],
-    "rules": [
-      { "name": "The One Hue Rule", "body": "Every neutral is tinted toward the brand hue (rose/crimson family). There is no pure #000, #fff, or neutral gray anywhere in this system.", "section": "colors" },
-      { "name": "The Pink Is The Point Rule", "body": "Tyrande Rose is not a shy accent. On the homepage it carries the surface. In the product it claims primary actions unapologetically.", "section": "colors" },
-      { "name": "The Two Families Rule", "body": "League Spartan is headings, Roboto is everything else. Never a display face in buttons, form labels, or data tables.", "section": "typography" },
-      { "name": "The Wide-Tracked Headline Rule", "body": "Display and Headline levels get a letter-spacing: -0.02em correction to counteract League Spartan's natural looseness at large sizes.", "section": "typography" },
-      { "name": "The Flat-By-Default Rule", "body": "Cards, panels, and navigation sit flat. If a surface needs to feel distinct, use tonal separation or a border, not a shadow. Overlays are the only exception.", "section": "elevation" },
-      { "name": "The No-Drop-Shadow-On-Buttons Rule", "body": "Buttons are flat. The active-state translate-y-px is the only motion-like depth the button gets.", "section": "elevation" }
-    ],
-    "dos": [
-      "Do use Tyrande Rose for the primary action on every screen, and only the primary action.",
-      "Do write marketing headings in League Spartan; write labels, body, table cells in Roboto.",
-      "Do tint every neutral toward the rose/crimson hue.",
-      "Do rely on tonal separation and borders for depth. Flat is the default.",
-      "Do use --progress (Jade Progress) for success and progress states only.",
-      "Do preserve light/dark parity. The product feels the same in either mode.",
-      "Do honor prefers-reduced-motion on every animated transition.",
-      "Do keep the focus ring warm (Ember Ring). Blue focus rings are foreign to this system."
-    ],
-    "donts": [
-      "Don't use #000 or #fff anywhere. Every neutral is tinted.",
-      "Don't use gradient text (background-clip: text). Absolute ban.",
-      "Don't use side-stripe borders greater than 1px as a colored accent. Anywhere. Ever.",
-      "Don't add drop shadows to cards or buttons. Overlays are the only exception.",
-      "Don't build the identical card-grid pattern (same-sized cards, icon + heading + text, repeated).",
-      "Don't ship hero-metric templates (big number, small label, gradient accent).",
-      "Don't use glassmorphism decoratively.",
-      "Don't use League Spartan inside buttons, form labels, tables, or body text.",
-      "Don't use modals as a first thought. Prefer inline or progressive disclosure.",
-      "Don't evoke old-web WoW fansite aesthetics.",
-      "Don't evoke RGB / cyberpunk / tryhard gaming visuals.",
-      "Don't use em dashes in copy.",
-      "Don't add orchestrated page-load animations."
-    ]
-  }
+	"schemaVersion": 2,
+	"generatedAt": "2026-04-24T00:00:00.000Z",
+	"title": "Design System: Mr. Mythical",
+	"extensions": {
+		"colorMeta": {
+			"primary": {
+				"role": "primary",
+				"displayName": "Tyrande Rose",
+				"canonical": "hsl(348 75% 81%)",
+				"tonalRamp": [
+					"#1a0a0f",
+					"#3a141e",
+					"#6b1f33",
+					"#9c3050",
+					"#c96478",
+					"#e89aaa",
+					"#f2afbe",
+					"#fbe0e6"
+				]
+			},
+			"mythic-crimson": {
+				"role": "primary-deep",
+				"displayName": "Mythic Crimson",
+				"canonical": "#86132a",
+				"tonalRamp": [
+					"#18040a",
+					"#2e0712",
+					"#4a0c1c",
+					"#6a1224",
+					"#86132a",
+					"#ad2c45",
+					"#d4526a",
+					"#eea6b6"
+				]
+			},
+			"tyrande-rose": {
+				"role": "primary-light",
+				"displayName": "Tyrande Rose (Anchor)",
+				"canonical": "#ec7990",
+				"tonalRamp": [
+					"#2e0a14",
+					"#4e1220",
+					"#7a1d33",
+					"#aa2a49",
+					"#d1455f",
+					"#ec7990",
+					"#f4a3b3",
+					"#fbdde3"
+				]
+			},
+			"background": {
+				"role": "neutral-bg",
+				"displayName": "Rose Parchment",
+				"canonical": "hsl(0 60% 99%)",
+				"tonalRamp": [
+					"#0a0404",
+					"#1c0d0d",
+					"#3b1d1d",
+					"#663434",
+					"#a26969",
+					"#d9bcbc",
+					"#f4e2e2",
+					"#fefafa"
+				]
+			},
+			"foreground": {
+				"role": "neutral-fg",
+				"displayName": "Ink Umber",
+				"canonical": "hsl(24 100% 2%)",
+				"tonalRamp": [
+					"#0a0400",
+					"#1a0a00",
+					"#331300",
+					"#5c2400",
+					"#8c3800",
+					"#c87329",
+					"#eab68c",
+					"#fbe8d5"
+				]
+			},
+			"card": {
+				"role": "surface",
+				"displayName": "Petal Card",
+				"canonical": "hsl(0 60% 95%)",
+				"tonalRamp": [
+					"#1a0a0c",
+					"#331517",
+					"#5e2428",
+					"#8f383e",
+					"#c16167",
+					"#e09a9f",
+					"#f0c8cb",
+					"#fbe7e7"
+				]
+			},
+			"muted": {
+				"role": "neutral-muted",
+				"displayName": "Ash Rose",
+				"canonical": "hsl(0 20% 80%)",
+				"tonalRamp": [
+					"#1a1414",
+					"#2e2424",
+					"#4e3c3c",
+					"#735959",
+					"#967a7a",
+					"#b7a0a0",
+					"#d6cccc",
+					"#f0e8e8"
+				]
+			},
+			"muted-foreground": {
+				"role": "neutral-muted-fg",
+				"displayName": "Clay Rose",
+				"canonical": "hsl(0 20% 30%)",
+				"tonalRamp": [
+					"#140e0e",
+					"#2a1e1e",
+					"#412e2e",
+					"#5c3d3d",
+					"#7d5a5a",
+					"#a18080",
+					"#c4a9a9",
+					"#e2d2d2"
+				]
+			},
+			"ring": {
+				"role": "focus-ring",
+				"displayName": "Ember Ring",
+				"canonical": "hsl(19 49% 40%)",
+				"tonalRamp": [
+					"#1a0e07",
+					"#331c10",
+					"#5c341e",
+					"#7f472a",
+					"#985939",
+					"#ba7c5a",
+					"#d4a487",
+					"#eecfbb"
+				]
+			},
+			"link": {
+				"role": "link",
+				"displayName": "Link Crimson",
+				"canonical": "hsl(348 80% 35%)",
+				"tonalRamp": [
+					"#1c040a",
+					"#3d0917",
+					"#600e24",
+					"#83132f",
+					"#a01231",
+					"#c43a58",
+					"#dd6c82",
+					"#f3b6c4"
+				]
+			},
+			"destructive": {
+				"role": "destructive",
+				"displayName": "Soft Destructive",
+				"canonical": "hsl(0 62% 70%)",
+				"tonalRamp": [
+					"#1a0808",
+					"#331010",
+					"#5e1d1d",
+					"#8f2e2e",
+					"#c14a4a",
+					"#dc6f6f",
+					"#e48a8a",
+					"#f3c5c5"
+				]
+			},
+			"progress": {
+				"role": "success",
+				"displayName": "Jade Progress",
+				"canonical": "hsl(126 75% 81%)",
+				"tonalRamp": [
+					"#061a0b",
+					"#0c3317",
+					"#155c28",
+					"#1e853a",
+					"#2db154",
+					"#6fd087",
+					"#aeeebf",
+					"#dff7e6"
+				]
+			}
+		},
+		"typographyMeta": {
+			"display": {
+				"displayName": "Display",
+				"purpose": "Homepage hero and rare brand moments only."
+			},
+			"headline": {
+				"displayName": "Headline",
+				"purpose": "Marketing section openers, /about page leads."
+			},
+			"title": {
+				"displayName": "Title",
+				"purpose": "Page-level titles in-product; card titles on the homepage."
+			},
+			"body": { "displayName": "Body", "purpose": "All paragraph copy. Cap line length 65-75ch." },
+			"label": {
+				"displayName": "Label",
+				"purpose": "Form labels, table headers, helper text, badges."
+			}
+		},
+		"shadows": [
+			{
+				"name": "overlay-popover",
+				"value": "0 10px 15px -3px rgba(10, 4, 0, 0.10), 0 4px 6px -4px rgba(10, 4, 0, 0.08)",
+				"purpose": "Bits-ui popover and dropdown-menu only. Overlays that genuinely lift off the page."
+			},
+			{
+				"name": "overlay-dialog",
+				"value": "0 25px 50px -12px rgba(10, 4, 0, 0.25)",
+				"purpose": "Dialog / modal backdrop lift. Never on cards or buttons."
+			}
+		],
+		"motion": [
+			{
+				"name": "ease-out-quart",
+				"value": "cubic-bezier(0.25, 1, 0.5, 1)",
+				"purpose": "Default easing for state transitions. Exponential ease-out."
+			},
+			{
+				"name": "duration-fast",
+				"value": "150ms",
+				"purpose": "Button hover, link underline, input focus."
+			},
+			{
+				"name": "duration-standard",
+				"value": "200ms",
+				"purpose": "Accordion open/close, tab switch."
+			},
+			{
+				"name": "duration-number",
+				"value": "180ms",
+				"purpose": "Numeric tweens in the calculator."
+			}
+		],
+		"breakpoints": [
+			{ "name": "sm", "value": "640px" },
+			{ "name": "md", "value": "768px" },
+			{ "name": "lg", "value": "1024px" },
+			{ "name": "xl", "value": "1280px" },
+			{ "name": "2xl", "value": "1536px" }
+		]
+	},
+	"components": [
+		{
+			"name": "Primary Button",
+			"kind": "button",
+			"refersTo": "button-primary",
+			"description": "The default action. Tyrande Rose background, Ink Umber foreground, rounded-lg.",
+			"html": "<button class=\"ds-btn-primary\">Calculate score</button>",
+			"css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 10px; border-radius: 8px; background: #f2afbe; color: #0a0400; font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; border: 1px solid transparent; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1), transform 150ms cubic-bezier(0.25, 1, 0.5, 1); outline: none; } .ds-btn-primary:hover { background: #e89aaa; } .ds-btn-primary:focus-visible { border-color: #985939; box-shadow: 0 0 0 3px rgba(152, 89, 57, 0.5); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:disabled { opacity: 0.5; pointer-events: none; }"
+		},
+		{
+			"name": "Outline Button",
+			"kind": "button",
+			"refersTo": "button-outline",
+			"description": "Secondary action. Border-only, no fill at rest.",
+			"html": "<button class=\"ds-btn-outline\">Import character</button>",
+			"css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 10px; border-radius: 8px; background: #fefafa; color: #0a0400; font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; border: 1px solid #f6d8d8; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1); outline: none; } .ds-btn-outline:hover { background: #d6cccc; } .ds-btn-outline:focus-visible { border-color: #985939; box-shadow: 0 0 0 3px rgba(152, 89, 57, 0.5); }"
+		},
+		{
+			"name": "Ghost Button",
+			"kind": "button",
+			"refersTo": "button-ghost",
+			"description": "Tertiary action. No border, no fill at rest.",
+			"html": "<button class=\"ds-btn-ghost\">Cancel</button>",
+			"css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 10px; border-radius: 8px; background: transparent; color: #0a0400; font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; border: 1px solid transparent; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1); outline: none; } .ds-btn-ghost:hover { background: #d6cccc; } .ds-btn-ghost:focus-visible { border-color: #985939; box-shadow: 0 0 0 3px rgba(152, 89, 57, 0.5); }"
+		},
+		{
+			"name": "Input",
+			"kind": "input",
+			"refersTo": "input",
+			"description": "Text field with warm focus ring.",
+			"html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Target score\" />",
+			"css": ".ds-input { display: block; width: 100%; height: 36px; padding: 0 12px; border-radius: 6px; background: #fefafa; color: #0a0400; font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 1rem; border: 1px solid #edb3b3; outline: none; transition: border-color 150ms cubic-bezier(0.25, 1, 0.5, 1), box-shadow 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-input::placeholder { color: #5c3d3d; } .ds-input:focus-visible { border-color: #985939; box-shadow: 0 0 0 3px rgba(152, 89, 57, 0.35); } .ds-input:disabled { opacity: 0.5; cursor: not-allowed; }"
+		},
+		{
+			"name": "Card",
+			"kind": "card",
+			"refersTo": "card",
+			"description": "Flat content container using tonal separation, not shadow.",
+			"html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Mythic+ Score Calculator</h3><p class=\"ds-card-body\">Plan the keys you need to hit your target score.</p></div>",
+			"css": ".ds-card { background: #fbe7e7; color: #0a0400; border-radius: 8px; padding: 24px; border: none; } .ds-card-title { font-family: 'League Spartan', ui-sans-serif, system-ui, sans-serif; font-size: 2.369rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 8px 0; } .ds-card-body { font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 1rem; line-height: 1.6; margin: 0; color: #5c3d3d; }"
+		},
+		{
+			"name": "Badge",
+			"kind": "chip",
+			"refersTo": "badge",
+			"description": "Tag or status marker.",
+			"html": "<span class=\"ds-badge\">Mythic</span>",
+			"css": ".ds-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; background: #f6d8d8; color: #0a0400; font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; line-height: 1.3; }"
+		},
+		{
+			"name": "Header Nav Link",
+			"kind": "nav",
+			"refersTo": null,
+			"description": "Top-bar navigation link with Link Crimson active state.",
+			"html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link ds-nav-link-active\" href=\"#\">Calculator</a><a class=\"ds-nav-link\" href=\"#\">Raid logs</a><a class=\"ds-nav-link\" href=\"#\">Addon</a></nav>",
+			"css": ".ds-nav { display: inline-flex; gap: 24px; align-items: center; } .ds-nav-link { font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 400; color: #0a0400; text-decoration: none; padding: 4px 0; transition: color 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-nav-link:hover { color: #a01231; } .ds-nav-link-active { font-weight: 700; color: #a01231; border-bottom: 2px solid #a01231; }"
+		}
+	],
+	"narrative": {
+		"northStar": "The Raid Night Console",
+		"overview": "Mr. Mythical's visual system is the tool an experienced player opens at 2 AM between pulls. The screen is warm, not hostile. The typography is confident, not loud. Pink and crimson run through every surface because the game does — this is a World of Warcraft product and it owns that heritage without cosplaying the game's UI. League Spartan carries headings with geometric authority; Roboto carries body and data with neutral discipline. The system is Restrained in-product and earns Committed on the homepage, where the pink becomes the material, not the accent. Cards exist but aren't the first reach; borders and tonal layers do most of the work. Motion is reserved for state feedback.",
+		"keyCharacteristics": [
+			"Warm-neutral backgrounds tinted toward the brand hue, never pure white",
+			"Soft rose primary that feels inviting without losing precision",
+			"Type pairing of geometric display + humanist body, with an exaggerated 1.333 scale ratio",
+			"Flat surfaces; depth comes from borders, tonal layers, and weight",
+			"Full light/dark parity via mode-watcher; dark mode is a shift, not an afterthought"
+		],
+		"rules": [
+			{
+				"name": "The One Hue Rule",
+				"body": "Every neutral is tinted toward the brand hue (rose/crimson family). There is no pure #000, #fff, or neutral gray anywhere in this system.",
+				"section": "colors"
+			},
+			{
+				"name": "The Pink Is The Point Rule",
+				"body": "Tyrande Rose is not a shy accent. On the homepage it carries the surface. In the product it claims primary actions unapologetically.",
+				"section": "colors"
+			},
+			{
+				"name": "The Two Families Rule",
+				"body": "League Spartan is headings, Roboto is everything else. Never a display face in buttons, form labels, or data tables.",
+				"section": "typography"
+			},
+			{
+				"name": "The Wide-Tracked Headline Rule",
+				"body": "Display and Headline levels get a letter-spacing: -0.02em correction to counteract League Spartan's natural looseness at large sizes.",
+				"section": "typography"
+			},
+			{
+				"name": "The Flat-By-Default Rule",
+				"body": "Cards, panels, and navigation sit flat. If a surface needs to feel distinct, use tonal separation or a border, not a shadow. Overlays are the only exception.",
+				"section": "elevation"
+			},
+			{
+				"name": "The No-Drop-Shadow-On-Buttons Rule",
+				"body": "Buttons are flat. The active-state translate-y-px is the only motion-like depth the button gets.",
+				"section": "elevation"
+			}
+		],
+		"dos": [
+			"Do use Tyrande Rose for the primary action on every screen, and only the primary action.",
+			"Do write marketing headings in League Spartan; write labels, body, table cells in Roboto.",
+			"Do tint every neutral toward the rose/crimson hue.",
+			"Do rely on tonal separation and borders for depth. Flat is the default.",
+			"Do use --progress (Jade Progress) for success and progress states only.",
+			"Do preserve light/dark parity. The product feels the same in either mode.",
+			"Do honor prefers-reduced-motion on every animated transition.",
+			"Do keep the focus ring warm (Ember Ring). Blue focus rings are foreign to this system."
+		],
+		"donts": [
+			"Don't use #000 or #fff anywhere. Every neutral is tinted.",
+			"Don't use gradient text (background-clip: text). Absolute ban.",
+			"Don't use side-stripe borders greater than 1px as a colored accent. Anywhere. Ever.",
+			"Don't add drop shadows to cards or buttons. Overlays are the only exception.",
+			"Don't build the identical card-grid pattern (same-sized cards, icon + heading + text, repeated).",
+			"Don't ship hero-metric templates (big number, small label, gradient accent).",
+			"Don't use glassmorphism decoratively.",
+			"Don't use League Spartan inside buttons, form labels, tables, or body text.",
+			"Don't use modals as a first thought. Prefer inline or progressive disclosure.",
+			"Don't evoke old-web WoW fansite aesthetics.",
+			"Don't evoke RGB / cyberpunk / tryhard gaming visuals.",
+			"Don't use em dashes in copy.",
+			"Don't add orchestrated page-load animations."
+		]
+	}
 }

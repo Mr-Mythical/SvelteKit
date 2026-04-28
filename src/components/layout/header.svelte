@@ -64,12 +64,7 @@
 		</nav>
 
 		<div class="bar-actions">
-			<button
-				type="button"
-				class="icon-btn"
-				onclick={toggleMode}
-				aria-label="Toggle theme"
-			>
+			<button type="button" class="icon-btn" onclick={toggleMode} aria-label="Toggle theme">
 				<span class="icon-wrap icon-sun"><Sun size={18} aria-hidden="true" /></span>
 				<span class="icon-wrap icon-moon"><Moon size={18} aria-hidden="true" /></span>
 			</button>

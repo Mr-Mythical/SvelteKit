@@ -71,4 +71,3 @@ export function createTokenCache(config: TokenCacheConfig): () => Promise<string
 		}
 	};
 }
-

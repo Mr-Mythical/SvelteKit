@@ -9,7 +9,11 @@ import {
 const makeRequest = (body: unknown, raw = false): Request => {
 	const init = raw
 		? { method: 'POST', body: body as BodyInit }
-		: { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } };
+		: {
+				method: 'POST',
+				body: JSON.stringify(body),
+				headers: { 'Content-Type': 'application/json' }
+			};
 	return new Request('http://localhost/api/test', init);
 };
 
@@ -37,7 +41,9 @@ describe('parseJsonBody', () => {
 
 describe('parseRecentCharacterBody', () => {
 	it('accepts well-formed input', () => {
-		expect(parseRecentCharacterBody({ characterName: 'Bob', realm: 'Stormrage', region: 'us' })).toEqual({
+		expect(
+			parseRecentCharacterBody({ characterName: 'Bob', realm: 'Stormrage', region: 'us' })
+		).toEqual({
 			characterName: 'Bob',
 			realm: 'Stormrage',
 			region: 'us'
@@ -56,7 +62,9 @@ describe('parseRecentCharacterBody', () => {
 
 	it('rejects empty strings and overlong strings', () => {
 		expect(parseRecentCharacterBody({ characterName: '', realm: 'r', region: 'us' })).toBeNull();
-		expect(parseRecentCharacterBody({ characterName: 'a'.repeat(65), realm: 'r', region: 'us' })).toBeNull();
+		expect(
+			parseRecentCharacterBody({ characterName: 'a'.repeat(65), realm: 'r', region: 'us' })
+		).toBeNull();
 	});
 });
 
@@ -72,7 +80,12 @@ describe('parseRecentReportBody', () => {
 
 	it('accepts optional guild/owner with name fields', () => {
 		expect(
-			parseRecentReportBody({ code: 'abc', title: 'Run', guild: { name: 'GuildA' }, owner: { name: 'me' } })
+			parseRecentReportBody({
+				code: 'abc',
+				title: 'Run',
+				guild: { name: 'GuildA' },
+				owner: { name: 'me' }
+			})
 		).toEqual({ code: 'abc', title: 'Run', guild: { name: 'GuildA' }, owner: { name: 'me' } });
 	});
 

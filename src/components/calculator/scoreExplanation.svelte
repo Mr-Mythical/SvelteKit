@@ -6,10 +6,10 @@
 <div class="container mx-auto flex flex-col gap-10 p-4 md:px-8 xl:px-40 2xl:px-72">
 	<article class="w-full" aria-labelledby="mythic-score-explanation">
 		<header>
-			<h2 id="score-explanation" class="mb-2 scroll-mt-24 text-2xl font-extrabold leading-tight">
+			<h2 id="score-explanation" class="mb-2 scroll-mt-24 text-2xl leading-tight font-extrabold">
 				How the Mythic+ Score System Works in World of Warcraft
 			</h2>
-			<p class="mb-4 text-sm italic text-muted-foreground">Updated for Midnight, Season 1</p>
+			<p class="text-muted-foreground mb-4 text-sm italic">Updated for Midnight, Season 1</p>
 		</header>
 
 		<section class="mb-8" aria-labelledby="why-mplus-score-matters">
@@ -47,8 +47,8 @@
 				Besides the base score, clearing certain key levels with new affixes will earn you
 				<strong>bonus points</strong>: <b>+5, +7, +10, and +12</b> each award an extra
 				<b>15 points</b>
-				for increased difficulty. And should therefore be your priority when pushing keys early in
-				the season. <br /> <br />
+				for increased difficulty. And should therefore be your priority when pushing keys early in the
+				season. <br /> <br />
 				Below is a quick reference for the base score and bonus affix points at each key level:
 			</p>
 			<Table.Root class="mb-6">
@@ -150,7 +150,7 @@
 			<h4 class="text-md mb-2 font-semibold">In-Game Tooltip Addon</h4>
 			<p>
 				<Button
-					class="p-0 text-[1.03rem] font-bold text-link"
+					class="text-link p-0 text-[1.03rem] font-bold"
 					variant="link"
 					href="https://www.curseforge.com/wow/addons/mr-mythical"
 					target="_blank"
@@ -160,7 +160,7 @@
 				</Button>
 				Or
 				<Button
-					class="p-0 text-[1.03rem] font-bold text-link"
+					class="text-link p-0 text-[1.03rem] font-bold"
 					variant="link"
 					href="https://addons.wago.io/addons/mr-mythical"
 					target="_blank"

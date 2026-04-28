@@ -58,7 +58,6 @@
 />
 
 <main class="home">
-
 	<!-- TOOLKIT: editorial rows, not a card grid -->
 	<section class="tools">
 		<!-- Mythic+ score planner. Title left, tool right. -->
@@ -66,13 +65,17 @@
 			<div class="tool-copy">
 				<p class="tool-eyebrow">Mythic+ Score calculator</p>
 				<h2 class="tool-title">See the keys you need.</h2>
-				<p class="tool-body">
-					Set a target rating and see the keystones that get you there.
-				</p>
+				<p class="tool-body">Set a target rating and see the keystones that get you there.</p>
 				<a href="/rating-calculator" class="tool-link">
 					Open the full calculator
 					<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
-						<path d="M3 2l5 4-5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+						<path
+							d="M3 2l5 4-5 4"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
 					</svg>
 				</a>
 			</div>
@@ -117,7 +120,13 @@
 				<a href="/raid" class="tool-link">
 					View the complete raid toolkit
 					<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
-						<path d="M3 2l5 4-5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+						<path
+							d="M3 2l5 4-5 4"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
 					</svg>
 				</a>
 			</div>
@@ -129,12 +138,19 @@
 				<p class="tool-eyebrow">Boss Damage & Death overview</p>
 				<h3 class="tool-title">Read the spikes that decide pulls.</h3>
 				<p class="tool-body">
-					Averaged damage taken and death hotspots from public Mythic kills, with the spikes that decide pulls.
+					Averaged damage taken and death hotspots from public Mythic kills, with the spikes that
+					decide pulls.
 				</p>
 				<a href="/raid/boss" class="tool-link">
 					Browse encounters
 					<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
-						<path d="M3 2l5 4-5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+						<path
+							d="M3 2l5 4-5 4"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
 					</svg>
 				</a>
 			</div>
@@ -184,12 +200,22 @@
 		<p class="tool-eyebrow">About</p>
 		<h2 class="tool-title">Built by a player, for keys and pulls.</h2>
 		<p class="about-body">
-			Mr. Mythical turns Warcraft Logs and keystone math into fast answers between runs. It's built by a player who wanted better tools to plan keys and understand raid logs, and is maintained with ongoing input from the community. The goal is to surface insights from the data that help you make informed decisions about your gameplay, whether that's which keystone to run next or how to approach a tricky boss mechanic.
+			Mr. Mythical turns Warcraft Logs and keystone math into fast answers between runs. It's built
+			by a player who wanted better tools to plan keys and understand raid logs, and is maintained
+			with ongoing input from the community. The goal is to surface insights from the data that help
+			you make informed decisions about your gameplay, whether that's which keystone to run next or
+			how to approach a tricky boss mechanic.
 		</p>
 		<a href="/about" class="tool-link">
 			Read more
 			<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
-				<path d="M3 2l5 4-5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+				<path
+					d="M3 2l5 4-5 4"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
 			</svg>
 		</a>
 	</section>

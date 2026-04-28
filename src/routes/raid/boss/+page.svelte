@@ -23,8 +23,8 @@
 		<p class="page-eyebrow">Raid encounters</p>
 		<h1 class="page-title">Boss damage and death profile.</h1>
 		<p class="page-lede">
-			Per-second damage curves and death clusters for every Midnight Season 1 mythic raid
-			boss. Aggregated from public progression logs to surface the moments that decide pulls.
+			Per-second damage curves and death clusters for every Midnight Season 1 mythic raid boss.
+			Aggregated from public progression logs to surface the moments that decide pulls.
 		</p>
 	</header>
 

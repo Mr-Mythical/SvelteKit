@@ -13,16 +13,13 @@
 		triggerId?: string;
 	}
 
-	let {
-		options = [],
-		selectedValue = '',
-		onSelect,
-		triggerId = ''
-	}: Props = $props();
+	let { options = [], selectedValue = '', onSelect, triggerId = '' }: Props = $props();
 
 	let open = $state(false);
 
-	let selectedLabel = $derived(options.find((o) => o.value === selectedValue)?.label ?? 'Select a realm...');
+	let selectedLabel = $derived(
+		options.find((o) => o.value === selectedValue)?.label ?? 'Select a realm...'
+	);
 
 	function closeAndFocusTrigger(triggerId: string) {
 		open = false;
@@ -48,7 +45,7 @@
 		aria-haspopup="listbox"
 		aria-labelledby={`${triggerId}-label`}
 		class={cn(
-			'inline-flex h-10 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+			'border-input bg-background ring-offset-background focus:ring-ring inline-flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm whitespace-nowrap focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
 		)}
 	>
 		<span id={`${triggerId}-label`}>{selectedLabel}</span>
@@ -69,7 +66,7 @@
 								handleSelect(option.value);
 							}}
 							class={cn(
-								'flex cursor-pointer select-none items-center p-2',
+								'flex cursor-pointer items-center p-2 select-none',
 								selectedValue === option.value ? 'bg-secondary' : ''
 							)}
 						>

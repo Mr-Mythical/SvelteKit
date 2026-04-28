@@ -124,9 +124,7 @@
 	);
 
 	let totalDeaths = $derived(rows.reduce((sum, r) => sum + r.death_count, 0));
-	let totalSamples = $derived(
-		rows.reduce((max, r) => Math.max(max, r.sample_count), 0)
-	);
+	let totalSamples = $derived(rows.reduce((max, r) => Math.max(max, r.sample_count), 0));
 </script>
 
 <section class="hotspots">
@@ -153,10 +151,14 @@
 		<ol class="moments">
 			{#each topWindows as hotspotWindow, i (`${hotspotWindow.start_seconds}-${hotspotWindow.end_seconds}`)}
 				{@const widthPct = (hotspotWindow.death_count / maxDeathCount) * 100}
-				{@const deathsPerPull = hotspotWindow.sample_count ? hotspotWindow.death_count / hotspotWindow.sample_count : 0}
+				{@const deathsPerPull = hotspotWindow.sample_count
+					? hotspotWindow.death_count / hotspotWindow.sample_count
+					: 0}
 				<li class="moment">
 					<span class="rank">#{i + 1}</span>
-					<span class="time">{fmtWindow(hotspotWindow.start_seconds, hotspotWindow.end_seconds)}</span>
+					<span class="time"
+						>{fmtWindow(hotspotWindow.start_seconds, hotspotWindow.end_seconds)}</span
+					>
 					<div class="bar-track" aria-hidden="true">
 						<span class="bar-fill" style="width: {widthPct}%"></span>
 					</div>
@@ -278,11 +280,7 @@
 		left: 0;
 		top: 0;
 		bottom: 0;
-		background: linear-gradient(
-			90deg,
-			oklch(0.7 0.16 25 / 0.85),
-			oklch(0.65 0.2 18 / 0.95)
-		);
+		background: linear-gradient(90deg, oklch(0.7 0.16 25 / 0.85), oklch(0.65 0.2 18 / 0.95));
 		border-radius: inherit;
 	}
 

@@ -4,10 +4,10 @@ This directory contains **drizzle-kit output only**, not source of truth.
 
 ## Canonical schema locations
 
-| Database         | Schema (TypeScript)            | drizzle-kit config       | Migration output  |
-| ---------------- | ------------------------------ | ------------------------ | ----------------- |
-| Raid analytics   | `src/lib/db/schema.ts`         | `drizzle.config.ts`      | `drizzle/*.sql`   |
-| User / auth      | `src/lib/db/userSchema.ts`     | `drizzle.user.config.ts` | `drizzle/user/`   |
+| Database       | Schema (TypeScript)        | drizzle-kit config       | Migration output |
+| -------------- | -------------------------- | ------------------------ | ---------------- |
+| Raid analytics | `src/lib/db/schema.ts`     | `drizzle.config.ts`      | `drizzle/*.sql`  |
+| User / auth    | `src/lib/db/userSchema.ts` | `drizzle.user.config.ts` | `drizzle/user/`  |
 
 Application code imports schemas only from `src/lib/db/`. Nothing outside
 this folder should import from `drizzle/`.

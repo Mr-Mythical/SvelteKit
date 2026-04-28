@@ -162,7 +162,9 @@
 			<section class="reveal-block" use:reveal={{ delay: 0 }}>
 				<header class="section-head">
 					<h2 class="section-label">Your reports</h2>
-					<span class="section-hint">Recent logs you opened, plus reports from your characters and guild</span>
+					<span class="section-hint"
+						>Recent logs you opened, plus reports from your characters and guild</span
+					>
 				</header>
 				<div class="reveal-surface" use:reveal={{ delay: 40 }}>
 					<YourReports onSelectReport={handleReportSelection} />
@@ -172,7 +174,9 @@
 			<section class="reveal-block" use:reveal={{ delay: 0 }}>
 				<header class="section-head">
 					<h2 class="section-label">Browse public logs</h2>
-					<span class="section-hint">Filter public WarcraftLogs reports by boss, pull length, and healer comp</span>
+					<span class="section-hint"
+						>Filter public WarcraftLogs reports by boss, pull length, and healer comp</span
+					>
 				</header>
 				<div class="reveal-surface" use:reveal={{ delay: 40 }}>
 					<LogBrowserFilters onsearch={handleLogSearch} loading={browseLoading} />
@@ -214,21 +218,20 @@
 		<h2 class="section-label">About the raid toolkit</h2>
 		<div class="reveal-surface" use:reveal={{ delay: 40 }}>
 			<p class="raid-lede">
-				WarcraftLogs analysis for raid leaders, healer cores, and officers who would rather read
-				a chart than scroll a damage-taken table. Paste a report to watch a fight unfold
+				WarcraftLogs analysis for raid leaders, healer cores, and officers who would rather read a
+				chart than scroll a damage-taken table. Paste a report to watch a fight unfold
 				second-by-second, open a boss damage profile to see aggregate pressure from real Mythic
-				kills, or browse public logs filtered by comp when your own pulls stop teaching you
-				anything new.
+				kills, or browse public logs filtered by comp when your own pulls stop teaching you anything
+				new.
 			</p>
 			<dl class="feature-list">
 				<div class="feature-row">
 					<dt>Interactive damage and healing timelines</dt>
 					<dd>
-						Every damage and healing event on a shared second-by-second axis. Click an ability
-						to isolate it, overlay boss casts to anchor mechanics, and toggle healer cooldowns
-						to see which windows were actually covered. The spike you felt in the pull gets a
-						timestamp, a source, and a visible window for the external that should have covered
-						it.
+						Every damage and healing event on a shared second-by-second axis. Click an ability to
+						isolate it, overlay boss casts to anchor mechanics, and toggle healer cooldowns to see
+						which windows were actually covered. The spike you felt in the pull gets a timestamp, a
+						source, and a visible window for the external that should have covered it.
 					</dd>
 				</div>
 				<div class="feature-row">
@@ -243,17 +246,17 @@
 				<div class="feature-row">
 					<dt>Raid log browser with composition filters</dt>
 					<dd>
-						Search public WarcraftLogs reports by encounter, pull length, and healer spec to
-						find kills close to your own comp. Useful when your roster does not match the meta
-						build the guide was written for.
+						Search public WarcraftLogs reports by encounter, pull length, and healer spec to find
+						kills close to your own comp. Useful when your roster does not match the meta build the
+						guide was written for.
 					</dd>
 				</div>
 				<div class="feature-row">
 					<dt>Per-account recent and guild reports</dt>
 					<dd>
 						Sign in with Battle.net and the site remembers reports from your characters and the
-						guilds they raid with. One list for every alt, and every chart, fight, and profile
-						stays shareable by plain URL.
+						guilds they raid with. One list for every alt, and every chart, fight, and profile stays
+						shareable by plain URL.
 					</dd>
 				</div>
 			</dl>

@@ -1,6 +1,4 @@
 <script lang="ts">
-
-
 	import DungeonCombobox from '../combobox/dungeonCombobox.svelte';
 	import * as Table from '$lib/components/ui/table';
 	import ArrowUp from '@lucide/svelte/icons/chevron-up';
@@ -470,7 +468,6 @@
 	let previousAuthState = $state(false);
 	let hasLoadedSavedState = $state(false);
 
-
 	// Function to load saved state when user signs in
 	async function loadSavedStateOnSignIn() {
 		try {
@@ -620,7 +617,6 @@
 		updateUrlWithCurrentData();
 	}
 
-
 	function resetRuns() {
 		// Set flags to prevent URL reactive interference and URL updates
 		isLoadingFromUrl = true;
@@ -681,7 +677,8 @@
 
 	function calculateScore() {
 		// Return early if scoreGoal is undefined or not a valid positive number
-		const target = typeof scoreGoal === 'string' ? parseInt(scoreGoal as unknown as string) : scoreGoal;
+		const target =
+			typeof scoreGoal === 'string' ? parseInt(scoreGoal as unknown as string) : scoreGoal;
 		if (target === undefined || !Number.isFinite(target) || target <= 0) return;
 
 		// Set flag to prevent URL updates during score calculation
@@ -747,9 +744,8 @@
 		const charName = to.url.searchParams.get('char') ?? '';
 		const charRegion = to.url.searchParams.get('region') ?? '';
 		const charRealm = to.url.searchParams.get('realm') ?? '';
-		const charKey = charName && charRegion && charRealm
-			? `${charName}-${charRegion}-${charRealm}`
-			: '';
+		const charKey =
+			charName && charRegion && charRealm ? `${charName}-${charRegion}-${charRealm}` : '';
 		if (charKey && charKey !== lastUrlCharacter) {
 			lastUrlCharacter = charKey;
 			if (!isLoadingFromUrl && !isLoadingCharacter) {
@@ -814,7 +810,13 @@
 		<div class="rows" role="list" class:list-pulse={listPulse}>
 			{#each $dungeonData.runs as run, i (i)}
 				{@const active = run.mythic_level > 0}
-				<div class="row" class:active class:feedback={feedbackRow === i} style={`--row-index: ${i};`} role="listitem">
+				<div
+					class="row"
+					class:active
+					class:feedback={feedbackRow === i}
+					style={`--row-index: ${i};`}
+					role="listitem"
+				>
 					<div class="row-dungeon">
 						<DungeonCombobox
 							{dungeons}
@@ -927,7 +929,11 @@
 						</div>
 						<div class="score-value tabular">{totalScore.toFixed(0)}</div>
 						{#if scoreDelta !== null && hasAnyRun}
-							<div class="score-delta" class:positive={scoreDelta >= 0} class:negative={scoreDelta < 0}>
+							<div
+								class="score-delta"
+								class:positive={scoreDelta >= 0}
+								class:negative={scoreDelta < 0}
+							>
 								{#if scoreDelta >= 0}
 									Exceeds goal by +{scoreDelta}
 								{:else}
@@ -1039,7 +1045,8 @@
 								{$wowSummaryStore.character_class.name}
 							</div>
 							<div class="character-sub">
-								{#if $wowSummaryStore.guild?.name}&lt;{$wowSummaryStore.guild.name}&gt;, {/if}{$wowSummaryStore.realm.name}
+								{#if $wowSummaryStore.guild?.name}&lt;{$wowSummaryStore.guild.name}&gt;,
+								{/if}{$wowSummaryStore.realm.name}
 							</div>
 						</div>
 					</div>
@@ -1172,7 +1179,9 @@
 		font-size: 0.875rem;
 		color: hsl(var(--foreground));
 		text-decoration: none;
-		transition: border-color 120ms ease, background-color 120ms ease;
+		transition:
+			border-color 120ms ease,
+			background-color 120ms ease;
 	}
 
 	.reward-targets-list a:hover,
@@ -1194,7 +1203,8 @@
 		gap: clamp(10px, 1.4vw, 16px);
 		padding: 9px 0;
 		border-bottom: 1px solid hsl(var(--border));
-		transition: background-color 120ms cubic-bezier(0.25, 1, 0.5, 1),
+		transition:
+			background-color 120ms cubic-bezier(0.25, 1, 0.5, 1),
 			border-color 180ms cubic-bezier(0.25, 1, 0.5, 1);
 	}
 
@@ -1270,7 +1280,8 @@
 		color: hsl(var(--muted-foreground));
 		border-radius: 4px;
 		cursor: pointer;
-		transition: background-color 120ms cubic-bezier(0.25, 1, 0.5, 1),
+		transition:
+			background-color 120ms cubic-bezier(0.25, 1, 0.5, 1),
 			color 120ms cubic-bezier(0.25, 1, 0.5, 1);
 	}
 
@@ -1315,7 +1326,8 @@
 		color: hsl(var(--muted-foreground));
 		cursor: pointer;
 		border-radius: 4px;
-		transition: color 120ms cubic-bezier(0.25, 1, 0.5, 1),
+		transition:
+			color 120ms cubic-bezier(0.25, 1, 0.5, 1),
 			transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
@@ -1607,7 +1619,8 @@
 		font-weight: 500;
 		cursor: pointer;
 		border: 1px solid transparent;
-		transition: background-color 150ms cubic-bezier(0.25, 1, 0.5, 1),
+		transition:
+			background-color 150ms cubic-bezier(0.25, 1, 0.5, 1),
 			color 150ms cubic-bezier(0.25, 1, 0.5, 1),
 			border-color 150ms cubic-bezier(0.25, 1, 0.5, 1);
 	}

@@ -65,13 +65,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async () => {
 			}
 		},
 		callbacks: {
-			async signIn({
-				user,
-				account
-			}: {
-				user: User | AdapterUser;
-				account?: Account | null;
-			}) {
+			async signIn({ user, account }: { user: User | AdapterUser; account?: Account | null }) {
 				// DrizzleAdapter's `linkAccount` only runs on the very first sign-in, so
 				// subsequent logins (e.g. after we changed scopes) never update the
 				// stored tokens / scope. Persist the fresh values here so the roster
@@ -91,12 +85,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async () => {
 								session_state:
 									typeof account.session_state === 'string' ? account.session_state : null
 							})
-							.where(
-								and(
-									eq(accounts.userId, user.id),
-									eq(accounts.provider, 'battlenet')
-								)
-							);
+							.where(and(eq(accounts.userId, user.id), eq(accounts.provider, 'battlenet')));
 					} catch (error) {
 						// Token-update best-effort: a failure here just means the cached
 						// access_token is stale, which the next API call will refresh.
@@ -118,13 +107,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async () => {
 				}
 				return true;
 			},
-			async session({
-				session,
-				user
-			}: {
-				session: Session;
-				user: AdapterUser;
-			}) {
+			async session({ session, user }: { session: Session; user: AdapterUser }) {
 				if (user?.id && session) {
 					try {
 						await createOrUpdateUserProfile(user.id, {

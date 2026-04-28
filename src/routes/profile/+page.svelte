@@ -31,7 +31,7 @@
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<div class="mb-8">
-		<h1 class="mb-2 font-heading text-3xl font-bold text-foreground">Profile</h1>
+		<h1 class="font-heading text-foreground mb-2 text-3xl font-bold">Profile</h1>
 		<p class="text-muted-foreground">
 			View your Battle.net account information and authentication details.
 		</p>
@@ -40,32 +40,32 @@
 	{#if session?.user}
 		<div class="grid gap-6">
 			<!-- User Information Card -->
-			<div class="rounded-lg border border-border bg-card p-6 shadow-sm">
+			<div class="border-border bg-card rounded-lg border p-6 shadow-sm">
 				<div class="mb-4 flex items-center gap-3">
-					<div class="rounded-lg bg-primary/10 p-2">
-						<User class="h-5 w-5 text-primary" />
+					<div class="bg-primary/10 rounded-lg p-2">
+						<User class="text-primary h-5 w-5" />
 					</div>
-					<h2 class="text-xl font-semibold text-card-foreground">Account Information</h2>
+					<h2 class="text-card-foreground text-xl font-semibold">Account Information</h2>
 				</div>
 
 				<div class="grid gap-4 md:grid-cols-2">
 					<div class="space-y-2">
-						<div class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+						<div class="text-muted-foreground flex items-center gap-2 text-sm font-medium">
 							<User class="h-4 w-4" />
 							Battle.net ID
 						</div>
-						<p class="rounded-md bg-muted/50 px-3 py-2 text-lg font-semibold text-card-foreground">
+						<p class="bg-muted/50 text-card-foreground rounded-md px-3 py-2 text-lg font-semibold">
 							{userBattletag || session.user.name || 'Unknown'}
 						</p>
 					</div>
 
 					<div class="space-y-2">
-						<div class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+						<div class="text-muted-foreground flex items-center gap-2 text-sm font-medium">
 							<Hash class="h-4 w-4" />
 							User ID
 						</div>
 						<p
-							class="break-all rounded-md bg-muted/50 px-3 py-2 font-mono text-sm text-card-foreground"
+							class="bg-muted/50 text-card-foreground rounded-md px-3 py-2 font-mono text-sm break-all"
 						>
 							{session.user.id}
 						</p>
@@ -75,24 +75,24 @@
 
 			<!-- API Access Card -->
 			{#if accessToken}
-				<div class="rounded-lg border border-border bg-card p-6 shadow-sm">
+				<div class="border-border bg-card rounded-lg border p-6 shadow-sm">
 					<div class="mb-4 flex items-center gap-3">
-						<div class="rounded-lg bg-accent/10 p-2">
-							<Key class="h-5 w-5 text-accent-foreground" />
+						<div class="bg-accent/10 rounded-lg p-2">
+							<Key class="text-accent-foreground h-5 w-5" />
 						</div>
-						<h2 class="text-xl font-semibold text-card-foreground">API Access</h2>
+						<h2 class="text-card-foreground text-xl font-semibold">API Access</h2>
 					</div>
 
 					<div class="space-y-2">
-						<div class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+						<div class="text-muted-foreground flex items-center gap-2 text-sm font-medium">
 							<Key class="h-4 w-4" />
 							Access Token
 						</div>
-						<div class="rounded-md bg-muted/50 p-3">
-							<p class="break-all font-mono text-xs text-card-foreground">
+						<div class="bg-muted/50 rounded-md p-3">
+							<p class="text-card-foreground font-mono text-xs break-all">
 								{accessToken.substring(0, 40)}...
 							</p>
-							<p class="mt-2 text-xs text-muted-foreground">
+							<p class="text-muted-foreground mt-2 text-xs">
 								This token can be used to make authenticated API calls to Battle.net services.
 							</p>
 						</div>
@@ -103,11 +103,11 @@
 	{:else}
 		<!-- Not Signed In State -->
 		<div class="py-12 text-center">
-			<div class="mx-auto mb-6 w-fit rounded-full bg-muted/50 p-4">
-				<User class="h-12 w-12 text-muted-foreground" />
+			<div class="bg-muted/50 mx-auto mb-6 w-fit rounded-full p-4">
+				<User class="text-muted-foreground h-12 w-12" />
 			</div>
-			<h2 class="mb-2 text-2xl font-semibold text-foreground">Sign In Required</h2>
-			<p class="mx-auto mb-6 max-w-md text-muted-foreground">
+			<h2 class="text-foreground mb-2 text-2xl font-semibold">Sign In Required</h2>
+			<p class="text-muted-foreground mx-auto mb-6 max-w-md">
 				Please sign in with your Battle.net account to view your profile information and access API
 				features.
 			</p>

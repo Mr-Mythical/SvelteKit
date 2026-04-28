@@ -38,7 +38,14 @@ vi.mock('$app/state', () => {
 
 	return {
 		page: mockPage,
-		navigating: { from: null, to: null, type: null, willUnload: false, delta: 0, complete: Promise.resolve() },
+		navigating: {
+			from: null,
+			to: null,
+			type: null,
+			willUnload: false,
+			delta: 0,
+			complete: Promise.resolve()
+		},
 		updated: { current: false, check: vi.fn(async () => false) }
 	};
 });

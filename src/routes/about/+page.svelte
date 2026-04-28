@@ -21,7 +21,7 @@
 			Mythic+ and raid content.
 		</p>
 
-		<h2 class="mb-4 mt-8 text-2xl font-bold">Our Tools</h2>
+		<h2 class="mt-8 mb-4 text-2xl font-bold">Our Tools</h2>
 		<ul class="mb-6 ml-6 list-disc space-y-2">
 			<li>
 				<strong>Mythic+ Rating Calculator:</strong> Plan your key pushing strategy and understand exactly
@@ -42,7 +42,7 @@
 			</li>
 		</ul>
 
-		<h2 class="mb-4 mt-8 text-2xl font-bold">The Story Behind Mr. Mythical</h2>
+		<h2 class="mt-8 mb-4 text-2xl font-bold">The Story Behind Mr. Mythical</h2>
 		<p class="mb-6">
 			As a dedicated Mythic+ pusher and raid optimizer, I found myself juggling between various
 			tools, spreadsheets, and community resources that didn't quite hit the mark. The constant
@@ -51,7 +51,7 @@
 			delivers exactly what players need, when they need it, without the clutter.
 		</p>
 
-		<h2 class="mb-4 mt-8 text-2xl font-bold">Development Philosophy</h2>
+		<h2 class="mt-8 mb-4 text-2xl font-bold">Development Philosophy</h2>
 		<p class="mb-6">Three core principles guide the development of Mr. Mythical:</p>
 		<ul class="mb-6 ml-6 list-disc space-y-2">
 			<li><strong>Accuracy:</strong> All tools are regularly validated against in-game results</li>
@@ -61,12 +61,12 @@
 			</li>
 		</ul>
 
-		<h2 class="mb-4 mt-8 text-2xl font-bold">Community and Open Source</h2>
+		<h2 class="mt-8 mb-4 text-2xl font-bold">Community and Open Source</h2>
 		<p class="mb-6">
 			MrMythical.com thrives on community feedback and collaboration. The entire project is open
 			source on
 			<Button
-				class="p-0 text-[1.03rem] font-bold text-link"
+				class="text-link p-0 text-[1.03rem] font-bold"
 				variant="link"
 				href="https://github.com/Mr-Mythical/SvelteKit"
 				target="_blank"
@@ -77,13 +77,13 @@
 			transparency ensures the tools remain relevant and reliable for everyone.
 		</p>
 
-		<h2 class="mb-4 mt-8 text-2xl font-bold">Support the Journey</h2>
+		<h2 class="mt-8 mb-4 text-2xl font-bold">Support the Journey</h2>
 		<p class="mb-6">
 			While MrMythical.com is and will always remain free to use, maintaining and improving these
 			tools requires significant time and resources. If you find value in these tools, consider
 			supporting the project on
 			<Button
-				class="p-0 text-[1.03rem] font-bold text-link"
+				class="text-link p-0 text-[1.03rem] font-bold"
 				variant="link"
 				href="https://www.patreon.com/mrmythical"
 				target="_blank"
@@ -93,20 +93,20 @@
 			</Button>.
 		</p>
 
-		<h2 class="mb-4 mt-8 text-2xl font-bold">Privacy Commitment</h2>
+		<h2 class="mt-8 mb-4 text-2xl font-bold">Privacy Commitment</h2>
 		<p class="mb-6">
 			Your privacy matters. The site does not use tracking or analytics services. Review our
 			detailed
-			<Button class="p-0 text-[1.03rem] font-bold text-link" variant="link" href="/privacy">
+			<Button class="text-link p-0 text-[1.03rem] font-bold" variant="link" href="/privacy">
 				Privacy Policy
 			</Button> for complete transparency.
 		</p>
 
-		<h2 class="mb-4 mt-8 text-2xl font-bold">Get in Touch</h2>
+		<h2 class="mt-8 mb-4 text-2xl font-bold">Get in Touch</h2>
 		<p class="mb-6">
 			Have ideas, feedback, or found a bug? I'd love to hear from you! Reach out via
 			<Button
-				class="p-0 text-[1.03rem] font-bold text-link"
+				class="text-link p-0 text-[1.03rem] font-bold"
 				variant="link"
 				onclick={() => (window.location.href = 'mailto:mythical@mrmythical.com')}
 			>

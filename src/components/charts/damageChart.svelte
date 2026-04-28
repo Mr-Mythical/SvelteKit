@@ -1,6 +1,4 @@
 <script lang="ts">
-
-
 	import { onDestroy, onMount } from 'svelte';
 	import { base } from '$app/paths';
 	import { Chart } from 'svelte-chartjs';
@@ -161,7 +159,10 @@
 	}
 
 	function formatDeathCause(event: DeathEvent) {
-		return event.abilityName || (event.abilityGameID ? `Ability ${event.abilityGameID}` : 'Unknown source');
+		return (
+			event.abilityName ||
+			(event.abilityGameID ? `Ability ${event.abilityGameID}` : 'Unknown source')
+		);
 	}
 
 	function formatDeathLabelName(event: DeathEvent) {
@@ -367,7 +368,9 @@
 
 	let indexOffset = 0;
 	let lastXValue = 0;
-	let pointInterval = $derived(damageEvents[0]?.pointInterval || healingEvents[0]?.pointInterval || 1000);
+	let pointInterval = $derived(
+		damageEvents[0]?.pointInterval || healingEvents[0]?.pointInterval || 1000
+	);
 	let suggestedYAxisMax = $derived(calculateSuggestedMax(damageEvents, healingEvents) * 1.3);
 
 	const options: ChartOptions<'line'> & {
@@ -504,7 +507,7 @@
 					color: '#444444'
 				}
 			},
-				y: {
+			y: {
 				title: {
 					display: true,
 					text: 'Amount',
@@ -696,123 +699,125 @@
 		}
 	});
 
-	let annotations = $derived(showAnnotations
-		? [
-				...castEvents
-					.filter((event) => {
-						if (hiddenHealerSourceIds.has(event.sourceID)) return false;
-						const abilitySpec = Object.entries(classSpecAbilities).find(([className, specs]) =>
-							Object.values(specs).some(
-								(spec) =>
-									(spec.Major as { id: number }[]).some(
-										(ability) => ability.id === event.abilityGameID
-									) ||
-									(spec.Minor as { id: number }[]).some(
-										(ability) => ability.id === event.abilityGameID
-									)
-							)
-						);
-						if (!abilitySpec) return false;
-						const [className, specs] = abilitySpec;
-						const specName = Object.keys(specs).find((spec) => {
-							const specAbilities = specs[spec as keyof typeof specs] as {
-								Major: { id: number }[];
-								Minor: { id: number }[];
-							};
-							return [...specAbilities.Major, ...specAbilities.Minor].some(
-								(ability) => ability.id === event.abilityGameID
+	let annotations = $derived(
+		showAnnotations
+			? [
+					...castEvents
+						.filter((event) => {
+							if (hiddenHealerSourceIds.has(event.sourceID)) return false;
+							const abilitySpec = Object.entries(classSpecAbilities).find(([className, specs]) =>
+								Object.values(specs).some(
+									(spec) =>
+										(spec.Major as { id: number }[]).some(
+											(ability) => ability.id === event.abilityGameID
+										) ||
+										(spec.Minor as { id: number }[]).some(
+											(ability) => ability.id === event.abilityGameID
+										)
+								)
 							);
-						});
-						if (!specName) return false;
+							if (!abilitySpec) return false;
+							const [className, specs] = abilitySpec;
+							const specName = Object.keys(specs).find((spec) => {
+								const specAbilities = specs[spec as keyof typeof specs] as {
+									Major: { id: number }[];
+									Minor: { id: number }[];
+								};
+								return [...specAbilities.Major, ...specAbilities.Minor].some(
+									(ability) => ability.id === event.abilityGameID
+								);
+							});
+							if (!specName) return false;
 
-						return true;
-					})
-					.map((event: CastEvent, index: number) => {
-						const xValue: number = Math.round(
-							(event.timestamp - damageTimelineStart) / damageTimelineInterval
-						);
-						const color: string = abilityColors[event.abilityGameID] || 'rgba(0, 0, 0, 0.8)';
-						const icon = getAbilityIcon(`${base}/icons/${event.abilityGameID}.webp`);
-						const sortedHealers = [...allHealers].sort((a, b) => a.name.localeCompare(b.name));
-						const healerIndex = sortedHealers.findIndex((h) => h.id === event.sourceID);
-						const yAdjust = healerIndex >= 0 ? 20 + healerIndex * 30 : 20;
-						return {
-							type: 'line',
-							xMin: xValue,
-							xMax: xValue,
-							borderColor: color,
-							borderWidth: 2,
-							label: {
-								content: icon,
-								display: true,
-								position: 'end',
-								yAdjust,
-								backgroundColor: 'transparent'
-							}
-						};
-					}),
-				...bossEvents
-					.filter((event: CastEvent) => enabledBossAbilityIds.has(event.abilityGameID))
-					.map((event: CastEvent, index: number) => {
-						const xValue: number = Math.round(
-							(event.timestamp - damageTimelineStart) / damageTimelineInterval
-						);
-						const group = bossAbilityGroups.find((candidate) =>
-							candidate.ids.includes(event.abilityGameID)
-						);
-						const iconUrl = group?.iconUrl || `${base}/icons/${event.abilityGameID}.webp`;
-						const bossIcon = getAbilityIcon(iconUrl);
-						return {
-							type: 'line',
-							xMin: xValue,
-							xMax: xValue,
-							borderWidth: 0,
-							borderColor: 'transparent',
-							label: {
-								content: bossIcon,
-								display: true,
-								position: 'end',
-								yAdjust: -12,
-								backgroundColor: 'transparent'
-							}
-						};
-					}),
-				...(showDeathEvents
-					? deathTableRows.map((event: DeathEvent) => {
+							return true;
+						})
+						.map((event: CastEvent, index: number) => {
 							const xValue: number = Math.round(
 								(event.timestamp - damageTimelineStart) / damageTimelineInterval
 							);
-							const deathLabelName = formatDeathLabelName(event);
+							const color: string = abilityColors[event.abilityGameID] || 'rgba(0, 0, 0, 0.8)';
+							const icon = getAbilityIcon(`${base}/icons/${event.abilityGameID}.webp`);
+							const sortedHealers = [...allHealers].sort((a, b) => a.name.localeCompare(b.name));
+							const healerIndex = sortedHealers.findIndex((h) => h.id === event.sourceID);
+							const yAdjust = healerIndex >= 0 ? 20 + healerIndex * 30 : 20;
 							return {
 								type: 'line',
 								xMin: xValue,
 								xMax: xValue,
-								clip: false,
-								drawTime: 'afterDatasetsDraw',
-								borderColor: deathLegendStroke,
+								borderColor: color,
 								borderWidth: 2,
-								borderDash: [6, 4],
 								label: {
-									content: deathLabelName,
+									content: icon,
 									display: true,
-									position: 'start',
-									yAdjust: 0,
-									xAdjust: 0,
-									textAlign: 'center',
-									font: {
-										size: 11,
-										weight: '600'
-									},
-									padding: { top: 3, right: 6, bottom: 3, left: 6 },
-									backgroundColor: 'rgba(127, 29, 29, 0.92)',
-									borderRadius: 999,
-									color: '#fff7f5'
+									position: 'end',
+									yAdjust,
+									backgroundColor: 'transparent'
 								}
 							};
-						})
-					: [])
-			]
-		: []);
+						}),
+					...bossEvents
+						.filter((event: CastEvent) => enabledBossAbilityIds.has(event.abilityGameID))
+						.map((event: CastEvent, index: number) => {
+							const xValue: number = Math.round(
+								(event.timestamp - damageTimelineStart) / damageTimelineInterval
+							);
+							const group = bossAbilityGroups.find((candidate) =>
+								candidate.ids.includes(event.abilityGameID)
+							);
+							const iconUrl = group?.iconUrl || `${base}/icons/${event.abilityGameID}.webp`;
+							const bossIcon = getAbilityIcon(iconUrl);
+							return {
+								type: 'line',
+								xMin: xValue,
+								xMax: xValue,
+								borderWidth: 0,
+								borderColor: 'transparent',
+								label: {
+									content: bossIcon,
+									display: true,
+									position: 'end',
+									yAdjust: -12,
+									backgroundColor: 'transparent'
+								}
+							};
+						}),
+					...(showDeathEvents
+						? deathTableRows.map((event: DeathEvent) => {
+								const xValue: number = Math.round(
+									(event.timestamp - damageTimelineStart) / damageTimelineInterval
+								);
+								const deathLabelName = formatDeathLabelName(event);
+								return {
+									type: 'line',
+									xMin: xValue,
+									xMax: xValue,
+									clip: false,
+									drawTime: 'afterDatasetsDraw',
+									borderColor: deathLegendStroke,
+									borderWidth: 2,
+									borderDash: [6, 4],
+									label: {
+										content: deathLabelName,
+										display: true,
+										position: 'start',
+										yAdjust: 0,
+										xAdjust: 0,
+										textAlign: 'center',
+										font: {
+											size: 11,
+											weight: '600'
+										},
+										padding: { top: 3, right: 6, bottom: 3, left: 6 },
+										backgroundColor: 'rgba(127, 29, 29, 0.92)',
+										borderRadius: 999,
+										color: '#fff7f5'
+									}
+								};
+							})
+						: [])
+				]
+			: []
+	);
 
 	$effect(() => {
 		options.plugins = options.plugins || {};
@@ -859,27 +864,32 @@
 </div>
 
 <div
-	class="container relative mx-auto flex h-[32rem] w-full items-center justify-center p-4 xl:h-[40rem] 2xl:h-[50rem]"
+	class="relative container mx-auto flex h-[32rem] w-full items-center justify-center p-4 xl:h-[40rem] 2xl:h-[50rem]"
 >
 	<div class="zoom-controls">
 		<button class="zoom-btn" onclick={zoomOut} title="Zoom out" aria-label="Zoom out">−</button>
 		<div bind:this={zoomLabelElement} class="zoom-label" aria-live="polite">Zoom 100%</div>
 		<button class="zoom-btn" onclick={zoomIn} title="Zoom in" aria-label="Zoom in">+</button>
-		<button class="zoom-btn zoom-reset" onclick={resetZoom} title="Reset zoom" aria-label="Reset zoom">↺</button>
+		<button
+			class="zoom-btn zoom-reset"
+			onclick={resetZoom}
+			title="Reset zoom"
+			aria-label="Reset zoom">↺</button
+		>
 	</div>
 	<Chart type="line" data={chartData} {options} bind:chart={chartInstance} />
 </div>
 
 {#if showDeathsSection}
-	<section class="mt-6 rounded-xl border border-border bg-card/80 p-4 md:p-6">
+	<section class="border-border bg-card/80 mt-6 rounded-xl border p-4 md:p-6">
 		<div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
 			<div>
 				<h3 class="text-xl font-semibold">Deaths in this pull</h3>
-				<p class="text-sm text-muted-foreground">
+				<p class="text-muted-foreground text-sm">
 					Each row shows when the death happened and which player died.
 				</p>
 			</div>
-			<p class="text-sm text-muted-foreground">{deathTableRows.length} total deaths</p>
+			<p class="text-muted-foreground text-sm">{deathTableRows.length} total deaths</p>
 		</div>
 
 		{#if deathTableRows.length > 0}
@@ -894,7 +904,8 @@
 					<TableBody>
 						{#each deathTableRows as event (event.timestamp + '-' + event.targetID)}
 							<TableRow>
-								<TableCell class="font-medium">{formatRelativeTimestamp(event.timestamp)}</TableCell>
+								<TableCell class="font-medium">{formatRelativeTimestamp(event.timestamp)}</TableCell
+								>
 								<TableCell style={`color: ${getDeathClassColor(event.targetClass)};`}>
 									{event.targetName}
 								</TableCell>
@@ -904,7 +915,7 @@
 				</Table>
 			</div>
 		{:else}
-			<p class="mt-4 text-sm text-muted-foreground">No death events were reported for this pull.</p>
+			<p class="text-muted-foreground mt-4 text-sm">No death events were reported for this pull.</p>
 		{/if}
 	</section>
 {/if}

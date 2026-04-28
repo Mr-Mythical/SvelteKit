@@ -51,17 +51,19 @@
 						toast.error('Failed to fetch data from Raider.io');
 					}
 				});
-				fetchWowSummary<BlizzardCharacterFull>(region, realm, characterName).then((summaryResult) => {
-					if (summaryResult.kind === 'ok') {
-						wowSummaryStore.set(summaryResult.summary);
-					} else {
-						logClientError(
-							'apiForm',
-							'Failed to fetch WoW character summary',
-							summaryResult.status
-						);
+				fetchWowSummary<BlizzardCharacterFull>(region, realm, characterName).then(
+					(summaryResult) => {
+						if (summaryResult.kind === 'ok') {
+							wowSummaryStore.set(summaryResult.summary);
+						} else {
+							logClientError(
+								'apiForm',
+								'Failed to fetch WoW character summary',
+								summaryResult.status
+							);
+						}
 					}
-				});
+				);
 
 				if (typeof window !== 'undefined') {
 					const currentUrl = new URL(window.location.href);
@@ -179,7 +181,11 @@
 			</Card.Content>
 
 			<Card.Footer class="api-dialog-footer">
-				<Button class="api-dialog-button" variant="outline" onclick={() => ($apiPopup = !$apiPopup)}>
+				<Button
+					class="api-dialog-button"
+					variant="outline"
+					onclick={() => ($apiPopup = !$apiPopup)}
+				>
 					Close
 				</Button>
 				<Form.Button class="api-dialog-button api-dialog-submit">Import</Form.Button>

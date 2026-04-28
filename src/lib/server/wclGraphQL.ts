@@ -24,7 +24,7 @@ export async function executeWclQuery<T>(
 	query: string,
 	variables: Record<string, unknown>
 ): Promise<T> {
-const accessToken = await getOrRefreshAccessToken();
+	const accessToken = await getOrRefreshAccessToken();
 
 	const response = await fetch(WCL_GRAPHQL_URL, {
 		method: 'POST',

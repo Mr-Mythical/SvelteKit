@@ -9,13 +9,7 @@
 		schemas?: Record<string, unknown>[];
 	}
 
-	let {
-		title = '',
-		description = '',
-		image = '',
-		keywords = '',
-		schemas = []
-	}: Props = $props();
+	let { title = '', description = '', image = '', keywords = '', schemas = [] }: Props = $props();
 
 	const base = 'https://mrmythical.com';
 	let fullUrl = $derived(base + page.url.pathname);

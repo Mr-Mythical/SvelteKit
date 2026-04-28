@@ -18,10 +18,7 @@ export interface StoredCharacter {
 export function getStoredCharacters(userId: string): Promise<StoredCharacter[]> {
 	return dbOperation('getStoredCharacters', async () => {
 		const db = getUserDb();
-		const rows = await db
-			.select()
-			.from(userCharacters)
-			.where(eq(userCharacters.userId, userId));
+		const rows = await db.select().from(userCharacters).where(eq(userCharacters.userId, userId));
 
 		return rows.map((row) => ({
 			region: row.region as StoredCharacter['region'],

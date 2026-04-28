@@ -23,9 +23,10 @@ interface PlayerDetailsData {
 }
 
 export const POST: RequestHandler = async ({ request }) => {
-	const body = (await request.json().catch(() => null)) as
-		| { code?: unknown; fightID?: unknown }
-		| null;
+	const body = (await request.json().catch(() => null)) as {
+		code?: unknown;
+		fightID?: unknown;
+	} | null;
 	const { code, fightID } = body ?? {};
 	if (typeof code !== 'string' || !code || typeof fightID !== 'number') {
 		return apiError('Invalid or missing report code and/or fight ID.', 400);

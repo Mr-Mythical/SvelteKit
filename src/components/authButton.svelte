@@ -1,6 +1,4 @@
 <script lang="ts">
-
-
 	import { signIn, signOut } from '@auth/sveltekit/client';
 	import { page } from '$app/state';
 	import { fly, fade, scale } from 'svelte/transition';
@@ -81,11 +79,11 @@
 	<!-- Mobile menu styling -->
 	{#if session?.user}
 		<div
-			class="flex flex-col gap-2 border-t border-border px-4 py-2"
+			class="border-border flex flex-col gap-2 border-t px-4 py-2"
 			in:fly={{ y: -10, duration: 300, easing: quintOut }}
 			out:fly={{ y: -10, duration: 200 }}
 		>
-			<div class="flex items-center gap-2 text-sm text-muted-foreground">
+			<div class="text-muted-foreground flex items-center gap-2 text-sm">
 				<div class="relative">
 					<User class="h-4 w-4" />
 				</div>
@@ -109,7 +107,7 @@
 		</div>
 	{:else}
 		<div
-			class="border-t border-border px-4 py-2"
+			class="border-border border-t px-4 py-2"
 			in:fly={{ y: 10, duration: 300, easing: quintOut }}
 			out:fly={{ y: 10, duration: 200 }}
 		>
@@ -141,13 +139,13 @@
 			>
 				<div class="hidden items-center gap-2 text-sm md:flex">
 					<div class="relative">
-						<User class="h-4 w-4 text-muted-foreground" />
+						<User class="text-muted-foreground h-4 w-4" />
 					</div>
 					<span class="animate-fade-in text-foreground">
-						<span class="font-semibold text-primary">{userBattletag || session.user.name}</span>
+						<span class="text-primary font-semibold">{userBattletag || session.user.name}</span>
 					</span>
 				</div>
-				<div class="animate-fade-in text-xs text-muted-foreground md:hidden">
+				<div class="animate-fade-in text-muted-foreground text-xs md:hidden">
 					{userBattletag || session.user.name}
 				</div>
 				<Button
