@@ -1,7 +1,9 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/db';
+import type { RequestHandler } from '@sveltejs/kit';
+import { getRaidDb } from '$lib/db';
 import { specPerformance } from '$lib/db/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, type SQL } from 'drizzle-orm';
+import { apiError, apiOk } from '$lib/server/apiResponses';
+import { handleApiError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -12,12 +14,12 @@ export const GET: RequestHandler = async ({ url }) => {
 		const metric = url.searchParams.get('metric') || 'dps';
 
 		if (!encounterId || !specIcon) {
-			return json({ error: 'encounterId and specIcon are required' }, { status: 400 });
+			return apiError('encounterId and specIcon are required', 400);
 		}
 
-		const database = db();
+		const database = getRaidDb();
 
-		let whereConditions: any[] = [
+		const whereConditions: (SQL | undefined)[] = [
 			eq(specPerformance.encounterId, parseInt(encounterId)),
 			eq(specPerformance.specIcon, specIcon)
 		];
@@ -31,6 +33,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			whereConditions.push(eq(specPerformance.isKill, false));
 		} else if (fightFilter === 'kills_no_deaths') {
 			whereConditions.push(eq(specPerformance.isKill, true));
+			whereConditions.push(eq(specPerformance.deathCount, 0));
 		} else if (fightFilter === 'kills_all') {
 			whereConditions.push(eq(specPerformance.isKill, true));
 		} else if (fightFilter === 'all') {
@@ -65,9 +68,8 @@ export const GET: RequestHandler = async ({ url }) => {
 			report_url: `https://www.warcraftlogs.com/reports/${r.report_code}#fight=${r.fight_id}`
 		}));
 
-		return json(result);
+		return apiOk(result);
 	} catch (error) {
-		console.error('Error in /api/spec-top-players:', error);
-		return json({ error: 'Failed to fetch top players' }, { status: 500 });
+		return handleApiError('api/spec-top-players', error, 'Failed to fetch top players');
 	}
 };

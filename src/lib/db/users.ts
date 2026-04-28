@@ -1,42 +1,31 @@
-import { eq, desc, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { getUserDb } from './userDb';
 import { userProfiles } from './userSchema';
+import { dbOperation } from './_helpers';
 
-/**
- * Update user's last seen timestamp
- */
-export async function updateUserLastSeen(userId: string): Promise<void> {
-	try {
-		const db = getUserDb();
-
-		await db
-			.update(userProfiles)
-			.set({
-				updatedAt: new Date()
-			})
-			.where(eq(userProfiles.id, userId));
-	} catch (error) {
-		console.error('Error updating user last seen:', error);
-		throw error;
-	}
+export interface BattleNetCredentials {
+	battletag?: string;
+	battlenetAccessToken?: string;
+	battlenetRefreshToken?: string;
+	battlenetExpiresAt?: Date;
 }
 
-/**
- * Create or update user profile
- */
-export async function createOrUpdateUserProfile(
-	userId: string,
-	data: {
-		battletag?: string;
-		battlenetAccessToken?: string;
-		battlenetRefreshToken?: string;
-		battlenetExpiresAt?: Date;
-	}
-): Promise<void> {
-	try {
-		const db = getUserDb();
+export function updateUserLastSeen(userId: string): Promise<void> {
+	return dbOperation('updateUserLastSeen', async () => {
+		await getUserDb()
+			.update(userProfiles)
+			.set({ updatedAt: new Date() })
+			.where(eq(userProfiles.id, userId));
+	});
+}
 
-		await db
+export function createOrUpdateUserProfile(
+	userId: string,
+	data: BattleNetCredentials
+): Promise<void> {
+	return dbOperation('createOrUpdateUserProfile', async () => {
+		const now = new Date();
+		await getUserDb()
 			.insert(userProfiles)
 			.values({
 				id: userId,
@@ -44,64 +33,44 @@ export async function createOrUpdateUserProfile(
 				battlenetAccessToken: data.battlenetAccessToken,
 				battlenetRefreshToken: data.battlenetRefreshToken,
 				battlenetExpiresAt: data.battlenetExpiresAt,
-				lastSeenAt: new Date(),
-				updatedAt: new Date()
+				lastSeenAt: now,
+				updatedAt: now
 			})
 			.onConflictDoUpdate({
 				target: userProfiles.id,
 				set: {
-					lastSeenAt: new Date(),
-					updatedAt: new Date(),
+					lastSeenAt: now,
+					updatedAt: now,
 					...(data.battletag && { battletag: data.battletag }),
 					...(data.battlenetAccessToken && { battlenetAccessToken: data.battlenetAccessToken }),
 					...(data.battlenetRefreshToken && { battlenetRefreshToken: data.battlenetRefreshToken }),
 					...(data.battlenetExpiresAt && { battlenetExpiresAt: data.battlenetExpiresAt })
 				}
 			});
-	} catch (error) {
-		console.error('Error creating/updating user profile:', error);
-		throw error;
-	}
+	});
 }
 
-/**
- * Get user profile by ID
- */
-export async function getUserProfile(userId: string) {
-	try {
-		const db = getUserDb();
+export type UserProfileRow = typeof userProfiles.$inferSelect;
 
-		const profile = await db
+export function getUserProfile(userId: string): Promise<UserProfileRow | null> {
+	return dbOperation('getUserProfile', async () => {
+		const profile = await getUserDb()
 			.select()
 			.from(userProfiles)
 			.where(eq(userProfiles.id, userId))
 			.limit(1);
-
-		return profile[0] || null;
-	} catch (error) {
-		console.error('Error getting user profile:', error);
-		return null;
-	}
+		return profile[0] ?? null;
+	});
 }
 
-/**
- * Update user preferences
- */
-export async function updateUserPreferences(
+export function updateUserPreferences(
 	userId: string,
-	preferences: Record<string, any>
+	preferences: Record<string, unknown>
 ): Promise<void> {
-	try {
-		const db = getUserDb();
-
-		await db
+	return dbOperation('updateUserPreferences', async () => {
+		await getUserDb()
 			.update(userProfiles)
-			.set({
-				updatedAt: new Date()
-			})
+			.set({ preferences, updatedAt: new Date() })
 			.where(eq(userProfiles.id, userId));
-	} catch (error) {
-		console.error('Error updating user preferences:', error);
-		throw error;
-	}
+	});
 }

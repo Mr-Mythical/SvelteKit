@@ -1,4 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
+import { apiError, apiOk } from '$lib/server/apiResponses';
+import { handleApiError } from '$lib/server/logger';
 
 interface RaiderIoResponse {
 	name: string;
@@ -28,9 +30,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	const realm = url.searchParams.get('realm');
 
 	if (!name || !region || !realm) {
-		return new Response(JSON.stringify({ error: 'Missing parameters' }), {
-			status: 400
-		});
+		return apiError('Missing parameters', 400);
 	}
 
 	const apiUrl =
@@ -39,17 +39,18 @@ export const GET: RequestHandler = async ({ url }) => {
 		`&name=${encodeURIComponent(name)}` +
 		`&fields=mythic_plus_best_runs`;
 
-	const response = await fetch(apiUrl);
-	if (!response.ok) {
-		return new Response(JSON.stringify({ error: 'Failed to fetch data' }), {
-			status: response.status
-		});
+	try {
+		const response = await fetch(apiUrl);
+		if (!response.ok) {
+			return apiError('Failed to fetch data', response.status);
+		}
+
+		const rawData: RaiderIoResponse = await response.json();
+		const bestRuns = rawData.mythic_plus_best_runs ?? [];
+		bestRuns.sort((a, b) => b.score - a.score);
+
+		return apiOk({ runs: bestRuns });
+	} catch (error) {
+		return handleApiError('api/raiderio', error, 'Failed to fetch data');
 	}
-
-	const rawData: RaiderIoResponse = await response.json();
-	const bestRuns = rawData.mythic_plus_best_runs ?? [];
-
-	bestRuns.sort((a, b) => b.score - a.score);
-
-	return new Response(JSON.stringify({ runs: bestRuns }), { status: 200 });
 };

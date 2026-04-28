@@ -1,14 +1,18 @@
 <script lang="ts">
-	import KeystoneTable from '../../components/keystoneTable.svelte';
-	import ScoreExplanation from '../../components/scoreExplanation.svelte';
-	import ApiForm from '../../components/apiForm.svelte';
+	import KeystoneTable from '../../components/calculator/keystoneTable.svelte';
+	import ScoreExplanation from '../../components/calculator/scoreExplanation.svelte';
+	import ApiForm from '../../components/calculator/apiForm.svelte';
 	import SEO from '../../components/seo.svelte';
-	import Footer from '../../components/footer.svelte';
+	import Footer from '../../components/layout/footer.svelte';
 	import { Toaster } from 'svelte-sonner';
 	import type { PageData } from './$types.js';
 	import * as Accordion from '$lib/components/ui/accordion';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	const defaultDescription =
 		'Try the interactive m+ calculator to see which keystones you need for your desired Mythic+ score in WoW. Import your character and plan your runs!';
@@ -89,20 +93,20 @@
 	schemas={[appSchema, faqSchema]}
 />
 <main class="container mx-auto px-4 py-8">
-	<div class="mb-6 text-center">
-		<h1 class="mb-2 text-4xl font-bold">Mythic+ Score Calculator</h1>
-		<p class="text-lg text-muted-foreground">
-			Calculate the required keystones to reach your desired World of Warcraft Mythic+ score, plan
-			dungeon runs, and optimize your m+ score with this interactive score calculator. Import your
-			character, set score goals, and share your setup with shareable URLs.
+	<header class="page-header">
+		<p class="page-eyebrow">Score calculator</p>
+		<h1 class="page-title">Mythic+ score calculator.</h1>
+		<p class="page-lede">
+			Calculate the keystones to reach your target Mythic+ score, plan dungeon runs, and share your
+			setup by URL.
 		</p>
-	</div>
+	</header>
 	<KeystoneTable />
 	<ScoreExplanation />
 	<ApiForm data={data.form} />
 	<section class="mt-12">
 		<h2 class="mb-6 text-2xl font-bold">Frequently Asked Questions</h2>
-		<Accordion.Root value="" class="w-full">
+		<Accordion.Root type="multiple" value={[]} class="w-full">
 			{#each faqItems as item, i (i)}
 				<Accordion.Item value={`faq-${i}`}>
 					<Accordion.Trigger>{item.question}</Accordion.Trigger>
@@ -114,3 +118,41 @@
 	<Toaster richColors />
 </main>
 <Footer />
+
+<style>
+	.page-header {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		max-width: 72ch;
+		padding-bottom: clamp(20px, 3vw, 32px);
+	}
+
+	.page-eyebrow {
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: hsl(var(--link));
+		margin: 0;
+	}
+
+	.page-title {
+		font-family: var(--font-heading);
+		font-size: clamp(1.75rem, 4vw, 2.5rem);
+		font-weight: 700;
+		line-height: 1.08;
+		letter-spacing: -0.02em;
+		color: hsl(var(--foreground));
+		margin: 0;
+	}
+
+	.page-lede {
+		font-family: var(--font-body);
+		font-size: 0.9375rem;
+		line-height: 1.45;
+		color: hsl(var(--muted-foreground));
+		margin: 0;
+	}
+</style>

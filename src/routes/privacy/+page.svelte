@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SEO from '../../components/seo.svelte';
-	import Footer from '../../components/footer.svelte';
+	import Footer from '../../components/layout/footer.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 </script>
 
@@ -22,14 +22,14 @@
 			AdSense for advertising which may use cookies.
 		</p>
 
-		<h2 class="mb-4 mt-4 text-xl font-bold">What Data Is Collected</h2>
+		<h2 class="mt-4 mb-4 text-xl font-bold">What Data Is Collected</h2>
 		<p>
 			MrMythical.com does not collect any personal information such as names, email addresses, or
 			account details. However, we use Google AdSense for advertising, which may use cookies to
 			serve relevant ads and measure ad performance.
 		</p>
 
-		<h2 class="mb-4 mt-4 text-xl font-bold">How This Information Is Used</h2>
+		<h2 class="mt-4 mb-4 text-xl font-bold">How This Information Is Used</h2>
 		<p>This information is used to:</p>
 
 		<ul class="ml-6 list-disc">
@@ -39,7 +39,7 @@
 		</ul>
 		<p>We do not use this information for personal profiling or tracking across other websites.</p>
 
-		<h2 class="mb-4 mt-4 text-xl font-bold">Your Rights</h2>
+		<h2 class="mt-4 mb-4 text-xl font-bold">Your Rights</h2>
 		<p>Under various data protection laws, you have the right to:</p>
 		<ul class="ml-6 list-disc">
 			<li>Access any data we hold about you</li>
@@ -47,22 +47,22 @@
 			<li>Object to data processing</li>
 			<li>Withdraw consent at any time</li>
 		</ul>
-		<h2 class="mb-4 mt-4 text-xl font-bold">Cookies</h2>
+		<h2 class="mt-4 mb-4 text-xl font-bold">Cookies</h2>
 		<p>
 			MrMythical.com uses cookies through Google AdSense for advertising purposes. These cookies
 			help serve relevant ads and measure campaign performance. You can view detailed information in
-			our <Button class="p-0 text-[1.03rem] font-bold text-link" variant="link" href="/cookie">
+			our <Button class="text-link p-0 text-[1.03rem] font-bold" variant="link" href="/cookie">
 				Cookie Policy
 			</Button> and manage your preferences at any time.
 		</p>
 
-		<h2 class="mb-4 mt-4 text-xl font-bold">Privacy Policy Contact</h2>
+		<h2 class="mt-4 mb-4 text-xl font-bold">Privacy Policy Contact</h2>
 		<p>
 			If you have questions or concerns about this privacy policy, please contact:
 			<Button
-				class="p-0 text-[1.03rem] font-bold text-link"
+				class="text-link p-0 text-[1.03rem] font-bold"
 				variant="link"
-				on:click={() => (window.location.href = 'mailto:mythical@mrmythical.com')}
+				onclick={() => (window.location.href = 'mailto:mythical@mrmythical.com')}
 			>
 				mythical@mrmythical.com
 			</Button>

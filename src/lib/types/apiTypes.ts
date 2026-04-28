@@ -91,7 +91,28 @@ export interface CastEvent {
 	sourceID: number;
 	targetID: number;
 	abilityGameID: number;
+	abilityName?: string;
+	abilityIcon?: string;
+	abilityIconUrl?: string;
 	fight: number;
+}
+
+export interface BossAbility {
+	id: number;
+	name: string;
+	icon?: string;
+	iconUrl?: string;
+}
+
+export interface DeathEvent {
+	timestamp: number;
+	targetID: number;
+	targetName: string;
+	targetClass?: string;
+	abilityGameID?: number;
+	abilityName?: string;
+	killerID?: number;
+	killerName?: string;
 }
 
 export interface EventsResponse {

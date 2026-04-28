@@ -1,0 +1,166 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+	--color-border: hsl(var(--border));
+	--color-input: hsl(var(--input));
+	--color-ring: hsl(var(--ring));
+	--color-background: hsl(var(--background));
+	--color-foreground: hsl(var(--foreground));
+	--color-progress: hsl(var(--progress));
+	--color-chart: hsl(var(--chart));
+	--color-link: hsl(var(--link));
+
+	--color-grad: #86132a;
+	--color-gradinverse: #ec7990;
+
+	--color-primary: hsl(var(--primary));
+	--color-primary-foreground: hsl(var(--primary-foreground));
+
+	--color-secondary: hsl(var(--secondary));
+	--color-secondary-foreground: hsl(var(--secondary-foreground));
+
+	--color-destructive: hsl(var(--destructive));
+	--color-destructive-foreground: hsl(var(--destructive-foreground));
+
+	--color-muted: hsl(var(--muted));
+	--color-muted-foreground: hsl(var(--muted-foreground));
+
+	--color-accent: hsl(var(--accent));
+	--color-accent-foreground: hsl(var(--accent-foreground));
+
+	--color-popover: hsl(var(--popover));
+	--color-popover-foreground: hsl(var(--popover-foreground));
+
+	--color-card: hsl(var(--card));
+	--color-card-foreground: hsl(var(--card-foreground));
+
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+
+	--font-heading: 'League Spartan';
+	--font-body: 'Roboto';
+
+	--text-sm: 0.75rem;
+	--text-base: 1rem;
+	--text-xl: 1.333rem;
+	--text-2xl: 1.777rem;
+	--text-3xl: 2.369rem;
+	--text-4xl: 3.158rem;
+	--text-5xl: 4.21rem;
+
+	--font-weight-normal: 400;
+	--font-weight-bold: 700;
+
+	--animate-accordion-down: accordion-down 0.2s ease-out;
+	--animate-accordion-up: accordion-up 0.2s ease-out;
+	--animate-caret-blink: caret-blink 1.25s ease-out infinite;
+
+	@keyframes accordion-down {
+		from {
+			height: 0;
+		}
+		to {
+			height: var(--bits-accordion-content-height);
+		}
+	}
+	@keyframes accordion-up {
+		from {
+			height: var(--bits-accordion-content-height);
+		}
+		to {
+			height: 0;
+		}
+	}
+	@keyframes caret-blink {
+		0%,
+		70%,
+		100% {
+			opacity: 1;
+		}
+		20%,
+		50% {
+			opacity: 0;
+		}
+	}
+}
+
+@layer base {
+	:root {
+		--background: 0 60% 99%;
+		--foreground: 24 100% 2%;
+		--card: 0 60% 95%;
+		--card-foreground: 24 100% 2%;
+		--chart: 0 10% 20%;
+		--popover: 0 60% 99%;
+		--popover-foreground: 24 100% 2%;
+		--primary: 348 75% 81%;
+		--primary-foreground: 24 100% 2%;
+		--secondary: 0 61% 90%;
+		--secondary-foreground: 24 100% 2%;
+		--muted: 0 20% 80%;
+		--muted-foreground: 0 20% 30%;
+		--accent: 19 49% 90%;
+		--accent-foreground: 24 100% 2%;
+		--destructive: 0 62% 70%;
+		--destructive-foreground: 24 100% 2%;
+		--border: 0 61% 90%;
+		--input: 0 61% 80%;
+		--ring: 19 49% 40%;
+		--progress: 126 75% 81%;
+		--link: 348 80% 35%;
+		--radius: 0.5rem;
+	}
+
+	.dark {
+		--background: 0 60% 1%;
+		--foreground: 24 100% 98%;
+		--card: 0 60% 5%;
+		--card-foreground: 24 100% 98%;
+		--chart: 0 10% 20%;
+		--popover: 0 60% 1%;
+		--popover-foreground: 24 100% 98%;
+		--primary: 348 75% 19%;
+		--primary-foreground: 24 100% 98%;
+		--secondary: 0 61% 10%;
+		--secondary-foreground: 24 100% 98%;
+		--muted: 0 20% 20%;
+		--muted-foreground: 0 20% 70%;
+		--accent: 19 49% 10%;
+		--accent-foreground: 24 100% 98%;
+		--destructive: 0 62% 30%;
+		--destructive-foreground: 24 100% 98%;
+		--border: 0 61% 10%;
+		--input: 0 61% 20%;
+		--ring: 19 49% 60%;
+		--progress: 126 75% 19%;
+		--link: 348 80% 65%;
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+	body {
+		@apply bg-background text-foreground;
+	}
+}
+
+/*
+  Tailwind 4 changed the default border/outline color from gray-200 to
+  currentColor. Preserve v3 behavior until every class is audited.
+*/
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: hsl(var(--border));
+	}
+}

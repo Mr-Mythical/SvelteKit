@@ -1,6 +1,6 @@
 import { render } from '@testing-library/svelte';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import ContentShowcase from '../contentShowcase.svelte';
+import ContentShowcase from '../layout/contentShowcase.svelte';
 
 describe('ContentShowcase', () => {
 	beforeEach(() => {

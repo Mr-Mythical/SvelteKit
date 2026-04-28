@@ -2,7 +2,19 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { handle as authHandle } from './auth';
 import type { Handle } from '@sveltejs/kit';
 
-const handleAuth: Handle = authHandle;
+const CSP_HEADER = [
+	"default-src 'self'",
+	"script-src 'self' 'unsafe-inline' 'unsafe-eval' https: https://pagead2.googlesyndication.com https://googlesyndication.com",
+	"style-src 'self' 'unsafe-inline' https:",
+	"img-src 'self' data: https:",
+	"font-src 'self' data: https:",
+	"connect-src 'self' https:",
+	"frame-src 'self' https: https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://googleads.g.doubleclick.net https://tpc.googlesyndication.com",
+	"frame-ancestors 'self'",
+	"object-src 'none'",
+	"base-uri 'self'",
+	"form-action 'self'"
+].join('; ');
 
 const handleSecurity: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event, {
@@ -16,40 +28,36 @@ const handleSecurity: Handle = async ({ event, resolve }) => {
 	response.headers.set('X-Content-Type-Options', 'nosniff');
 	response.headers.set('X-Frame-Options', 'SAMEORIGIN');
 	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-
-	const csp = [
-		"default-src 'self'",
-		"script-src 'self' 'unsafe-inline' 'unsafe-eval' https: https://pagead2.googlesyndication.com https://googlesyndication.com",
-		"style-src 'self' 'unsafe-inline' https:",
-		"img-src 'self' data: https:",
-		"font-src 'self' data: https:",
-		"connect-src 'self' https:",
-		"frame-src 'self' https: https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://googleads.g.doubleclick.net https://tpc.googlesyndication.com",
-		"frame-ancestors 'self'",
-		"object-src 'none'",
-		"base-uri 'self'",
-		"form-action 'self'"
-	].join('; ');
-
-	response.headers.set('Content-Security-Policy', csp);
+	response.headers.set('Content-Security-Policy', CSP_HEADER);
 
 	return response;
 };
 
 const handleSession: Handle = async ({ event, resolve }) => {
 	event.locals.getSession = async () => {
-		const response = await fetch(`${event.url.origin}/auth/session`, {
-			headers: {
-				cookie: event.request.headers.get('cookie') || ''
+		try {
+			const response = await fetch(`${event.url.origin}/auth/session`, {
+				headers: {
+					cookie: event.request.headers.get('cookie') || ''
+				}
+			});
+			if (response.ok) {
+				return await response.json();
 			}
-		});
-		if (response.ok) {
-			return await response.json();
+			return null;
+		} catch {
+			// Self-fetch failed (DNS, abort, runtime error). Honor the same
+			// 'unavailable -> null' contract that callers already rely on.
+			return null;
 		}
-		return null;
 	};
 
 	return resolve(event);
 };
 
-export const handle = sequence(handleAuth, handleSecurity, handleSession);
+// Exported for tests so the response-header contract can be exercised
+// without booting Auth.js. Production wiring still uses `handle` below.
+export const handle = sequence(authHandle, handleSecurity, handleSession);
+
+export const __securityHandlerForTests: Handle = handleSecurity;
+export const __cspHeaderForTests = CSP_HEADER;
