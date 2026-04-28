@@ -86,7 +86,7 @@
 </script>
 
 <SEO
-	title={data.seoTitle ?? 'Mythic+ Score Calculator - MrMythical'}
+	title={data.seoTitle ?? 'Mythic+ Score Calculator | MrMythical'}
 	description={data.seoDescription ?? defaultDescription}
 	image="https://mrmythical.com/Logo.png"
 	keywords={data.seoKeywords ?? defaultKeywords}

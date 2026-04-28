@@ -32,8 +32,8 @@
 </script>
 
 <SEO
-	title={`Mythic ${currentBoss?.name} damage and death profile - Mr. Mythical`}
-	description={`Mythic ${currentBoss?.name} per-second damage curve and death timing aggregated from public progression logs, with sourced encounter notes and key abilities.`}
+	title={`Mythic ${currentBoss?.name} damage and death profile | Mr. Mythical`}
+	description={`Mythic ${currentBoss?.name} per-second damage curve and death timing aggregated from public progression logs. Visualize the encounter's damage patterns, identify consistent spike windows, and understand where pulls typically fall apart. An essential tool for raid preparation and strategy refinement in World of Warcraft.`}
 	image="https://mrmythical.com/Logo.png"
 	keywords={`Mythic ${currentBoss?.name}, ${currentBoss?.slug}, Midnight raid, raid boss visualization, damage patterns, death timings, World of Warcraft, encounter charts`}
 />
@@ -87,79 +87,6 @@
 				<div class="block">
 					<h3 class="block-title">What kills pulls</h3>
 					<p class="block-body">{currentBoss.guide.kills}</p>
-				</div>
-			{/if}
-
-			{#if hasResources && currentBoss?.resources}
-				<div class="block">
-					<h3 class="block-title">Recommended reading</h3>
-					<ul class="resource-list">
-						{#if currentBoss.resources.method}
-							<li>
-								<a
-									href={currentBoss.resources.method}
-									target="_blank"
-									rel="noopener noreferrer"
-									class="resource-link"
-								>
-									Method guide
-								</a>
-							</li>
-						{/if}
-						{#if currentBoss.resources.wowhead}
-							<li>
-								<a
-									href={currentBoss.resources.wowhead}
-									target="_blank"
-									rel="noopener noreferrer"
-									class="resource-link"
-								>
-									Wowhead strategy
-								</a>
-							</li>
-						{/if}
-						{#if currentBoss.resources.icyVeins}
-							<li>
-								<a
-									href={currentBoss.resources.icyVeins}
-									target="_blank"
-									rel="noopener noreferrer"
-									class="resource-link"
-								>
-									Icy Veins guide
-								</a>
-							</li>
-						{/if}
-					</ul>
-				</div>
-			{/if}
-
-			{#if currentBoss?.abilities && currentBoss.abilities.length > 0}
-				<div class="block">
-					<h3 class="block-title">Key abilities</h3>
-					<ul class="ability-list">
-						{#each currentBoss.abilities as ability (ability.id)}
-							<li class="ability-item">
-								<img
-									src={`${base}/icons/${ability.id}.webp`}
-									alt=""
-									width="22"
-									height="22"
-									class="ability-icon"
-									loading="lazy"
-									onerror={hideImgOnError}
-								/>
-								<a
-									href={`https://www.wowhead.com/spell=${ability.id}`}
-									target="_blank"
-									rel="noopener noreferrer"
-									class="ability-link"
-								>
-									{ability.name}
-								</a>
-							</li>
-						{/each}
-					</ul>
 				</div>
 			{/if}
 		</section>

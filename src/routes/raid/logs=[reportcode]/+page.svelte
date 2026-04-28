@@ -643,7 +643,7 @@
 </script>
 
 <SEO
-	title="Raid Encounter Visualization & Log Browser - Mr. Mythical"
+	title="Raid Encounter Visualization & Log Browser | Mr. Mythical"
 	description="Visualize raid encounters from Warcraft Logs. Interactive damage and healing timelines with ability overlays for deeper insights into raid performance."
 	image="https://mrmythical.com/Logo.png"
 	keywords="Raid visualization, Encounter visualization, healing visualization, Warcraft Logs, World of Warcraft, wow raids, cooldown planning, boss tactics, raid leading, damage graphs, healing graphs, raid performance, ability overlays"
