@@ -1,3 +1,21 @@
+/**
+ * Drizzle schema for the **raid analytics** database.
+ *
+ * This is one of two intentionally separate databases. The split is by
+ * deployment — they are different Postgres instances behind different
+ * connection strings:
+ *
+ * - This file (`schema.ts`) → `DATABASE_URL` (read-only raid analytics).
+ *   Drizzle config: `drizzle.config.ts` → migrations under `drizzle/`.
+ * - `userSchema.ts` → `DATABASE_USER_URL` (user/auth, read-write).
+ *   Drizzle config: `drizzle.user.config.ts` → migrations under `drizzle/user/`.
+ *
+ * Connection factories: `getRaidDb()` (this schema) and `getUserDb()`
+ * (`userSchema.ts`) — see `connection.ts`.
+ *
+ * If you need a table that spans both domains, the answer is almost always
+ * a join in app code; do not duplicate tables across schemas.
+ */
 import {
 	pgTable,
 	serial,
@@ -14,122 +32,6 @@ import {
 	boolean,
 	varchar
 } from 'drizzle-orm/pg-core';
-
-// =============================================================================
-// USER MANAGEMENT TABLES
-// =============================================================================
-
-// Users table for authentication and profile management
-export const users = pgTable(
-	'users',
-	{
-		id: text('id').primaryKey(), // Auth.js user ID (Battle.net sub)
-		battletag: varchar('battletag', { length: 50 }).notNull(),
-		email: text('email'), // May be null for Battle.net users
-		name: text('name'), // Display name
-		image: text('image'), // Avatar URL
-		createdAt: timestamp('created_at').defaultNow().notNull(),
-		updatedAt: timestamp('updated_at').defaultNow().notNull(),
-		lastSeenAt: timestamp('last_seen_at').defaultNow().notNull(),
-		isActive: boolean('is_active').default(true).notNull(),
-		preferences: jsonb('preferences').default('{}'), // User settings/preferences
-		// Battle.net specific data
-		battlenetAccessToken: text('battlenet_access_token'),
-		battlenetRefreshToken: text('battlenet_refresh_token'),
-		battlenetExpiresAt: timestamp('battlenet_expires_at')
-	},
-	(table) => ({
-		battletagIdx: index('idx_users_battletag').on(table.battletag),
-		emailIdx: index('idx_users_email').on(table.email),
-		activeIdx: index('idx_users_active').on(table.isActive),
-		lastSeenIdx: index('idx_users_last_seen').on(table.lastSeenAt)
-	})
-);
-
-// Sessions table for Auth.js session management
-export const accounts = pgTable(
-	'accounts',
-	{
-		id: text('id').primaryKey(),
-		userId: text('user_id')
-			.notNull()
-			.references(() => users.id, { onDelete: 'cascade' }),
-		type: text('type').notNull(), // oauth, email, etc.
-		provider: text('provider').notNull(), // battlenet, etc.
-		providerAccountId: text('provider_account_id').notNull(),
-		refresh_token: text('refresh_token'),
-		access_token: text('access_token'),
-		expires_at: integer('expires_at'),
-		token_type: text('token_type'),
-		scope: text('scope'),
-		id_token: text('id_token'),
-		session_state: text('session_state'),
-		createdAt: timestamp('created_at').defaultNow().notNull(),
-		updatedAt: timestamp('updated_at').defaultNow().notNull()
-	},
-	(table) => ({
-		userIdx: index('idx_accounts_user').on(table.userId),
-		providerIdx: index('idx_accounts_provider').on(table.provider, table.providerAccountId)
-	})
-);
-
-// Sessions table for active user sessions
-export const sessions = pgTable(
-	'sessions',
-	{
-		id: text('id').primaryKey(),
-		userId: text('user_id')
-			.notNull()
-			.references(() => users.id, { onDelete: 'cascade' }),
-		expires: timestamp('expires').notNull(),
-		sessionToken: text('session_token').notNull(),
-		createdAt: timestamp('created_at').defaultNow().notNull(),
-		updatedAt: timestamp('updated_at').defaultNow().notNull()
-	},
-	(table) => ({
-		userIdx: index('idx_sessions_user').on(table.userId),
-		tokenIdx: uniqueIndex('idx_sessions_token').on(table.sessionToken),
-		expiresIdx: index('idx_sessions_expires').on(table.expires)
-	})
-);
-
-// =============================================================================
-// RECENTS TABLES
-// =============================================================================
-
-// Recent reports/characters viewed by users
-export const userRecents = pgTable(
-	'user_recents',
-	{
-		id: serial('id').primaryKey(),
-		userId: text('user_id')
-			.notNull()
-			.references(() => users.id, { onDelete: 'cascade' }),
-		type: text('type').notNull(), // 'character', 'report', 'guild', 'dungeon_run'
-		// Flexible data storage for different types of recents
-		entityId: text('entity_id').notNull(), // Character name, report code, guild name, etc.
-		entityData: jsonb('entity_data').notNull(), // Full entity details for quick access
-		// Additional metadata
-		title: text('title').notNull(), // Display title for the recent item
-		subtitle: text('subtitle'), // Additional context (server, guild, etc.)
-		metadata: jsonb('metadata').default('{}'), // Additional flexible data
-		// Timestamps
-		lastAccessedAt: timestamp('last_accessed_at').defaultNow().notNull(),
-		createdAt: timestamp('created_at').defaultNow().notNull()
-	},
-	(table) => ({
-		userIdx: index('idx_user_recents_user').on(table.userId),
-		typeIdx: index('idx_user_recents_type').on(table.type),
-		userTypeIdx: index('idx_user_recents_user_type').on(table.userId, table.type),
-		lastAccessedIdx: index('idx_user_recents_last_accessed').on(table.lastAccessedAt),
-		// Unique constraint to prevent duplicate recents per user
-		uniqueUserEntity: uniqueIndex('idx_user_recents_unique').on(
-			table.userId,
-			table.type,
-			table.entityId
-		)
-	})
-);
 
 // =============================================================================
 // ENCOUNTERS TABLE
@@ -179,19 +81,74 @@ export const unifiedReports = pgTable(
 // =============================================================================
 // Stores healer specialization compositions for each fight report
 // Uses JSON array to handle multiple healers of the same spec
+// NOTE: The deployed `healer_compositions` table denormalises the report
+// identifiers (report_code/fight_id/encounter_id/region) and `last_updated`
+// directly onto the row instead of joining via `unified_reports`. The schema
+// below mirrors the live table so Drizzle types match production. The
+// `unifiedReports` table is still the FK target for `healer_compositions.report_id`
+// (cascade-on-delete) but the join path through it is no longer used at
+// runtime — production reads use the denormalised columns above.
 export const healerCompositions = pgTable(
 	'healer_compositions',
 	{
 		id: serial('id').primaryKey(),
 		reportId: integer('report_id')
-			.notNull()
 			.unique()
 			.references(() => unifiedReports.id, { onDelete: 'cascade' }),
+		reportCode: text('report_code'),
+		fightId: integer('fight_id'),
+		encounterId: integer('encounter_id'),
+		region: text('region'),
 		specIcons: json('spec_icons').$type<string[]>().notNull(), // JSON array of healer spec icons
-		fightDuration: integer('fight_duration') // Calculated fight duration in milliseconds
+		fightDuration: integer('fight_duration'), // Calculated fight duration in milliseconds
+		lastUpdated: timestamp('last_updated').defaultNow()
 	},
 	(table) => ({
-		reportIdx: index('idx_healer_compositions_report').on(table.reportId)
+		reportIdx: index('idx_healer_compositions_report').on(table.reportId),
+		encounterIdx: index('idx_healer_compositions_encounter').on(table.encounterId)
+	})
+);
+
+// =============================================================================
+// DEATH_HOTSPOTS TABLE
+// =============================================================================
+// Aggregates death events into per-second buckets for heatmap rendering.
+// Mirrors a production-only table that has no Drizzle migration in this repo.
+export const deathHotspots = pgTable(
+	'death_hotspots',
+	{
+		id: serial('id').primaryKey(),
+		encounterId: integer('encounter_id')
+			.notNull()
+			.references(() => encounters.encounterId),
+		timeSeconds: integer('time_seconds').notNull(),
+		deathCount: integer('death_count').notNull(),
+		sampleCount: integer('sample_count').notNull()
+	},
+	(table) => ({
+		encounterIdx: index('idx_death_hotspots_encounter').on(table.encounterId)
+	})
+);
+
+// =============================================================================
+// DEATH_RATE TABLE
+// =============================================================================
+// Per-second death counts across analyzed mythic kills, parallel to
+// damage_averages. Mirrors a production-aggregated table populated by the
+// data pipeline; no Drizzle migration is shipped from this repo.
+export const deathRate = pgTable(
+	'death_rate',
+	{
+		id: serial('id').primaryKey(),
+		encounterId: integer('encounter_id')
+			.notNull()
+			.references(() => encounters.encounterId),
+		timeSeconds: integer('time_seconds').notNull(),
+		deathCount: integer('death_count').notNull(),
+		sampleCount: integer('sample_count').notNull()
+	},
+	(table) => ({
+		encounterIdx: index('idx_death_rate_encounter').on(table.encounterId)
 	})
 );
 

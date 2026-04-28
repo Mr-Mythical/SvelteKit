@@ -1,22 +1,20 @@
-export const GET = async () => {
+import { bosses } from '$lib/types/bossData';
+
+export const GET = () => {
 	const baseUrl = 'https://mrmythical.com';
+	const bossRoutes = bosses.map((boss) => `/raid/boss/${boss.slug}`);
 
 	const routes = [
 		'/',
 		'/rating-calculator',
+		'/rating-calculator?score=1500',
 		'/rating-calculator?score=2000',
 		'/rating-calculator?score=2500',
 		'/rating-calculator?score=3000',
-		'/rating-calculator?score=3500',
+		'/rating-calculator?score=3400',
 		'/raid',
-		'/raid/boss/plexus-sentinel',
-		'/raid/boss/loomithar',
-		'/raid/boss/soulbinder-naazindhri',
-		'/raid/boss/forgeweaver-araz',
-		'/raid/boss/the-soul-hunters',
-		'/raid/boss/fractillus',
-		'/raid/boss/nexus-king-salhadaar',
-		'/raid/boss/dimensius-the-all-devouring',
+		'/raid/boss',
+		...bossRoutes,
 		'/about',
 		'/privacy',
 		'/cookie'

@@ -1,41 +1,46 @@
 <script lang="ts">
 	import SEO from '../../components/seo.svelte';
-	import Footer from '../../components/footer.svelte';
-	import * as Card from '$lib/components/ui/card';
+	import Footer from '../../components/layout/footer.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
 	import { bosses } from '$lib/types/bossData';
-	import RecentReports from '../../components/recentReports.svelte';
-	import LogBrowserFilters from '../../components/logBrowser.svelte';
-	import LogBrowserResults from '../../components/logBrowserResult.svelte';
-	import BossPreviewChart from '../../components/bossPreviewChart.svelte';
+	import YourReports from '../../components/raid/yourReports.svelte';
+	import LogBrowserFilters from '../../components/raid/logBrowser.svelte';
+	import LogBrowserResults from '../../components/raid/logBrowserResult.svelte';
+	import BossPreviewChart from '../../components/charts/bossPreviewChart.svelte';
 	import { goto } from '$app/navigation';
+	import { reveal } from '$lib/actions/reveal';
+	import { extractWarcraftLogsReportCode } from '$lib/data/warcraftlogs';
+	import type { BrowsedLog } from '$lib/types/apiTypes';
 
-	let reportURL: string = '';
-	let loadingFights = false;
-	let error: string = '';
-	let browseLoading = false;
-	let browsedLogs: any[] = [];
-	let totalBrowsedLogs = 0;
-	let currentBrowsePage = 1;
+	let reportURL: string = $state('');
+	let loadingFights = $state(false);
+	let error: string = $state('');
+	let browseLoading = $state(false);
+	let browsedLogs: BrowsedLog[] = $state([]);
+	let totalBrowsedLogs = $state(0);
+	let currentBrowsePage = $state(1);
 	const browseItemsPerPage = 10;
 
 	function handleReportSelection(code: string) {
 		reportURL = `https://www.warcraftlogs.com/reports/${code}`;
-		// Automatically fetch fights after setting the URL
 		fetchFights();
 	}
 
 	async function fetchFights() {
 		if (!reportURL.trim()) {
-			error = 'Please enter a report code or URL.';
+			error = 'Enter a report URL or code.';
 			return;
 		}
 
 		loadingFights = true;
 		error = '';
-		const codeToFetch = reportURL.split('#')[0].trim().split('/').pop() || reportURL;
+		const codeToFetch = extractWarcraftLogsReportCode(reportURL);
+		if (!codeToFetch) {
+			error = 'Enter a valid WarcraftLogs report URL or 16-character report code.';
+			loadingFights = false;
+			return;
+		}
 
 		try {
 			const response = await fetch('/api/fights', {
@@ -46,26 +51,38 @@
 			const data = await response.json();
 
 			if (response.ok) {
-				// Redirect to log page with report (keep loading state until navigation)
 				await goto(`/raid/logs=${codeToFetch}`);
 			} else {
 				error = data.error || 'Failed to fetch fights.';
 			}
 		} catch (err) {
 			console.error('Fetch Fights Error:', err);
-			error = 'An unexpected error occurred while fetching fights.';
+			error = 'Something went wrong. Try again in a moment.';
 		} finally {
 			loadingFights = false;
 		}
 	}
 
-	async function handleLogSearch(event: CustomEvent) {
+	function onUrlKey(e: KeyboardEvent) {
+		if (e.key === 'Enter') fetchFights();
+	}
+
+	function onUrlInput() {
+		if (error) error = '';
+	}
+
+	async function handleLogSearch(detail: {
+		bossId?: number;
+		minDuration?: number;
+		maxDuration?: number;
+		healerSpecs?: string[];
+	}) {
 		browseLoading = true;
 		browsedLogs = [];
 		totalBrowsedLogs = 0;
 		currentBrowsePage = 1;
 
-		const params = { ...event.detail, page: 1, limit: browseItemsPerPage };
+		const params = { ...detail, page: 1, limit: browseItemsPerPage };
 		try {
 			const response = await fetch('/api/browse-logs', {
 				method: 'POST',
@@ -76,7 +93,7 @@
 
 			if (response.ok && data.logs) {
 				browsedLogs = data.logs;
-				totalBrowsedLogs = data.total || 0;
+				totalBrowsedLogs = data.total ?? 0;
 			} else {
 				browsedLogs = [];
 				totalBrowsedLogs = 0;
@@ -90,235 +107,461 @@
 		}
 	}
 
-	async function handleBrowsePageChange(event: CustomEvent<{ page: number }>) {
-		// Handle page change if needed
+	async function handleBrowsePageChange(_detail: { page: number }) {
+		// Pagination is handled by the LogBrowser component itself; this stub
+		// exists only to satisfy its `onPageChange` prop until server-side paging
+		// is wired up here.
 	}
 
-	function analyzeLogFromBrowse(log: any) {
+	function analyzeLogFromBrowse(log: BrowsedLog) {
 		goto(`/raid/logs=${log.log_code}?fight=${log.fight_id}`);
 	}
 </script>
 
 <SEO
-	title="World of Warcraft Raid Tools & Log Visualizer | Mr. Mythical"
-	description="Visualize raid encounters, browse logs, and explore damage patterns with interactive charts and timelines."
+	title="WoW Raid Log Visualizer & WarcraftLogs Analysis | Mr. Mythical"
+	description="Visualize WarcraftLogs reports second-by-second, study aggregate boss damage profiles from Mythic progression kills, and browse public logs by encounter and healer comp."
 	image="https://mrmythical.com/Logo.png"
-	keywords="raid tools, raid log analysis, encounter visualization, WarcraftLogs, WoW raid planner, damage visualization, healing timelines"
+	keywords="WoW raid log visualizer, WarcraftLogs analysis, Mythic raid damage timeline, healer cooldown planning, raid log browser, boss damage profiles, WoW raid tools"
 />
 
-<main class="container mx-auto px-4 py-6">
-	<section class="mx-auto mb-12 max-w-7xl">
-		<div class="space-y-4 text-center">
-			<h1 class="mb-4 text-4xl font-bold">Interactive Raid Visualization & Timeline Analysis</h1>
-			<h3 class="text-xl font-semibold">Raid visualization highlights</h3>
-			<p class="text-lg leading-relaxed text-muted-foreground">
-				Visualize your World of Warcraft raid encounters with interactive charts and timelines.
-				Watch damage patterns unfold second-by-second, explore average damage taken across
-				encounters, and analyze healing coverage with filterable ability timelines. Transform raw
-				WarcraftLogs data into clear, actionable visualizations that reveal raid dynamics at a
-				glance.
-			</p>
-			<div class="mt-6 grid gap-4 text-left sm:grid-cols-2 md:grid-cols-3">
-				<div class="rounded-lg border bg-card p-4">
-					<h3 class="mb-2 font-semibold text-foreground">Interactive Damage Timeline</h3>
-					<p class="text-sm text-muted-foreground">
-						See every damage event plotted second-by-second with clickable ability markers and
-						visual event highlighting
-					</p>
-				</div>
-				<div class="rounded-lg border bg-card p-4">
-					<h3 class="mb-2 font-semibold text-foreground">Average Damage Taken Charts</h3>
-					<p class="text-sm text-muted-foreground">
-						Visualize average raid damage taken with statistical bands showing variability and
-						confidence in the data
-					</p>
-				</div>
-				<div class="rounded-lg border bg-card p-4">
-					<h3 class="mb-2 font-semibold text-foreground">Boss Encounter Previews</h3>
-					<p class="text-sm text-muted-foreground">
-						Quick preview charts for each boss showing damage patterns across first-kill progression
-						logs
-					</p>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<section class="mx-auto mb-8 max-w-2xl text-center">
-		<h2 class="mb-2 text-2xl font-bold">Visualize a WarcraftLogs Report</h2>
-		<p class="mb-4 text-sm text-muted-foreground">
-			Paste a report URL or code to view interactive damage and healing timelines.
+<main class="page">
+	<header class="tool-header">
+		<p class="eyebrow">Raid toolkit</p>
+		<h1 class="tool-title">WoW Raid Log Visualizer.</h1>
+		<p class="tool-sub">
+			Paste a WarcraftLogs report, browse comparable public kills, or study aggregate boss damage
+			profiles and death hotspots from Mythic progression kills.
 		</p>
-		<div class="space-y-2">
-			<Label for="reportCodeTop">WarcraftLogs Link or Code</Label>
-			<div class="flex gap-2">
-				<Input
-					id="reportCodeTop"
-					class="flex-1"
-					type="text"
-					bind:value={reportURL}
-					placeholder="https://www.warcraftlogs.com/reports/<reportcode>"
-				/>
-				<Button on:click={fetchFights} disabled={loadingFights}>
-					{#if loadingFights}
-						Loading...
-					{:else}
-						Visualize
-					{/if}
-				</Button>
-			</div>
-			{#if error && !loadingFights}
-				<p class="text-sm text-destructive">{error}</p>
-			{/if}
+		<div class="tool-input">
+			<label for="reportCodeTop" class="sr-only">WarcraftLogs link or code</label>
+			<Input
+				id="reportCodeTop"
+				type="text"
+				bind:value={reportURL}
+				oninput={onUrlInput}
+				onkeydown={onUrlKey}
+				placeholder="Paste a WarcraftLogs report URL or code"
+				class="h-10"
+				aria-describedby="reportCodeTopHint"
+			/>
+			<Button onclick={fetchFights} disabled={loadingFights} class="h-10 shrink-0">
+				{loadingFights ? 'Opening…' : 'Open report'}
+			</Button>
 		</div>
-	</section>
+		<p id="reportCodeTopHint" class="tool-hint">
+			Accepts full WarcraftLogs URLs (including query/hash params) or a 16-character report code.
+		</p>
+		{#if error && !loadingFights}
+			<p class="tool-error" role="alert">{error}</p>
+		{/if}
+	</header>
 
-	<div class="mx-auto max-w-7xl">
-		<div class="grid gap-8 lg:grid-cols-[1.25fr_0.75fr]">
-			<div class="space-y-6">
-				<Card.Root class="relative overflow-hidden transition hover:shadow-lg">
-					<div
-						class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"
-					></div>
-					<Card.Header>
-						<div class="flex items-center gap-3">
-							<div class="rounded-lg bg-primary/10 p-2">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-5 w-5 text-primary"
-									viewBox="0 0 20 20"
-									fill="currentColor"
-								>
-									<path
-										fill-rule="evenodd"
-										d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-										clip-rule="evenodd"
-									/>
-								</svg>
-							</div>
-							<Card.Title>Recent Reports</Card.Title>
-						</div>
-						<Card.Description>Quick access to your recently viewed reports</Card.Description>
-					</Card.Header>
-
-					<RecentReports onSelectReport={handleReportSelection} />
-				</Card.Root>
-
-				<Card.Root class="relative overflow-hidden transition hover:shadow-lg">
-					<div
-						class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"
-					></div>
-					<Card.Header>
-						<div class="flex items-center gap-3">
-							<div class="rounded-lg bg-primary/10 p-2">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-5 w-5 text-primary"
-									viewBox="0 0 20 20"
-									fill="currentColor"
-								>
-									<path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z" />
-									<path
-										fill-rule="evenodd"
-										d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z"
-										clip-rule="evenodd"
-									/>
-								</svg>
-							</div>
-							<Card.Title>Browse Logs From WarcraftLogs</Card.Title>
-						</div>
-						<Card.Description
-							>Search and filter logs based on boss and healer composition</Card.Description
-						>
-					</Card.Header>
-					<Card.Content class="space-y-4">
-						<LogBrowserFilters on:search={handleLogSearch} loading={browseLoading} />
-						<LogBrowserResults
-							logs={browsedLogs}
-							loading={browseLoading}
-							totalLogs={totalBrowsedLogs}
-							currentPage={currentBrowsePage}
-							itemsPerPage={browseItemsPerPage}
-							on:pageChange={handleBrowsePageChange}
-							on:analyzeLog={(e) => analyzeLogFromBrowse(e.detail)}
-						/>
-					</Card.Content>
-				</Card.Root>
-			</div>
-
-			<Card.Root
-				class="relative mx-auto w-full max-w-md overflow-hidden transition hover:shadow-lg"
-			>
-				<div class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"></div>
-				<Card.Header>
-					<div class="flex items-center gap-3">
-						<div class="rounded-lg bg-primary/10 p-2">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-5 w-5 text-primary"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-							>
-								<path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z" />
-								<path
-									fill-rule="evenodd"
-									d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-						</div>
-						<Card.Title>Damage Visualization by Boss</Card.Title>
-					</div>
-					<Card.Description
-						>Interactive damage patterns and timelines for each encounter</Card.Description
+	<div class="raid-grid">
+		<div class="raid-col-main">
+			<section class="reveal-block" use:reveal={{ delay: 0 }}>
+				<header class="section-head">
+					<h2 class="section-label">Your reports</h2>
+					<span class="section-hint"
+						>Recent logs you opened, plus reports from your characters and guild</span
 					>
-				</Card.Header>
-				<Card.Content>
-					<div class="grid grid-cols-1 gap-2">
-						{#each bosses as boss (boss.id)}
-							<a
-								href={`/raid/boss/${boss.slug}`}
-								class="group relative overflow-hidden rounded-lg border bg-card p-3 transition hover:border-primary hover:shadow-lg"
-							>
-								<div
-									class="absolute inset-0 -z-10 bg-gradient-to-br from-purple-500/5 to-transparent transition group-hover:from-purple-500/10"
-								></div>
-								<div
-									class="mb-2 flex h-32 items-center justify-center overflow-hidden rounded-lg bg-muted/50 transition group-hover:bg-muted"
-								>
-									<BossPreviewChart bossId={boss.id} />
-								</div>
-								<h3
-									class="text-sm font-semibold text-foreground transition group-hover:text-primary"
-								>
-									{boss.name}
-								</h3>
-								<p class="text-xs text-muted-foreground">View patterns</p>
-							</a>
-						{/each}
-					</div>
-				</Card.Content>
-			</Card.Root>
+				</header>
+				<div class="reveal-surface" use:reveal={{ delay: 40 }}>
+					<YourReports onSelectReport={handleReportSelection} />
+				</div>
+			</section>
+
+			<section class="reveal-block" use:reveal={{ delay: 0 }}>
+				<header class="section-head">
+					<h2 class="section-label">Browse public logs</h2>
+					<span class="section-hint"
+						>Filter public WarcraftLogs reports by boss, pull length, and healer comp</span
+					>
+				</header>
+				<div class="reveal-surface" use:reveal={{ delay: 40 }}>
+					<LogBrowserFilters onsearch={handleLogSearch} loading={browseLoading} />
+					<LogBrowserResults
+						logs={browsedLogs}
+						loading={browseLoading}
+						totalLogs={totalBrowsedLogs}
+						currentPage={currentBrowsePage}
+						itemsPerPage={browseItemsPerPage}
+						onpageChange={handleBrowsePageChange}
+						onanalyzeLog={(log) => analyzeLogFromBrowse(log)}
+					/>
+				</div>
+			</section>
 		</div>
+
+		<aside class="raid-col-side reveal-block" use:reveal={{ delay: 0 }}>
+			<header class="section-head">
+				<h2 class="section-label">Boss damage profiles</h2>
+				<span class="section-hint">Averaged damage timelines with five-second death windows</span>
+			</header>
+			<div class="boss-grid reveal-surface" use:reveal={{ delay: 40 }}>
+				{#each bosses as boss (boss.id)}
+					<a href={`/raid/boss/${boss.slug}`} class="boss-tile">
+						<div class="boss-thumb">
+							<BossPreviewChart bossId={boss.id} />
+						</div>
+						<div class="boss-meta">
+							<span class="boss-name">{boss.name}</span>
+							<span class="boss-action" aria-hidden="true">→</span>
+						</div>
+					</a>
+				{/each}
+			</div>
+		</aside>
 	</div>
-	<div class="mt-8 w-full rounded-lg bg-card p-6 text-center shadow-md">
-		<h3 class="mb-4 text-2xl font-semibold">Support on Patreon</h3>
-		<p class="mb-6">
-			Enjoying these tools? Support MrMythical.com on Patreon to help keep these free, open-source
-			WoW utilities accurate and up-to-date. Your contribution enables new features and ongoing
-			improvements for the Mythic+ and raid community.
-		</p>
-		<Button>
-			<a
-				href="https://www.patreon.com/MrMythical"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="px-6 py-3"
-			>
-				Support on Patreon
-			</a>
-		</Button>
-	</div>
+
+	<section class="about reveal-block" use:reveal={{ delay: 0 }}>
+		<h2 class="section-label">About the raid toolkit</h2>
+		<div class="reveal-surface" use:reveal={{ delay: 40 }}>
+			<p class="raid-lede">
+				WarcraftLogs analysis for raid leaders, healer cores, and officers who would rather read a
+				chart than scroll a damage-taken table. Paste a report to watch a fight unfold
+				second-by-second, open a boss damage profile to see aggregate pressure from real Mythic
+				kills, or browse public logs filtered by comp when your own pulls stop teaching you anything
+				new.
+			</p>
+			<dl class="feature-list">
+				<div class="feature-row">
+					<dt>Interactive damage and healing timelines</dt>
+					<dd>
+						Every damage and healing event on a shared second-by-second axis. Click an ability to
+						isolate it, overlay boss casts to anchor mechanics, and toggle healer cooldowns to see
+						which windows were actually covered. The spike you felt in the pull gets a timestamp, a
+						source, and a visible window for the external that should have covered it.
+					</dd>
+				</div>
+				<div class="feature-row">
+					<dt>Aggregate boss damage profiles</dt>
+					<dd>
+						Per-second damage-taken averages with standard deviation bands and 95% confidence
+						intervals, computed from public Mythic progression kills. Death hotspots group deaths
+						into five-second review windows, so raid leaders can separate one-off deaths from
+						repeatable mechanic failures.
+					</dd>
+				</div>
+				<div class="feature-row">
+					<dt>Raid log browser with composition filters</dt>
+					<dd>
+						Search public WarcraftLogs reports by encounter, pull length, and healer spec to find
+						kills close to your own comp. Useful when your roster does not match the meta build the
+						guide was written for.
+					</dd>
+				</div>
+				<div class="feature-row">
+					<dt>Per-account recent and guild reports</dt>
+					<dd>
+						Sign in with Battle.net and the site remembers reports from your characters and the
+						guilds they raid with. One list for every alt, and every chart, fight, and profile stays
+						shareable by plain URL.
+					</dd>
+				</div>
+			</dl>
+		</div>
+	</section>
 </main>
 
 <Footer />
+
+<style>
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.page {
+		max-width: 80rem;
+		margin: 0 auto;
+		padding: clamp(20px, 3vw, 36px) clamp(20px, 4vw, 48px) 64px;
+	}
+
+	.tool-header {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		max-width: 72ch;
+		padding-bottom: clamp(20px, 3vw, 32px);
+	}
+
+	.eyebrow {
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: hsl(var(--link));
+		margin: 0;
+	}
+
+	.tool-title {
+		font-family: var(--font-heading);
+		font-size: clamp(1.75rem, 4vw, 2.5rem);
+		font-weight: 700;
+		line-height: 1.08;
+		letter-spacing: -0.02em;
+		color: hsl(var(--foreground));
+		margin: 0;
+	}
+
+	.tool-sub {
+		font-family: var(--font-body);
+		font-size: 0.9375rem;
+		line-height: 1.45;
+		color: hsl(var(--muted-foreground));
+		margin: 0;
+	}
+
+	.tool-input {
+		display: flex;
+		gap: 8px;
+		margin-top: 16px;
+		max-width: 36rem;
+	}
+
+	.tool-error {
+		margin: 10px 0 0;
+		font-family: var(--font-body);
+		font-size: 0.8125rem;
+		color: hsl(var(--destructive));
+	}
+
+	.tool-hint {
+		margin: 8px 0 0;
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		line-height: 1.35;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.section-label {
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: hsl(var(--muted-foreground));
+		margin: 0;
+	}
+
+	.section-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 20px;
+	}
+
+	.section-hint {
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		line-height: 1.4;
+		color: hsl(var(--muted-foreground));
+		text-align: right;
+		max-width: 36ch;
+	}
+
+	.raid-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: clamp(40px, 5vw, 56px);
+		margin-top: clamp(28px, 4vw, 40px);
+		padding-top: clamp(32px, 4vw, 48px);
+		border-top: 1px solid hsl(var(--border));
+	}
+
+	@media (min-width: 1024px) {
+		.raid-grid {
+			grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+			gap: 3.5rem;
+		}
+	}
+
+	.raid-col-main {
+		display: flex;
+		flex-direction: column;
+		gap: clamp(40px, 5vw, 60px);
+		min-width: 0;
+	}
+
+	.raid-col-side {
+		min-width: 0;
+	}
+
+	.about {
+		margin-top: clamp(40px, 5vw, 60px);
+		padding-top: clamp(32px, 4vw, 48px);
+		border-top: 1px solid hsl(var(--border));
+	}
+
+	.raid-lede {
+		font-family: var(--font-body);
+		font-size: 0.9375rem;
+		line-height: 1.65;
+		color: hsl(var(--muted-foreground));
+		margin: 20px 0 24px;
+		max-width: 72ch;
+	}
+
+	.feature-list {
+		display: grid;
+		gap: 0;
+		margin: 0;
+		padding: 0;
+		max-width: 80ch;
+	}
+
+	.feature-row {
+		display: grid;
+		grid-template-columns: minmax(12rem, 16rem) 1fr;
+		gap: 1.25rem;
+		padding: 16px 0;
+		border-top: 1px solid hsl(var(--border));
+	}
+
+	.feature-row:last-child {
+		border-bottom: 1px solid hsl(var(--border));
+	}
+
+	.feature-row dt {
+		font-family: var(--font-heading);
+		font-size: 0.9375rem;
+		font-weight: 600;
+		letter-spacing: -0.005em;
+		color: hsl(var(--foreground));
+		margin: 0;
+		line-height: 1.35;
+	}
+
+	.feature-row dd {
+		font-family: var(--font-body);
+		font-size: 0.875rem;
+		line-height: 1.6;
+		color: hsl(var(--muted-foreground));
+		margin: 0;
+	}
+
+	@media (max-width: 640px) {
+		.feature-row {
+			grid-template-columns: 1fr;
+			gap: 4px;
+		}
+		.section-head {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 6px;
+		}
+		.section-hint {
+			text-align: left;
+			max-width: none;
+		}
+	}
+
+	.reveal-block,
+	.reveal-surface {
+		opacity: 0;
+		transform: translate3d(0, 10px, 0);
+		transition:
+			opacity 220ms cubic-bezier(0.16, 1, 0.3, 1),
+			transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+		transition-delay: var(--reveal-delay, 0ms);
+	}
+
+	.reveal-block:global([data-revealed='true']),
+	.reveal-surface:global([data-revealed='true']) {
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
+	}
+
+	.boss-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+	}
+
+	.boss-tile {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 10px;
+		border: 1px solid hsl(var(--border));
+		border-radius: 8px;
+		background: transparent;
+		text-decoration: none;
+		color: inherit;
+		transition:
+			border-color 160ms cubic-bezier(0.25, 1, 0.5, 1),
+			transform 160ms cubic-bezier(0.25, 1, 0.5, 1),
+			background-color 160ms cubic-bezier(0.25, 1, 0.5, 1);
+	}
+
+	.boss-tile:hover {
+		border-color: hsl(var(--primary) / 0.6);
+		transform: translateY(-1px);
+	}
+
+	.boss-tile:focus-visible {
+		outline: none;
+		border-color: hsl(var(--primary));
+		box-shadow: 0 0 0 3px hsl(var(--primary) / 0.25);
+	}
+
+	.boss-thumb {
+		height: 5.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+		border-radius: 6px;
+		background: transparent;
+	}
+
+	.boss-meta {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+	}
+
+	.boss-name {
+		font-family: var(--font-body);
+		font-size: 0.8125rem;
+		font-weight: 500;
+		letter-spacing: -0.005em;
+	}
+
+	.boss-action {
+		font-size: 0.875rem;
+		color: hsl(var(--muted-foreground));
+		transition:
+			transform 160ms cubic-bezier(0.25, 1, 0.5, 1),
+			color 160ms;
+	}
+
+	.boss-tile:hover .boss-action {
+		transform: translateX(2px);
+		color: hsl(var(--primary));
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.reveal-block,
+		.reveal-surface {
+			opacity: 1;
+			transform: none;
+			transition: none;
+		}
+		.boss-tile,
+		.boss-action {
+			transition: none;
+		}
+	}
+</style>

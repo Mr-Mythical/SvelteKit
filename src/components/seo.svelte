@@ -1,16 +1,20 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
-	export let title = '';
-	export let description = '';
-	export let image = '';
-	export let keywords = '';
-	export let schemas: Record<string, unknown>[] = [];
+	interface Props {
+		title?: string;
+		description?: string;
+		image?: string;
+		keywords?: string;
+		schemas?: Record<string, unknown>[];
+	}
+
+	let { title = '', description = '', image = '', keywords = '', schemas = [] }: Props = $props();
 
 	const base = 'https://mrmythical.com';
-	$: fullUrl = base + $page.url.pathname;
-	$: segments = $page.url.pathname.split('/').filter(Boolean);
-	$: breadcrumbList = {
+	let fullUrl = $derived(base + page.url.pathname);
+	let segments = $derived(page.url.pathname.split('/').filter(Boolean));
+	let breadcrumbList = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'BreadcrumbList',
 		itemListElement: segments.map((seg, idx) => ({
@@ -21,23 +25,23 @@
 				name: seg
 			}
 		}))
-	};
-	$: webPage = {
+	});
+	let webPage = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'WebPage',
 		name: title,
 		description,
 		url: fullUrl,
 		isPartOf: { '@type': 'WebSite', name: 'mrmythical.com', url: base }
-	};
-	$: organization = {
+	});
+	let organization = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'Organization',
 		name: 'Mr. Mythical',
 		url: base,
 		logo: image
-	};
-	$: website = {
+	});
+	let website = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'WebSite',
 		name: title,
@@ -48,19 +52,19 @@
 			target: base + '/rating-calculator?score={search_term_string}',
 			'query-input': 'required name=search_term_string'
 		}
-	};
+	});
 </script>
 
 <svelte:head>
 	<title>{title}</title>
 
-	<link rel="canonical" href={'https://mrmythical.com' + $page.url.pathname} />
+	<link rel="canonical" href={'https://mrmythical.com' + page.url.pathname} />
 
 	<meta name="description" content={description} />
 	<meta name="keywords" content={keywords} />
 
 	<meta property="og:site_name" content="mrmythical.com" />
-	<meta property="og:url" content="https://mrmythical.com{$page.url.pathname}" />
+	<meta property="og:url" content="https://mrmythical.com{page.url.pathname}" />
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
@@ -68,7 +72,7 @@
 
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta property="twitter:domain" content="mrmythical.com" />
-	<meta property="twitter:url" content="https://mrmythical.com{$page.url.pathname}" />
+	<meta property="twitter:url" content="https://mrmythical.com{page.url.pathname}" />
 	<meta name="twitter:title" content={title} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={image} />

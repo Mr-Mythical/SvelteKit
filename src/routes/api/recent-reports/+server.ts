@@ -1,17 +1,17 @@
 import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
-import { getUserRecents, addUserRecent } from '$lib/db/userRecents.js';
+import { getUserRecents, addUserRecent, type ReportRecentData } from '$lib/db/userRecents.js';
+import { apiOk } from '$lib/server/apiResponses';
+import { requireSession } from '$lib/server/requireSession';
+import { handleApiError } from '$lib/server/logger';
+import { parseJsonBody, parseRecentReportBody } from '$lib/server/requestBody';
 
 // GET: Fetch user's recent reports
 export const GET: RequestHandler = async ({ locals }) => {
+	const auth = await requireSession(locals);
+	if ('response' in auth) return auth.response;
+
 	try {
-		const session = await locals.getSession?.();
-
-		if (!session?.user?.id) {
-			return json([]);
-		}
-
-		const recentReports = await getUserRecents(session.user.id, 'report', 6);
+		const recentReports = await getUserRecents<ReportRecentData>(auth.session.user.id, 'report', 6);
 
 		// Transform to match the expected RecentReport format
 		const reports = recentReports.map((recent) => ({
@@ -22,26 +22,24 @@ export const GET: RequestHandler = async ({ locals }) => {
 			owner: { name: recent.entityData.owner || 'Unknown' }
 		}));
 
-		return json(reports);
+		return apiOk(reports);
 	} catch (error) {
-		console.error('Error fetching recent reports:', error);
-		return json([]);
+		return handleApiError('api/recent-reports', error, 'Failed to fetch recent reports');
 	}
 };
 
 // POST: Add a report to recent list
 export const POST: RequestHandler = async ({ request, locals }) => {
+	const auth = await requireSession(locals);
+	if ('response' in auth) return auth.response;
+
 	try {
-		const session = await locals.getSession?.();
-
-		if (!session?.user?.id) {
-			return json({ error: 'Not authenticated' }, { status: 401 });
-		}
-
-		const { code, title, guild, owner } = await request.json();
+		const parsed = await parseJsonBody(request, parseRecentReportBody);
+		if (parsed instanceof Response) return parsed;
+		const { code, title, guild, owner } = parsed;
 
 		await addUserRecent(
-			session.user.id,
+			auth.session.user.id,
 			'report',
 			code,
 			{
@@ -58,9 +56,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		);
 
-		return json({ success: true });
+		return apiOk({ success: true });
 	} catch (error) {
-		console.error('Error adding recent report:', error);
-		return json({ error: 'Failed to add report' }, { status: 500 });
+		return handleApiError('api/recent-reports', error, 'Failed to add report');
 	}
 };

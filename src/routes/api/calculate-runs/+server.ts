@@ -3,49 +3,27 @@ import {
 	scoreFormula,
 	calculateKeystoneBreakdown,
 	type KeystoneBreakdown
-} from '$lib/utils/keystoneCalculations';
+} from '$lib/calculations/keystoneCalculations';
 import { dungeonCount } from '$lib/types/dungeons';
+import { apiError, apiOk } from '$lib/server/apiResponses';
 
 interface CalculateRunsResponse {
 	targetScore: number;
 	totalScore: number;
 	breakdown: KeystoneBreakdown[];
-	error?: string;
 }
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = ({ url }) => {
 	const scoreParam = url.searchParams.get('score');
 
 	if (!scoreParam) {
-		return new Response(
-			JSON.stringify({
-				error: 'Missing score parameter',
-				breakdown: [],
-				totalScore: 0,
-				targetScore: 0
-			} as CalculateRunsResponse),
-			{
-				status: 400,
-				headers: { 'Content-Type': 'application/json' }
-			}
-		);
+		return apiError('Missing score parameter', 400);
 	}
 
 	const targetScore = parseInt(scoreParam, 10);
 
 	if (isNaN(targetScore) || targetScore < 0) {
-		return new Response(
-			JSON.stringify({
-				error: 'Invalid score parameter. Must be a positive number.',
-				breakdown: [],
-				totalScore: 0,
-				targetScore: 0
-			} as CalculateRunsResponse),
-			{
-				status: 400,
-				headers: { 'Content-Type': 'application/json' }
-			}
-		);
+		return apiError('Invalid score parameter. Must be a positive number.', 400);
 	}
 
 	const breakdown = calculateKeystoneBreakdown(targetScore, dungeonCount);
@@ -56,15 +34,9 @@ export const GET: RequestHandler = async ({ url }) => {
 		totalScore += scoreFormula(item.level, 1) * item.count;
 	}
 
-	return new Response(
-		JSON.stringify({
-			targetScore,
-			totalScore,
-			breakdown
-		} as CalculateRunsResponse),
-		{
-			status: 200,
-			headers: { 'Content-Type': 'application/json' }
-		}
-	);
+	return apiOk<CalculateRunsResponse>({
+		targetScore,
+		totalScore,
+		breakdown
+	});
 };

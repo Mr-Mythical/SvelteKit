@@ -1,6 +1,9 @@
 import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
-import { getUserRecents, addUserRecent } from '$lib/db/userRecents.js';
+import { getUserRecents, addUserRecent, type CurrentStateRecentData } from '$lib/db/userRecents.js';
+import { apiOk } from '$lib/server/apiResponses';
+import { requireSession } from '$lib/server/requireSession';
+import { handleApiError } from '$lib/server/logger';
+import { parseJsonBody, parseCurrentStateBody } from '$lib/server/requestBody';
 
 export interface CurrentState {
 	urlParams: string;
@@ -9,41 +12,40 @@ export interface CurrentState {
 
 // GET: Fetch user's current state
 export const GET: RequestHandler = async ({ locals }) => {
+	const auth = await requireSession(locals);
+	if ('response' in auth) return auth.response;
+
 	try {
-		const session = await locals.getSession?.();
-
-		if (!session?.user?.id) {
-			return json(null);
-		}
-
-		const recentStates = await getUserRecents(session.user.id, 'current_state', 1);
+		const recentStates = await getUserRecents<CurrentStateRecentData>(
+			auth.session.user.id,
+			'current_state',
+			1
+		);
 
 		if (recentStates.length === 0) {
-			return json(null);
+			return apiOk(null);
 		}
 
 		const latestState = recentStates[0];
 
-		return json({
+		return apiOk({
 			urlParams: latestState.entityData.urlParams,
 			timestamp: latestState.entityData.timestamp
 		});
 	} catch (error) {
-		console.error('Error fetching current state:', error);
-		return json(null);
+		return handleApiError('api/current-state', error, 'Failed to fetch current state');
 	}
 };
 
 // POST: Save user's current state
 export const POST: RequestHandler = async ({ request, locals }) => {
+	const auth = await requireSession(locals);
+	if ('response' in auth) return auth.response;
+
 	try {
-		const session = await locals.getSession?.();
-
-		if (!session?.user?.id) {
-			return json({ error: 'Not authenticated' }, { status: 401 });
-		}
-
-		const { urlParams }: Omit<CurrentState, 'timestamp'> = await request.json();
+		const parsed = await parseJsonBody(request, parseCurrentStateBody);
+		if (parsed instanceof Response) return parsed;
+		const { urlParams } = parsed;
 
 		const timestamp = Date.now();
 
@@ -61,7 +63,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				subtitle = 'Character state';
 			} else if (params.has('runs')) {
 				const runsData = params.get('runs');
-				const runCount = Math.floor((runsData?.length || 0) / 6);
+				const runCount = Math.floor((runsData?.length ?? 0) / 6);
 				title = 'Custom Runs';
 				subtitle = `${runCount} dungeons configured`;
 			} else if (params.has('score')) {
@@ -72,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		await addUserRecent(
-			session.user.id,
+			auth.session.user.id,
 			'current_state',
 			'current',
 			{ urlParams, timestamp },
@@ -81,9 +83,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			{ timestamp, hasUrlParams: !!urlParams }
 		);
 
-		return json({ success: true, timestamp });
+		return apiOk({ success: true, timestamp });
 	} catch (error) {
-		console.error('Error saving current state:', error);
-		return json({ error: 'Failed to save state' }, { status: 500 });
+		return handleApiError('api/current-state', error, 'Failed to save state');
 	}
 };

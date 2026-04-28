@@ -1,30 +1,20 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
-	import { cn, flyAndScale } from '$lib/utils.js.js';
+	import { cn } from '$lib/utils.js';
 
-	type $$Props = DropdownMenuPrimitive.SubContentProps;
-	type $$Events = DropdownMenuPrimitive.SubContentEvents;
-
-	let className: $$Props['class'] = undefined;
-	export let transition: $$Props['transition'] = flyAndScale;
-	export let transitionConfig: $$Props['transitionConfig'] = {
-		x: -10,
-		y: 0
-	};
-	export { className as class };
+	let {
+		ref = $bindable(null),
+		class: className,
+		...restProps
+	}: DropdownMenuPrimitive.SubContentProps = $props();
 </script>
 
 <DropdownMenuPrimitive.SubContent
-	{transition}
-	{transitionConfig}
+	bind:ref
+	data-slot="dropdown-menu-sub-content"
 	class={cn(
-		'z-50 min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-lg focus:outline-none',
+		'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 bg-popover text-popover-foreground w-auto min-w-[96px] rounded-lg p-1 shadow-lg ring-1 duration-100',
 		className
 	)}
-	{...$$restProps}
-	on:keydown
-	on:focusout
-	on:pointermove
->
-	<slot />
-</DropdownMenuPrimitive.SubContent>
+	{...restProps}
+/>

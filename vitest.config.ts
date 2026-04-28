@@ -3,6 +3,9 @@ import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
 	plugins: [sveltekit()],
+	resolve: {
+		conditions: process.env.VITEST ? ['browser'] : undefined
+	},
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}'],
 		exclude: ['node_modules', 'dist', '.svelte-kit'],

@@ -1,63 +1,45 @@
 import type { RequestHandler } from './$types';
-import { getValidAccessToken } from '$lib/utils/tokenCache';
-import type { ApiResponse, PlayerDetailsResponse, Player } from '$lib/types/apiTypes';
+import type { Player } from '$lib/types/apiTypes';
+import { apiError, apiOk } from '$lib/server/apiResponses';
+import { executeWclQuery, WclQueryError } from '$lib/server/wclGraphQL';
+import { handleApiError } from '$lib/server/logger';
+
+const QUERY = `
+	query GetPlayerDetails($code: String!, $fightID: Int!) {
+		reportData {
+			report(code: $code) {
+				playerDetails(fightIDs: [$fightID])
+			}
+		}
+	}
+`;
+
+interface PlayerDetailsData {
+	reportData: {
+		report: {
+			playerDetails: { data: { playerDetails: { healers: Player[] } } };
+		};
+	};
+}
 
 export const POST: RequestHandler = async ({ request }) => {
+	const body = (await request.json().catch(() => null)) as {
+		code?: unknown;
+		fightID?: unknown;
+	} | null;
+	const { code, fightID } = body ?? {};
+	if (typeof code !== 'string' || !code || typeof fightID !== 'number') {
+		return apiError('Invalid or missing report code and/or fight ID.', 400);
+	}
+
 	try {
-		const { code, fightID } = await request.json();
-
-		if (!code || typeof code !== 'string' || !fightID || typeof fightID !== 'number') {
-			return new Response(
-				JSON.stringify({ error: 'Invalid or missing report code and/or fight ID.' }),
-				{
-					status: 400,
-					headers: { 'Content-Type': 'application/json' }
-				}
-			);
-		}
-
-		const accessToken = await getValidAccessToken();
-
-		const query = `
-      query GetPlayerDetails($code: String!, $fightID: Int!) {
-        reportData {
-          report(code: $code) {
-            playerDetails(fightIDs: [$fightID]) # Fetches details for the specified fight
-          }
-        }
-      }
-    `;
-
-		const variables = { code, fightID };
-
-		const response = await fetch('https://www.warcraftlogs.com/api/v2/client', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${accessToken}`
-			},
-			body: JSON.stringify({ query, variables })
-		});
-
-		const json = await response.json();
-
-		if (json.errors) {
-			return new Response(JSON.stringify({ error: 'Failed to fetch healing data from API.' }), {
-				status: 500,
-				headers: { 'Content-Type': 'application/json' }
-			});
-		}
-
-		let healerData: Player[] = json.data.reportData.report.playerDetails.data.playerDetails.healers;
-
-		return new Response(JSON.stringify({ healerData }), {
-			status: 200,
-			headers: { 'Content-Type': 'application/json' }
-		});
+		const data = await executeWclQuery<PlayerDetailsData>(QUERY, { code, fightID });
+		const healerData = data.reportData.report.playerDetails.data.playerDetails.healers;
+		return apiOk({ healerData });
 	} catch (error) {
-		return new Response(JSON.stringify({ error: 'Internal Server Error.' }), {
-			status: 500,
-			headers: { 'Content-Type': 'application/json' }
-		});
+		if (error instanceof WclQueryError) {
+			return apiError('Failed to fetch healing data from API.', 502);
+		}
+		return handleApiError('api/player-details', error);
 	}
 };

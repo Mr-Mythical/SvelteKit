@@ -1,6 +1,8 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { getBlizzardValidAccessToken } from '$lib/utils/blizzardTokenCache';
+import { getOrRefreshBlizzardAccessToken } from '$lib/auth/blizzardTokenCache';
 import type { BlizzardCharacterFull } from '$lib/types/blizzardFull';
+import { apiError, apiOk } from '$lib/server/apiResponses';
+import { handleApiError } from '$lib/server/logger';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const name = url.searchParams.get('name');
@@ -8,14 +10,19 @@ export const GET: RequestHandler = async ({ url }) => {
 	const realm = url.searchParams.get('realm');
 
 	if (!name || !region || !realm) {
-		return new Response(JSON.stringify({ error: 'Missing parameters' }), { status: 400 });
+		return apiError('Missing parameters', 400);
 	}
 
-	try {
-		const token = await getBlizzardValidAccessToken();
+	// Blizzard profile API requires lowercased name and realm slug.
+	const regionLc = region.toLowerCase();
+	const realmLc = realm.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+	const nameLc = name.toLowerCase();
 
-		const summaryUrl = `https://${encodeURIComponent(region)}.api.blizzard.com/profile/wow/character/${encodeURIComponent(realm)}/${encodeURIComponent(name)}?namespace=profile-${encodeURIComponent(region)}&locale=en_US`;
-		const mediaUrl = `https://${encodeURIComponent(region)}.api.blizzard.com/profile/wow/character/${encodeURIComponent(realm)}/${encodeURIComponent(name)}/character-media?namespace=profile-${encodeURIComponent(region)}&locale=en_US`;
+	try {
+		const token = await getOrRefreshBlizzardAccessToken();
+
+		const summaryUrl = `https://${encodeURIComponent(regionLc)}.api.blizzard.com/profile/wow/character/${encodeURIComponent(realmLc)}/${encodeURIComponent(nameLc)}?namespace=profile-${encodeURIComponent(regionLc)}&locale=en_US`;
+		const mediaUrl = `https://${encodeURIComponent(regionLc)}.api.blizzard.com/profile/wow/character/${encodeURIComponent(realmLc)}/${encodeURIComponent(nameLc)}/character-media?namespace=profile-${encodeURIComponent(regionLc)}&locale=en_US`;
 
 		const [summaryResponse, mediaResponse] = await Promise.all([
 			fetch(summaryUrl, { headers: { Authorization: `Bearer ${token}` } }),
@@ -23,12 +30,10 @@ export const GET: RequestHandler = async ({ url }) => {
 		]);
 
 		if (!summaryResponse.ok) {
-			const errorBody = await summaryResponse.text();
-			throw new Error(`Summary endpoint error: ${errorBody}`);
+			throw new Error(`Summary endpoint error: status ${summaryResponse.status}`);
 		}
 		if (!mediaResponse.ok) {
-			const errorBody = await mediaResponse.text();
-			throw new Error(`Media endpoint error: ${errorBody}`);
+			throw new Error(`Media endpoint error: status ${mediaResponse.status}`);
 		}
 
 		const summaryData = await summaryResponse.json();
@@ -36,9 +41,13 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		const combinedData: BlizzardCharacterFull = { ...summaryData, media: mediaData };
 
-		return new Response(JSON.stringify(combinedData), { status: 200 });
-	} catch (error: any) {
-		console.error('Error in /api/blizzard:', error);
-		return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+		return apiOk(combinedData);
+	} catch (error) {
+		return handleApiError(
+			'api/blizzard',
+			error,
+			'Failed to fetch character data from Blizzard.',
+			502
+		);
 	}
 };

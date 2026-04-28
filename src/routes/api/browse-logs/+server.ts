@@ -1,19 +1,21 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/db';
-import { healerCompositions, unifiedReports, encounters } from '$lib/db/schema';
-import { eq, gte, lte, desc, and } from 'drizzle-orm';
+import type { RequestHandler } from '@sveltejs/kit';
+import { getRaidDb } from '$lib/db';
+import { healerCompositions, encounters } from '$lib/db/schema';
+import { eq, gte, lte, desc, and, type SQL } from 'drizzle-orm';
 import type { BrowseLogsParams, BrowsedLog, BrowseLogsResponse } from '$lib/types/apiTypes';
 import { bosses as bossList } from '$lib/types/bossData';
+import { apiOk } from '$lib/server/apiResponses';
+import { handleApiError } from '$lib/server/logger';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const params: BrowseLogsParams = await request.json();
 
 		// Build the where conditions
-		let whereConditions = [];
+		const whereConditions: SQL[] = [];
 
 		if (params.bossId) {
-			whereConditions.push(eq(unifiedReports.encounterId, params.bossId));
+			whereConditions.push(eq(healerCompositions.encounterId, params.bossId));
 		}
 		if (params.minDuration) {
 			whereConditions.push(gte(healerCompositions.fightDuration, params.minDuration));
@@ -22,56 +24,66 @@ export const POST: RequestHandler = async ({ request }) => {
 			whereConditions.push(lte(healerCompositions.fightDuration, params.maxDuration));
 		}
 
-		// Query healer compositions with joined data
-		let query = db()
+		// Query healer compositions with joined encounter data.
+		// The live DB stores report_code/fight_id/encounter_id/region directly on
+		// healer_compositions (no separate unified_reports table), so we sort by
+		// last_updated as a recency proxy and leave guild_name/start_time empty.
+		const query = getRaidDb()
 			.select({
-				reportCode: unifiedReports.reportCode,
-				fightId: unifiedReports.fightId,
-				encounterId: unifiedReports.encounterId,
+				reportCode: healerCompositions.reportCode,
+				fightId: healerCompositions.fightId,
+				encounterId: healerCompositions.encounterId,
 				encounterName: encounters.encounterName,
-				guildName: unifiedReports.guildName,
-				rankingStartTime: unifiedReports.rankingStartTime,
+				lastUpdated: healerCompositions.lastUpdated,
 				fightDuration: healerCompositions.fightDuration,
 				specIcons: healerCompositions.specIcons
 			})
 			.from(healerCompositions)
-			.innerJoin(unifiedReports, eq(healerCompositions.reportId, unifiedReports.id))
-			.innerJoin(encounters, eq(unifiedReports.encounterId, encounters.encounterId))
+			.innerJoin(encounters, eq(healerCompositions.encounterId, encounters.encounterId))
 			.where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
-			.orderBy(desc(unifiedReports.rankingStartTime));
+			.orderBy(desc(healerCompositions.lastUpdated));
 
 		const compositionsData = await query;
 
 		// Transform data to match expected format
-		let filteredLogsData = compositionsData.map((row) => ({
+		const mappedLogsData = compositionsData.map((row) => ({
 			report_code: row.reportCode,
 			fight_id: row.fightId,
 			encounter_id: row.encounterId,
 			encounter_name: row.encounterName,
-			guild_name: row.guildName,
-			report_absolute_start_time_ms: row.rankingStartTime,
+			guild_name: null as string | null,
+			report_absolute_start_time_ms: row.lastUpdated != null ? row.lastUpdated.getTime() : 0,
 			duration_ms: row.fightDuration,
 			healer_specs: row.specIcons as string[]
 		}));
 
 		// Filter by healer specs if specified
-		if (params.healerSpecs && params.healerSpecs.length > 0) {
-			filteredLogsData = filteredLogsData.filter((comp) => {
-				const actualSpecsInLog = comp.healer_specs;
-				return params.healerSpecs!.every((requiredSpec) => actualSpecsInLog.includes(requiredSpec));
-			});
-		}
+		const filteredLogsData =
+			params.healerSpecs && params.healerSpecs.length > 0
+				? mappedLogsData.filter((comp) => {
+						const actualSpecsInLog = comp.healer_specs;
+						return params.healerSpecs!.every((requiredSpec) =>
+							actualSpecsInLog.includes(requiredSpec)
+						);
+					})
+				: mappedLogsData;
 
 		const totalFilteredCount = filteredLogsData.length;
 
 		const page = params.page || 1;
 		const limit = params.limit || 10;
 		const offset = (page - 1) * limit;
-		const paginatedLogsData = filteredLogsData.slice(offset, offset + limit);
+		const paginatedLogsData = filteredLogsData
+			.slice(offset, offset + limit)
+			.filter(
+				(log): log is typeof log & { report_code: string; fight_id: number } =>
+					log.report_code !== null && log.fight_id !== null
+			);
 
 		const browsedLogsResult: BrowsedLog[] = paginatedLogsData.map((log) => {
-			const bossData = log.encounter_id ? bossList.find((b) => b.id === log.encounter_id) : null;
-			const durationInSeconds = log.duration_ms ? Math.floor(log.duration_ms / 1000) : 0;
+			const bossData =
+				log.encounter_id != null ? bossList.find((b) => b.id === log.encounter_id) : null;
+			const durationInSeconds = log.duration_ms != null ? Math.floor(log.duration_ms / 1000) : 0;
 
 			return {
 				log_code: log.report_code,
@@ -81,8 +93,8 @@ export const POST: RequestHandler = async ({ request }) => {
 				healer_composition: log.healer_specs,
 				log_url: `https://www.warcraftlogs.com/reports/${log.report_code}#fight=${log.fight_id}`,
 				fight_id: log.fight_id,
-				start_time: log.report_absolute_start_time_ms || 0,
-				end_time: (log.report_absolute_start_time_ms || 0) + (log.duration_ms || 0)
+				start_time: log.report_absolute_start_time_ms ?? 0,
+				end_time: (log.report_absolute_start_time_ms ?? 0) + (log.duration_ms ?? 0)
 			};
 		});
 
@@ -93,10 +105,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			limit
 		};
 
-		return json(responsePayload);
-	} catch (error: any) {
-		console.error('Error in /api/browse-logs:', error.message, error.stack);
-		const errorResponse: { error: string } = { error: error.message || 'Internal Server Error.' };
-		return json(errorResponse, { status: 500 });
+		return apiOk(responsePayload);
+	} catch (error) {
+		const message = error instanceof Error ? error.message : 'Internal Server Error.';
+		return handleApiError('api/browse-logs', error, message);
 	}
 };

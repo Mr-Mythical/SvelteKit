@@ -1,27 +1,50 @@
 <script lang="ts">
 	import { Slider as SliderPrimitive } from 'bits-ui';
-	import { cn } from '$lib/utils.js.js';
+	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
 
-	type $$Props = SliderPrimitive.Props;
-
-	let className: $$Props['class'] = undefined;
-	export let value: $$Props['value'] = [0];
-	export { className as class };
+	let {
+		ref = $bindable(null),
+		value = $bindable(),
+		orientation = 'horizontal',
+		class: className,
+		...restProps
+	}: WithoutChildrenOrChild<SliderPrimitive.RootProps> = $props();
 </script>
 
+<!--
+Discriminated Unions + Destructing (required for bindable) do not
+get along, so we shut typescript up by casting `value` to `never`.
+-->
 <SliderPrimitive.Root
-	bind:value
-	class={cn('relative flex w-full touch-none select-none items-center', className)}
-	{...$$restProps}
-	let:thumbs
+	bind:ref
+	bind:value={value as never}
+	data-slot="slider"
+	{orientation}
+	class={cn(
+		'relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col',
+		className
+	)}
+	{...restProps}
 >
-	<span class="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
-		<SliderPrimitive.Range class="absolute h-full bg-primary" />
-	</span>
-	{#each thumbs as thumb}
-		<SliderPrimitive.Thumb
-			{thumb}
-			class="block h-5 w-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-		/>
-	{/each}
+	{#snippet children({ thumbItems })}
+		<span
+			data-slot="slider-track"
+			data-orientation={orientation}
+			class={cn(
+				'bg-muted bg-muted relative grow overflow-hidden rounded-full data-horizontal:h-1 data-horizontal:w-full data-horizontal:w-full data-vertical:h-full data-vertical:h-full data-vertical:w-1'
+			)}
+		>
+			<SliderPrimitive.Range
+				data-slot="slider-range"
+				class={cn('bg-primary absolute select-none data-horizontal:h-full data-vertical:w-full')}
+			/>
+		</span>
+		{#each thumbItems as thumb (thumb.index)}
+			<SliderPrimitive.Thumb
+				data-slot="slider-thumb"
+				index={thumb.index}
+				class="border-ring ring-ring/50 relative block size-3 shrink-0 rounded-full border bg-white transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50"
+			/>
+		{/each}
+	{/snippet}
 </SliderPrimitive.Root>

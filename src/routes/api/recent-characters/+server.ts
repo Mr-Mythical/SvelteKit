@@ -1,16 +1,20 @@
 import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
-import { getUserRecents, addUserRecent } from '$lib/db/userRecents.js';
+import { getUserRecents, addUserRecent, type CharacterRecentData } from '$lib/db/userRecents.js';
+import { apiOk } from '$lib/server/apiResponses';
+import { requireSession } from '$lib/server/requireSession';
+import { handleApiError } from '$lib/server/logger';
+import { parseJsonBody, parseRecentCharacterBody } from '$lib/server/requestBody';
 
 export const GET: RequestHandler = async ({ locals }) => {
+	const auth = await requireSession(locals);
+	if ('response' in auth) return auth.response;
+
 	try {
-		const session = await locals.getSession?.();
-
-		if (!session?.user?.id) {
-			return json([]);
-		}
-
-		const recentCharacters = await getUserRecents(session.user.id, 'character', 10);
+		const recentCharacters = await getUserRecents<CharacterRecentData>(
+			auth.session.user.id,
+			'character',
+			6
+		);
 
 		const characters = recentCharacters.map((recent) => ({
 			region: recent.entityData.region,
@@ -18,25 +22,23 @@ export const GET: RequestHandler = async ({ locals }) => {
 			characterName: recent.entityData.characterName
 		}));
 
-		return json(characters);
+		return apiOk(characters);
 	} catch (error) {
-		console.error('Error fetching recent characters:', error);
-		return json([]);
+		return handleApiError('api/recent-characters', error, 'Failed to fetch recent characters');
 	}
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
+	const auth = await requireSession(locals);
+	if ('response' in auth) return auth.response;
+
 	try {
-		const session = await locals.getSession?.();
-
-		if (!session?.user?.id) {
-			return json({ error: 'Not authenticated' }, { status: 401 });
-		}
-
-		const { characterName, realm, region } = await request.json();
+		const parsed = await parseJsonBody(request, parseRecentCharacterBody);
+		if (parsed instanceof Response) return parsed;
+		const { characterName, realm, region } = parsed;
 
 		await addUserRecent(
-			session.user.id,
+			auth.session.user.id,
 			'character',
 			`${characterName}-${realm}`,
 			{
@@ -53,9 +55,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		);
 
-		return json({ success: true });
+		return apiOk({ success: true });
 	} catch (error) {
-		console.error('Error adding recent character:', error);
-		return json({ error: 'Failed to add character' }, { status: 500 });
+		return handleApiError('api/recent-characters', error, 'Failed to add character');
 	}
 };

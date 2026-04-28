@@ -1,25 +1,36 @@
 <script lang="ts">
 	import { signIn, signOut } from '@auth/sveltekit/client';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { fly, fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import LogIn from 'lucide-svelte/icons/log-in';
-	import LogOut from 'lucide-svelte/icons/log-out';
-	import User from 'lucide-svelte/icons/user';
-	import Loader2 from 'lucide-svelte/icons/loader-2';
+	import LogIn from '@lucide/svelte/icons/log-in';
+	import LogOut from '@lucide/svelte/icons/log-out';
+	import User from '@lucide/svelte/icons/user';
+	import Loader2 from '@lucide/svelte/icons/loader-2';
+	import { logClientError } from '$lib/clientLog';
+	import type { Session } from '@auth/core/types';
 
-	export let mobile: boolean = false;
+	type AppSession = Session & {
+		accessToken?: string;
+		user?: { battletag?: string } & NonNullable<Session['user']>;
+	};
 
-	let isSigningIn = false;
-	let isSigningOut = false;
+	interface Props {
+		mobile?: boolean;
+	}
 
-	$: session = $page.data.session;
-	$: userBattletag = session?.user ? (session.user as any).battletag : null;
-	$: isLoading = isSigningIn || isSigningOut;
+	let { mobile = false }: Props = $props();
+
+	let isSigningIn = $state(false);
+	let isSigningOut = $state(false);
+
+	let session = $derived(page.data.session as AppSession | undefined);
+	let userBattletag = $derived(session?.user?.battletag ?? null);
+	let isLoading = $derived(isSigningIn || isSigningOut);
 
 	// Check if we're in the middle of an OAuth flow
-	$: {
+	$effect(() => {
 		if (typeof window !== 'undefined') {
 			const urlParams = new URLSearchParams(window.location.search);
 			// If we have OAuth callback parameters, we're returning from Battle.net
@@ -35,7 +46,7 @@
 				isSigningOut = false;
 			}
 		}
-	}
+	});
 
 	async function handleSignIn() {
 		isSigningIn = true;
@@ -43,7 +54,7 @@
 			// Note: signIn redirects to Battle.net, so this won't return until page reload
 			await signIn('battlenet');
 		} catch (error) {
-			console.error('Sign in error:', error);
+			logClientError('authButton', 'Sign in failed before redirect', error);
 			// Only reset loading state if there's an error (redirect failed)
 			isSigningIn = false;
 		}
@@ -56,7 +67,7 @@
 			// Note: signOut may redirect/reload, so this might not return
 			await signOut();
 		} catch (error) {
-			console.error('Sign out error:', error);
+			logClientError('authButton', 'Sign out failed', error);
 			// Only reset loading state if there's an error
 			isSigningOut = false;
 		}
@@ -68,11 +79,11 @@
 	<!-- Mobile menu styling -->
 	{#if session?.user}
 		<div
-			class="flex flex-col gap-2 border-t border-border px-4 py-2"
+			class="border-border flex flex-col gap-2 border-t px-4 py-2"
 			in:fly={{ y: -10, duration: 300, easing: quintOut }}
 			out:fly={{ y: -10, duration: 200 }}
 		>
-			<div class="flex items-center gap-2 text-sm text-muted-foreground">
+			<div class="text-muted-foreground flex items-center gap-2 text-sm">
 				<div class="relative">
 					<User class="h-4 w-4" />
 				</div>
@@ -81,7 +92,7 @@
 			<Button
 				variant="destructive"
 				size="sm"
-				on:click={handleSignOut}
+				onclick={handleSignOut}
 				disabled={isSigningOut}
 				class="w-full justify-center transition-all duration-200 hover:scale-[0.98] active:scale-95"
 			>
@@ -96,16 +107,16 @@
 		</div>
 	{:else}
 		<div
-			class="border-t border-border px-4 py-2"
+			class="border-border border-t px-4 py-2"
 			in:fly={{ y: 10, duration: 300, easing: quintOut }}
 			out:fly={{ y: 10, duration: 200 }}
 		>
 			<Button
 				variant="default"
 				size="sm"
-				on:click={handleSignIn}
+				onclick={handleSignIn}
 				disabled={isSigningIn}
-				class="w-full justify-center bg-gradient-to-r from-blue-600 to-blue-700 text-white transition-all duration-200 hover:scale-[1.02] hover:from-blue-700 hover:to-blue-800 hover:shadow-lg active:scale-95"
+				class="w-full justify-center"
 			>
 				{#if isSigningIn}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
@@ -128,19 +139,19 @@
 			>
 				<div class="hidden items-center gap-2 text-sm md:flex">
 					<div class="relative">
-						<User class="h-4 w-4 text-muted-foreground" />
+						<User class="text-muted-foreground h-4 w-4" />
 					</div>
 					<span class="animate-fade-in text-foreground">
-						<span class="font-semibold text-primary">{userBattletag || session.user.name}</span>
+						<span class="text-primary font-semibold">{userBattletag || session.user.name}</span>
 					</span>
 				</div>
-				<div class="animate-fade-in text-xs text-muted-foreground md:hidden">
+				<div class="animate-fade-in text-muted-foreground text-xs md:hidden">
 					{userBattletag || session.user.name}
 				</div>
 				<Button
 					variant="destructive"
 					size="sm"
-					on:click={handleSignOut}
+					onclick={handleSignOut}
 					disabled={isSigningOut}
 					class="flex items-center gap-1.5 transition-all duration-200 hover:scale-[0.98] active:scale-95"
 				>
@@ -158,9 +169,9 @@
 				<Button
 					variant="default"
 					size="sm"
-					on:click={handleSignIn}
+					onclick={handleSignIn}
 					disabled={isSigningIn}
-					class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md transition-all duration-300 hover:scale-[1.02] hover:from-blue-700 hover:to-blue-800 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-70"
+					class="flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-70"
 				>
 					{#if isSigningIn}
 						<Loader2 class="h-4 w-4 animate-spin" />
