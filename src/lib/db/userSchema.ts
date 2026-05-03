@@ -183,6 +183,9 @@ export const userCharacters = pgTable(
 		className: text('class_name'),
 		raceName: text('race_name'),
 		faction: varchar('faction', { length: 16 }),
+		guildName: text('guild_name'),
+		guildRealm: text('guild_realm'),
+		guildRegion: text('guild_region'),
 		fetchedAt: timestamp('fetched_at').defaultNow().notNull()
 	},
 	(table) => ({

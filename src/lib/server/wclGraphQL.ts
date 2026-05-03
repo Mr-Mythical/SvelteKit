@@ -8,7 +8,9 @@ export class WclQueryError extends Error {
 	constructor(
 		message: string,
 		public readonly kind: 'http' | 'graphql',
-		public readonly detail?: unknown
+		public readonly detail?: unknown,
+		public readonly status?: number,
+		public readonly retryAfter?: string | null
 	) {
 		super(message);
 		this.name = 'WclQueryError';
@@ -36,7 +38,13 @@ export async function executeWclQuery<T>(
 	});
 
 	if (!response.ok) {
-		throw new WclQueryError(`WCL HTTP ${response.status}`, 'http', response.statusText);
+		throw new WclQueryError(
+			`WCL HTTP ${response.status}`,
+			'http',
+			response.statusText,
+			response.status,
+			response.headers.get('retry-after')
+		);
 	}
 
 	const body = (await response.json()) as { data?: T; errors?: unknown };
@@ -113,9 +121,28 @@ export async function handleWclFightRequest<TData, TBody>(
 		return apiOk(result);
 	} catch (error) {
 		if (error instanceof WclQueryError) {
-			return apiError(options.fetchErrorMessage, 502);
+			return wclErrorToResponse(error, options.fetchErrorMessage);
 		}
 		logServerError(options.operation, 'request failed', error);
 		return apiError('Internal Server Error.');
 	}
+}
+
+/**
+ * Map a {@link WclQueryError} to a SvelteKit response, surfacing upstream
+ * 429s (and their `Retry-After`) so clients can back off instead of seeing
+ * a generic 502 when WCL's per-hour points budget is exhausted.
+ */
+export function wclErrorToResponse(error: WclQueryError, fallbackMessage: string): Response {
+	if (error.kind === 'http' && error.status === 429) {
+		const headers: Record<string, string> = {};
+		if (error.retryAfter) headers['retry-after'] = error.retryAfter;
+		const message =
+			'Warcraft Logs API rate limit reached. Please wait a moment and try again.';
+		return new Response(JSON.stringify({ error: message }), {
+			status: 429,
+			headers: { 'content-type': 'application/json', ...headers }
+		});
+	}
+	return apiError(fallbackMessage, 502);
 }

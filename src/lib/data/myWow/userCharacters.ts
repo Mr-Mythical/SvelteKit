@@ -12,6 +12,9 @@ export interface StoredCharacter {
 	className: string | null;
 	raceName: string | null;
 	faction: 'ALLIANCE' | 'HORDE' | null;
+	guildName?: string | null;
+	guildRealm?: string | null;
+	guildRegion?: string | null;
 	fetchedAt: Date;
 }
 
@@ -29,6 +32,9 @@ export function getStoredCharacters(userId: string): Promise<StoredCharacter[]> 
 			className: row.className,
 			raceName: row.raceName,
 			faction: row.faction as StoredCharacter['faction'],
+			guildName: row.guildName ?? null,
+			guildRealm: row.guildRealm ?? null,
+			guildRegion: row.guildRegion ?? null,
 			fetchedAt: row.fetchedAt
 		}));
 	});
@@ -43,6 +49,9 @@ export interface CharacterUpsertInput {
 	className: string | null;
 	raceName: string | null;
 	faction: 'ALLIANCE' | 'HORDE' | null;
+	guildName?: string | null;
+	guildRealm?: string | null;
+	guildRegion?: string | null;
 }
 
 /**
@@ -70,11 +79,14 @@ export function replaceStoredCharacters(
 					realmSlug: character.realmSlug,
 					realmName: character.realmName,
 					characterName: character.characterName,
-					level: character.level,
-					className: character.className,
-					raceName: character.raceName,
-					faction: character.faction,
-					fetchedAt: now
+					   level: character.level,
+					   className: character.className,
+					   raceName: character.raceName,
+					   faction: character.faction,
+					   guildName: character.guildName ?? null,
+					   guildRealm: character.guildRealm ?? null,
+					   guildRegion: character.guildRegion ?? null,
+					   fetchedAt: now
 				}))
 			);
 		});

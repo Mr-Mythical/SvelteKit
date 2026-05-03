@@ -32,6 +32,24 @@ export interface ScoreSource {
 }
 
 const DEFAULT_TIMEOUT_MS = 7000;
+const DEFAULT_MAX_RETRIES = 2;
+const RETRY_BASE_DELAY_MS = 400;
+
+function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function parseRetryAfterMs(retryAfterHeader: string | null): number | null {
+	if (!retryAfterHeader) return null;
+	const seconds = Number(retryAfterHeader);
+	if (Number.isFinite(seconds) && seconds >= 0) {
+		return Math.round(seconds * 1000);
+	}
+	const dateMs = Date.parse(retryAfterHeader);
+	if (Number.isNaN(dateMs)) return null;
+	const delta = dateMs - Date.now();
+	return delta > 0 ? delta : 0;
+}
 
 /** Fetch with an AbortController-based timeout. Always cleans up the timer. */
 export async function fetchWithTimeout(
@@ -46,6 +64,36 @@ export async function fetchWithTimeout(
 	} finally {
 		clearTimeout(timeout);
 	}
+}
+
+export async function fetchWithRateLimit(
+	input: string,
+	init: RequestInit | undefined,
+	options: { timeoutMs?: number; maxRetries?: number } = {}
+): Promise<Response> {
+	const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+	const maxRetries = options.maxRetries ?? DEFAULT_MAX_RETRIES;
+
+	let lastError: unknown;
+	for (let attempt = 0; attempt <= maxRetries; attempt++) {
+		try {
+			const response = await fetchWithTimeout(input, init, timeoutMs);
+			if (response.status === 429 || response.status === 503) {
+				if (attempt === maxRetries) return response;
+				const retryAfterMs = parseRetryAfterMs(response.headers.get('retry-after'));
+				const backoffMs = RETRY_BASE_DELAY_MS * Math.pow(2, attempt);
+				await sleep(Math.max(retryAfterMs ?? 0, backoffMs));
+				continue;
+			}
+			return response;
+		} catch (error) {
+			lastError = error;
+			if (attempt === maxRetries) throw error;
+			await sleep(RETRY_BASE_DELAY_MS * Math.pow(2, attempt));
+		}
+	}
+
+	throw (lastError ?? new Error('fetchWithRateLimit failed unexpectedly')) as Error;
 }
 
 type BlizzardMythicKeystoneProfile = {
@@ -81,7 +129,7 @@ export const blizzardScoreSource: ScoreSource = {
 				`https://${region}.api.blizzard.com/profile/wow/character/` +
 				`${encodeURIComponent(realm.toLowerCase())}/${encodeURIComponent(name.toLowerCase())}` +
 				`/mythic-keystone-profile?namespace=profile-${region}&locale=en_US`;
-			const response = await fetchWithTimeout(url, {
+			const response = await fetchWithRateLimit(url, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 					'Battlenet-Namespace': `profile-${region}`
@@ -160,7 +208,9 @@ export const raiderIoScoreSource: ScoreSource = {
 						`&realm=${encodeURIComponent(realmVariant)}` +
 						`&name=${encodeURIComponent(nameVariant)}` +
 						`&fields=mythic_plus_scores_by_season:current`;
-					const response = await fetchWithTimeout(url, undefined, RAIDERIO_TIMEOUT_MS);
+					const response = await fetchWithRateLimit(url, undefined, {
+						timeoutMs: RAIDERIO_TIMEOUT_MS
+					});
 					attempts.push({
 						realm: realmVariant,
 						name: nameVariant,

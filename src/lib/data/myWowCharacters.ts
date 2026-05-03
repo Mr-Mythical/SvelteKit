@@ -10,6 +10,8 @@ export interface MyWowCharacter {
 	className: string | null;
 	raceName: string | null;
 	faction: 'ALLIANCE' | 'HORDE' | null;
+	score?: number | null;
+	scoreColor?: string | null;
 }
 
 export type MyWowCharactersState = {

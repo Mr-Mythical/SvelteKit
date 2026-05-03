@@ -1,7 +1,7 @@
 import type { RequestHandler } from './$types';
 import type { FightsAndReportInfoResponse } from '$lib/types/apiTypes';
 import { apiError, apiOk } from '$lib/server/apiResponses';
-import { executeWclQuery, WclQueryError } from '$lib/server/wclGraphQL';
+import { executeWclQuery, WclQueryError, wclErrorToResponse } from '$lib/server/wclGraphQL';
 import { logServerError, handleApiError } from '$lib/server/logger';
 
 const QUERY = `
@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	} catch (error) {
 		if (error instanceof WclQueryError) {
 			logServerError('api/fights', 'WCL query failed', error.detail);
-			return apiError('Failed to fetch fights from API.', 502);
+			return wclErrorToResponse(error, 'Failed to fetch fights from API.');
 		}
 		return handleApiError('api/fights', error);
 	}

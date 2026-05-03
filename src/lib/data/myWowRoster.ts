@@ -5,6 +5,7 @@ import {
 	type CharacterUpsertInput
 } from '$lib/data/myWow/userCharacters';
 import { logServerError } from '$lib/server/logger';
+import { fetchWithRateLimit, raiderIoScoreSource } from '$lib/server/scoreSources';
 
 // Server-only helper that returns the signed-in user's WoW character roster.
 //
@@ -25,6 +26,11 @@ export interface RosterCharacter {
 	className: string | null;
 	raceName: string | null;
 	faction: 'ALLIANCE' | 'HORDE' | null;
+	guildName?: string | null;
+	guildRealm?: string | null;
+	guildRegion?: string | null;
+	score?: number | null;
+	scoreColor?: string | null;
 }
 
 export interface RosterResult {
@@ -40,6 +46,11 @@ const MEMORY_TTL_MS = 10 * 60 * 1000;
 type CacheEntry = { value: RosterCharacter[]; fetchedAt: number };
 const rosterCache = new Map<string, CacheEntry>();
 
+type RaiderScoreTier = {
+	score: number;
+	rgbHex: string;
+};
+
 type BlizzProfileResponse = {
 	wow_accounts?: Array<{
 		characters?: Array<{
@@ -53,22 +64,179 @@ type BlizzProfileResponse = {
 	}>;
 };
 
+// Guild info comes from the individual character profile endpoint, not the roster endpoint.
+type BlizzCharacterResponse = {
+	guild?: { name?: string; realm?: { slug?: string; name?: string } };
+};
+
+const ROSTER_MIN_LEVEL = 90;
+const GUILD_FETCH_MIN_LEVEL = 90;
+const GUILD_FETCH_CONCURRENCY = 5;
+const SCORE_FETCH_CONCURRENCY = 5;
+const SCORE_TIERS_TTL_MS = 6 * 60 * 60 * 1000;
+const SCORE_CACHE_TTL_MS = 30 * 60 * 1000;
+const SCORE_NULL_CACHE_TTL_MS = 10 * 60 * 1000;
+
+type ScoreCacheEntry = {
+	score: number | null;
+	scoreColor: string | null;
+	fetchedAt: number;
+};
+
+let scoreTierCache: { tiers: RaiderScoreTier[]; fetchedAt: number } | null = null;
+const scoreCache = new Map<string, ScoreCacheEntry>();
+
+function scoreCacheKey(character: RosterCharacter): string {
+	return `${character.region}-${character.realm}-${character.characterName.toLowerCase()}`;
+}
+
+async function getScoreTiers(): Promise<RaiderScoreTier[]> {
+	if (scoreTierCache && Date.now() - scoreTierCache.fetchedAt < SCORE_TIERS_TTL_MS) {
+		return scoreTierCache.tiers;
+	}
+
+	try {
+		const response = await fetchWithRateLimit(
+			'https://raider.io/api/v1/mythic-plus/score-tiers?season=season-mn-1',
+			undefined
+		);
+		if (!response.ok) {
+			return scoreTierCache?.tiers ?? [];
+		}
+
+		const payload = (await response.json()) as RaiderScoreTier[];
+		const tiers = Array.isArray(payload)
+			? payload
+					.filter((tier) => typeof tier?.score === 'number' && typeof tier?.rgbHex === 'string')
+					.sort((a, b) => b.score - a.score)
+			: [];
+
+		scoreTierCache = { tiers, fetchedAt: Date.now() };
+		return tiers;
+	} catch {
+		return scoreTierCache?.tiers ?? [];
+	}
+}
+
+function getScoreColor(score: number, tiers: RaiderScoreTier[]): string | null {
+	for (const tier of tiers) {
+		if (score >= tier.score) return tier.rgbHex;
+	}
+	return tiers.length > 0 ? tiers[tiers.length - 1]?.rgbHex ?? null : null;
+}
+
+async function enrichScores(characters: RosterCharacter[]): Promise<void> {
+	if (characters.length === 0) return;
+
+	const tiers = await getScoreTiers();
+	const toLookup: RosterCharacter[] = [];
+
+	for (const character of characters) {
+		const key = scoreCacheKey(character);
+		const cached = scoreCache.get(key);
+		if (!cached) {
+			toLookup.push(character);
+			continue;
+		}
+
+		const ttl = cached.score === null ? SCORE_NULL_CACHE_TTL_MS : SCORE_CACHE_TTL_MS;
+		if (Date.now() - cached.fetchedAt <= ttl) {
+			character.score = cached.score;
+			character.scoreColor = cached.scoreColor;
+		} else {
+			toLookup.push(character);
+		}
+	}
+
+	if (toLookup.length === 0) return;
+
+	for (let i = 0; i < toLookup.length; i += SCORE_FETCH_CONCURRENCY) {
+		const batch = toLookup.slice(i, i + SCORE_FETCH_CONCURRENCY);
+		await Promise.all(
+			batch.map(async (character) => {
+				try {
+					const lookup = await raiderIoScoreSource.lookup(
+						character.region,
+						character.realm,
+						character.characterName
+					);
+					const score = lookup.result?.score ?? null;
+					const scoreColor = typeof score === 'number' ? getScoreColor(score, tiers) : null;
+					character.score = score;
+					character.scoreColor = scoreColor;
+					scoreCache.set(scoreCacheKey(character), {
+						score,
+						scoreColor,
+						fetchedAt: Date.now()
+					});
+				} catch {
+					character.score = null;
+					character.scoreColor = null;
+					scoreCache.set(scoreCacheKey(character), {
+						score: null,
+						scoreColor: null,
+						fetchedAt: Date.now()
+					});
+				}
+			})
+		);
+	}
+}
+
+async function fetchGuildInfo(
+	token: string,
+	region: RosterCharacter['region'],
+	characters: RosterCharacter[]
+): Promise<Map<string, { guildName: string | null; guildRealm: string | null }>> {
+	const eligible = characters.filter((c) => c.level >= GUILD_FETCH_MIN_LEVEL);
+	const result = new Map<string, { guildName: string | null; guildRealm: string | null }>();
+
+	// Process in batches to avoid rate limiting.
+	for (let i = 0; i < eligible.length; i += GUILD_FETCH_CONCURRENCY) {
+		const batch = eligible.slice(i, i + GUILD_FETCH_CONCURRENCY);
+		await Promise.all(
+			batch.map(async (char) => {
+				const key = `${char.realm}-${char.characterName.toLowerCase()}`;
+				try {
+					const res = await fetchWithRateLimit(
+						`https://${region}.api.blizzard.com/profile/wow/character/${encodeURIComponent(char.realm)}/${encodeURIComponent(char.characterName.toLowerCase())}?namespace=profile-${region}&locale=en_US`,
+						{
+							headers: { Authorization: `Bearer ${token}` }
+						},
+						{ timeoutMs: 4500 }
+					);
+					if (!res.ok) {
+						result.set(key, { guildName: null, guildRealm: null });
+						return;
+					}
+					const data = (await res.json()) as BlizzCharacterResponse;
+					result.set(key, {
+						guildName: data.guild?.name ?? null,
+						guildRealm: data.guild?.realm?.slug ?? null
+					});
+				} catch {
+					result.set(key, { guildName: null, guildRealm: null });
+				}
+			})
+		);
+	}
+	return result;
+}
+
 async function fetchRegion(
 	token: string,
 	region: RosterCharacter['region']
 ): Promise<RosterCharacter[]> {
-	const controller = new AbortController();
-	const timeout = setTimeout(() => controller.abort(), 4500);
 	try {
-		const response = await fetch(
+		const response = await fetchWithRateLimit(
 			`https://${region}.api.blizzard.com/profile/user/wow?namespace=profile-${region}&locale=en_US`,
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,
 					'Battlenet-Namespace': `profile-${region}`
-				},
-				signal: controller.signal
-			}
+				}
+			},
+			{ timeoutMs: 4500 }
 		);
 		if (!response.ok) return [];
 
@@ -79,24 +247,36 @@ async function fetchRegion(
 				const name = character.name;
 				const realmSlug = character.realm?.slug;
 				if (!name || !realmSlug) continue;
-				characters.push({
-					characterName: name,
-					realm: realmSlug,
-					realmName: character.realm?.name ?? realmSlug,
-					region,
-					level: character.level ?? 0,
-					className: character.playable_class?.name ?? null,
-					raceName: character.playable_race?.name ?? null,
-					faction: character.faction?.type ?? null
-				});
+				       characters.push({
+					       characterName: name,
+					       realm: realmSlug,
+					       realmName: character.realm?.name ?? realmSlug,
+					       region,
+					       level: character.level ?? 0,
+					       className: character.playable_class?.name ?? null,
+					       raceName: character.playable_race?.name ?? null,
+					       faction: character.faction?.type ?? null,
+					       guildName: null,
+					       guildRealm: null,
+					       guildRegion: null
+				       });
+			}
+		}
+		// Fetch guild info for high-level characters via individual profile calls
+		const guildMap = await fetchGuildInfo(token, region, characters);
+		for (const char of characters) {
+			const key = `${char.realm}-${char.characterName.toLowerCase()}`;
+			const guild = guildMap.get(key);
+			if (guild) {
+				char.guildName = guild.guildName;
+				char.guildRealm = guild.guildRealm;
+				char.guildRegion = guild.guildName ? region : null;
 			}
 		}
 		return characters;
 	} catch (error) {
 		logServerError('myWowRoster', `region ${region} failed`, error);
 		return [];
-	} finally {
-		clearTimeout(timeout);
 	}
 }
 
@@ -142,29 +322,35 @@ export async function refreshRosterFromBattleNet(
 		REGIONS.map((region) => fetchRegion(tokenInfo.token, region))
 	);
 	const merged = sortRoster(dedupe(perRegion.flat()));
+	const level90Only = merged.filter((character) => character.level >= ROSTER_MIN_LEVEL);
 
-	if (merged.length === 0) return null;
+	if (level90Only.length === 0) return null;
+
+	await enrichScores(level90Only);
 
 	try {
 		await replaceStoredCharacters(
 			userId,
-			merged.map<CharacterUpsertInput>((character) => ({
-				region: character.region,
-				realmSlug: character.realm,
-				realmName: character.realmName,
-				characterName: character.characterName,
-				level: character.level,
-				className: character.className,
-				raceName: character.raceName,
-				faction: character.faction
-			}))
+			       level90Only.map<CharacterUpsertInput>((character) => ({
+				       region: character.region,
+				       realmSlug: character.realm,
+				       realmName: character.realmName,
+				       characterName: character.characterName,
+				       level: character.level,
+				       className: character.className,
+				       raceName: character.raceName,
+				       faction: character.faction,
+				       guildName: character.guildName ?? null,
+					       guildRealm: character.guildRealm ?? null,
+					       guildRegion: character.guildRegion ?? null
+			       }))
 		);
 	} catch (error) {
 		logServerError('myWowRoster', 'failed to persist roster', error);
 	}
 
-	rosterCache.set(userId, { value: merged, fetchedAt: Date.now() });
-	return merged;
+	rosterCache.set(userId, { value: level90Only, fetchedAt: Date.now() });
+	return level90Only;
 }
 
 /**
@@ -210,9 +396,15 @@ export async function getMyWowRoster(
 				level: row.level,
 				className: row.className,
 				raceName: row.raceName,
-				faction: row.faction
+				faction: row.faction,
+				guildName: row.guildName ?? null,
+				guildRealm: row.guildRealm ?? null,
+				guildRegion: row.guildRegion ?? null,
+				score: null,
+				scoreColor: null
 			}))
 		);
+		await enrichScores(stored);
 	} catch (error) {
 		logServerError('myWowRoster', 'DB read failed', error);
 	}

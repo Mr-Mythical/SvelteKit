@@ -22,7 +22,8 @@
 		"db:user:generate": "drizzle-kit generate --config=drizzle.user.config.ts",
 		"db:user:migrate": "drizzle-kit migrate --config=drizzle.user.config.ts",
 		"db:user:push": "drizzle-kit push --config=drizzle.user.config.ts",
-		"db:user:drop": "drizzle-kit drop --config=drizzle.user.config.ts"
+		"db:user:drop": "drizzle-kit drop --config=drizzle.user.config.ts",
+		"cleanup:under90-recents": "node scripts/cleanup-under90-recents.mjs"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20250109.0",
@@ -39,7 +40,7 @@
 		"@vitest/coverage-v8": "^4.1.5",
 		"@vitest/ui": "^4.1.5",
 		"bits-ui": "^2.18.0",
-		"drizzle-kit": "^0.31.5",
+		"drizzle-kit": "^0.31.10",
 		"eslint": "^10.2.1",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.17.1",

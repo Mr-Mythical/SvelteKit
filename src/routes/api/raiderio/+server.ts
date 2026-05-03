@@ -1,6 +1,30 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
+import { getOrRefreshBlizzardAccessToken } from '$lib/auth/blizzardTokenCache';
+
+const MIN_CHARACTER_LEVEL = 90;
+
+async function fetchCharacterLevel(
+	region: string,
+	realm: string,
+	characterName: string
+): Promise<number | null> {
+	const regionLc = region.toLowerCase();
+	const realmLc = realm.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+	const nameLc = characterName.toLowerCase();
+
+	const token = await getOrRefreshBlizzardAccessToken();
+	const summaryUrl = `https://${encodeURIComponent(regionLc)}.api.blizzard.com/profile/wow/character/${encodeURIComponent(realmLc)}/${encodeURIComponent(nameLc)}?namespace=profile-${encodeURIComponent(regionLc)}&locale=en_US`;
+	const summaryResponse = await fetch(summaryUrl, {
+		headers: { Authorization: `Bearer ${token}` }
+	});
+
+	if (!summaryResponse.ok) return null;
+
+	const summaryData = (await summaryResponse.json()) as { level?: number };
+	return typeof summaryData.level === 'number' ? summaryData.level : null;
+}
 
 interface RaiderIoResponse {
 	name: string;
@@ -40,6 +64,14 @@ export const GET: RequestHandler = async ({ url }) => {
 		`&fields=mythic_plus_best_runs`;
 
 	try {
+		const level = await fetchCharacterLevel(region, realm, name);
+		if (level === null) {
+			return apiError('Unable to verify character level', 502);
+		}
+		if (level < MIN_CHARACTER_LEVEL) {
+			return apiError('Only endgame characters can be imported', 422);
+		}
+
 		const response = await fetch(apiUrl);
 		if (!response.ok) {
 			return apiError('Failed to fetch data', response.status);

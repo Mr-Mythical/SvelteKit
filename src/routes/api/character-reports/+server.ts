@@ -5,6 +5,7 @@ import { getMyWowRoster } from '$lib/data/myWowRoster';
 import { requireSession } from '$lib/server/requireSession';
 import { executeWclQuery, WclQueryError } from '$lib/server/wclGraphQL';
 import { logServerError, logServerWarn, handleApiError } from '$lib/server/logger';
+import { memoryCacheGetOrSet } from '$lib/server/memoryCache';
 
 // Returns a flat list of recent WarcraftLogs reports aggregated across the
 // signed-in user's characters, plus a deduplicated list of the
@@ -43,6 +44,17 @@ type CharacterReportsResponse = {
 
 const MAX_PERSONAL_GUILD_REPORTS_SHOWN = 6;
 const MAX_GUILD_FILTERS_SHOWN = 8;
+const MIN_CHARACTER_LEVEL = 90;
+const MAX_CHARACTERS_QUERIED = 15;
+const MAX_GUILDS_QUERIED = 10;
+
+function characterKey(region: string, realm: string, name: string): string {
+	return `${region.toLowerCase()}-${realm.toLowerCase()}-${name.toLowerCase()}`;
+}
+
+function guildKey(region: string, realm: string, name: string): string {
+	return `${region.toLowerCase()}-${realm.toLowerCase()}-${name.toLowerCase()}`;
+}
 
 const CHARACTER_REPORT_QUERY = /* GraphQL */ `
 	query CharacterReports($name: String!, $server: String!, $region: String!) {
@@ -145,138 +157,115 @@ function logWclFailure(kind: 'character' | 'guild', target: unknown, error: unkn
 	logServerError('api/character-reports', `WCL fetch failed for ${kind}`, { target, error });
 }
 
-export const GET: RequestHandler = async ({ locals }) => {
+const CHARACTER_REPORTS_TTL_MS = 5 * 60 * 1000;
+const CHARACTER_REPORTS_BROWSER_TTL_S = 180;
+
+export const GET: RequestHandler = async ({ locals, setHeaders }) => {
 	const auth = await requireSession(locals);
 	if ('response' in auth) return auth.response;
 	const userId = auth.session.user.id;
 
 	try {
-		// Source 1: the user's Battle.net roster (level 90+).
-		let bnetCharacters: Array<{ characterName: string; realm: string; region: string }> = [];
-		try {
-			const roster = await getMyWowRoster(userId);
-			bnetCharacters = roster.characters
-				.filter((character) => character.level >= 90)
-				.map((character) => ({
-					characterName: character.characterName,
-					realm: character.realm,
-					region: character.region
-				}));
-		} catch (error) {
-			logServerError('api/character-reports', 'battlenet roster fetch failed', error);
-		}
-
-		// Source 2: manually-imported recents (covers characters on other accounts
-		// or when the bnet scope is missing).
-		const recents = await getUserRecents<CharacterRecentData>(userId, 'character', 6);
-		const recentCharacters = recents
-			.map((recent) => ({
-				characterName: recent.entityData?.characterName,
-				realm: recent.entityData?.realm,
-				region: recent.entityData?.region
-			}))
-			.filter((character) => character.characterName && character.realm && character.region);
-
-		// Merge and dedupe. Cap at a reasonable number so we don't hammer WCL.
-		const seen = new Set<string>();
-		const merged: Array<{ characterName: string; realm: string; region: string }> = [];
-		for (const character of [...bnetCharacters, ...recentCharacters]) {
-			const key = `${character.region}-${character.realm}-${character.characterName.toLowerCase()}`;
-			if (seen.has(key)) continue;
-			seen.add(key);
-			merged.push(character);
-			if (merged.length >= 15) break;
-		}
-
-		if (merged.length === 0) {
-			return apiOk({ reports: [], guilds: [] } satisfies CharacterReportsResponse);
-		}
-
-		const perCharacter = await Promise.all(
-			merged.map(async (character) => {
-				const reports = await fetchReportsForCharacter(character);
-				return reports.map<CharacterReport>((report) => ({
-					code: report.code,
-					title: report.title || 'Untitled report',
-					timestamp: report.startTime ?? 0,
-					guild: report.guild?.name ? { name: report.guild.name } : null,
-					owner: { name: report.owner?.name || 'Unknown' },
-					sourceCharacter: {
-						name: character.characterName,
-						realm: character.realm,
-						region: character.region
-					}
-				}));
-			})
+		const payload = await memoryCacheGetOrSet(
+			`character-reports:${userId}`,
+			CHARACTER_REPORTS_TTL_MS,
+			() => buildCharacterReports(userId)
 		);
-
-		const guildTargets = new Map<
-			string,
-			{
-				name: string;
-				realm: string;
-				region: string;
-				sourceCharacter: CharacterReport['sourceCharacter'];
-			}
-		>();
-		for (const report of perCharacter.flat()) {
-			if (!report.guild?.name) continue;
-			const key = `${report.guild.name.toLowerCase()}-${report.sourceCharacter.region}-${report.sourceCharacter.realm}`;
-			if (guildTargets.has(key)) continue;
-			guildTargets.set(key, {
-				name: report.guild.name,
-				realm: report.sourceCharacter.realm,
-				region: report.sourceCharacter.region,
-				sourceCharacter: report.sourceCharacter
-			});
-		}
-
-		const guildReports = await Promise.all(
-			Array.from(guildTargets.values())
-				.slice(0, 10)
-				.map(async (guild) => {
-					const reports = await fetchReportsForGuild({
-						name: guild.name,
-						realm: guild.realm,
-						region: guild.region
-					});
-					return reports.map<CharacterReport>((report) => ({
-						code: report.code,
-						title: report.title || 'Untitled report',
-						timestamp: report.startTime ?? 0,
-						guild: report.guild?.name ? { name: report.guild.name } : { name: guild.name },
-						owner: { name: report.owner?.name || 'Unknown' },
-						sourceCharacter: guild.sourceCharacter
-					}));
-				})
-		);
-
-		// Dedupe by report code, keep the entry with the most recent timestamp.
-		const byCode = new Map<string, CharacterReport>();
-		for (const report of [...perCharacter.flat(), ...guildReports.flat()]) {
-			const existing = byCode.get(report.code);
-			if (!existing || report.timestamp > existing.timestamp) {
-				byCode.set(report.code, report);
-			}
-		}
-
-		const reports = Array.from(byCode.values())
-			.sort((a, b) => b.timestamp - a.timestamp)
-			.slice(0, MAX_PERSONAL_GUILD_REPORTS_SHOWN);
-
-		const guildCounts = new Map<string, number>();
-		for (const report of reports) {
-			if (report.guild?.name) {
-				guildCounts.set(report.guild.name, (guildCounts.get(report.guild.name) ?? 0) + 1);
-			}
-		}
-		const guilds = Array.from(guildCounts.entries())
-			.map(([name, count]) => ({ name, count }))
-			.sort((a, b) => b.count - a.count)
-			.slice(0, MAX_GUILD_FILTERS_SHOWN);
-
-		return apiOk({ reports, guilds } satisfies CharacterReportsResponse);
+		// Browser cache as well so back/forward navigation and component
+		// remounts within a few minutes don't re-hit the worker at all.
+		setHeaders({
+			'cache-control': `private, max-age=${CHARACTER_REPORTS_BROWSER_TTL_S}`
+		});
+		return apiOk(payload);
 	} catch (error) {
 		return handleApiError('api/character-reports', error);
 	}
 };
+
+async function buildCharacterReports(userId: string): Promise<CharacterReportsResponse> {
+	// Only fetch guild logs for all unique guilds that user's high-level characters are in
+	let bnetCharacters: Array<{ characterName: string; realm: string; region: string; guild?: string }> = [];
+	try {
+		const roster = await getMyWowRoster(userId);
+		for (const character of roster.characters) {
+			if (character.level >= MIN_CHARACTER_LEVEL && character.guildName) {
+				bnetCharacters.push({
+					characterName: character.characterName,
+					realm: character.guildRealm ?? character.realm,
+					region: character.guildRegion ?? character.region,
+					guild: character.guildName
+				});
+			}
+		}
+	} catch (error) {
+		logServerError('api/character-reports', 'battlenet roster fetch failed', error);
+	}
+
+	// Dedupe guilds by region+realm+guild name
+	const guildTargets = new Map<string, { name: string; realm: string; region: string }>();
+	for (const character of bnetCharacters) {
+		if (!character.guild) continue;
+		const key = guildKey(character.region, character.realm, character.guild);
+		if (!guildTargets.has(key)) {
+			guildTargets.set(key, {
+				name: character.guild,
+				realm: character.realm,
+				region: character.region
+			});
+		}
+	}
+
+	if (guildTargets.size === 0) {
+		return { reports: [], guilds: [] };
+	}
+
+	const guildReports = await Promise.all(
+		Array.from(guildTargets.values())
+			.slice(0, MAX_GUILDS_QUERIED)
+			.map(async (guild) => {
+				const reports = await fetchReportsForGuild({
+					name: guild.name,
+					realm: guild.realm,
+					region: guild.region
+				});
+				return reports.map<CharacterReport>((report) => ({
+					code: report.code,
+					title: report.title || 'Untitled report',
+					timestamp: report.startTime ?? 0,
+					guild: report.guild?.name ? { name: report.guild.name } : { name: guild.name },
+					owner: { name: report.owner?.name || 'Unknown' },
+					sourceCharacter: {
+						name: '',
+						realm: guild.realm,
+						region: guild.region
+					}
+				}));
+			})
+	);
+
+	// Dedupe by report code, keep the entry with the most recent timestamp.
+	const byCode = new Map<string, CharacterReport>();
+	for (const report of guildReports.flat()) {
+		const existing = byCode.get(report.code);
+		if (!existing || report.timestamp > existing.timestamp) {
+			byCode.set(report.code, report);
+		}
+	}
+
+	const reports = Array.from(byCode.values())
+		.sort((a, b) => b.timestamp - a.timestamp)
+		.slice(0, MAX_PERSONAL_GUILD_REPORTS_SHOWN);
+
+	const guildCounts = new Map<string, number>();
+	for (const report of reports) {
+		if (report.guild?.name) {
+			guildCounts.set(report.guild.name, (guildCounts.get(report.guild.name) ?? 0) + 1);
+		}
+	}
+	const guilds = Array.from(guildCounts.entries())
+		.map(([name, count]) => ({ name, count }))
+		.sort((a, b) => b.count - a.count)
+		.slice(0, MAX_GUILD_FILTERS_SHOWN);
+
+	return { reports, guilds };
+}

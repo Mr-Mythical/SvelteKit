@@ -5,6 +5,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { recentReports, type RecentReport } from '$lib/stores/recentReports';
 	import Loader2 from '@lucide/svelte/icons/loader-2';
+	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import { logClientError } from '$lib/clientLog';
 
 	interface CharacterReport {
@@ -56,14 +57,9 @@
 		filteredCharacterReports.slice(0, MAX_PERSONAL_GUILD_REPORTS_SHOWN)
 	);
 
-	onMount(async () => {
-		await recentReports.init();
 
-		if (!session) {
-			characterLoading = false;
-			return;
-		}
-
+	async function syncCharacterReports() {
+		characterLoading = true;
 		try {
 			const response = await fetch('/api/character-reports');
 			if (response.ok) {
@@ -82,6 +78,15 @@
 		} finally {
 			characterLoading = false;
 		}
+	}
+
+	onMount(async () => {
+		await recentReports.init();
+		if (!session) {
+			characterLoading = false;
+			return;
+		}
+		await syncCharacterReports();
 	});
 
 	onDestroy(() => {
@@ -112,7 +117,21 @@
 		{:else}
 			<div class="report-columns">
 				<section class="report-column">
-					<h3 class="report-title">From your characters</h3>
+
+					<div class="flex items-center justify-between">
+						<h3 class="report-title">From your characters</h3>
+						<Button
+							variant="ghost"
+							size="icon"
+							class="h-7 w-7"
+							title="Sync character reports"
+							onclick={syncCharacterReports}
+							disabled={characterLoading}
+						>
+							<RefreshCw class={characterLoading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} />
+							<span class="sr-only">Sync character reports</span>
+						</Button>
+					</div>
 
 					{#if characterLoading}
 						<div class="py-2 text-center">
