@@ -137,8 +137,7 @@ export function wclErrorToResponse(error: WclQueryError, fallbackMessage: string
 	if (error.kind === 'http' && error.status === 429) {
 		const headers: Record<string, string> = {};
 		if (error.retryAfter) headers['retry-after'] = error.retryAfter;
-		const message =
-			'Warcraft Logs API rate limit reached. Please wait a moment and try again.';
+		const message = 'Warcraft Logs API rate limit reached. Please wait a moment and try again.';
 		return new Response(JSON.stringify({ error: message }), {
 			status: 429,
 			headers: { 'content-type': 'application/json', ...headers }

@@ -1,9 +1,5 @@
 import type { RequestHandler } from './$types';
-import {
-	getUserRecents,
-	addUserRecent,
-	type CharacterRecentData
-} from '$lib/db/userRecents.js';
+import { getUserRecents, addUserRecent, type CharacterRecentData } from '$lib/db/userRecents.js';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { requireSession } from '$lib/server/requireSession';
 import { handleApiError } from '$lib/server/logger';

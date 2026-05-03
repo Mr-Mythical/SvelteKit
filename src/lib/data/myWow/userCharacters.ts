@@ -79,14 +79,14 @@ export function replaceStoredCharacters(
 					realmSlug: character.realmSlug,
 					realmName: character.realmName,
 					characterName: character.characterName,
-					   level: character.level,
-					   className: character.className,
-					   raceName: character.raceName,
-					   faction: character.faction,
-					   guildName: character.guildName ?? null,
-					   guildRealm: character.guildRealm ?? null,
-					   guildRegion: character.guildRegion ?? null,
-					   fetchedAt: now
+					level: character.level,
+					className: character.className,
+					raceName: character.raceName,
+					faction: character.faction,
+					guildName: character.guildName ?? null,
+					guildRealm: character.guildRealm ?? null,
+					guildRegion: character.guildRegion ?? null,
+					fetchedAt: now
 				}))
 			);
 		});

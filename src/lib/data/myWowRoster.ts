@@ -122,7 +122,7 @@ function getScoreColor(score: number, tiers: RaiderScoreTier[]): string | null {
 	for (const tier of tiers) {
 		if (score >= tier.score) return tier.rgbHex;
 	}
-	return tiers.length > 0 ? tiers[tiers.length - 1]?.rgbHex ?? null : null;
+	return tiers.length > 0 ? (tiers[tiers.length - 1]?.rgbHex ?? null) : null;
 }
 
 async function enrichScores(characters: RosterCharacter[]): Promise<void> {
@@ -247,19 +247,19 @@ async function fetchRegion(
 				const name = character.name;
 				const realmSlug = character.realm?.slug;
 				if (!name || !realmSlug) continue;
-				       characters.push({
-					       characterName: name,
-					       realm: realmSlug,
-					       realmName: character.realm?.name ?? realmSlug,
-					       region,
-					       level: character.level ?? 0,
-					       className: character.playable_class?.name ?? null,
-					       raceName: character.playable_race?.name ?? null,
-					       faction: character.faction?.type ?? null,
-					       guildName: null,
-					       guildRealm: null,
-					       guildRegion: null
-				       });
+				characters.push({
+					characterName: name,
+					realm: realmSlug,
+					realmName: character.realm?.name ?? realmSlug,
+					region,
+					level: character.level ?? 0,
+					className: character.playable_class?.name ?? null,
+					raceName: character.playable_race?.name ?? null,
+					faction: character.faction?.type ?? null,
+					guildName: null,
+					guildRealm: null,
+					guildRegion: null
+				});
 			}
 		}
 		// Fetch guild info for high-level characters via individual profile calls
@@ -331,19 +331,19 @@ export async function refreshRosterFromBattleNet(
 	try {
 		await replaceStoredCharacters(
 			userId,
-			       level90Only.map<CharacterUpsertInput>((character) => ({
-				       region: character.region,
-				       realmSlug: character.realm,
-				       realmName: character.realmName,
-				       characterName: character.characterName,
-				       level: character.level,
-				       className: character.className,
-				       raceName: character.raceName,
-				       faction: character.faction,
-				       guildName: character.guildName ?? null,
-					       guildRealm: character.guildRealm ?? null,
-					       guildRegion: character.guildRegion ?? null
-			       }))
+			level90Only.map<CharacterUpsertInput>((character) => ({
+				region: character.region,
+				realmSlug: character.realm,
+				realmName: character.realmName,
+				characterName: character.characterName,
+				level: character.level,
+				className: character.className,
+				raceName: character.raceName,
+				faction: character.faction,
+				guildName: character.guildName ?? null,
+				guildRealm: character.guildRealm ?? null,
+				guildRegion: character.guildRegion ?? null
+			}))
 		);
 	} catch (error) {
 		logServerError('myWowRoster', 'failed to persist roster', error);

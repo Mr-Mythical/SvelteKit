@@ -16,7 +16,10 @@ function loadDotEnv() {
 		const eq = line.indexOf('=');
 		if (eq <= 0) continue;
 		const key = line.slice(0, eq).trim();
-		const value = line.slice(eq + 1).trim().replace(/^['\"]|['\"]$/g, '');
+		const value = line
+			.slice(eq + 1)
+			.trim()
+			.replace(/^['\"]|['\"]$/g, '');
 		if (!(key in process.env)) process.env[key] = value;
 	}
 }
@@ -101,8 +104,7 @@ async function run() {
 					const data = row.entity_data ?? {};
 					const region = typeof data.region === 'string' ? data.region : null;
 					const realm = typeof data.realm === 'string' ? data.realm : null;
-					const characterName =
-						typeof data.characterName === 'string' ? data.characterName : null;
+					const characterName = typeof data.characterName === 'string' ? data.characterName : null;
 
 					if (!region || !realm || !characterName) {
 						return { id: row.id, delete: false, reason: 'missing data' };
@@ -112,7 +114,11 @@ async function run() {
 					if (level !== null && level < MIN_CHARACTER_LEVEL) {
 						return { id: row.id, delete: true, reason: `level ${level}` };
 					}
-					return { id: row.id, delete: false, reason: level === null ? 'unknown level' : `level ${level}` };
+					return {
+						id: row.id,
+						delete: false,
+						reason: level === null ? 'unknown level' : `level ${level}`
+					};
 				})
 			);
 

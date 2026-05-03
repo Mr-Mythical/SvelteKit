@@ -57,7 +57,6 @@
 		filteredCharacterReports.slice(0, MAX_PERSONAL_GUILD_REPORTS_SHOWN)
 	);
 
-
 	async function syncCharacterReports() {
 		characterLoading = true;
 		try {
@@ -117,7 +116,6 @@
 		{:else}
 			<div class="report-columns">
 				<section class="report-column">
-
 					<div class="flex items-center justify-between">
 						<h3 class="report-title">From your characters</h3>
 						<Button

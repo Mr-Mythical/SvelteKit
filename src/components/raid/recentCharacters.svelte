@@ -17,7 +17,6 @@
 	import { toast } from 'svelte-sonner';
 	import { myWowCharacters, type MyWowCharacter } from '$lib/data/myWowCharacters';
 
-
 	let characters: RecentCharacter[] = $state([]);
 	let isLoading = $state(true);
 	let bnetCharacters: MyWowCharacter[] = $state([]);
@@ -34,10 +33,6 @@
 	function characterKey(region: string, realm: string, name: string): string {
 		return `${region.toLowerCase()}-${realm.toLowerCase()}-${name.toLowerCase()}`;
 	}
-
-
-
-
 
 	function getVisibleBnetCharacters(): MyWowCharacter[] {
 		return bnetCharacters
@@ -170,12 +165,7 @@
 	let { loadCharacter }: Props = $props();
 </script>
 
-
-{#if (
-	!session ||
-	(session && bnetHasAccount && getVisibleBnetCharacters().length > 0) ||
-	(getVisibleRecentCharacters().length > 0)
-)}
+{#if !session || (session && bnetHasAccount && getVisibleBnetCharacters().length > 0) || getVisibleRecentCharacters().length > 0}
 	<Card class="recent-characters space-y-4 p-4">
 		{#if !session}
 			<section class="space-y-3">
@@ -265,22 +255,22 @@
 					<h3 class="text-lg font-semibold">Recent Imports</h3>
 				</header>
 				<div class="space-y-2">
-				{#each getVisibleRecentCharacters() as char (char.characterName + char.realm + char.region)}
-					<div class="animate-in fade-in-0 slide-in-from-top-2 duration-300">
-						<Button
-							variant="outline"
-							class="w-full justify-between text-left"
-							onclick={() => loadCharacter(char)}
-						>
-							<div>
-								<span class="font-medium">
-									{char.characterName.charAt(0).toUpperCase() + char.characterName.slice(1)}
-								</span>
-								<span class="text-muted"> - {getRealmLabel(char.region, char.realm)}</span>
-							</div>
-						</Button>
-					</div>
-				{/each}
+					{#each getVisibleRecentCharacters() as char (char.characterName + char.realm + char.region)}
+						<div class="animate-in fade-in-0 slide-in-from-top-2 duration-300">
+							<Button
+								variant="outline"
+								class="w-full justify-between text-left"
+								onclick={() => loadCharacter(char)}
+							>
+								<div>
+									<span class="font-medium">
+										{char.characterName.charAt(0).toUpperCase() + char.characterName.slice(1)}
+									</span>
+									<span class="text-muted"> - {getRealmLabel(char.region, char.realm)}</span>
+								</div>
+							</Button>
+						</div>
+					{/each}
 				</div>
 			</section>
 		{/if}

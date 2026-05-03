@@ -184,7 +184,12 @@ export const GET: RequestHandler = async ({ locals, setHeaders }) => {
 
 async function buildCharacterReports(userId: string): Promise<CharacterReportsResponse> {
 	// Only fetch guild logs for all unique guilds that user's high-level characters are in
-	let bnetCharacters: Array<{ characterName: string; realm: string; region: string; guild?: string }> = [];
+	let bnetCharacters: Array<{
+		characterName: string;
+		realm: string;
+		region: string;
+		guild?: string;
+	}> = [];
 	try {
 		const roster = await getMyWowRoster(userId);
 		for (const character of roster.characters) {
