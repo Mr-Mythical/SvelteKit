@@ -17,6 +17,7 @@ export interface RecentCharacter {
 	region: string;
 	realm: string;
 	characterName: string;
+	className?: string | null;
 }
 
 export type AddOutcome =
@@ -32,6 +33,28 @@ export interface RecentCharactersBackend {
 
 const LOCAL_STORAGE_KEY = 'recentCharacters';
 const MAX_RECENT = 5;
+
+function normalizeIdentityPart(value: string): string {
+	return value.trim().toLowerCase();
+}
+
+function characterIdentity(character: RecentCharacter): string {
+	return `${normalizeIdentityPart(character.region)}::${normalizeIdentityPart(character.realm)}::${normalizeIdentityPart(character.characterName)}`;
+}
+
+function dedupeCharacters(characters: RecentCharacter[]): RecentCharacter[] {
+	const seen = new Set<string>();
+	const deduped: RecentCharacter[] = [];
+
+	for (const character of characters) {
+		const identity = characterIdentity(character);
+		if (seen.has(identity)) continue;
+		seen.add(identity);
+		deduped.push(character);
+	}
+
+	return deduped;
+}
 
 export const apiRecentCharactersBackend: RecentCharactersBackend = {
 	name: 'api',
@@ -72,7 +95,7 @@ function readLocalStorage(): RecentCharacter[] {
 	if (!stored) return [];
 	try {
 		const parsed = JSON.parse(stored);
-		return Array.isArray(parsed) ? (parsed as RecentCharacter[]) : [];
+		return Array.isArray(parsed) ? dedupeCharacters(parsed as RecentCharacter[]) : [];
 	} catch (error) {
 		logClientError('recentCharacters/localStorage', 'parse failed', error);
 		return [];
@@ -80,11 +103,7 @@ function readLocalStorage(): RecentCharacter[] {
 }
 
 function sameCharacter(a: RecentCharacter, b: RecentCharacter): boolean {
-	return (
-		a.region === b.region &&
-		a.realm === b.realm &&
-		a.characterName.toLowerCase() === b.characterName.toLowerCase()
-	);
+	return characterIdentity(a) === characterIdentity(b);
 }
 
 export const localStorageRecentCharactersBackend: RecentCharactersBackend = {
@@ -96,7 +115,7 @@ export const localStorageRecentCharactersBackend: RecentCharactersBackend = {
 	async add(character) {
 		if (typeof localStorage === 'undefined') return { status: 'unavailable' };
 		try {
-			const existing = readLocalStorage().filter((c) => !sameCharacter(c, character));
+			const existing = dedupeCharacters(readLocalStorage()).filter((c) => !sameCharacter(c, character));
 			const next = [character, ...existing].slice(0, MAX_RECENT);
 			localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(next));
 			return { status: 'ok', characters: next };

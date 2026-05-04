@@ -52,6 +52,7 @@ export interface CharacterRecentData {
 	characterName: string;
 	realm: string;
 	region: string;
+	className?: string | null;
 }
 
 export interface ReportRecentData {

@@ -16,6 +16,7 @@
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import { toast } from 'svelte-sonner';
 	import { myWowCharacters, type MyWowCharacter } from '$lib/data/myWowCharacters';
+	import { getClassColor } from '$lib/ui/classColors';
 
 	let characters: RecentCharacter[] = $state([]);
 	let isLoading = $state(true);
@@ -32,6 +33,22 @@
 	// Helper to create a unique key for a character
 	function characterKey(region: string, realm: string, name: string): string {
 		return `${region.toLowerCase()}-${realm.toLowerCase()}-${name.toLowerCase()}`;
+	}
+
+	function getCharacterNameColor(className?: string | null): string {
+		return getClassColor(className, 'inherit');
+	}
+
+	function getBattleNetCharacterClassName(character: MyWowCharacter): string | null {
+		if (character.className) return character.className;
+
+		const match = characters.find(
+			(recent) =>
+				characterKey(recent.region, recent.realm, recent.characterName) ===
+				characterKey(character.region, character.realm, character.characterName)
+		);
+
+		return match?.className ?? null;
 	}
 
 	function getVisibleBnetCharacters(): MyWowCharacter[] {
@@ -76,7 +93,8 @@
 		loadCharacter({
 			characterName: character.characterName,
 			realm: character.realm,
-			region: character.region
+			region: character.region,
+			className: character.className
 		});
 	}
 
@@ -125,7 +143,37 @@
 
 	async function syncBnet() {
 		try {
+			const beforeVisibleRecents = getVisibleRecentCharacters();
+			const beforeVisibleRecentKeys = new Set(
+				beforeVisibleRecents.map((character) =>
+					characterKey(character.region, character.realm, character.characterName)
+				)
+			);
+
 			await myWowCharacters.refresh();
+
+			const afterVisibleRecentKeys = new Set(
+				getVisibleRecentCharacters().map((character) =>
+					characterKey(character.region, character.realm, character.characterName)
+				)
+			);
+			const afterBnetKeys = getBnetKeys();
+
+			let movedToBnetCount = 0;
+			for (const key of beforeVisibleRecentKeys) {
+				if (!afterVisibleRecentKeys.has(key) && afterBnetKeys.has(key)) {
+					movedToBnetCount += 1;
+				}
+			}
+
+			if (movedToBnetCount > 0) {
+				const noun = movedToBnetCount === 1 ? 'character' : 'characters';
+				toast.success(
+					`Battle.net roster refreshed. ${movedToBnetCount} recent ${noun} moved to Battle.net Characters.`
+				);
+				return;
+			}
+
 			toast.success('Battle.net roster refreshed.');
 		} catch (error) {
 			console.error('recentCharacters: bnet sync failed', error);
@@ -165,7 +213,7 @@
 	let { loadCharacter }: Props = $props();
 </script>
 
-{#if !session || (session && bnetHasAccount && getVisibleBnetCharacters().length > 0) || getVisibleRecentCharacters().length > 0}
+{#if !session || (session && bnetHasAccount) || getVisibleRecentCharacters().length > 0}
 	<Card class="recent-characters space-y-4 p-4">
 		{#if !session}
 			<section class="space-y-3">
@@ -190,7 +238,7 @@
 			</section>
 		{/if}
 
-		{#if session && bnetHasAccount && getVisibleBnetCharacters().length > 0}
+		{#if session && bnetHasAccount}
 			<section class="space-y-2">
 				<header class="flex items-center justify-between">
 					<h3 class="text-lg font-semibold">Battle.net Characters</h3>
@@ -215,17 +263,24 @@
 					<p class="text-muted-foreground text-sm">
 						Re-link Battle.net with the WoW profile scope to see your characters here.
 					</p>
+				{:else if getVisibleBnetCharacters().length === 0}
+					<p class="text-muted-foreground text-sm">
+						No Battle.net characters are synced yet. Use the sync button to refresh your roster.
+					</p>
 				{:else}
 					<div class="space-y-2">
 						{#each getVisibleBnetCharacters() as char (characterKey(char.region, char.realm, char.characterName))}
 							<div class="animate-in fade-in-0 slide-in-from-top-2 duration-300">
 								<Button
 									variant="outline"
-									class="w-full justify-between text-left"
+									class="w-full justify-between bg-neutral-500 text-left hover:bg-neutral-600 dark:bg-input/30 dark:hover:bg-input/50"
 									onclick={() => loadFromBnet(char)}
 								>
 									<div class="min-w-0">
-										<span class="font-medium">
+										<span
+											class="font-medium"
+											style={`color: ${getCharacterNameColor(getBattleNetCharacterClassName(char))};`}
+										>
 											{char.characterName.charAt(0).toUpperCase() + char.characterName.slice(1)}
 										</span>
 										<span class="text-muted">
@@ -259,11 +314,14 @@
 						<div class="animate-in fade-in-0 slide-in-from-top-2 duration-300">
 							<Button
 								variant="outline"
-								class="w-full justify-between text-left"
+								class="w-full justify-between bg-neutral-500 text-left hover:bg-neutral-600 dark:bg-input/30 dark:hover:bg-input/50"
 								onclick={() => loadCharacter(char)}
 							>
 								<div>
-									<span class="font-medium">
+									<span
+										class="font-medium"
+										style={`color: ${getCharacterNameColor(char.className)};`}
+									>
 										{char.characterName.charAt(0).toUpperCase() + char.characterName.slice(1)}
 									</span>
 									<span class="text-muted"> - {getRealmLabel(char.region, char.realm)}</span>
@@ -276,3 +334,4 @@
 		{/if}
 	</Card>
 {/if}
+

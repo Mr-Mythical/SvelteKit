@@ -822,7 +822,7 @@
 
 					<div class="grid gap-6 lg:grid-cols-[1fr_1fr]">
 						<!-- Deaths section on the left -->
-						<section class="border-border bg-card/80 rounded-xl border p-4 md:p-6">
+					<section class="border-border bg-card/80 rounded-xl border p-4 md:p-6">
 							<div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
 								<div>
 									<h3 class="text-xl font-semibold">Deaths in this pull</h3>
@@ -864,7 +864,7 @@
 						</section>
 
 						<!-- Similar healer comps on the right -->
-						<section class="border-border bg-card/80 self-start rounded-xl border p-4 md:p-6">
+					<section class="border-border bg-card/80 self-start rounded-xl border p-4 md:p-6">
 							<LogBrowserResults
 								logs={similarLogs}
 								loading={loadingSimilarLogs}
@@ -899,3 +899,4 @@
 </main>
 
 <Footer />
+

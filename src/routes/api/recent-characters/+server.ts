@@ -8,11 +8,31 @@ import { getOrRefreshBlizzardAccessToken } from '$lib/auth/blizzardTokenCache';
 
 const MIN_CHARACTER_LEVEL = 90;
 
+function normalizeIdentityPart(value: string): string {
+	return value.trim().toLowerCase();
+}
+
+function recentCharacterIdentity(region: string, realm: string, characterName: string): string {
+	return `${normalizeIdentityPart(region)}::${normalizeIdentityPart(realm)}::${normalizeIdentityPart(characterName)}`;
+}
+
+function normalizeRegion(value: string): string {
+	return normalizeIdentityPart(value);
+}
+
+function normalizeRealm(value: string): string {
+	return normalizeIdentityPart(value);
+}
+
+function normalizeCharacterName(value: string): string {
+	return value.trim();
+}
+
 async function fetchCharacterLevel(
 	region: string,
 	realm: string,
 	characterName: string
-): Promise<number | null> {
+): Promise<{ level: number; className: string | null } | null> {
 	const regionLc = region.toLowerCase();
 	const realmLc = realm.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
 	const nameLc = characterName.toLowerCase();
@@ -25,8 +45,15 @@ async function fetchCharacterLevel(
 
 	if (!summaryResponse.ok) return null;
 
-	const summaryData = (await summaryResponse.json()) as { level?: number };
-	return typeof summaryData.level === 'number' ? summaryData.level : null;
+	const summaryData = (await summaryResponse.json()) as {
+		level?: number;
+		character_class?: { name?: string };
+	};
+	if (typeof summaryData.level !== 'number') return null;
+	return {
+		level: summaryData.level,
+		className: typeof summaryData.character_class?.name === 'string' ? summaryData.character_class.name : null
+	};
 }
 
 export const GET: RequestHandler = async ({ locals }) => {
@@ -40,11 +67,20 @@ export const GET: RequestHandler = async ({ locals }) => {
 			6
 		);
 
-		const characters = recentCharacters.map((recent) => ({
-			region: recent.entityData.region,
-			realm: recent.entityData.realm,
-			characterName: recent.entityData.characterName
-		}));
+		const dedupedByIdentity = new Map<string, CharacterRecentData>();
+		for (const recent of recentCharacters) {
+			const region = normalizeRegion(recent.entityData.region);
+			const realm = normalizeRealm(recent.entityData.realm);
+			const characterName = normalizeCharacterName(recent.entityData.characterName);
+			const className =
+				typeof recent.entityData.className === 'string' ? recent.entityData.className : null;
+			const identity = recentCharacterIdentity(region, realm, characterName);
+			if (!dedupedByIdentity.has(identity)) {
+				dedupedByIdentity.set(identity, { region, realm, characterName, className });
+			}
+		}
+
+		const characters = Array.from(dedupedByIdentity.values());
 
 		return apiOk(characters);
 	} catch (error) {
@@ -59,30 +95,33 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		const parsed = await parseJsonBody(request, parseRecentCharacterBody);
 		if (parsed instanceof Response) return parsed;
-		const { characterName, realm, region } = parsed;
+		const characterName = normalizeCharacterName(parsed.characterName);
+		const realm = normalizeRealm(parsed.realm);
+		const region = normalizeRegion(parsed.region);
 
-		const level = await fetchCharacterLevel(region, realm, characterName);
-		if (level === null) {
+		const profile = await fetchCharacterLevel(region, realm, characterName);
+		if (profile === null) {
 			return apiError('Unable to verify character level', 502);
 		}
-		if (level < MIN_CHARACTER_LEVEL) {
+		if (profile.level < MIN_CHARACTER_LEVEL) {
 			return apiError('Only endgame characters can be saved', 422);
 		}
 
 		await addUserRecent(
 			auth.session.user.id,
 			'character',
-			`${characterName}-${realm}`,
+			recentCharacterIdentity(region, realm, characterName),
 			{
 				characterName,
 				realm,
-				region
+				region,
+				className: profile.className
 			},
 			characterName,
 			`${realm} - ${region}`,
 			{
-				class: null,
-				level,
+				class: profile.className,
+				level: profile.level,
 				timestamp: Date.now()
 			}
 		);
