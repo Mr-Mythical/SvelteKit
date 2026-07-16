@@ -33,16 +33,16 @@
 				used during encounters, helping you optimize your raids healing strategy
 			</li>
 			<li>
-				<strong>Average Damage Taken:</strong> Using Warcraft Logs data from public Mythic kills,
-				this tool helps you understand how much damage your raid typically takes against each boss every
-				second, allowing for better planning and survivability
+				<strong>Average Damage Taken:</strong> Using Warcraft Logs data from public Mythic kills, this
+				tool helps you understand how much damage your raid typically takes against each boss every second,
+				allowing for better planning and survivability
 			</li>
 		</ul>
 
 		<h2 class="mt-8 mb-4 text-2xl font-bold">In-Game Addons</h2>
 		<p class="mb-4">
-			Beyond the website, the Mr. Mythical addon suite brings the same toolkit into World of Warcraft.
-			Start with
+			Beyond the website, the Mr. Mythical addon suite brings the same toolkit into World of
+			Warcraft. Start with
 			<Button
 				class="text-link p-0 text-[1.03rem] font-bold"
 				variant="link"

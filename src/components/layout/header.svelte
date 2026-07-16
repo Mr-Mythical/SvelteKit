@@ -67,12 +67,7 @@
 		</nav>
 
 		<div class="bar-actions">
-			<a
-				href={DISCORD_URL}
-				class="discord-cta"
-				target="_blank"
-				rel="noopener noreferrer"
-			>
+			<a href={DISCORD_URL} class="discord-cta" target="_blank" rel="noopener noreferrer">
 				Discord
 			</a>
 

@@ -273,7 +273,7 @@
 							<div class="animate-in fade-in-0 slide-in-from-top-2 duration-300">
 								<Button
 									variant="outline"
-									class="w-full justify-between bg-neutral-500 text-left hover:bg-neutral-600 dark:bg-input/30 dark:hover:bg-input/50"
+									class="dark:bg-input/30 dark:hover:bg-input/50 w-full justify-between bg-neutral-500 text-left hover:bg-neutral-600"
 									onclick={() => loadFromBnet(char)}
 								>
 									<div class="min-w-0">
@@ -314,7 +314,7 @@
 						<div class="animate-in fade-in-0 slide-in-from-top-2 duration-300">
 							<Button
 								variant="outline"
-								class="w-full justify-between bg-neutral-500 text-left hover:bg-neutral-600 dark:bg-input/30 dark:hover:bg-input/50"
+								class="dark:bg-input/30 dark:hover:bg-input/50 w-full justify-between bg-neutral-500 text-left hover:bg-neutral-600"
 								onclick={() => loadCharacter(char)}
 							>
 								<div>
@@ -334,4 +334,3 @@
 		{/if}
 	</Card>
 {/if}
-

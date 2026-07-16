@@ -115,7 +115,9 @@ export const localStorageRecentCharactersBackend: RecentCharactersBackend = {
 	async add(character) {
 		if (typeof localStorage === 'undefined') return { status: 'unavailable' };
 		try {
-			const existing = dedupeCharacters(readLocalStorage()).filter((c) => !sameCharacter(c, character));
+			const existing = dedupeCharacters(readLocalStorage()).filter(
+				(c) => !sameCharacter(c, character)
+			);
 			const next = [character, ...existing].slice(0, MAX_RECENT);
 			localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(next));
 			return { status: 'ok', characters: next };

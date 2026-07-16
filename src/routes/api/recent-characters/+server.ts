@@ -52,7 +52,10 @@ async function fetchCharacterLevel(
 	if (typeof summaryData.level !== 'number') return null;
 	return {
 		level: summaryData.level,
-		className: typeof summaryData.character_class?.name === 'string' ? summaryData.character_class.name : null
+		className:
+			typeof summaryData.character_class?.name === 'string'
+				? summaryData.character_class.name
+				: null
 	};
 }
 
