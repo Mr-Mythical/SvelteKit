@@ -9,6 +9,7 @@
 	import ScorePlanner from '../components/calculator/scorePlanner.svelte';
 	import { bosses } from '$lib/types/bossData';
 	import { extractWarcraftLogsReportCode } from '$lib/data/warcraftlogs';
+	import { ADDONS, DISCORD_URL, FLAGSHIP_ADDON } from '$lib/data/addons';
 
 	// Rotate through the current raid's bosses in the encounter preview.
 	let bossIndex = $state(0);
@@ -52,9 +53,9 @@
 
 <SEO
 	title="Mr. Mythical | Mythic+ & Raid Tools"
-	description="Master WoW with Mr. Mythical tools: Mythic+ score calculator, raid visualizations, and strategy insights to optimize your performance."
+	description="Master WoW with Mr. Mythical: Mythic+ score calculator, raid visualizations, and in-game addons for keystones, gear, and DPS."
 	image="https://mrmythical.com/Logo.png"
-	keywords="World of Warcraft tools, Mythic+ calculator, raid analysis, WoW dungeon optimization, Warcraft logs, M+ score tracker, WoW addons, raid progression"
+	keywords="World of Warcraft tools, Mythic+ calculator, raid analysis, WoW dungeon optimization, Warcraft logs, M+ score tracker, WoW addons, Mr Mythical addon, raid progression"
 />
 
 <main class="home">
@@ -166,34 +167,73 @@
 			</figure>
 		</article>
 
-		<!-- In-game addon. Title left, actions right. -->
-		<article class="tool-row tool-row--addon">
+		<!-- In-game addon suite -->
+		<article class="tool-row tool-row--addons" id="addons">
 			<div class="tool-copy">
-				<p class="tool-eyebrow">In-game addon</p>
-				<h3 class="tool-title">Mr. Mythical addon</h3>
+				<p class="tool-eyebrow">In-game addons</p>
+				<h3 class="tool-title">Mr. Mythical addons</h3>
 				<p class="tool-body">
-					Enhanced keystone tooltips. Rewards, crests, and projected score, on hover.
+					The same toolkit, in-game. Keystone tooltips, DPS gearing, leaderboards, gear checks, and
+					a mascot that has opinions.
 				</p>
 			</div>
-			<div class="tool-actions">
-				<Button
-					variant="default"
-					href="https://www.curseforge.com/wow/addons/mr-mythical"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					CurseForge
-				</Button>
-				<Button
-					variant="outline"
-					href="https://addons.wago.io/addons/mr-mythical"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Wago Addons
-				</Button>
-			</div>
+			<ul class="addon-list">
+				{#each ADDONS as addon (addon.id)}
+					<li class="addon-item" class:addon-item--flagship={addon.id === FLAGSHIP_ADDON.id}>
+						<div class="addon-copy">
+							<p class="addon-name">{addon.name}</p>
+							<p class="addon-tagline">{addon.tagline}</p>
+						</div>
+						<div class="addon-links">
+							<a
+								href={addon.links.curseforge}
+								class="addon-link"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								CurseForge
+							</a>
+							<a
+								href={addon.links.wago}
+								class="addon-link addon-link--muted"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								Wago
+							</a>
+						</div>
+					</li>
+				{/each}
+			</ul>
 		</article>
+	</section>
+
+	<section class="discord" aria-labelledby="discord-heading">
+		<div class="discord-copy">
+			<p class="tool-eyebrow">Community</p>
+			<h2 id="discord-heading" class="tool-title">Join the Discord</h2>
+			<p class="tool-body">
+				Feedback, bug reports, and addon talk between keys. Come say what broke — or what you want
+				next.
+			</p>
+		</div>
+		<div class="discord-actions">
+			<Button href={DISCORD_URL} target="_blank" rel="noopener noreferrer" variant="default">
+				Join Discord
+			</Button>
+			<a href="#addons" class="tool-link">
+				Browse the addons
+				<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
+					<path
+						d="M3 2l5 4-5 4"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			</a>
+		</div>
 	</section>
 
 	<section class="about">
@@ -294,10 +334,6 @@
 		align-items: start;
 	}
 
-	.tool-row:last-child {
-		border-bottom: 1px solid hsl(var(--border));
-	}
-
 	.tool-row--featured {
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
 	}
@@ -312,16 +348,16 @@
 		align-items: start;
 	}
 
-	.tool-row--addon {
-		grid-template-columns: minmax(0, 1.4fr) auto;
-		align-items: center;
+	.tool-row--addons {
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
+		align-items: start;
 	}
 
 	@media (max-width: 800px) {
 		.tool-row,
 		.tool-row--featured,
 		.tool-row--reverse,
-		.tool-row--addon {
+		.tool-row--addons {
 			grid-template-columns: 1fr;
 			gap: 20px;
 			padding: 28px 0;
@@ -491,8 +527,137 @@
 		gap: 10px;
 	}
 
+	/* ---- ADDON LIST ---- */
+
+	.addon-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		border-top: 1px solid hsl(var(--border));
+	}
+
+	.addon-item {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 12px 20px;
+		align-items: center;
+		padding: 14px 0;
+		border-bottom: 1px solid hsl(var(--border));
+	}
+
+	.addon-item--flagship .addon-name {
+		color: hsl(var(--link));
+	}
+
+	.addon-copy {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		min-width: 0;
+	}
+
+	.addon-name {
+		font-family: var(--font-heading);
+		font-size: 1.0625rem;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+		line-height: 1.2;
+		color: hsl(var(--foreground));
+		margin: 0;
+	}
+
+	.addon-tagline {
+		font-family: var(--font-body);
+		font-size: 0.875rem;
+		line-height: 1.45;
+		color: hsl(var(--muted-foreground));
+		margin: 0;
+	}
+
+	.addon-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 14px;
+		justify-content: flex-end;
+	}
+
+	.addon-link {
+		font-family: var(--font-body);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		color: hsl(var(--foreground));
+		text-decoration: none;
+		border-bottom: 1px solid hsl(var(--primary));
+		padding-bottom: 1px;
+		transition: color 150ms cubic-bezier(0.25, 1, 0.5, 1);
+	}
+
+	.addon-link--muted {
+		font-weight: 500;
+		color: hsl(var(--muted-foreground));
+		border-bottom-color: hsl(var(--border));
+	}
+
+	.addon-link:hover {
+		color: hsl(var(--link));
+		border-bottom-color: hsl(var(--link));
+	}
+
+	.addon-link:focus-visible {
+		outline: 2px solid hsl(var(--ring));
+		outline-offset: 3px;
+		border-radius: 2px;
+	}
+
+	@media (max-width: 560px) {
+		.addon-item {
+			grid-template-columns: 1fr;
+			gap: 8px;
+		}
+
+		.addon-links {
+			justify-content: flex-start;
+		}
+	}
+
+	/* ---- DISCORD ---- */
+
+	.discord {
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) auto;
+		gap: clamp(20px, 3vw, 40px);
+		align-items: center;
+		padding: 28px 0;
+		border-top: 1px solid hsl(var(--border));
+		border-bottom: 1px solid hsl(var(--border));
+	}
+
+	.discord-copy {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		min-width: 0;
+	}
+
+	.discord-actions {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	@media (max-width: 720px) {
+		.discord {
+			grid-template-columns: 1fr;
+			gap: 16px;
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
-		.tool-link {
+		.tool-link,
+		.addon-link {
 			transition: none;
 		}
 	}

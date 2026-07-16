@@ -7,6 +7,7 @@
 	import Menu from '@lucide/svelte/icons/menu';
 	import X from '@lucide/svelte/icons/x';
 	import AuthButton from '../authButton.svelte';
+	import { DISCORD_URL } from '$lib/data/addons';
 
 	let open = $state(false);
 
@@ -14,6 +15,7 @@
 		{ href: '/', label: 'Home' },
 		{ href: '/rating-calculator', label: 'Calculator' },
 		{ href: '/raid', label: 'Raid' },
+		{ href: '/#addons', label: 'Addons' },
 		{ href: '/about', label: 'About' }
 	];
 
@@ -21,6 +23,7 @@
 
 	function isActive(href: string) {
 		if (href === '/') return pathname === '/';
+		if (href.startsWith('/#')) return false;
 		return pathname === href || pathname.startsWith(href + '/');
 	}
 
@@ -64,6 +67,15 @@
 		</nav>
 
 		<div class="bar-actions">
+			<a
+				href={DISCORD_URL}
+				class="discord-cta"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				Discord
+			</a>
+
 			<button type="button" class="icon-btn" onclick={toggleMode} aria-label="Toggle theme">
 				<span class="icon-wrap icon-sun"><Sun size={18} aria-hidden="true" /></span>
 				<span class="icon-wrap icon-moon"><Moon size={18} aria-hidden="true" /></span>
@@ -106,6 +118,17 @@
 						</a>
 					</li>
 				{/each}
+				<li>
+					<a
+						href={DISCORD_URL}
+						class="mobile-link mobile-link--discord"
+						target="_blank"
+						rel="noopener noreferrer"
+						onclick={close}
+					>
+						Join Discord
+					</a>
+				</li>
 			</ul>
 			<div class="mobile-auth">
 				<AuthButton mobile />
@@ -245,6 +268,36 @@
 		justify-self: end;
 	}
 
+	.discord-cta {
+		font-family: var(--font-body);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		color: hsl(var(--background));
+		background: hsl(var(--link));
+		text-decoration: none;
+		padding: 7px 12px;
+		border-radius: 6px;
+		line-height: 1;
+		transition:
+			background-color 150ms cubic-bezier(0.25, 1, 0.5, 1),
+			opacity 150ms cubic-bezier(0.25, 1, 0.5, 1);
+	}
+
+	.discord-cta:hover {
+		opacity: 0.9;
+	}
+
+	.discord-cta:focus-visible {
+		outline: 2px solid hsl(var(--ring));
+		outline-offset: 2px;
+	}
+
+	@media (max-width: 480px) {
+		.discord-cta {
+			display: none;
+		}
+	}
+
 	.auth-slot {
 		display: none;
 	}
@@ -355,6 +408,12 @@
 		color: hsl(var(--link));
 	}
 
+	.mobile-link--discord {
+		font-weight: 700;
+		color: hsl(var(--link));
+		border-bottom: none;
+	}
+
 	.mobile-auth {
 		margin-top: 12px;
 		padding-top: 4px;
@@ -368,7 +427,8 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.nav-link,
-		.icon-btn {
+		.icon-btn,
+		.discord-cta {
 			transition: none;
 		}
 	}

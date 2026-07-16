@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { DISCORD_URL } from '$lib/data/addons';
+
 	const currentYear = new Date().getFullYear();
 
 	const product = [
 		{ href: '/rating-calculator', label: 'Calculator' },
-		{ href: '/raid', label: 'Raid' }
+		{ href: '/raid', label: 'Raid' },
+		{ href: '/#addons', label: 'Addons' }
 	];
 
 	const site = [
@@ -15,7 +18,7 @@
 	const community = [
 		{ href: 'https://github.com/Mr-Mythical/SvelteKit', label: 'GitHub', external: true },
 		{ href: 'https://www.patreon.com/MrMythical', label: 'Patreon', external: true },
-		{ href: 'https://discord.gg/hvREYuvJ6w', label: 'Discord', external: true }
+		{ href: DISCORD_URL, label: 'Join Discord', external: true }
 	];
 </script>
 
@@ -52,6 +55,7 @@
 						<li>
 							<a
 								href={link.href}
+								class:is-discord={link.label === 'Join Discord'}
 								target={link.external ? '_blank' : undefined}
 								rel={link.external ? 'noopener noreferrer' : undefined}
 							>
@@ -170,6 +174,11 @@
 
 	.col a:hover {
 		color: hsl(var(--link));
+	}
+
+	.col a.is-discord {
+		color: hsl(var(--link));
+		font-weight: 600;
 	}
 
 	.col a:focus-visible {

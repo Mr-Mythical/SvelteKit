@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Table from '$lib/components/ui/table';
+	import { FLAGSHIP_ADDON } from '$lib/data/addons';
 </script>
 
 <div class="container mx-auto flex flex-col gap-10 p-4 md:px-8 xl:px-40 2xl:px-72">
@@ -152,7 +153,7 @@
 				<Button
 					class="text-link p-0 text-[1.03rem] font-bold"
 					variant="link"
-					href="https://www.curseforge.com/wow/addons/mr-mythical"
+					href={FLAGSHIP_ADDON.links.curseforge}
 					target="_blank"
 					rel="noopener noreferrer"
 				>
@@ -162,7 +163,7 @@
 				<Button
 					class="text-link p-0 text-[1.03rem] font-bold"
 					variant="link"
-					href="https://addons.wago.io/addons/mr-mythical"
+					href={FLAGSHIP_ADDON.links.wago}
 					target="_blank"
 					rel="noopener noreferrer"
 				>
@@ -172,7 +173,8 @@
 			<p class="mb-4">
 				The Mr. Mythical addon gives you enhanced and customizable Mythic+ keystone tooltips with
 				instant, detailed information. See dungeon rewards, crest earnings, and your potential score
-				directly in tooltips and chat.
+				directly in tooltips and chat. Browse the full addon suite on the
+				<a class="text-link font-semibold" href="/#addons">homepage</a>.
 			</p>
 
 			<ul class="mb-6 ml-6 list-disc space-y-1">

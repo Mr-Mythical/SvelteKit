@@ -2,6 +2,7 @@
 	import SEO from '../../components/seo.svelte';
 	import Footer from '../../components/layout/footer.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import { ADDONS, DISCORD_URL, FLAGSHIP_ADDON } from '$lib/data/addons';
 </script>
 
 <SEO
@@ -28,18 +29,51 @@
 				how different dungeons impact your overall score
 			</li>
 			<li>
-				<strong>Keystone Tooltip Addon:</strong> Get instant score predictions and gear drops without
-				alt-tabbing, seamlessly integrated into your gameplay
-			</li>
-			<li>
 				<strong>Encounter Healing Analyzer:</strong> Visualize raid healing, damage taken and abilities
 				used during encounters, helping you optimize your raids healing strategy
 			</li>
 			<li>
-				<strong>Average Damage Taken:</strong> Using Warcraft Logs data from Mythic Manaforge Omega,
+				<strong>Average Damage Taken:</strong> Using Warcraft Logs data from public Mythic kills,
 				this tool helps you understand how much damage your raid typically takes against each boss every
 				second, allowing for better planning and survivability
 			</li>
+		</ul>
+
+		<h2 class="mt-8 mb-4 text-2xl font-bold">In-Game Addons</h2>
+		<p class="mb-4">
+			Beyond the website, the Mr. Mythical addon suite brings the same toolkit into World of Warcraft.
+			Start with
+			<Button
+				class="text-link p-0 text-[1.03rem] font-bold"
+				variant="link"
+				href={FLAGSHIP_ADDON.links.curseforge}
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				{FLAGSHIP_ADDON.name}
+			</Button>
+			on CurseForge or Wago, then add companions as you need them:
+		</p>
+		<ul class="mb-6 ml-6 list-disc space-y-2">
+			{#each ADDONS as addon (addon.id)}
+				<li>
+					<strong>{addon.name}:</strong>
+					{addon.tagline}
+					<a
+						class="text-link font-semibold"
+						href={addon.links.curseforge}
+						target="_blank"
+						rel="noopener noreferrer">CurseForge</a
+					>
+					·
+					<a
+						class="text-link font-semibold"
+						href={addon.links.wago}
+						target="_blank"
+						rel="noopener noreferrer">Wago</a
+					>
+				</li>
+			{/each}
 		</ul>
 
 		<h2 class="mt-8 mb-4 text-2xl font-bold">The Story Behind Mr. Mythical</h2>
@@ -63,8 +97,17 @@
 
 		<h2 class="mt-8 mb-4 text-2xl font-bold">Community and Open Source</h2>
 		<p class="mb-6">
-			MrMythical.com thrives on community feedback and collaboration. The entire project is open
-			source on
+			MrMythical.com thrives on community feedback and collaboration. Join the
+			<Button
+				class="text-link p-0 text-[1.03rem] font-bold"
+				variant="link"
+				href={DISCORD_URL}
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				Discord
+			</Button>
+			for feedback, bug reports, and addon talk — or contribute on
 			<Button
 				class="text-link p-0 text-[1.03rem] font-bold"
 				variant="link"
@@ -104,11 +147,21 @@
 
 		<h2 class="mt-8 mb-4 text-2xl font-bold">Get in Touch</h2>
 		<p class="mb-6">
-			Have ideas, feedback, or found a bug? I'd love to hear from you! Reach out via
+			Have ideas, feedback, or found a bug? Join the
 			<Button
 				class="text-link p-0 text-[1.03rem] font-bold"
 				variant="link"
-				onclick={() => (window.location.href = 'mailto:mythical@mrmythical.com')}
+				href={DISCORD_URL}
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				Discord
+			</Button>
+			or email
+			<Button
+				class="text-link p-0 text-[1.03rem] font-bold"
+				variant="link"
+				href="mailto:mythical@mrmythical.com"
 			>
 				mythical@mrmythical.com
 			</Button>. Your input helps make Mr. Mythical better for everyone.
