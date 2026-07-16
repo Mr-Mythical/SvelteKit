@@ -59,6 +59,14 @@
 />
 
 <main class="home">
+	<header class="page-header">
+		<p class="page-eyebrow">Mythic+ &amp; raid toolkit</p>
+		<h1 class="page-title">Mr. Mythical</h1>
+		<p class="page-lede">
+			Score plans, raid logs, and boss profiles for when you need a quick answer between keys.
+		</p>
+	</header>
+
 	<!-- TOOLKIT: editorial rows, not a card grid -->
 	<section class="tools">
 		<!-- Mythic+ score planner. Title left, tool right. -->
@@ -173,8 +181,8 @@
 				<p class="tool-eyebrow">In-game addons</p>
 				<h3 class="tool-title">Mr. Mythical addons</h3>
 				<p class="tool-body">
-					The same toolkit, in-game. Keystone tooltips, DPS gearing, leaderboards, gear checks, and
-					a mascot that has opinions.
+					The same toolkit in-game. Keystone tooltips, DPS gearing, leaderboards, gear checks, and a
+					mascot that has opinions.
 				</p>
 			</div>
 			<ul class="addon-list">
@@ -213,7 +221,7 @@
 			<p class="tool-eyebrow">Community</p>
 			<h2 id="discord-heading" class="tool-title">Join the Discord</h2>
 			<p class="tool-body">
-				Feedback, bug reports, and addon talk between keys. Come say what broke — or what you want
+				Feedback, bug reports, and addon talk between keys. Come say what broke, or what you want
 				next.
 			</p>
 		</div>
@@ -240,11 +248,10 @@
 		<p class="tool-eyebrow">About</p>
 		<h2 class="tool-title">Built by a player, for keys and pulls.</h2>
 		<p class="about-body">
-			Mr. Mythical turns Warcraft Logs and keystone math into fast answers between runs. It's built
-			by a player who wanted better tools to plan keys and understand raid logs, and is maintained
-			with ongoing input from the community. The goal is to surface insights from the data that help
-			you make informed decisions about your gameplay, whether that's which keystone to run next or
-			how to approach a tricky boss mechanic.
+			Mr. Mythical turns Warcraft Logs and keystone math into answers you can use between runs. It
+			is built by a player who wanted better tools for planning keys and reading raid logs, and it
+			stays updated with help from the community. The aim is simple: show the data that helps you
+			decide which keystone to run next, or how to handle a tricky boss.
 		</p>
 		<a href="/about" class="tool-link">
 			Read more

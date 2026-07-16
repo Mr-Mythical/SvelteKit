@@ -49,7 +49,7 @@
 		{
 			question: 'Does the calculator account for affix bonuses?',
 			answer:
-				'Yes. The calculator uses the exact WoW formula including base score increments for each keystone level and affix breakpoint bonuses at levels 4, 7, 10, and 12.'
+				'Yes. The calculator uses the exact WoW formula including base score increments for each keystone level and affix breakpoint bonuses at levels 5, 7, 10, and 12.'
 		},
 		{
 			question: 'Can I use the API to query specific scores?',
