@@ -181,8 +181,8 @@
 				<p class="tool-eyebrow">In-game addons</p>
 				<h3 class="tool-title">Mr. Mythical addons</h3>
 				<p class="tool-body">
-					The same toolkit in-game. Keystone tooltips, DPS gearing validated against SimulationCraft,
-					leaderboards, gear checks, and a mascot that has opinions.
+					The same toolkit in-game. Keystone tooltips, DPS gearing validated against
+					SimulationCraft, leaderboards, gear checks, and a mascot that has opinions.
 				</p>
 				<a href="/addons" class="tool-link">
 					Browse all addons

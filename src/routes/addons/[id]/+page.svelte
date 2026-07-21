@@ -29,7 +29,12 @@
 		<p class="page-subhead">{addon.headline}</p>
 		<p class="page-lede">{addon.blurb}</p>
 		<div class="header-actions">
-			<Button href={addon.links.curseforge} target="_blank" rel="noopener noreferrer" variant="default">
+			<Button
+				href={addon.links.curseforge}
+				target="_blank"
+				rel="noopener noreferrer"
+				variant="default"
+			>
 				Download on CurseForge
 			</Button>
 			<Button href={addon.links.wago} target="_blank" rel="noopener noreferrer" variant="outline">

@@ -142,8 +142,7 @@ export const ADDONS: AddonProduct[] = [
 		seoTitle: 'Mythic+ Leaderboard WoW Addon | Mr. Mythical',
 		seoDescription:
 			'Download Mr. Mythical Leaderboard. See top Raider.IO Mythic+ runs on keystone tooltips in World of Warcraft.',
-		seoKeywords:
-			'Mythic+ leaderboard, Raider.IO addon, keystone tooltip, WoW addon, Mr Mythical',
+		seoKeywords: 'Mythic+ leaderboard, Raider.IO addon, keystone tooltip, WoW addon, Mr Mythical',
 		ctaLabel: 'View Leaderboard'
 	},
 	{
@@ -152,7 +151,8 @@ export const ADDONS: AddonProduct[] = [
 		title: 'Mr. Mythical: Gear Check',
 		tagline: 'WoW group gear check for enchants, gems, and durability before the pull.',
 		headline: 'Check group gear before you pull.',
-		blurb: 'Scan for missing enchants, empty sockets, and gear about to break before a key or raid boss.',
+		blurb:
+			'Scan for missing enchants, empty sockets, and gear about to break before a key or raid boss.',
 		description:
 			'Mr. Mythical Gear Check is a World of Warcraft prep addon. Open it before a Mythic+ key or raid boss to catch missing or weak enchants, empty gem sockets, and low durability.',
 		features: [
@@ -169,8 +169,7 @@ export const ADDONS: AddonProduct[] = [
 		seoTitle: 'Gear Check WoW Addon | Mr. Mythical',
 		seoDescription:
 			'Download Mr. Mythical Gear Check. Inspect your WoW group for missing enchants, empty sockets, and low durability.',
-		seoKeywords:
-			'WoW gear check, enchants addon, gem check, durability, Mythic+ prep, Mr Mythical',
+		seoKeywords: 'WoW gear check, enchants addon, gem check, durability, Mythic+ prep, Mr Mythical',
 		ctaLabel: 'View Gear Check'
 	},
 	{

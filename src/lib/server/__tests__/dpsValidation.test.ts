@@ -43,7 +43,7 @@ _G.MrMythicalValidationExport = V
 
 describe('formatProfileKey', () => {
 	it('formats multi-word classes and hero talents', () => {
-		expect(formatProfileKey('MID1_Death_Knight_Unholy_San\'layn')).toMatchObject({
+		expect(formatProfileKey("MID1_Death_Knight_Unholy_San'layn")).toMatchObject({
 			className: 'Death Knight',
 			specName: 'Unholy',
 			heroTalent: "San'layn",

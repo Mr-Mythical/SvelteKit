@@ -27,8 +27,7 @@ export const SITE_ROUTES: SiteRoute[] = [
 		changefreq: 'weekly',
 		priority: 1,
 		title: 'Mr. Mythical | Mythic+ & Raid Tools',
-		description:
-			'Mythic+ score calculator, raid log visualizer, boss profiles, and WoW addons.',
+		description: 'Mythic+ score calculator, raid log visualizer, boss profiles, and WoW addons.',
 		inFeed: true
 	},
 	{

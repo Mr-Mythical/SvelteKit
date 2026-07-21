@@ -74,8 +74,7 @@ function normalizeExport(fields: Record<string, unknown>): ValidationExport | nu
 		checked_label: asString(fields.checked_label),
 		status: asString(fields.status, 'validated'),
 		confirmed_at: fields.confirmed_at != null ? asString(fields.confirmed_at) : undefined,
-		confirmed_label:
-			fields.confirmed_label != null ? asString(fields.confirmed_label) : undefined,
+		confirmed_label: fields.confirmed_label != null ? asString(fields.confirmed_label) : undefined,
 		is_full_run: asBool(fields.is_full_run),
 		is_current: asBool(fields.is_current),
 		overall: normalizeOverall(overall),
@@ -92,10 +91,9 @@ function titleCaseWords(raw: string): string {
 }
 
 /** Turn `MID1_Mage_Frost_Frostfire` into class / spec / hero labels. */
-export function formatProfileKey(profileKey: string): Omit<
-	ValidationSpecDisplay,
-	keyof ValidationSpecRow
-> {
+export function formatProfileKey(
+	profileKey: string
+): Omit<ValidationSpecDisplay, keyof ValidationSpecRow> {
 	let rest = profileKey.replace(/^MID\d+_/, '');
 	let className = '';
 	for (const multi of MULTI_WORD_CLASSES) {
@@ -114,7 +112,9 @@ export function formatProfileKey(profileKey: string): Omit<
 	const parts = rest.split('_').filter(Boolean);
 	const specName = titleCaseWords(parts[0] ?? '');
 	const heroTalent = parts.length > 1 ? titleCaseWords(parts.slice(1).join('_')) : null;
-	const label = heroTalent ? `${className} ${specName} (${heroTalent})` : `${className} ${specName}`;
+	const label = heroTalent
+		? `${className} ${specName} (${heroTalent})`
+		: `${className} ${specName}`;
 
 	return { profileKey, className, specName, heroTalent, label };
 }
@@ -173,9 +173,7 @@ async function fetchValidationLua(platform?: App.Platform): Promise<string | nul
  * Load the latest shipped validation export from the addon GitHub repo.
  * Cached for 1h in-isolate and in Cloudflare's edge Cache API.
  */
-export async function loadDpsValidation(
-	platform?: App.Platform
-): Promise<ValidationExport | null> {
+export async function loadDpsValidation(platform?: App.Platform): Promise<ValidationExport | null> {
 	const memHit = memoryCacheGet<ValidationExport>(MEMORY_KEY);
 	if (memHit) return memHit;
 

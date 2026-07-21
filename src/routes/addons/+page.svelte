@@ -37,7 +37,8 @@
 							<p class="accuracy-label">Addon compared to simulation</p>
 							<ul class="accuracy-metrics">
 								<li>
-									<span class="accuracy-value">{data.validation.upgrade_picks_pct.toFixed(1)}%</span>
+									<span class="accuracy-value">{data.validation.upgrade_picks_pct.toFixed(1)}%</span
+									>
 									<span class="accuracy-name">upgrade picks</span>
 								</li>
 								<li>
@@ -47,7 +48,9 @@
 									<span class="accuracy-name">gap error</span>
 								</li>
 								<li>
-									<span class="accuracy-value">{data.validation.dps_read_error_pct.toFixed(2)}%</span>
+									<span class="accuracy-value"
+										>{data.validation.dps_read_error_pct.toFixed(2)}%</span
+									>
 									<span class="accuracy-name">DPS read error</span>
 								</li>
 							</ul>
@@ -104,9 +107,7 @@
 		<div class="discord-copy">
 			<p class="tool-eyebrow">Community</p>
 			<h2 id="discord-heading" class="tool-title">Need help with an addon?</h2>
-			<p class="tool-body">
-				Ask on Discord for bug reports, feedback, and Mythic+ addon talk.
-			</p>
+			<p class="tool-body">Ask on Discord for bug reports, feedback, and Mythic+ addon talk.</p>
 		</div>
 		<div class="discord-actions">
 			<Button href={DISCORD_URL} target="_blank" rel="noopener noreferrer" variant="default">
