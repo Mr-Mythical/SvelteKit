@@ -16,7 +16,7 @@
 		{ href: '/rating-calculator', label: 'Calculator' },
 		{ href: '/raid', label: 'Logs' },
 		{ href: '/raid/boss', label: 'Bosses' },
-		{ href: '/#addons', label: 'Addons' },
+		{ href: '/addons', label: 'Addons' },
 		{ href: '/about', label: 'About' }
 	];
 
@@ -24,7 +24,6 @@
 
 	function isActive(href: string) {
 		if (href === '/') return pathname === '/';
-		if (href.startsWith('/#')) return false;
 		// Keep /raid and /raid/boss from both lighting up under "Logs".
 		if (href === '/raid') {
 			return pathname === '/raid' || pathname.startsWith('/raid/logs');

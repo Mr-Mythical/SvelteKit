@@ -1,0 +1,32 @@
+# Mr. Mythical
+
+> Mythic+ and raid tools for World of Warcraft, plus free in-game addons for keystones, DPS gearing, and prep checks.
+
+Mr. Mythical helps players plan Mythic+ keys, read Warcraft Logs, check boss damage profiles, and install related WoW addons from CurseForge or Wago.
+
+## Web tools
+
+- [Home](https://mrmythical.com/): Overview of the Mythic+ score calculator, raid log visualizer, boss profiles, and addons
+- [Mythic+ Score Calculator](https://mrmythical.com/rating-calculator): Set a target rating and see which keystones get you there
+- [Raid Log Visualizer](https://mrmythical.com/raid): Paste a Warcraft Logs report for per-second damage and healing
+- [Boss Damage & Death Profiles](https://mrmythical.com/raid/boss): Averaged Mythic kill damage and death hotspots
+- [About](https://mrmythical.com/about): Project background and contact
+
+## WoW addons
+
+- [All addons](https://mrmythical.com/addons): Mr. Mythical addon suite for World of Warcraft
+- [Mythic+ Dashboard & Tooltips](https://mrmythical.com/addons/dashboard): Keystone tooltips with rewards, crests, score gains, and a planning dashboard
+- [DPS Predictor & Gearing Dashboard](https://mrmythical.com/addons/dps-predictor): In-game gearing dashboard for bag loadouts, season scans, crest plans, and Great Vault, with SimulationCraft-trained DPS
+- [Leaderboard](https://mrmythical.com/addons/leaderboard): Top Raider.IO Mythic+ runs on keystone tooltips
+- [Gear Check](https://mrmythical.com/addons/gear-check): Group checks for enchants, gems, and durability
+- [Assistant](https://mrmythical.com/addons/assistant): Unicorn companion with run commentary and optional keystone insert
+
+## Policies
+
+- [Privacy Policy](https://mrmythical.com/privacy)
+- [Cookie Policy](https://mrmythical.com/cookie)
+
+## Feeds
+
+- [RSS feed](https://mrmythical.com/feed.xml): Updates for main tools and addon pages
+- [Sitemap](https://mrmythical.com/sitemap.xml)

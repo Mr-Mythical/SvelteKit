@@ -7,7 +7,7 @@
 		{ href: '/rating-calculator', label: 'Calculator' },
 		{ href: '/raid', label: 'Open a log' },
 		{ href: '/raid/boss', label: 'Boss profiles' },
-		{ href: '/#addons', label: 'Addons' }
+		{ href: '/addons', label: 'Addons' }
 	];
 
 	const site = [

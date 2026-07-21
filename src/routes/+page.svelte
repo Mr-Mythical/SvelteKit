@@ -181,17 +181,29 @@
 				<p class="tool-eyebrow">In-game addons</p>
 				<h3 class="tool-title">Mr. Mythical addons</h3>
 				<p class="tool-body">
-					The same toolkit in-game. Keystone tooltips, DPS gearing, leaderboards, gear checks, and a
-					mascot that has opinions.
+					The same toolkit in-game. Keystone tooltips, DPS gearing validated against SimulationCraft,
+					leaderboards, gear checks, and a mascot that has opinions.
 				</p>
+				<a href="/addons" class="tool-link">
+					Browse all addons
+					<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
+						<path
+							d="M3 2l5 4-5 4"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</a>
 			</div>
 			<ul class="addon-list">
 				{#each ADDONS as addon (addon.id)}
 					<li class="addon-item" class:addon-item--flagship={addon.id === FLAGSHIP_ADDON.id}>
-						<div class="addon-copy">
+						<a class="addon-copy" href={`/addons/${addon.id}`}>
 							<p class="addon-name">{addon.name}</p>
 							<p class="addon-tagline">{addon.tagline}</p>
-						</div>
+						</a>
 						<div class="addon-links">
 							<a
 								href={addon.links.curseforge}
@@ -229,7 +241,7 @@
 			<Button href={DISCORD_URL} target="_blank" rel="noopener noreferrer" variant="default">
 				Join Discord
 			</Button>
-			<a href="#addons" class="tool-link">
+			<a href="/addons" class="tool-link">
 				Browse the addons
 				<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
 					<path
@@ -563,6 +575,18 @@
 		flex-direction: column;
 		gap: 4px;
 		min-width: 0;
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.addon-copy:hover .addon-name {
+		color: hsl(var(--link));
+	}
+
+	.addon-copy:focus-visible {
+		outline: 2px solid hsl(var(--ring));
+		outline-offset: 4px;
+		border-radius: 2px;
 	}
 
 	.addon-name {
@@ -573,6 +597,7 @@
 		line-height: 1.2;
 		color: hsl(var(--foreground));
 		margin: 0;
+		transition: color 150ms cubic-bezier(0.25, 1, 0.5, 1);
 	}
 
 	.addon-tagline {

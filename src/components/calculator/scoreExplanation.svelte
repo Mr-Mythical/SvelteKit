@@ -174,7 +174,7 @@
 				The Mr. Mythical addon gives you enhanced and customizable Mythic+ keystone tooltips with
 				instant, detailed information. See dungeon rewards, crest earnings, and your potential score
 				directly in tooltips and chat. Browse the full addon suite on the
-				<a class="text-link font-semibold" href="/#addons">homepage</a>.
+				<a class="text-link font-semibold" href="/addons">addons page</a>.
 			</p>
 
 			<ul class="mb-6 ml-6 list-disc space-y-1">

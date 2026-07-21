@@ -45,18 +45,17 @@
 			<Button
 				class="text-link p-0 text-[1.03rem] font-bold"
 				variant="link"
-				href={FLAGSHIP_ADDON.links.curseforge}
-				target="_blank"
-				rel="noopener noreferrer"
+				href={`/addons/${FLAGSHIP_ADDON.id}`}
 			>
 				{FLAGSHIP_ADDON.name}
 			</Button>
-			on CurseForge or Wago, then pick up the others if you need them:
+			, then pick up the others if you need them — or browse the full
+			<a class="text-link font-semibold" href="/addons">addons page</a>:
 		</p>
 		<ul class="mb-6 ml-6 list-disc space-y-2">
 			{#each ADDONS as addon (addon.id)}
 				<li>
-					<strong>{addon.name}:</strong>
+					<a class="text-link font-semibold" href={`/addons/${addon.id}`}>{addon.name}</a>:
 					{addon.tagline}
 					<a
 						class="text-link font-semibold"

@@ -7,6 +7,15 @@
 	let { children } = $props();
 </script>
 
+<svelte:head>
+	<link
+		rel="alternate"
+		type="application/rss+xml"
+		title="Mr. Mythical RSS"
+		href="https://mrmythical.com/feed.xml"
+	/>
+</svelte:head>
+
 <ModeWatcher />
 <Header />
 <ContentShowcase />

@@ -1,0 +1,47 @@
+---
+description: Keep sitemap and RSS feed lastmod dates accurate when site content changes
+globs: src/lib/data/siteRoutes.ts,src/lib/data/addons.ts,src/routes/**/*.svelte,src/routes/**/+server.ts,static/llms.txt,static/robots.txt
+alwaysApply: false
+---
+
+# Sitemap & RSS freshness
+
+Public discovery for this site comes from one source of truth:
+
+- `src/lib/data/siteRoutes.ts` → powers `/sitemap.xml` and `/feed.xml`
+- `static/llms.txt` → curated AI/index links (update when adding major public pages)
+
+## When you change user-facing content
+
+If you edit copy, features, SEO fields, or add/remove a public page, update discovery metadata in the **same change**:
+
+1. Open `src/lib/data/siteRoutes.ts`
+2. Set that route’s `lastmod` to today’s date as `YYYY-MM-DD` (use the user’s “Today's date” from context when available)
+3. New public page? Add a `SITE_ROUTES` entry with `path`, `lastmod`, `changefreq`, `priority`, `title`, `description`
+4. Should it appear in RSS? Set `inFeed: true` (main tools, about, `/addons`, each addon). Skip noisy URLs (every boss, calculator `?score=` variants)
+5. New major page or addon? Add a matching link under the right section in `static/llms.txt` with an absolute `https://mrmythical.com/...` URL
+
+## Examples
+
+```ts
+// Edited /addons and addon catalog copy today (2026-07-21)
+{
+  path: '/addons',
+  lastmod: '2026-07-21', // bump
+  // ...
+}
+```
+
+```ts
+// ❌ BAD — left lastmod stale after rewriting addon SEO copy
+{ path: '/addons/dps-predictor', lastmod: '2026-06-01', ... }
+
+// ✅ GOOD
+{ path: '/addons/dps-predictor', lastmod: '2026-07-21', ... }
+```
+
+## Do not
+
+- Do not use `new Date()` for sitemap `lastmod` (identical dates look auto-generated)
+- Do not bump every route’s `lastmod` — only routes whose content actually changed
+- Do not put private/api routes in `SITE_ROUTES` or `llms.txt`

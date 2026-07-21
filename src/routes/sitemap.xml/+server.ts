@@ -1,43 +1,24 @@
-import { bosses } from '$lib/types/bossData';
+import { absoluteUrl, SITE_ROUTES } from '$lib/data/siteRoutes';
 
 export const GET = () => {
-	const baseUrl = 'https://mrmythical.com';
-	const bossRoutes = bosses.map((boss) => `/raid/boss/${boss.slug}`);
-
-	const routes = [
-		'/',
-		'/rating-calculator',
-		'/rating-calculator?score=1500',
-		'/rating-calculator?score=2000',
-		'/rating-calculator?score=2500',
-		'/rating-calculator?score=3000',
-		'/rating-calculator?score=3400',
-		'/raid',
-		'/raid/boss',
-		...bossRoutes,
-		'/about',
-		'/privacy',
-		'/cookie'
-	];
+	const urls = SITE_ROUTES.map(
+		(route) => `  <url>
+    <loc>${absoluteUrl(route.path)}</loc>
+    <lastmod>${route.lastmod}</lastmod>
+    <changefreq>${route.changefreq}</changefreq>
+    <priority>${route.priority.toFixed(1)}</priority>
+  </url>`
+	).join('\n');
 
 	const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-      ${routes
-				.map(
-					(route) => `
-        <url>
-          <loc>${baseUrl}${route}</loc>
-          <lastmod>${new Date().toISOString()}</lastmod>
-          <changefreq>weekly</changefreq>
-          <priority>${route === '/' ? '1.0' : '0.8'}</priority>
-        </url>`
-				)
-				.join('')}
-    </urlset>`;
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
 
 	return new Response(sitemap, {
 		headers: {
-			'Content-Type': 'application/xml'
+			'Content-Type': 'application/xml; charset=utf-8',
+			'Cache-Control': 'public, max-age=3600'
 		}
 	});
 };
