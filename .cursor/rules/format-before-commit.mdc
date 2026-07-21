@@ -1,0 +1,14 @@
+---
+description: Run npm format before creating git commits
+alwaysApply: true
+---
+
+# Format before commit
+
+Before creating a git commit in this repo:
+
+1. Run `npm run format` (Prettier write across the project)
+2. Stage any files Prettier changed that belong in the commit
+3. Then create the commit
+
+Do not skip formatting unless the user explicitly says to. If format fails, fix the issue before committing.
