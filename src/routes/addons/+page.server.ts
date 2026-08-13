@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({ platform }) => {
 
 	return {
 		addons: ADDONS.map(
-			({ id, name, headline, blurb, features, links, hasValidation, ctaLabel }) => ({
+			({ id, name, headline, blurb, features, links, hasValidation, ctaLabel, screenshots }) => ({
 				id,
 				name,
 				headline,
@@ -15,7 +15,8 @@ export const load: PageServerLoad = async ({ platform }) => {
 				features: features.slice(0, 4),
 				links: { curseforge: links.curseforge, wago: links.wago },
 				hasValidation: !!hasValidation,
-				ctaLabel
+				ctaLabel,
+				screenshots: screenshots ?? []
 			})
 		),
 		validation: validation

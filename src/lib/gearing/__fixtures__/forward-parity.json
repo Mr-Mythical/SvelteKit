@@ -1,0 +1,78 @@
+{
+	"model_version": "v6",
+	"source": "addon_runtime.exported_forward vs model-v6.json",
+	"cases": [
+		{
+			"name": "frost_mid",
+			"spec_key": "MID1_Mage_Frost",
+			"stats": {
+				"primary_stat": 1800,
+				"crit": 700,
+				"haste": 650,
+				"mastery": 800,
+				"versatility": 400
+			},
+			"expected_dps": 120416.12902460028
+		},
+		{
+			"name": "frost_high",
+			"spec_key": "MID1_Mage_Frost",
+			"stats": {
+				"primary_stat": 2200,
+				"crit": 900,
+				"haste": 800,
+				"mastery": 1000,
+				"versatility": 500
+			},
+			"expected_dps": 152203.6751470835
+		},
+		{
+			"name": "unholy_san",
+			"spec_key": "MID1_Death_Knight_Unholy_San'layn",
+			"stats": {
+				"primary_stat": 1900,
+				"crit": 600,
+				"haste": 900,
+				"mastery": 700,
+				"versatility": 450
+			},
+			"expected_dps": 143592.65559517877
+		},
+		{
+			"name": "enh_storm",
+			"spec_key": "MID1_Shaman_Enhancement_Stormbringer",
+			"stats": {
+				"primary_stat": 1750,
+				"crit": 750,
+				"haste": 850,
+				"mastery": 650,
+				"versatility": 380
+			},
+			"expected_dps": 129754.42477759632
+		},
+		{
+			"name": "zeroish",
+			"spec_key": "MID1_Warrior_Arms",
+			"stats": {
+				"primary_stat": 1000,
+				"crit": 100,
+				"haste": 100,
+				"mastery": 100,
+				"versatility": 100
+			},
+			"expected_dps": 69532.20143596196
+		},
+		{
+			"name": "first_spec_default",
+			"spec_key": "MID1_Death_Knight_Blood",
+			"stats": {
+				"primary_stat": 1500,
+				"crit": 600,
+				"haste": 600,
+				"mastery": 600,
+				"versatility": 600
+			},
+			"expected_dps": 69793.61890357322
+		}
+	]
+}

@@ -9,7 +9,7 @@
 	import ScorePlanner from '../components/calculator/scorePlanner.svelte';
 	import { bosses } from '$lib/types/bossData';
 	import { extractWarcraftLogsReportCode } from '$lib/data/warcraftlogs';
-	import { ADDONS, DISCORD_URL, FLAGSHIP_ADDON } from '$lib/data/addons';
+	import { ADDONS, DISCORD_URL } from '$lib/data/addons';
 
 	// Rotate through the current raid's bosses in the encounter preview.
 	let bossIndex = $state(0);
@@ -199,7 +199,7 @@
 			</div>
 			<ul class="addon-list">
 				{#each ADDONS as addon (addon.id)}
-					<li class="addon-item" class:addon-item--flagship={addon.id === FLAGSHIP_ADDON.id}>
+					<li class="addon-item">
 						<a class="addon-copy" href={`/addons/${addon.id}`}>
 							<p class="addon-name">{addon.name}</p>
 							<p class="addon-tagline">{addon.tagline}</p>
@@ -564,10 +564,6 @@
 		align-items: center;
 		padding: 14px 0;
 		border-bottom: 1px solid hsl(var(--border));
-	}
-
-	.addon-item--flagship .addon-name {
-		color: hsl(var(--link));
 	}
 
 	.addon-copy {

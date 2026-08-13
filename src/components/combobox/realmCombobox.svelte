@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Check from '@lucide/svelte/icons/check';
-	import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';
+	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import * as Command from '$lib/components/ui/command/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { cn } from '$lib/utils.js';
@@ -11,23 +11,29 @@
 		selectedValue?: string;
 		onSelect: (value: string) => void;
 		triggerId?: string;
+		class?: string;
+		placeholder?: string;
 	}
 
-	let { options = [], selectedValue = '', onSelect, triggerId = '' }: Props = $props();
+	let {
+		options = [],
+		selectedValue = '',
+		onSelect,
+		triggerId = '',
+		class: className = '',
+		placeholder = 'Select a realm...'
+	}: Props = $props();
 
 	let open = $state(false);
 
-	let selectedLabel = $derived(
-		options.find((o) => o.value === selectedValue)?.label ?? 'Select a realm...'
-	);
+	const selectedOption = $derived(options.find((o) => o.value === selectedValue));
+	const selectedLabel = $derived(selectedOption?.label ?? placeholder);
+	const hasValue = $derived(Boolean(selectedOption));
 
-	function closeAndFocusTrigger(triggerId: string) {
+	function closeAndFocusTrigger(id: string) {
 		open = false;
 		tick().then(() => {
-			const triggerElement = document.getElementById(triggerId);
-			if (triggerElement) {
-				triggerElement.focus();
-			}
+			document.getElementById(id)?.focus();
 		});
 	}
 
@@ -44,22 +50,26 @@
 		aria-expanded={open}
 		aria-haspopup="listbox"
 		aria-labelledby={`${triggerId}-label`}
+		data-placeholder={!hasValue ? '' : undefined}
 		class={cn(
-			'border-input bg-background ring-offset-background focus:ring-ring inline-flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm whitespace-nowrap focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+			"border-input data-placeholder:text-muted-foreground dark:bg-input/30 dark:hover:bg-input/50 focus-visible:border-ring focus-visible:ring-ring/50 flex h-8 w-full items-center justify-between gap-1.5 rounded-lg border bg-transparent py-2 pr-2 pl-2.5 text-sm whitespace-nowrap transition-colors outline-none select-none focus-visible:ring-3 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+			className
 		)}
 	>
-		<span id={`${triggerId}-label`}>{selectedLabel}</span>
-		<ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
+		<span id={`${triggerId}-label`} class={cn('truncate', !hasValue && 'text-muted-foreground')}>
+			{selectedLabel}
+		</span>
+		<ChevronDownIcon class="text-muted-foreground pointer-events-none size-4" aria-hidden="true" />
 		<span class="sr-only">Toggle dropdown</span>
 	</Popover.Trigger>
 
-	<Popover.Content class="p-0">
+	<Popover.Content class="w-72 p-0" align="start">
 		<div class="scrollable-dropdown">
 			<Command.Root>
 				<Command.Input placeholder="Search realm..." aria-label="Search realm" />
 				<Command.Empty>No realm found.</Command.Empty>
 				<Command.Group>
-					{#each options as option}
+					{#each options as option (option.value)}
 						<Command.Item
 							value={option.label}
 							onSelect={() => {

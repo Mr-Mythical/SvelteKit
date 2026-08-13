@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '../../components/seo.svelte';
 	import Footer from '../../components/layout/footer.svelte';
+	import ScreenshotCarousel from '../../components/addons/screenshotCarousel.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { DISCORD_URL } from '$lib/data/addons';
 
@@ -19,7 +20,7 @@
 		<p class="page-eyebrow">World of Warcraft</p>
 		<h1 class="page-title">Mr. Mythical WoW addons</h1>
 		<p class="page-lede">
-			Free World of Warcraft addons for Mythic+ and gearing. Keystone tooltips, a SimC-checked
+			Free World of Warcraft addons for Mythic+ and gearing. Keystone tooltips, a neural net powered
 			gearing dashboard, Raider.IO leaderboards, gear checks, and a unicorn that talks too much.
 			Grab them on CurseForge or Wago.
 		</p>
@@ -32,6 +33,11 @@
 					<p class="tool-eyebrow">{addon.name}</p>
 					<h2 class="tool-title">{addon.headline}</h2>
 					<p class="tool-body">{addon.blurb}</p>
+					<ul class="feature-list">
+						{#each addon.features as feature (feature)}
+							<li>{feature}</li>
+						{/each}
+					</ul>
 					{#if addon.hasValidation && data.validation}
 						<div class="accuracy">
 							<p class="accuracy-label">Addon compared to simulation</p>
@@ -75,11 +81,9 @@
 					</a>
 				</div>
 				<div class="tool-side">
-					<ul class="feature-list">
-						{#each addon.features as feature (feature)}
-							<li>{feature}</li>
-						{/each}
-					</ul>
+					{#if addon.screenshots.length}
+						<ScreenshotCarousel shots={addon.screenshots} label={`${addon.name} screenshots`} />
+					{/if}
 					<div class="addon-links">
 						<a
 							href={addon.links.curseforge}
@@ -329,11 +333,12 @@
 
 	.feature-list {
 		list-style: none;
-		margin: 0;
+		margin: 4px 0 0;
 		padding: 0;
 		display: flex;
 		flex-direction: column;
 		border-top: 1px solid hsl(var(--border));
+		max-width: 56ch;
 	}
 
 	.feature-list li {
@@ -343,6 +348,19 @@
 		color: hsl(var(--muted-foreground));
 		padding: 10px 0;
 		border-bottom: 1px solid hsl(var(--border));
+		padding-left: 1em;
+		position: relative;
+	}
+
+	.feature-list li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 1.05em;
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: hsl(var(--link));
 	}
 
 	.addon-links {
