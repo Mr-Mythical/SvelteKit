@@ -2,6 +2,7 @@
 	import SEO from '../../../components/seo.svelte';
 	import Footer from '../../../components/layout/footer.svelte';
 	import ValidationSection from '../../../components/addons/validationSection.svelte';
+	import ScreenshotCarousel from '../../../components/addons/screenshotCarousel.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { DISCORD_URL } from '$lib/data/addons';
 
@@ -14,82 +15,67 @@
 <SEO
 	title={addon.seoTitle}
 	description={addon.seoDescription}
-	image="https://mrmythical.com/Logo.png"
+	image={addon.screenshots?.[0]
+		? `https://mrmythical.com${addon.screenshots[0].src}`
+		: 'https://mrmythical.com/Logo.png'}
 	keywords={addon.seoKeywords}
 />
 
 <main class="home">
-	<header class="page-header">
-		<p class="page-eyebrow">
-			<a href="/addons" class="crumb-link">WoW addons</a>
-			<span class="crumb-sep" aria-hidden="true">/</span>
-			{addon.name}
-		</p>
-		<h1 class="page-title">{addon.title}</h1>
-		<p class="page-subhead">{addon.headline}</p>
-		<p class="page-lede">{addon.blurb}</p>
-		<div class="header-actions">
-			<Button
-				href={addon.links.curseforge}
-				target="_blank"
-				rel="noopener noreferrer"
-				variant="default"
-			>
-				Download on CurseForge
-			</Button>
-			<Button href={addon.links.wago} target="_blank" rel="noopener noreferrer" variant="outline">
-				Get it on Wago
-			</Button>
-			{#if addon.links.github}
-				<a class="tool-link" href={addon.links.github} target="_blank" rel="noopener noreferrer">
-					View source on GitHub
-					<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
-						<path
-							d="M3 2l5 4-5 4"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
-				</a>
-			{/if}
+	<header class="page-header" class:page-header--split={!!addon.screenshots?.length}>
+		<div class="header-copy">
+			<p class="page-eyebrow">
+				<a href="/addons" class="crumb-link">WoW addons</a>
+				<span class="crumb-sep" aria-hidden="true">/</span>
+				{addon.name}
+			</p>
+			<h1 class="page-title">{addon.title}</h1>
+			<p class="page-subhead">{addon.headline}</p>
+			<p class="page-lede">{addon.description}</p>
+			<div class="header-actions">
+				<Button
+					href={addon.links.curseforge}
+					target="_blank"
+					rel="noopener noreferrer"
+					variant="default"
+				>
+					Download on CurseForge
+				</Button>
+				<Button href={addon.links.wago} target="_blank" rel="noopener noreferrer" variant="outline">
+					Get it on Wago
+				</Button>
+				{#if addon.id === 'dps-predictor'}
+					<Button href="/gearing" variant="outline">Open Gearing Dashboard</Button>
+				{/if}
+				{#if addon.links.github}
+					<a class="tool-link" href={addon.links.github} target="_blank" rel="noopener noreferrer">
+						View source on GitHub
+						<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
+							<path
+								d="M3 2l5 4-5 4"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+					</a>
+				{/if}
+			</div>
 		</div>
+		{#if addon.screenshots?.length}
+			<div class="header-shots">
+				<ScreenshotCarousel shots={addon.screenshots} label={`${addon.name} screenshots`} />
+			</div>
+		{/if}
 	</header>
 
 	<section class="tools">
-		<article class="tool-row">
-			<div class="tool-copy">
-				<p class="tool-eyebrow">About this WoW addon</p>
-				<h2 class="tool-title">What {addon.name} does</h2>
-				<p class="tool-body">{addon.description}</p>
-			</div>
-			<div class="tool-side">
-				<p class="side-label">Get the addon</p>
-				<div class="side-actions">
-					<a
-						class="addon-link"
-						href={addon.links.curseforge}
-						target="_blank"
-						rel="noopener noreferrer">Download on CurseForge</a
-					>
-					<a
-						class="addon-link addon-link--muted"
-						href={addon.links.wago}
-						target="_blank"
-						rel="noopener noreferrer">Get it on Wago</a
-					>
-					{#if addon.links.github}
-						<a
-							class="addon-link addon-link--muted"
-							href={addon.links.github}
-							target="_blank"
-							rel="noopener noreferrer">GitHub</a
-						>
-					{/if}
-				</div>
-			</div>
-		</article>
+		{#if validation}
+			<article class="tool-row tool-row--validation">
+				<ValidationSection data={validation} specs={data.validationSpecs} />
+			</article>
+		{/if}
 
 		<article class="tool-row">
 			<div class="tool-copy">
@@ -105,29 +91,6 @@
 				</ul>
 			</div>
 		</article>
-
-		{#if addon.commands?.length}
-			<article class="tool-row">
-				<div class="tool-copy">
-					<p class="tool-eyebrow">Commands</p>
-					<h2 class="tool-title">How to open {addon.name}</h2>
-					<p class="tool-body">Slash commands once the addon is installed.</p>
-				</div>
-				<div class="tool-side">
-					<ul class="command-list">
-						{#each addon.commands as command (command)}
-							<li><code>{command}</code></li>
-						{/each}
-					</ul>
-				</div>
-			</article>
-		{/if}
-
-		{#if validation}
-			<article class="tool-row tool-row--validation">
-				<ValidationSection data={validation} specs={data.validationSpecs} />
-			</article>
-		{/if}
 
 		{#if addon.limitations?.length}
 			<article class="tool-row">
@@ -221,6 +184,32 @@
 		padding-bottom: clamp(8px, 1.5vw, 16px);
 	}
 
+	.page-header--split {
+		display: grid;
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
+		gap: clamp(24px, 4vw, 48px);
+		align-items: start;
+		max-width: none;
+	}
+
+	.header-copy {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	.header-shots {
+		min-width: 0;
+	}
+
+	@media (max-width: 800px) {
+		.page-header--split {
+			grid-template-columns: 1fr;
+			gap: 20px;
+		}
+	}
+
 	.page-eyebrow {
 		font-family: var(--font-body);
 		font-size: 0.75rem;
@@ -274,9 +263,10 @@
 	.page-lede {
 		font-family: var(--font-body);
 		font-size: 0.9375rem;
-		line-height: 1.45;
+		line-height: 1.5;
 		color: hsl(var(--muted-foreground));
 		margin: 0;
+		max-width: 56ch;
 	}
 
 	.header-actions {
@@ -376,24 +366,7 @@
 		border-bottom-color: hsl(var(--link));
 	}
 
-	.side-label {
-		font-family: var(--font-body);
-		font-size: 0.75rem;
-		font-weight: 500;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: hsl(var(--muted-foreground));
-		margin: 0;
-	}
-
-	.side-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px 14px;
-	}
-
 	.feature-list,
-	.command-list,
 	.addon-list {
 		list-style: none;
 		margin: 0;
@@ -417,21 +390,6 @@
 
 	.feature-list--muted li {
 		color: hsl(var(--muted-foreground));
-	}
-
-	.command-list {
-		border-top: 1px solid hsl(var(--border));
-	}
-
-	.command-list li {
-		padding: 10px 0;
-		border-bottom: 1px solid hsl(var(--border));
-	}
-
-	.command-list code {
-		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-		font-size: 0.875rem;
-		color: hsl(var(--foreground));
 	}
 
 	.addon-list {

@@ -24,9 +24,14 @@ describe('handleSecurity', () => {
 			resolve: async () => new Response('hello')
 		});
 
-		expect(response.headers.get('Strict-Transport-Security')).toBe(
-			'max-age=63072000; includeSubDomains; preload'
-		);
+		// HSTS is production-only so localhost OAuth is not pinned to https.
+		if (process.env.NODE_ENV === 'production') {
+			expect(response.headers.get('Strict-Transport-Security')).toBe(
+				'max-age=63072000; includeSubDomains; preload'
+			);
+		} else {
+			expect(response.headers.get('Strict-Transport-Security')).toBeNull();
+		}
 		expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
 		expect(response.headers.get('X-Frame-Options')).toBe('SAMEORIGIN');
 		expect(response.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin');
@@ -51,6 +56,17 @@ describe('handleSecurity', () => {
 			}
 		});
 		expect(response.headers.get('Content-Security-Policy')).toBe(__cspHeaderForTests);
+	});
+
+	it('sets short cache headers on gearing JSON artifacts', async () => {
+		const event = baseEvent();
+		event.url = new URL('http://localhost/gearing/model-v6.json');
+		const response = await __securityHandlerForTests({
+			event,
+			resolve: async () => new Response('{}')
+		});
+		expect(response.headers.get('Cache-Control')).toMatch(/max-age=300/);
+		expect(response.headers.get('Cache-Control')).toMatch(/must-revalidate/);
 	});
 
 	it('forwards the filterSerializedResponseHeaders predicate to resolve', async () => {
@@ -82,15 +98,18 @@ describe('CSP header', () => {
 		expect(csp).toMatch(/object-src 'none'/);
 	});
 
-	it('limits base-uri and form-action to self', () => {
+	it('limits base-uri to self and allows Battle.net OAuth form-action', () => {
 		expect(csp).toMatch(/base-uri 'self'/);
 		expect(csp).toMatch(/form-action 'self'/);
+		expect(csp).toMatch(/https:\/\/eu\.battle\.net/);
+		expect(csp).toMatch(/https:\/\/oauth\.battle\.net/);
 	});
 
 	it('declares all the directives the app relies on', () => {
 		for (const directive of [
 			'default-src',
 			'script-src',
+			'worker-src',
 			'style-src',
 			'img-src',
 			'font-src',
@@ -99,5 +118,9 @@ describe('CSP header', () => {
 		]) {
 			expect(csp).toContain(directive);
 		}
+	});
+
+	it('allows same-origin and blob workers for loadout search', () => {
+		expect(csp).toMatch(/worker-src 'self' blob:/);
 	});
 });

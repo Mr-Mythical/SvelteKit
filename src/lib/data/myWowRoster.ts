@@ -97,7 +97,7 @@ async function getScoreTiers(): Promise<RaiderScoreTier[]> {
 
 	try {
 		const response = await fetchWithRateLimit(
-			'https://raider.io/api/v1/mythic-plus/score-tiers?season=season-mn-1',
+			'https://raider.io/api/v1/mythic-plus/score-tiers?season=season-mn-2',
 			undefined
 		);
 		if (!response.ok) {

@@ -32,7 +32,13 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async () => {
 			BattleNet({
 				clientId: env.AUTH_BATTLENET_ID,
 				clientSecret: env.AUTH_BATTLENET_SECRET,
-				issuer: 'https://eu.battle.net/oauth',
+				issuer:
+					(env.AUTH_BATTLENET_ISSUER as
+						| 'https://eu.battle.net/oauth'
+						| 'https://us.battle.net/oauth'
+						| 'https://kr.battle.net/oauth'
+						| 'https://tw.battle.net/oauth'
+						| undefined) ?? 'https://eu.battle.net/oauth',
 				checks: ['pkce', 'nonce', 'state'],
 				authorization: {
 					params: {
@@ -45,6 +51,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async () => {
 			})
 		],
 		secret: env.AUTH_SECRET,
+		// Also set AUTH_TRUST_HOST=true and AUTH_URL=http://localhost:5173 for local OAuth.
 		trustHost: true,
 		debug: process.env.NODE_ENV !== 'production',
 		session: {

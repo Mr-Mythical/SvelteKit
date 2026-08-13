@@ -107,6 +107,16 @@ export const SITE_ROUTES: SiteRoute[] = [
 		inFeed: false
 	})),
 	{
+		path: '/gearing',
+		lastmod: '2026-08-13',
+		changefreq: 'weekly',
+		priority: 0.9,
+		title: 'Gearing Dashboard',
+		description:
+			'Load equipped gear from Battle.net and scan season dungeon and raid loot in the browser with the same SimC-trained DPS estimator as the Mr. Mythical addon.',
+		inFeed: true
+	},
+	{
 		path: '/addons',
 		lastmod: '2026-07-21',
 		changefreq: 'weekly',

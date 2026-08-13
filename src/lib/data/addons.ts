@@ -8,12 +8,21 @@ export type AddonLinks = {
 	github?: string;
 };
 
+export type AddonScreenshot = {
+	src: string;
+	alt: string;
+	caption: string;
+	/** CSS object-position when the carousel crops to a fixed frame (default: top center) */
+	objectPosition?: string;
+};
+
 export type AddonProduct = {
 	id: string;
 	/** Short label for lists (e.g. "Mythic+ Dashboard") */
 	name: string;
 	/** Full marketplace title */
 	title: string;
+	/** Addon ## Notes from the .toc (shown on homepage / about) */
 	tagline: string;
 	/** Punchy editorial headline for tool rows (homepage style) */
 	headline: string;
@@ -23,10 +32,10 @@ export type AddonProduct = {
 	description: string;
 	/** What the addon does, shown as a feature list */
 	features: string[];
-	/** Slash commands or how to open it */
-	commands?: string[];
 	/** Honest limitations when relevant */
 	limitations?: string[];
+	/** Optional product screenshots (static paths) */
+	screenshots?: AddonScreenshot[];
 	links: AddonLinks;
 	/** Whether this page loads SimC-factory validation metrics */
 	hasValidation?: boolean;
@@ -45,27 +54,20 @@ export const ADDONS: AddonProduct[] = [
 		id: 'dashboard',
 		name: 'Mythic+ Dashboard & Tooltips',
 		title: 'Mr. Mythical: Mythic+ Dashboard & Tooltips',
-		tagline: 'WoW Mythic+ keystone tooltips with rewards, score gains, and a planning dashboard.',
-		headline: 'More info on every Mythic+ keystone.',
+		tagline:
+			'Your all-in-one Mythic+ toolkit with enhanced customizable tooltips, run tracking, score calculations, and reward information',
+		headline: 'Keystone tooltips, your way.',
 		blurb:
-			'Hover a key and see rewards, crests, score gains, and timers. Use the dashboard when you want to plan the next dungeon.',
+			'Toggle every line: rewards, crests, score gains, timers, personal bests. Keep tooltips lean day to day, or hold a modifier for the full picture. Dashboard for planning when you want more.',
 		description:
-			'Mr. Mythical is a World of Warcraft Mythic+ addon for keystone tooltips and run planning. Tooltips show reward item levels, crest amounts, score gains, your personal best, and timer lines. Show or hide what you need, or hold a modifier for extra detail. The dashboard includes a rewards browser, score calculator, dungeon timers, season stats, and a log of recent runs.',
+			'Mr. Mythical is a World of Warcraft Mythic+ addon built around customizable keystone tooltips and a planning dashboard. Pick which details appear—reward item levels, crest amounts, score gains, personal best, timer lines—and whether they show always or only while you hold a modifier. Same controls apply to keystone chat links. When you want to dig in, the dashboard covers rewards, score calc, dungeon timers, season stats, and a log of recent runs.',
 		features: [
-			'Mythic+ keystone tooltips with rewards, crests, and score gains',
-			'Personal best and party score gains (always on, or hold a modifier)',
-			'Dungeon timer lines for chest thresholds',
+			'Fully customizable Mythic+ keystone tooltips',
+			'Show or hide rewards, crests, score gains, timers, and personal best',
+			'Always-on lines, or reveal extra detail with a modifier key',
+			'Same tooltip options on keystone chat links',
 			'Dashboard with rewards, score calc, timers, and season stats',
-			'Tracks your Mythic+ runs as you play',
-			'Same tooltip details on keystone chat links'
-		],
-		commands: [
-			'/mrm opens the main dashboard',
-			'/mrm rewards opens the reward calculator',
-			'/mrm score opens the score calculator',
-			'/mrm stats opens season stats',
-			'/mrm times opens dungeon timer thresholds',
-			'/mrm settings opens options'
+			'Tracks your Mythic+ runs as you play'
 		],
 		links: {
 			curseforge: 'https://www.curseforge.com/wow/addons/mr-mythical',
@@ -74,9 +76,9 @@ export const ADDONS: AddonProduct[] = [
 		},
 		seoTitle: 'Mythic+ Dashboard & Tooltips WoW Addon | Mr. Mythical',
 		seoDescription:
-			'Download Mr. Mythical for WoW Mythic+. Keystone tooltips with rewards, crests, and score gains, plus a dashboard to plan your next key.',
+			'Download Mr. Mythical for WoW Mythic+. Customizable keystone tooltips—toggle rewards, crests, score gains, and timers—plus a planning dashboard.',
 		seoKeywords:
-			'Mythic+ addon, WoW addon, keystone tooltips, Mythic+ score, crest rewards, Mr Mythical, CurseForge',
+			'Mythic+ addon, WoW addon, customizable keystone tooltips, Mythic+ score, crest rewards, Mr Mythical, CurseForge',
 		ctaLabel: 'View Mythic+ Dashboard'
 	},
 	{
@@ -84,12 +86,12 @@ export const ADDONS: AddonProduct[] = [
 		name: 'DPS Predictor & Gearing Dashboard',
 		title: 'Mr. Mythical: DPS Predictor & Gearing Dashboard',
 		tagline:
-			'WoW gearing dashboard for bags, season loot, crests, and Great Vault, powered by SimulationCraft-trained DPS.',
+			'Gearing dashboard for your best loadout from your bags or the season, optimal crest upgrades, and Great Vault advice - powered by a neural-net DPS prediction model.',
 		headline: 'Build your best loadout in game.',
 		blurb:
-			'Use the dashboard to find your best loadout from bags or the entire season, optimize crest upgrades, pick Great Vault rewards, and see DPS on tooltips. Powered by a neural net trained on SimC data.',
+			'Use the dashboard to find your best loadout from bags or the entire season, optimize crest upgrades, pick Great Vault rewards, and see DPS on tooltips.',
 		description:
-			'Mr. Mythical DPS Predictor is a World of Warcraft gearing addon. The main UI is the /mrdps dashboard: find your best loadout from bags, scan current raid and Mythic+ journal loot, rank crest upgrades by DPS per crest, and compare Great Vault options before you lock in. A neural net runs on your PC, trained on SimulationCraft data, with no server calls. Item tooltips also show DPS vs what you wear. Validation vs fresh SimC sims is published on this page.',
+			'Mr. Mythical DPS Predictor is a World of Warcraft gearing addon. The main UI is the /mrdps dashboard: find your best loadout from bags, scan current raid and Mythic+ journal loot, rank crest upgrades by DPS per crest, and compare Great Vault options before you lock in. Item tooltips also show DPS vs what you wear. Validation vs fresh SimC sims is published on this page.',
 		features: [
 			'Gearing dashboard via /mrdps',
 			'Find Loadout searches full gear sets from your bags',
@@ -98,13 +100,41 @@ export const ADDONS: AddonProduct[] = [
 			'Great Vault picks ranked by DPS',
 			'Preview drops at Champion, Hero, and Myth tracks',
 			'DPS vs equipped on item tooltips',
-			'Neural net trained on SimulationCraft, per spec and hero talent'
+			'DPS estimates checked against SimulationCraft, per spec and hero talent'
 		],
-		commands: ['/mrdps opens the gearing dashboard'],
 		limitations: [
 			'This is a fast estimate, not a full SimulationCraft run',
 			'It does not fully model rotations, trinket procs, or set bonuses',
 			'Trinkets are skipped. The model assumes best-in-slot trinkets'
+		],
+		screenshots: [
+			{
+				src: '/addons/dps-predictor/gear-advisor-bags.png',
+				alt: 'Mr. Mythical DPS Predictor Bags tab showing best loadout from inventory with Equip buttons',
+				caption: 'Bags tab: best loadout from what you own, with one-click Equip'
+			},
+			{
+				src: '/addons/dps-predictor/gear-advisor-dungeons-raids.png',
+				alt: 'Mr. Mythical DPS Predictor Dungeons and Raids tab with season BiS recommendations and sources',
+				caption: 'Dungeons & Raids: best drops across the season, with boss and instance sources'
+			},
+			{
+				src: '/addons/dps-predictor/crest-upgrades.png',
+				alt: 'Mr. Mythical DPS Predictor Crest Upgrades tab ranking upgrades by DPS per crest',
+				caption: 'Crest Upgrades: step-by-step plan ranked by DPS per crest spent'
+			},
+			{
+				src: '/addons/dps-predictor/great-vault.png',
+				alt: 'Great Vault window with Mr. Mythical recommending the highest DPS reward',
+				caption: 'Great Vault: which reward is the biggest DPS gain before you lock in'
+			},
+			{
+				src: '/addons/dps-predictor/tooltip-comparison.png',
+				alt: 'Item tooltip showing Mr. Mythical DPS Predictor plus 1335 DPS versus equipped gear',
+				caption: 'Tooltips: predicted DPS change vs what you are wearing',
+				// Tall tooltip: keep +DPS line in frame when cropped
+				objectPosition: 'bottom center'
+			}
 		],
 		links: {
 			curseforge: 'https://www.curseforge.com/wow/addons/mr-mythical-dps-predictor',
@@ -123,7 +153,7 @@ export const ADDONS: AddonProduct[] = [
 		id: 'leaderboard',
 		name: 'Leaderboard',
 		title: 'Mr. Mythical: Leaderboard',
-		tagline: 'Top Raider.IO Mythic+ runs on your WoW keystone tooltips.',
+		tagline: 'Shows the top Mythic+ runs from Raider.IO with keystone tooltips',
 		headline: 'See the top Mythic+ clear for that dungeon.',
 		blurb:
 			'Hover a keystone for the current Raider.IO top run. Level, time, score, and who was in it.',
@@ -149,7 +179,8 @@ export const ADDONS: AddonProduct[] = [
 		id: 'gear-check',
 		name: 'Gear Check',
 		title: 'Mr. Mythical: Gear Check',
-		tagline: 'WoW group gear check for enchants, gems, and durability before the pull.',
+		tagline:
+			"Quickly inspect your group's gear to identify common preparation issues like missing enchants, empty gem sockets, and low durability items.",
 		headline: 'Check group gear before you pull.',
 		blurb:
 			'Scan for missing enchants, empty sockets, and gear about to break before a key or raid boss.',
@@ -160,7 +191,6 @@ export const ADDONS: AddonProduct[] = [
 			'Flags empty sockets and bad gems',
 			'Warns on low durability'
 		],
-		commands: ['/mrgc or /gearcheck opens the gear check window'],
 		links: {
 			curseforge: 'https://www.curseforge.com/wow/addons/mr-mythical-gear-check',
 			wago: 'https://addons.wago.io/addons/mrmythicalgearcheck',
@@ -176,7 +206,8 @@ export const ADDONS: AddonProduct[] = [
 		id: 'assistant',
 		name: 'Assistant',
 		title: 'Mr. Mythical: Assistant',
-		tagline: 'A WoW unicorn companion that comments on your runs and can insert your keystone.',
+		tagline:
+			'A sophisticated unicorn companion who provides witty (if not particularly helpful) commentary on your adventures.',
 		headline: 'A unicorn with opinions.',
 		blurb:
 			'Comments on deaths, keys, and repairs. Can auto-insert your Mythic+ keystone if you leave that on.',
@@ -186,11 +217,6 @@ export const ADDONS: AddonProduct[] = [
 			'Comments on deaths, keys, finishes, and repairs',
 			'Optional auto-insert for the correct Mythic+ keystone',
 			'Movable frame, message length, and per-event toggles'
-		],
-		commands: [
-			'/mma test shows a test message',
-			'/mma move unlocks or locks the frame',
-			'/mma reset moves it back to center'
 		],
 		links: {
 			curseforge: 'https://www.curseforge.com/wow/addons/mr-mythical-assistant',

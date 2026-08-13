@@ -14,6 +14,7 @@
 	const links = [
 		{ href: '/', label: 'Home' },
 		{ href: '/rating-calculator', label: 'Calculator' },
+		{ href: '/gearing', label: 'Gearing' },
 		{ href: '/raid', label: 'Logs' },
 		{ href: '/raid/boss', label: 'Bosses' },
 		{ href: '/addons', label: 'Addons' },

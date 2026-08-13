@@ -9,15 +9,16 @@ export interface Run {
 	score: number;
 }
 
+/** Midnight Season 2 Mythic+ pool (short names match MrMythical SHORT_NAMES). */
 export const dungeons = [
-	{ value: "Algeth'ar Academy", label: "Algeth'ar Academy", short_name: 'AA' },
-	{ value: "Magisters' Terrace", label: "Magisters' Terrace", short_name: 'MT' },
-	{ value: 'Maisara Caverns', label: 'Maisara Caverns', short_name: 'MC' },
-	{ value: 'Nexus-Point Xenas', label: 'Nexus-Point Xenas', short_name: 'NPX' },
-	{ value: 'Pit of Saron', label: 'Pit of Saron', short_name: 'POS' },
-	{ value: 'Seat of the Triumvirate', label: 'Seat of the Triumvirate', short_name: 'SEAT' },
-	{ value: 'Skyreach', label: 'Skyreach', short_name: 'SR' },
-	{ value: 'Windrunner Spire', label: 'Windrunner Spire', short_name: 'WS' }
+	{ value: 'Altar of Fangs', label: 'Altar of Fangs', short_name: 'AOF' },
+	{ value: 'The Blinding Vale', label: 'The Blinding Vale', short_name: 'BV' },
+	{ value: 'Den of Nalorakk', label: 'Den of Nalorakk', short_name: 'DON' },
+	{ value: "Kings' Rest", label: "Kings' Rest", short_name: 'KR' },
+	{ value: 'Murder Row', label: 'Murder Row', short_name: 'MR' },
+	{ value: 'Ruby Life Pools', label: 'Ruby Life Pools', short_name: 'RLP' },
+	{ value: 'Temple of Sethraliss', label: 'Temple of Sethraliss', short_name: 'TOS' },
+	{ value: 'Voidscar Arena', label: 'Voidscar Arena', short_name: 'VA' }
 ];
 
 export class Dungeons {

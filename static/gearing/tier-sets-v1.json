@@ -1,0 +1,582 @@
+{
+  "version": 1,
+  "schema": "tier-sets-v1",
+  "season": "midnight-s2",
+  "wow_build": "12.1.0",
+  "model_compat": "v6",
+  "source": {
+    "pipeline": "lua-bridge",
+    "extractor": "simc casc_extract + dbc_extract \u2192 simc-factory (target)",
+    "publishedFrom": "TierTokenData.lua",
+    "notes": [
+      "Replace with ItemSet / EJ DBC export when available; keep tokens+pieces indexes."
+    ]
+  },
+  "minTierSetPieces": 4,
+  "tierSlots": [
+    1,
+    3,
+    5,
+    7,
+    10
+  ],
+  "tokens": {
+    "270910": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "PRIEST": 271556,
+        "MAGE": 271565,
+        "WARLOCK": 271547
+      }
+    },
+    "270911": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "ROGUE": 271511,
+        "MONK": 271520,
+        "DRUID": 271529,
+        "DEMONHUNTER": 271538
+      }
+    },
+    "270912": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "HUNTER": 271493,
+        "SHAMAN": 271484,
+        "EVOKER": 271502
+      }
+    },
+    "270913": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "WARRIOR": 271457,
+        "PALADIN": 271466,
+        "DEATHKNIGHT": 271475
+      }
+    },
+    "270914": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "PRIEST": 271555,
+        "MAGE": 271564,
+        "WARLOCK": 271546
+      }
+    },
+    "270915": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "ROGUE": 271510,
+        "MONK": 271519,
+        "DRUID": 271528,
+        "DEMONHUNTER": 271537
+      }
+    },
+    "270916": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "HUNTER": 271492,
+        "SHAMAN": 271483,
+        "EVOKER": 271501
+      }
+    },
+    "270917": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "WARRIOR": 271456,
+        "PALADIN": 271465,
+        "DEATHKNIGHT": 271474
+      }
+    },
+    "270918": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "PRIEST": 271554,
+        "MAGE": 271563,
+        "WARLOCK": 271545
+      }
+    },
+    "270919": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "ROGUE": 271509,
+        "MONK": 271518,
+        "DRUID": 271527,
+        "DEMONHUNTER": 271536
+      }
+    },
+    "270920": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "HUNTER": 271491,
+        "SHAMAN": 271482,
+        "EVOKER": 271500
+      }
+    },
+    "270921": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "WARRIOR": 271455,
+        "PALADIN": 271464,
+        "DEATHKNIGHT": 271473
+      }
+    },
+    "270922": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "PRIEST": 271553,
+        "MAGE": 271562,
+        "WARLOCK": 271544
+      }
+    },
+    "270923": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "ROGUE": 271508,
+        "MONK": 271517,
+        "DRUID": 271526,
+        "DEMONHUNTER": 271535
+      }
+    },
+    "270924": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "HUNTER": 271490,
+        "SHAMAN": 271481,
+        "EVOKER": 271499
+      }
+    },
+    "270925": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "WARRIOR": 271454,
+        "PALADIN": 271463,
+        "DEATHKNIGHT": 271472
+      }
+    },
+    "270926": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "PRIEST": 271558,
+        "MAGE": 271567,
+        "WARLOCK": 271549
+      }
+    },
+    "270927": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "ROGUE": 271513,
+        "MONK": 271522,
+        "DRUID": 271531,
+        "DEMONHUNTER": 271540
+      }
+    },
+    "270928": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "HUNTER": 271495,
+        "SHAMAN": 271486,
+        "EVOKER": 271504
+      }
+    },
+    "270929": {
+      "family": "venomous-abyss-t1",
+      "pieces": {
+        "WARRIOR": 271459,
+        "PALADIN": 271468,
+        "DEATHKNIGHT": 271477
+      }
+    }
+  },
+  "pieces": {
+    "271556": {
+      "classToken": "PRIEST",
+      "matchKey": "venomous-abyss-t1:PRIEST",
+      "tokenItemId": 270910,
+      "family": "venomous-abyss-t1"
+    },
+    "271565": {
+      "classToken": "MAGE",
+      "matchKey": "venomous-abyss-t1:MAGE",
+      "tokenItemId": 270910,
+      "family": "venomous-abyss-t1"
+    },
+    "271547": {
+      "classToken": "WARLOCK",
+      "matchKey": "venomous-abyss-t1:WARLOCK",
+      "tokenItemId": 270910,
+      "family": "venomous-abyss-t1"
+    },
+    "271511": {
+      "classToken": "ROGUE",
+      "matchKey": "venomous-abyss-t1:ROGUE",
+      "tokenItemId": 270911,
+      "family": "venomous-abyss-t1"
+    },
+    "271520": {
+      "classToken": "MONK",
+      "matchKey": "venomous-abyss-t1:MONK",
+      "tokenItemId": 270911,
+      "family": "venomous-abyss-t1"
+    },
+    "271529": {
+      "classToken": "DRUID",
+      "matchKey": "venomous-abyss-t1:DRUID",
+      "tokenItemId": 270911,
+      "family": "venomous-abyss-t1"
+    },
+    "271538": {
+      "classToken": "DEMONHUNTER",
+      "matchKey": "venomous-abyss-t1:DEMONHUNTER",
+      "tokenItemId": 270911,
+      "family": "venomous-abyss-t1"
+    },
+    "271493": {
+      "classToken": "HUNTER",
+      "matchKey": "venomous-abyss-t1:HUNTER",
+      "tokenItemId": 270912,
+      "family": "venomous-abyss-t1"
+    },
+    "271484": {
+      "classToken": "SHAMAN",
+      "matchKey": "venomous-abyss-t1:SHAMAN",
+      "tokenItemId": 270912,
+      "family": "venomous-abyss-t1"
+    },
+    "271502": {
+      "classToken": "EVOKER",
+      "matchKey": "venomous-abyss-t1:EVOKER",
+      "tokenItemId": 270912,
+      "family": "venomous-abyss-t1"
+    },
+    "271457": {
+      "classToken": "WARRIOR",
+      "matchKey": "venomous-abyss-t1:WARRIOR",
+      "tokenItemId": 270913,
+      "family": "venomous-abyss-t1"
+    },
+    "271466": {
+      "classToken": "PALADIN",
+      "matchKey": "venomous-abyss-t1:PALADIN",
+      "tokenItemId": 270913,
+      "family": "venomous-abyss-t1"
+    },
+    "271475": {
+      "classToken": "DEATHKNIGHT",
+      "matchKey": "venomous-abyss-t1:DEATHKNIGHT",
+      "tokenItemId": 270913,
+      "family": "venomous-abyss-t1"
+    },
+    "271555": {
+      "classToken": "PRIEST",
+      "matchKey": "venomous-abyss-t1:PRIEST",
+      "tokenItemId": 270914,
+      "family": "venomous-abyss-t1"
+    },
+    "271564": {
+      "classToken": "MAGE",
+      "matchKey": "venomous-abyss-t1:MAGE",
+      "tokenItemId": 270914,
+      "family": "venomous-abyss-t1"
+    },
+    "271546": {
+      "classToken": "WARLOCK",
+      "matchKey": "venomous-abyss-t1:WARLOCK",
+      "tokenItemId": 270914,
+      "family": "venomous-abyss-t1"
+    },
+    "271510": {
+      "classToken": "ROGUE",
+      "matchKey": "venomous-abyss-t1:ROGUE",
+      "tokenItemId": 270915,
+      "family": "venomous-abyss-t1"
+    },
+    "271519": {
+      "classToken": "MONK",
+      "matchKey": "venomous-abyss-t1:MONK",
+      "tokenItemId": 270915,
+      "family": "venomous-abyss-t1"
+    },
+    "271528": {
+      "classToken": "DRUID",
+      "matchKey": "venomous-abyss-t1:DRUID",
+      "tokenItemId": 270915,
+      "family": "venomous-abyss-t1"
+    },
+    "271537": {
+      "classToken": "DEMONHUNTER",
+      "matchKey": "venomous-abyss-t1:DEMONHUNTER",
+      "tokenItemId": 270915,
+      "family": "venomous-abyss-t1"
+    },
+    "271492": {
+      "classToken": "HUNTER",
+      "matchKey": "venomous-abyss-t1:HUNTER",
+      "tokenItemId": 270916,
+      "family": "venomous-abyss-t1"
+    },
+    "271483": {
+      "classToken": "SHAMAN",
+      "matchKey": "venomous-abyss-t1:SHAMAN",
+      "tokenItemId": 270916,
+      "family": "venomous-abyss-t1"
+    },
+    "271501": {
+      "classToken": "EVOKER",
+      "matchKey": "venomous-abyss-t1:EVOKER",
+      "tokenItemId": 270916,
+      "family": "venomous-abyss-t1"
+    },
+    "271456": {
+      "classToken": "WARRIOR",
+      "matchKey": "venomous-abyss-t1:WARRIOR",
+      "tokenItemId": 270917,
+      "family": "venomous-abyss-t1"
+    },
+    "271465": {
+      "classToken": "PALADIN",
+      "matchKey": "venomous-abyss-t1:PALADIN",
+      "tokenItemId": 270917,
+      "family": "venomous-abyss-t1"
+    },
+    "271474": {
+      "classToken": "DEATHKNIGHT",
+      "matchKey": "venomous-abyss-t1:DEATHKNIGHT",
+      "tokenItemId": 270917,
+      "family": "venomous-abyss-t1"
+    },
+    "271554": {
+      "classToken": "PRIEST",
+      "matchKey": "venomous-abyss-t1:PRIEST",
+      "tokenItemId": 270918,
+      "family": "venomous-abyss-t1"
+    },
+    "271563": {
+      "classToken": "MAGE",
+      "matchKey": "venomous-abyss-t1:MAGE",
+      "tokenItemId": 270918,
+      "family": "venomous-abyss-t1"
+    },
+    "271545": {
+      "classToken": "WARLOCK",
+      "matchKey": "venomous-abyss-t1:WARLOCK",
+      "tokenItemId": 270918,
+      "family": "venomous-abyss-t1"
+    },
+    "271509": {
+      "classToken": "ROGUE",
+      "matchKey": "venomous-abyss-t1:ROGUE",
+      "tokenItemId": 270919,
+      "family": "venomous-abyss-t1"
+    },
+    "271518": {
+      "classToken": "MONK",
+      "matchKey": "venomous-abyss-t1:MONK",
+      "tokenItemId": 270919,
+      "family": "venomous-abyss-t1"
+    },
+    "271527": {
+      "classToken": "DRUID",
+      "matchKey": "venomous-abyss-t1:DRUID",
+      "tokenItemId": 270919,
+      "family": "venomous-abyss-t1"
+    },
+    "271536": {
+      "classToken": "DEMONHUNTER",
+      "matchKey": "venomous-abyss-t1:DEMONHUNTER",
+      "tokenItemId": 270919,
+      "family": "venomous-abyss-t1"
+    },
+    "271491": {
+      "classToken": "HUNTER",
+      "matchKey": "venomous-abyss-t1:HUNTER",
+      "tokenItemId": 270920,
+      "family": "venomous-abyss-t1"
+    },
+    "271482": {
+      "classToken": "SHAMAN",
+      "matchKey": "venomous-abyss-t1:SHAMAN",
+      "tokenItemId": 270920,
+      "family": "venomous-abyss-t1"
+    },
+    "271500": {
+      "classToken": "EVOKER",
+      "matchKey": "venomous-abyss-t1:EVOKER",
+      "tokenItemId": 270920,
+      "family": "venomous-abyss-t1"
+    },
+    "271455": {
+      "classToken": "WARRIOR",
+      "matchKey": "venomous-abyss-t1:WARRIOR",
+      "tokenItemId": 270921,
+      "family": "venomous-abyss-t1"
+    },
+    "271464": {
+      "classToken": "PALADIN",
+      "matchKey": "venomous-abyss-t1:PALADIN",
+      "tokenItemId": 270921,
+      "family": "venomous-abyss-t1"
+    },
+    "271473": {
+      "classToken": "DEATHKNIGHT",
+      "matchKey": "venomous-abyss-t1:DEATHKNIGHT",
+      "tokenItemId": 270921,
+      "family": "venomous-abyss-t1"
+    },
+    "271553": {
+      "classToken": "PRIEST",
+      "matchKey": "venomous-abyss-t1:PRIEST",
+      "tokenItemId": 270922,
+      "family": "venomous-abyss-t1"
+    },
+    "271562": {
+      "classToken": "MAGE",
+      "matchKey": "venomous-abyss-t1:MAGE",
+      "tokenItemId": 270922,
+      "family": "venomous-abyss-t1"
+    },
+    "271544": {
+      "classToken": "WARLOCK",
+      "matchKey": "venomous-abyss-t1:WARLOCK",
+      "tokenItemId": 270922,
+      "family": "venomous-abyss-t1"
+    },
+    "271508": {
+      "classToken": "ROGUE",
+      "matchKey": "venomous-abyss-t1:ROGUE",
+      "tokenItemId": 270923,
+      "family": "venomous-abyss-t1"
+    },
+    "271517": {
+      "classToken": "MONK",
+      "matchKey": "venomous-abyss-t1:MONK",
+      "tokenItemId": 270923,
+      "family": "venomous-abyss-t1"
+    },
+    "271526": {
+      "classToken": "DRUID",
+      "matchKey": "venomous-abyss-t1:DRUID",
+      "tokenItemId": 270923,
+      "family": "venomous-abyss-t1"
+    },
+    "271535": {
+      "classToken": "DEMONHUNTER",
+      "matchKey": "venomous-abyss-t1:DEMONHUNTER",
+      "tokenItemId": 270923,
+      "family": "venomous-abyss-t1"
+    },
+    "271490": {
+      "classToken": "HUNTER",
+      "matchKey": "venomous-abyss-t1:HUNTER",
+      "tokenItemId": 270924,
+      "family": "venomous-abyss-t1"
+    },
+    "271481": {
+      "classToken": "SHAMAN",
+      "matchKey": "venomous-abyss-t1:SHAMAN",
+      "tokenItemId": 270924,
+      "family": "venomous-abyss-t1"
+    },
+    "271499": {
+      "classToken": "EVOKER",
+      "matchKey": "venomous-abyss-t1:EVOKER",
+      "tokenItemId": 270924,
+      "family": "venomous-abyss-t1"
+    },
+    "271454": {
+      "classToken": "WARRIOR",
+      "matchKey": "venomous-abyss-t1:WARRIOR",
+      "tokenItemId": 270925,
+      "family": "venomous-abyss-t1"
+    },
+    "271463": {
+      "classToken": "PALADIN",
+      "matchKey": "venomous-abyss-t1:PALADIN",
+      "tokenItemId": 270925,
+      "family": "venomous-abyss-t1"
+    },
+    "271472": {
+      "classToken": "DEATHKNIGHT",
+      "matchKey": "venomous-abyss-t1:DEATHKNIGHT",
+      "tokenItemId": 270925,
+      "family": "venomous-abyss-t1"
+    },
+    "271558": {
+      "classToken": "PRIEST",
+      "matchKey": "venomous-abyss-t1:PRIEST",
+      "tokenItemId": 270926,
+      "family": "venomous-abyss-t1"
+    },
+    "271567": {
+      "classToken": "MAGE",
+      "matchKey": "venomous-abyss-t1:MAGE",
+      "tokenItemId": 270926,
+      "family": "venomous-abyss-t1"
+    },
+    "271549": {
+      "classToken": "WARLOCK",
+      "matchKey": "venomous-abyss-t1:WARLOCK",
+      "tokenItemId": 270926,
+      "family": "venomous-abyss-t1"
+    },
+    "271513": {
+      "classToken": "ROGUE",
+      "matchKey": "venomous-abyss-t1:ROGUE",
+      "tokenItemId": 270927,
+      "family": "venomous-abyss-t1"
+    },
+    "271522": {
+      "classToken": "MONK",
+      "matchKey": "venomous-abyss-t1:MONK",
+      "tokenItemId": 270927,
+      "family": "venomous-abyss-t1"
+    },
+    "271531": {
+      "classToken": "DRUID",
+      "matchKey": "venomous-abyss-t1:DRUID",
+      "tokenItemId": 270927,
+      "family": "venomous-abyss-t1"
+    },
+    "271540": {
+      "classToken": "DEMONHUNTER",
+      "matchKey": "venomous-abyss-t1:DEMONHUNTER",
+      "tokenItemId": 270927,
+      "family": "venomous-abyss-t1"
+    },
+    "271495": {
+      "classToken": "HUNTER",
+      "matchKey": "venomous-abyss-t1:HUNTER",
+      "tokenItemId": 270928,
+      "family": "venomous-abyss-t1"
+    },
+    "271486": {
+      "classToken": "SHAMAN",
+      "matchKey": "venomous-abyss-t1:SHAMAN",
+      "tokenItemId": 270928,
+      "family": "venomous-abyss-t1"
+    },
+    "271504": {
+      "classToken": "EVOKER",
+      "matchKey": "venomous-abyss-t1:EVOKER",
+      "tokenItemId": 270928,
+      "family": "venomous-abyss-t1"
+    },
+    "271459": {
+      "classToken": "WARRIOR",
+      "matchKey": "venomous-abyss-t1:WARRIOR",
+      "tokenItemId": 270929,
+      "family": "venomous-abyss-t1"
+    },
+    "271468": {
+      "classToken": "PALADIN",
+      "matchKey": "venomous-abyss-t1:PALADIN",
+      "tokenItemId": 270929,
+      "family": "venomous-abyss-t1"
+    },
+    "271477": {
+      "classToken": "DEATHKNIGHT",
+      "matchKey": "venomous-abyss-t1:DEATHKNIGHT",
+      "tokenItemId": 270929,
+      "family": "venomous-abyss-t1"
+    }
+  }
+}
