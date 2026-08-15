@@ -2,14 +2,10 @@
 	import SEO from '../../components/seo.svelte';
 	import Footer from '../../components/layout/footer.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import { PAGE_SEO } from '$lib/data/seoCopy';
 </script>
 
-<SEO
-	title="Cookie Policy for Mr. Mythical WoW Tools"
-	description="This Cookie Policy explains how
-MrMythical.com uses cookies for advertising through Google AdSense."
-	image="https://mrmythical.com/Logo.png"
-/>
+<SEO title={PAGE_SEO.cookie.title} description={PAGE_SEO.cookie.description} />
 
 <main class="container mx-auto px-4 py-8">
 	<article class="mx-auto max-w-4xl">

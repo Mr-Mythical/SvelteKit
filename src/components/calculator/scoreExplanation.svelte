@@ -10,7 +10,7 @@
 			<h2 id="score-explanation" class="mb-2 scroll-mt-24 text-2xl leading-tight font-extrabold">
 				How the Mythic+ Score System Works in World of Warcraft
 			</h2>
-			<p class="text-muted-foreground mb-4 text-sm italic">Updated for Midnight, Season 1</p>
+			<p class="text-muted-foreground mb-4 text-sm italic">Updated for Midnight Season 2</p>
 		</header>
 
 		<section class="mb-8" aria-labelledby="why-mplus-score-matters">
@@ -41,7 +41,7 @@
 				Affix Breakpoints &amp; Bonus Points
 			</h3>
 			<p>
-				In Midnight Season 1, keystone levels <b>+2 through +6</b> feature
+				In Midnight, keystone levels <b>+2 through +6</b> feature
 				<b>Lindormi's Guidance</b>. It highlights and weakens select non-boss enemies to help
 				players learn a basic route through the dungeon, but it
 				<strong>does not affect score</strong>. <br /> <br />
@@ -145,7 +145,7 @@
 
 		<section class="mb-8" aria-labelledby="tools-to-boost-score">
 			<h3 id="tools-to-boost-score" class="mb-2 text-lg font-bold">
-				Using MrMythical.com Tools to Boost Your Score
+				Using Mr. Mythical Tools to Boost Your Score
 			</h3>
 
 			<h4 class="text-md mb-2 font-semibold">In-Game Tooltip Addon</h4>

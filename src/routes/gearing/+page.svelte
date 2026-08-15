@@ -2,6 +2,8 @@
 	import { onDestroy, onMount, tick } from 'svelte';
 	import SEO from '../../components/seo.svelte';
 	import Footer from '../../components/layout/footer.svelte';
+	import WowheadScripts from '../../components/wowheadScripts.svelte';
+	import { PAGE_SEO } from '$lib/data/seoCopy';
 	import ItemLink from '../../components/gearing/itemLink.svelte';
 	import ItemIcon from '../../components/gearing/itemIcon.svelte';
 	import RealmCombobox from '../../components/combobox/realmCombobox.svelte';
@@ -738,20 +740,20 @@
 	}
 </script>
 
+<WowheadScripts />
 <SEO
-	title="Gearing Dashboard | Mr. Mythical"
-	description="Load equipped gear from Battle.net and scan season dungeon and raid loot with the same SimC-trained DPS estimator as the Mr. Mythical addon. Fast estimates in the browser — not a full SimulationCraft run."
-	image="https://mrmythical.com/Logo.png"
-	keywords="WoW gearing, DPS estimator, SimulationCraft, season BiS, Battle.net Armory, dungeon loot, raid loot, Mr Mythical"
+	title={PAGE_SEO.gearing.title}
+	description={PAGE_SEO.gearing.description}
+	keywords="WoW gearing, farm priority, DPS estimator, SimulationCraft, season BiS, Battle.net Armory, dungeon loot, raid loot, Mr Mythical"
 />
 
 <main class="home">
 	<header class="page-header">
-		<p class="page-eyebrow">Gearing</p>
-		<h1 class="page-title">Gearing dashboard.</h1>
+		<p class="page-eyebrow">Battle.net</p>
+		<h1 class="page-title">See what to farm first.</h1>
 		<p class="page-lede">
-			Load equipped gear from Battle.net, then scan Midnight Season 2 dungeon and raid loot with the
-			same SimC-trained estimator as the in-game addon.
+			Load equipped gear from Battle.net, then rank Midnight Season 2 dungeon and raid loot in the
+			browser. Typical farm scans finish immediately, with no SimulationCraft wait.
 		</p>
 		<div class="header-actions">
 			<a href="/addons/dps-predictor" class="tool-link">
@@ -768,6 +770,20 @@
 			</a>
 		</div>
 	</header>
+
+	<section class="farm-how" aria-labelledby="farm-how-heading">
+		<h2 id="farm-how-heading" class="tool-title">How farm priority works</h2>
+		<ol class="farm-how-list">
+			<li>Load equipped gear from Battle.net.</li>
+			<li>Rank Midnight Season 2 dungeon and raid bosses by upgrade value.</li>
+			<li>Typical farm scans finish immediately. Full BiS search can take longer.</li>
+		</ol>
+		<p class="tool-body">
+			Same SimC-trained DPS estimator as the in-game addon, not a SimulationCraft run. Use
+			<a href="/addons/dps-predictor" class="text-link font-semibold">/mrdps in game</a>
+			for bag loadouts and crest plans on the character.
+		</p>
+	</section>
 
 	{#if loading}
 		<p class="status">Loading model and item database…</p>
@@ -954,8 +970,8 @@
 						<p class="tool-eyebrow">Season scan</p>
 						<h2 class="tool-title">Farm priority and BiS.</h2>
 						<p class="tool-body">
-							Rank bosses by expected upgrade value, or search the full season catalog for a
-							loadout.
+							Rank bosses by expected upgrade value as soon as your gear is loaded, or search the
+							full season catalog for a loadout. A full BiS search can take longer.
 						</p>
 					</div>
 					<div class="season-panel">
@@ -1210,7 +1226,7 @@
 									</div>
 								{:else if seasonHasEstimates}
 									<p class="meta-line">
-										No positive upgrades vs your equipped gear at this track — nothing to farm.
+										No positive upgrades vs your equipped gear at this track. Nothing to farm.
 									</p>
 								{:else}
 									<p class="meta-line">
@@ -1492,9 +1508,10 @@
 		<p class="tool-eyebrow">Limits</p>
 		<h2 class="tool-title">This is an estimate, not a sim.</h2>
 		<p class="about-body">
-			A fast DPS estimate trained on SimulationCraft, not a live SimC run. It does not model trinket
-			procs, rotations, or set bonuses the way a full sim does. Confirm close calls with a real sim
-			when it matters.
+			A DPS estimate trained on SimulationCraft, not a live SimC run. Typical farm ranks finish
+			immediately. A full season BiS search can take longer. It does not model trinket procs,
+			rotations, or set bonuses the way a full sim does. Confirm close calls with a real sim when it
+			matters.
 		</p>
 	</section>
 </main>
@@ -1544,6 +1561,25 @@
 		letter-spacing: -0.02em;
 		color: hsl(var(--foreground));
 		margin: 0;
+	}
+
+	.farm-how {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		max-width: 72ch;
+	}
+
+	.farm-how-list {
+		margin: 0;
+		padding-left: 1.25rem;
+		font-family: var(--font-body);
+		font-size: 0.9375rem;
+		line-height: 1.5;
+		color: hsl(var(--muted-foreground));
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
 	}
 
 	.page-lede {

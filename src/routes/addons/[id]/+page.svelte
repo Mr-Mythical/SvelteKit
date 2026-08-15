@@ -45,7 +45,7 @@
 					Get it on Wago
 				</Button>
 				{#if addon.id === 'dps-predictor'}
-					<Button href="/gearing" variant="outline">Open Gearing Dashboard</Button>
+					<Button href="/gearing" variant="outline">Open farm priority</Button>
 				{/if}
 				{#if addon.links.github}
 					<a class="tool-link" href={addon.links.github} target="_blank" rel="noopener noreferrer">

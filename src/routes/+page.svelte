@@ -10,6 +10,9 @@
 	import { bosses } from '$lib/types/bossData';
 	import { extractWarcraftLogsReportCode } from '$lib/data/warcraftlogs';
 	import { ADDONS, DISCORD_URL } from '$lib/data/addons';
+	import { PAGE_SEO } from '$lib/data/seoCopy';
+
+	let { data = { validation: null } } = $props();
 
 	// Rotate through the current raid's bosses in the encounter preview.
 	let bossIndex = $state(0);
@@ -49,12 +52,18 @@
 	function onLogInput() {
 		if (logError) logError = '';
 	}
+
+	const gearingAddon = ADDONS.find((addon) => addon.id === 'dps-predictor');
+	const gearingFeatures = [
+		'Rank Midnight Season 2 dungeon and raid bosses by upgrade value',
+		'Load a character from Battle.net Armory',
+		'Typical farm scans finish immediately, with no SimC wait'
+	];
 </script>
 
 <SEO
-	title="Mr. Mythical | Mythic+ & Raid Tools"
-	description="Master WoW with Mr. Mythical: Mythic+ score calculator, Battle.net gearing dashboard for Midnight Season 2, raid visualizations, and in-game addons for keystones, gear, and DPS."
-	image="https://mrmythical.com/Logo.png"
+	title={PAGE_SEO.home.title}
+	description={PAGE_SEO.home.description}
 	keywords="World of Warcraft tools, Mythic+ calculator, WoW gearing, season BiS, Battle.net Armory, raid analysis, Warcraft logs, M+ score tracker, WoW addons, Mr Mythical addon"
 />
 
@@ -94,23 +103,57 @@
 			</div>
 		</article>
 
-		<!-- Gearing dashboard. Tool left, title right — the L/R stagger after the planner. -->
+		<!-- Gearing dashboard. Tool left, title right. -->
 		<article class="tool-row tool-row--reverse">
-			<div class="tool-side tool-side--cta">
-				<p class="log-hint">
-					Midnight Season 2 dungeon and raid loot. Fast estimates, not a full sim.
-				</p>
-				<Button href="/gearing">Open Gearing</Button>
+			<div class="tool-side">
+				<ul class="feature-list">
+					{#each gearingFeatures as feature (feature)}
+						<li>{feature}</li>
+					{/each}
+				</ul>
+				{#if data.validation}
+					<div class="accuracy">
+						<p class="accuracy-label">Addon compared to simulation</p>
+						<ul class="accuracy-metrics">
+							<li>
+								<span class="accuracy-value">{data.validation.upgrade_picks_pct.toFixed(1)}%</span>
+								<span class="accuracy-name">upgrade picks</span>
+							</li>
+							<li>
+								<span class="accuracy-value"
+									>{data.validation.upgrade_size_error_pct.toFixed(2)}%</span
+								>
+								<span class="accuracy-name">gap error</span>
+							</li>
+							<li>
+								<span class="accuracy-value">{data.validation.dps_read_error_pct.toFixed(2)}%</span>
+								<span class="accuracy-name">DPS read error</span>
+							</li>
+						</ul>
+						<p class="accuracy-meta">
+							{data.validation.spec_count} specs · checked {data.validation.checked_label}
+						</p>
+					</div>
+				{:else}
+					<p class="tool-note">Includes SimulationCraft validation</p>
+				{/if}
+				{#if gearingAddon}
+					<div class="addon-links">
+						<a href={`/addons/${gearingAddon.id}`} class="addon-link addon-link--muted">
+							View the addon
+						</a>
+					</div>
+				{/if}
 			</div>
 			<div class="tool-copy">
-				<p class="tool-eyebrow">Gearing dashboard</p>
-				<h3 class="tool-title">Scan season loot against your gear.</h3>
+				<p class="tool-eyebrow">Farm priority</p>
+				<h2 class="tool-title">See what to farm first, instantly.</h2>
 				<p class="tool-body">
-					Load a character from Battle.net, then rank farm priority and season BiS with the same
-					SimC-trained estimator as the in-game addon.
+					Load a character from Battle.net, then rank season dungeon and raid loot in the browser.
+					Typical farm scans finish immediately, with no SimulationCraft wait.
 				</p>
 				<a href="/gearing" class="tool-link">
-					Open the gearing dashboard
+					Open farm priority
 					<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
 						<path
 							d="M3 2l5 4-5 4"
@@ -128,7 +171,7 @@
 		<article class="tool-row">
 			<div class="tool-copy">
 				<p class="tool-eyebrow">Raid log visualizer</p>
-				<h3 class="tool-title">Visualize your raid logs.</h3>
+				<h2 class="tool-title">Visualize your raid logs.</h2>
 				<p class="tool-body">
 					Per-second damage and healing on a shared timeline, with ability overlays.
 				</p>
@@ -172,11 +215,21 @@
 			</div>
 		</article>
 
-		<!-- Boss damage and death profile. Title left, tool right. -->
-		<article class="tool-row tool-row--featured">
+		<!-- Boss damage and death profile. Tool left, title right. -->
+		<article class="tool-row tool-row--featured tool-row--reverse">
+			<figure class="tool-preview">
+				<div class="tool-preview-frame">
+					{#key previewBoss.id}
+						<BossPreviewChart bossId={previewBoss.id} />
+					{/key}
+				</div>
+				<figcaption class="tool-preview-caption">
+					Mythic {previewBoss.name}
+				</figcaption>
+			</figure>
 			<div class="tool-copy">
 				<p class="tool-eyebrow">Boss Damage & Death overview</p>
-				<h3 class="tool-title">Read the spikes that decide pulls.</h3>
+				<h2 class="tool-title">Read the spikes that decide pulls.</h2>
 				<p class="tool-body">
 					Averaged damage taken and death hotspots from public Mythic kills, with the spikes that
 					decide pulls.
@@ -194,26 +247,16 @@
 					</svg>
 				</a>
 			</div>
-			<figure class="tool-preview">
-				<div class="tool-preview-frame">
-					{#key previewBoss.id}
-						<BossPreviewChart bossId={previewBoss.id} />
-					{/key}
-				</div>
-				<figcaption class="tool-preview-caption">
-					Mythic {previewBoss.name}
-				</figcaption>
-			</figure>
 		</article>
 
 		<!-- In-game addon suite -->
 		<article class="tool-row tool-row--addons" id="addons">
 			<div class="tool-copy">
 				<p class="tool-eyebrow">In-game addons</p>
-				<h3 class="tool-title">Mr. Mythical addons</h3>
+				<h2 class="tool-title">Mr. Mythical addons</h2>
 				<p class="tool-body">
-					The same toolkit in-game. Keystone tooltips, DPS gearing validated against
-					SimulationCraft, leaderboards, gear checks, and a mascot that has opinions.
+					The same toolkit in-game. Keystone tooltips, DPS gearing that ranks upgrades immediately,
+					leaderboards, gear checks, and a mascot that has opinions.
 				</p>
 				<a href="/addons" class="tool-link">
 					Browse all addons
@@ -259,7 +302,12 @@
 		</article>
 	</section>
 
-	<section class="discord" aria-labelledby="discord-heading">
+	<section class="discord discord--reverse" aria-labelledby="discord-heading">
+		<div class="discord-actions">
+			<Button href={DISCORD_URL} target="_blank" rel="noopener noreferrer" variant="default">
+				Join Discord
+			</Button>
+		</div>
 		<div class="discord-copy">
 			<p class="tool-eyebrow">Community</p>
 			<h2 id="discord-heading" class="tool-title">Join the Discord</h2>
@@ -267,23 +315,6 @@
 				Feedback, bug reports, and addon talk between keys. Come say what broke, or what you want
 				next.
 			</p>
-		</div>
-		<div class="discord-actions">
-			<Button href={DISCORD_URL} target="_blank" rel="noopener noreferrer" variant="default">
-				Join Discord
-			</Button>
-			<a href="/addons" class="tool-link">
-				Browse the addons
-				<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
-					<path
-						d="M3 2l5 4-5 4"
-						stroke="currentColor"
-						stroke-width="1.5"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					/>
-				</svg>
-			</a>
 		</div>
 	</section>
 
@@ -389,6 +420,10 @@
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
 	}
 
+	.tool-row--featured.tool-row--reverse {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+	}
+
 	.tool-row--planner {
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
 		align-items: start;
@@ -414,7 +449,7 @@
 			padding: 28px 0;
 		}
 
-		.tool-row--reverse > .tool-side {
+		.tool-row--reverse > :first-child {
 			order: 2;
 		}
 	}
@@ -424,16 +459,11 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
+		gap: 10px;
 	}
 
 	.tool-side--planner {
 		align-items: stretch;
-	}
-
-	.tool-side--cta {
-		gap: 12px;
-		align-items: flex-start;
-		padding-top: 4px;
 	}
 
 	.tool-copy {
@@ -497,6 +527,118 @@
 		outline: 2px solid hsl(var(--ring));
 		outline-offset: 4px;
 		border-radius: 2px;
+	}
+
+	.feature-list {
+		list-style: none;
+		margin: 4px 0 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		border-top: 1px solid hsl(var(--border));
+		max-width: 56ch;
+	}
+
+	.tool-side .feature-list {
+		margin-top: 0;
+		border-top: none;
+	}
+
+	.feature-list li {
+		font-family: var(--font-body);
+		font-size: 0.875rem;
+		line-height: 1.45;
+		color: hsl(var(--muted-foreground));
+		padding: 10px 0;
+		border-bottom: 1px solid hsl(var(--border));
+		padding-left: 1em;
+		position: relative;
+	}
+
+	.feature-list li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 1.05em;
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: hsl(var(--link));
+	}
+
+	.tool-note {
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: hsl(var(--link));
+		margin: 0;
+	}
+
+	.accuracy {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		margin-top: 4px;
+		padding-top: 12px;
+		border-top: 1px solid hsl(var(--border));
+		max-width: 42ch;
+	}
+
+	.accuracy-label {
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: hsl(var(--link));
+		margin: 0;
+	}
+
+	.accuracy-metrics {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 10px 12px;
+	}
+
+	.accuracy-metrics li {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
+
+	.accuracy-value {
+		font-family: var(--font-heading);
+		font-size: 1.25rem;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1.1;
+		color: hsl(var(--foreground));
+	}
+
+	.accuracy-name {
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		line-height: 1.3;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.accuracy-meta {
+		font-family: var(--font-body);
+		font-size: 0.8125rem;
+		color: hsl(var(--muted-foreground));
+		margin: 0;
+	}
+
+	@media (max-width: 560px) {
+		.accuracy-metrics {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	/* ---- LOG FORM ---- */
@@ -643,6 +785,11 @@
 		justify-content: flex-end;
 	}
 
+	.tool-side .addon-links {
+		justify-content: flex-start;
+		margin-top: 4px;
+	}
+
 	.addon-link {
 		font-family: var(--font-body);
 		font-size: 0.8125rem;
@@ -686,12 +833,16 @@
 
 	.discord {
 		display: grid;
-		grid-template-columns: minmax(0, 1.4fr) auto;
-		gap: clamp(20px, 3vw, 40px);
-		align-items: center;
-		padding: 28px 0;
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+		gap: clamp(24px, 4vw, 56px);
+		align-items: start;
+		padding: 36px 0;
 		border-top: 1px solid hsl(var(--border));
 		border-bottom: 1px solid hsl(var(--border));
+	}
+
+	.discord--reverse {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
 	}
 
 	.discord-copy {
@@ -708,10 +859,15 @@
 		gap: 12px;
 	}
 
-	@media (max-width: 720px) {
+	@media (max-width: 800px) {
 		.discord {
 			grid-template-columns: 1fr;
 			gap: 16px;
+			padding: 28px 0;
+		}
+
+		.discord--reverse > :first-child {
+			order: 2;
 		}
 	}
 

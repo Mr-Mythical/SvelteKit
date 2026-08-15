@@ -34,6 +34,7 @@
 	import { logClientError } from '$lib/clientLog';
 	import { bosses } from '$lib/types/bossData';
 	import { getClassColor } from '$lib/ui/classColors';
+	import { PAGE_SEO } from '$lib/data/seoCopy';
 
 	let reportURL: string = $state('');
 	let fights: Fight[] = $state([]);
@@ -643,10 +644,9 @@
 </script>
 
 <SEO
-	title="Raid Encounter Visualization & Log Browser | Mr. Mythical"
-	description="Visualize raid encounters from Warcraft Logs. Interactive damage and healing timelines with ability overlays for deeper insights into raid performance."
-	image="https://mrmythical.com/Logo.png"
-	keywords="Raid visualization, Encounter visualization, healing visualization, Warcraft Logs, World of Warcraft, wow raids, cooldown planning, boss tactics, raid leading, damage graphs, healing graphs, raid performance, ability overlays"
+	title={PAGE_SEO.raidLog.title}
+	description={PAGE_SEO.raidLog.description}
+	keywords="Raid visualization, Warcraft Logs, World of Warcraft, cooldown planning, damage graphs"
 />
 
 <main class="container mx-auto px-4 py-8">

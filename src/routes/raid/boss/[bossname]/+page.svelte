@@ -4,6 +4,7 @@
 	import SEO from '../../../../components/seo.svelte';
 	import Footer from '../../../../components/layout/footer.svelte';
 	import { bosses } from '$lib/types/bossData';
+	import { bossSeoDescription, bossSeoTitle } from '$lib/data/seoCopy';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import type { PageData } from './$types';
@@ -32,10 +33,9 @@
 </script>
 
 <SEO
-	title={`Mythic ${currentBoss?.name} damage and death profile | Mr. Mythical`}
-	description={`Mythic ${currentBoss?.name} per-second damage curve and death timing aggregated from public progression logs. Visualize the encounter's damage patterns, identify consistent spike windows, and understand where pulls typically fall apart. An essential tool for raid preparation and strategy refinement in World of Warcraft.`}
-	image="https://mrmythical.com/Logo.png"
-	keywords={`Mythic ${currentBoss?.name}, ${currentBoss?.slug}, Midnight raid, raid boss visualization, damage patterns, death timings, World of Warcraft, encounter charts`}
+	title={bossSeoTitle(currentBoss?.name ?? 'Boss')}
+	description={bossSeoDescription(currentBoss?.name ?? 'this encounter')}
+	keywords={`Mythic ${currentBoss?.name}, ${currentBoss?.slug}, Midnight raid, raid boss visualization, damage patterns, death timings, World of Warcraft`}
 />
 
 <main class="container mx-auto px-4 py-8">

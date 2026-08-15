@@ -3,8 +3,7 @@ import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { formSchema } from './schema.js';
-import { calculateKeystoneBreakdown } from '$lib/calculations/keystoneCalculations';
-import { dungeonCount } from '$lib/types/dungeons';
+import { scoreLandingSeo } from '$lib/data/seoCopy';
 
 export const load: PageServerLoad = async (event) => {
 	const form = await superValidate(zod4(formSchema));
@@ -16,16 +15,10 @@ export const load: PageServerLoad = async (event) => {
 	let seoKeywords: string | undefined;
 
 	if (score && Number.isFinite(score) && score > 0) {
-		const breakdown = calculateKeystoneBreakdown(score, dungeonCount);
-		const parts = breakdown.sort((a, b) => b.level - a.level).map((b) => `${b.count} +${b.level}`);
-		const breakdownStr =
-			parts.length > 1
-				? parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1]
-				: parts[0];
-
-		seoTitle = `${score} Mythic+ Rating Calculator`;
-		seoDescription = `Achieve your ${score} Mythic+ score with ${breakdownStr}. Try the interactive m+ calculator to see which keystones you need for your desired Mythic+ score in WoW. Import your character and plan your runs!`;
-		seoKeywords = `mythic+ calculator, mythic rating calculator, mythic score calculator, mythic+ score calculator, mythic plus rating calculator, mythic+ rating calculator, mythic plus calculator, mythic planner, mythic dungeon planner, m+ calculator, ${score} mythic rating, ${score} mythic+ rating, ${score} mythic score, ${score} mythic+ score`;
+		const seo = scoreLandingSeo(score);
+		seoTitle = seo.title;
+		seoDescription = seo.description;
+		seoKeywords = `mythic+ calculator, mythic rating calculator, mythic score calculator, ${score} mythic+ rating`;
 	}
 
 	return {

@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { bosses } from '$lib/types/bossData';
 
 export const load: PageServerLoad = ({ params }) => {
@@ -7,8 +7,7 @@ export const load: PageServerLoad = ({ params }) => {
 	const boss = bosses.find((b) => b.slug === bossSlug);
 
 	if (!boss) {
-		// Redirect to the first boss if the slug doesn't exist
-		throw redirect(307, `/raid/boss/${bosses[0].slug}`);
+		error(404, 'Boss not found');
 	}
 
 	return {
