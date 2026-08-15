@@ -35,7 +35,7 @@ export const GET = () => {
   <channel>
     <title>Mr. Mythical</title>
     <link>${SITE_ORIGIN}</link>
-    <description>Mythic+ and raid tools for World of Warcraft, plus free in-game addons.</description>
+    <description>Mythic+ score plans, a Battle.net gearing dashboard, raid tools, and free in-game addons for World of Warcraft.</description>
     <language>en-us</language>
     <lastBuildDate>${new Date(latest + 'T12:00:00.000Z').toUTCString()}</lastBuildDate>
     <atom:link href="${SITE_ORIGIN}/feed.xml" rel="self" type="application/rss+xml"/>

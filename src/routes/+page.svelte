@@ -53,9 +53,9 @@
 
 <SEO
 	title="Mr. Mythical | Mythic+ & Raid Tools"
-	description="Master WoW with Mr. Mythical: Mythic+ score calculator, raid visualizations, and in-game addons for keystones, gear, and DPS."
+	description="Master WoW with Mr. Mythical: Mythic+ score calculator, Battle.net gearing dashboard for Midnight Season 2, raid visualizations, and in-game addons for keystones, gear, and DPS."
 	image="https://mrmythical.com/Logo.png"
-	keywords="World of Warcraft tools, Mythic+ calculator, raid analysis, WoW dungeon optimization, Warcraft logs, M+ score tracker, WoW addons, Mr Mythical addon, raid progression"
+	keywords="World of Warcraft tools, Mythic+ calculator, WoW gearing, season BiS, Battle.net Armory, raid analysis, Warcraft logs, M+ score tracker, WoW addons, Mr Mythical addon"
 />
 
 <main class="home">
@@ -63,7 +63,8 @@
 		<p class="page-eyebrow">Mythic+ &amp; raid toolkit</p>
 		<h1 class="page-title">Mr. Mythical</h1>
 		<p class="page-lede">
-			Score plans, raid logs, and boss profiles for when you need a quick answer between keys.
+			Score plans, a season gearing dashboard, raid logs, and boss profiles for when you need a
+			quick answer between keys.
 		</p>
 	</header>
 
@@ -90,6 +91,35 @@
 			</div>
 			<div class="tool-side tool-side--planner">
 				<ScorePlanner />
+			</div>
+		</article>
+
+		<article class="tool-row">
+			<div class="tool-copy">
+				<p class="tool-eyebrow">Gearing dashboard</p>
+				<h2 class="tool-title">Scan season loot against your gear.</h2>
+				<p class="tool-body">
+					Load a character from Battle.net, then rank farm priority and season BiS with the same
+					SimC-trained estimator as the in-game addon.
+				</p>
+				<a href="/gearing" class="tool-link">
+					Open the gearing dashboard
+					<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
+						<path
+							d="M3 2l5 4-5 4"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</a>
+			</div>
+			<div class="tool-side tool-side--cta">
+				<p class="log-hint">
+					Midnight Season 2 dungeon and raid loot. Fast estimates, not a full sim.
+				</p>
+				<Button href="/gearing">Open Gearing</Button>
 			</div>
 		</article>
 
@@ -260,10 +290,11 @@
 		<p class="tool-eyebrow">About</p>
 		<h2 class="tool-title">Built by a player, for keys and pulls.</h2>
 		<p class="about-body">
-			Mr. Mythical turns Warcraft Logs and keystone math into answers you can use between runs. It
-			is built by a player who wanted better tools for planning keys and reading raid logs, and it
-			stays updated with help from the community. The aim is simple: show the data that helps you
-			decide which keystone to run next, or how to handle a tricky boss.
+			Mr. Mythical turns Warcraft Logs, keystone math, and season loot into answers you can use
+			between runs. It is built by a player who wanted better tools for planning keys, reading raid
+			logs, and ranking upgrades, and it stays updated with help from the community. The aim is
+			simple: show the data that helps you decide which keystone to run next, what to farm, or how
+			to handle a tricky boss.
 		</p>
 		<a href="/about" class="tool-link">
 			Read more
@@ -396,6 +427,12 @@
 
 	.tool-side--planner {
 		align-items: stretch;
+	}
+
+	.tool-side--cta {
+		gap: 12px;
+		align-items: flex-start;
+		padding-top: 4px;
 	}
 
 	.tool-copy {

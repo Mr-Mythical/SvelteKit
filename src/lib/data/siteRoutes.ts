@@ -23,11 +23,12 @@ export type SiteRoute = {
 export const SITE_ROUTES: SiteRoute[] = [
 	{
 		path: '/',
-		lastmod: '2026-07-21',
+		lastmod: '2026-08-16',
 		changefreq: 'weekly',
 		priority: 1,
 		title: 'Mr. Mythical | Mythic+ & Raid Tools',
-		description: 'Mythic+ score calculator, raid log visualizer, boss profiles, and WoW addons.',
+		description:
+			'Mythic+ score calculator, Battle.net gearing dashboard, raid log visualizer, boss profiles, and WoW addons.',
 		inFeed: true
 	},
 	{
@@ -118,7 +119,7 @@ export const SITE_ROUTES: SiteRoute[] = [
 	},
 	{
 		path: '/addons',
-		lastmod: '2026-07-21',
+		lastmod: '2026-08-16',
 		changefreq: 'weekly',
 		priority: 0.9,
 		title: 'WoW Addons for Mythic+ & Gearing',
@@ -128,7 +129,7 @@ export const SITE_ROUTES: SiteRoute[] = [
 	},
 	...ADDONS.map((addon) => ({
 		path: `/addons/${addon.id}`,
-		lastmod: '2026-07-21',
+		lastmod: '2026-08-16',
 		changefreq: 'weekly' as const,
 		priority: 0.8,
 		title: addon.seoTitle,

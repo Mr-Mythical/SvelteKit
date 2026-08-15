@@ -23,6 +23,12 @@ describe('Homepage', () => {
 		expect(screen.getByText('Visualize your raid logs.')).toBeInTheDocument();
 	});
 
+	it('has a gearing dashboard section', () => {
+		render(Page);
+
+		expect(screen.getByText('Scan season loot against your gear.')).toBeInTheDocument();
+	});
+
 	it('renders main content structure', () => {
 		render(Page);
 
