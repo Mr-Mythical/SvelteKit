@@ -94,10 +94,17 @@
 			</div>
 		</article>
 
-		<article class="tool-row">
+		<!-- Gearing dashboard. Tool left, title right — the L/R stagger after the planner. -->
+		<article class="tool-row tool-row--reverse">
+			<div class="tool-side tool-side--cta">
+				<p class="log-hint">
+					Midnight Season 2 dungeon and raid loot. Fast estimates, not a full sim.
+				</p>
+				<Button href="/gearing">Open Gearing</Button>
+			</div>
 			<div class="tool-copy">
 				<p class="tool-eyebrow">Gearing dashboard</p>
-				<h2 class="tool-title">Scan season loot against your gear.</h2>
+				<h3 class="tool-title">Scan season loot against your gear.</h3>
 				<p class="tool-body">
 					Load a character from Battle.net, then rank farm priority and season BiS with the same
 					SimC-trained estimator as the in-game addon.
@@ -115,16 +122,29 @@
 					</svg>
 				</a>
 			</div>
-			<div class="tool-side tool-side--cta">
-				<p class="log-hint">
-					Midnight Season 2 dungeon and raid loot. Fast estimates, not a full sim.
-				</p>
-				<Button href="/gearing">Open Gearing</Button>
-			</div>
 		</article>
 
-		<!-- Raid log visualizer. Tool left, title right. -->
-		<article class="tool-row tool-row--reverse">
+		<!-- Raid log visualizer. Title left, tool right. -->
+		<article class="tool-row">
+			<div class="tool-copy">
+				<p class="tool-eyebrow">Raid log visualizer</p>
+				<h3 class="tool-title">Visualize your raid logs.</h3>
+				<p class="tool-body">
+					Per-second damage and healing on a shared timeline, with ability overlays.
+				</p>
+				<a href="/raid" class="tool-link">
+					View the complete raid toolkit
+					<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
+						<path
+							d="M3 2l5 4-5 4"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</a>
+			</div>
 			<div class="tool-side">
 				<form class="log-form" onsubmit={openLog} novalidate>
 					<label for="home-log-url" class="log-label">Open a Warcraft Logs report</label>
@@ -149,25 +169,6 @@
 						<p class="log-hint">Per-second damage and healing, with ability overlays.</p>
 					{/if}
 				</form>
-			</div>
-			<div class="tool-copy">
-				<p class="tool-eyebrow">Raid log visualizer</p>
-				<h3 class="tool-title">Visualize your raid logs.</h3>
-				<p class="tool-body">
-					Per-second damage and healing on a shared timeline, with ability overlays.
-				</p>
-				<a href="/raid" class="tool-link">
-					View the complete raid toolkit
-					<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" fill="none">
-						<path
-							d="M3 2l5 4-5 4"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
-				</a>
 			</div>
 		</article>
 
@@ -575,12 +576,6 @@
 		font-size: 0.8125rem;
 		color: hsl(var(--muted-foreground));
 		margin: 0;
-	}
-
-	.tool-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
 	}
 
 	/* ---- ADDON LIST ---- */
