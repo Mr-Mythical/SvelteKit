@@ -9,14 +9,18 @@ function jsonLdText(): string {
 		.join('\n');
 }
 
+function setPageUrl(href: string) {
+	(page as { url: URL }).url = new URL(href);
+}
+
 describe('SEO component', () => {
 	afterEach(() => {
-		page.url = new URL('http://localhost/');
+		setPageUrl('http://localhost/');
 		document.head.innerHTML = '';
 	});
 
 	it('emits stable site JSON-LD without SearchAction on the homepage', () => {
-		page.url = new URL('https://mrmythical.com/');
+		setPageUrl('https://mrmythical.com/');
 		render(SEO, { props: { title: 'Home', description: 'Desc' } });
 
 		const blobs = jsonLdText();
@@ -34,7 +38,7 @@ describe('SEO component', () => {
 	});
 
 	it('keeps numeric score on canonical and adds breadcrumbs on nested routes', () => {
-		page.url = new URL('https://mrmythical.com/rating-calculator?score=1500&utm_source=x');
+		setPageUrl('https://mrmythical.com/rating-calculator?score=1500&utm_source=x');
 		render(SEO, {
 			props: { title: '1500 Mythic+ Rating | Mr. Mythical', description: 'Plan.' }
 		});

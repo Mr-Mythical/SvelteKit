@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/svelte';
 import Page from '../../routes/+page.svelte';
 
 const homeData = {
+	session: null,
 	validation: {
 		upgrade_picks_pct: 96.4,
 		upgrade_size_error_pct: 0.41,

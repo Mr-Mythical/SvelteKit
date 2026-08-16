@@ -12,7 +12,7 @@
 	import { ADDONS, DISCORD_URL } from '$lib/data/addons';
 	import { PAGE_SEO } from '$lib/data/seoCopy';
 
-	let { data = { validation: null } } = $props();
+	let { data = { session: null, validation: null } } = $props();
 
 	// Rotate through the current raid's bosses in the encounter preview.
 	let bossIndex = $state(0);
