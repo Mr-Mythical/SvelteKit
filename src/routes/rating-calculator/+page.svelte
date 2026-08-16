@@ -7,6 +7,8 @@
 	import { Toaster } from 'svelte-sonner';
 	import type { PageData } from './$types.js';
 	import * as Accordion from '$lib/components/ui/accordion';
+	import { PAGE_SEO } from '$lib/data/seoCopy';
+	import { SITE_ORIGIN } from '$lib/seo';
 
 	interface Props {
 		data: PageData;
@@ -14,12 +16,10 @@
 
 	let { data }: Props = $props();
 
-	const defaultDescription =
-		'Try the interactive m+ calculator to see which keystones you need for your desired Mythic+ score in WoW. Import your character and plan your runs!';
+	const defaultDescription = PAGE_SEO.calculator.description;
 	const defaultKeywords =
 		'mythic+ calculator, mythic rating calculator, mythic score calculator, mythic+ score calculator, mythic plus rating calculator, mythic+ rating calculator, mythic plus calculator, mythic planner, mythic dungeon planner, m+ calculator';
 
-	const base = 'https://mrmythical.com';
 	const faqItems = [
 		{
 			question: 'How is Mythic+ score calculated?',
@@ -39,7 +39,7 @@
 		{
 			question: 'How do I share my calculator setup with friends?',
 			answer:
-				'Once you set your desired keystones in the calculator, click "Share Current Setup" to copy your URL or just copy it directly from the URL bar. You can copy and share this link with your team—they\'ll see the exact same dungeon and keystone level configuration.'
+				'Once you set your desired keystones in the calculator, click "Share Current Setup" to copy your URL or just copy it directly from the URL bar. You can copy and share this link with your team. They will see the exact same dungeon and keystone level configuration.'
 		},
 		{
 			question: "What's the difference between rating and score?",
@@ -59,7 +59,7 @@
 		{
 			question: 'Can I generate a shareable link for a specific score?',
 			answer:
-				'Visit /rating-calculator?score=XXXX (replace XXXX with your target score) to see the exact keystones needed. The page automatically generates optimized dungeons and includes the breakdown in the URL—perfect for sharing with your guild.'
+				'Visit /rating-calculator?score=XXXX (replace XXXX with your target score) to see the exact keystones needed. The page automatically generates optimized dungeons and includes the breakdown in the URL, which is useful for sharing with your guild.'
 		}
 	];
 
@@ -69,7 +69,7 @@
 		name: 'Mythic+ Score Calculator',
 		applicationCategory: 'Calculator',
 		operatingSystem: 'Web',
-		url: base + '/rating-calculator',
+		url: SITE_ORIGIN + '/rating-calculator',
 		description: data.seoDescription ?? defaultDescription,
 		offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
 	};
@@ -86,7 +86,7 @@
 </script>
 
 <SEO
-	title={data.seoTitle ?? 'Mythic+ Score Calculator | MrMythical'}
+	title={data.seoTitle ?? PAGE_SEO.calculator.title}
 	description={data.seoDescription ?? defaultDescription}
 	image="https://mrmythical.com/Logo.png"
 	keywords={data.seoKeywords ?? defaultKeywords}

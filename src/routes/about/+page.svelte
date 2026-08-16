@@ -3,13 +3,10 @@
 	import Footer from '../../components/layout/footer.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { ADDONS, DISCORD_URL, FLAGSHIP_ADDON } from '$lib/data/addons';
+	import { PAGE_SEO } from '$lib/data/seoCopy';
 </script>
 
-<SEO
-	title="About Mr. Mythical | Mythic+ & Raid Tools"
-	description="Mr. Mythical is a Mythic+ and raid toolkit for World of Warcraft: score calculator, log visualizer, boss profiles, and in-game addons."
-	image="https://mrmythical.com/Logo.png"
-/>
+<SEO title={PAGE_SEO.about.title} description={PAGE_SEO.about.description} />
 
 <main class="container mx-auto px-4 py-8">
 	<article class="mx-auto max-w-4xl">
@@ -27,6 +24,10 @@
 			<li>
 				<strong>Mythic+ Score Calculator:</strong> Set a target rating and see which keystones get you
 				there. You can import characters, share plans with a URL, and adjust for affixes.
+			</li>
+			<li>
+				<strong>Farm Priority:</strong> Load equipped gear from Battle.net, then rank Midnight Season
+				2 dungeon and raid loot. Typical farm scans finish immediately.
 			</li>
 			<li>
 				<strong>Raid Log Visualizer:</strong> Paste a Warcraft Logs report to see damage and healing
@@ -49,7 +50,7 @@
 			>
 				{FLAGSHIP_ADDON.name}
 			</Button>
-			, then pick up the others if you need them — or browse the full
+			, then pick up the others if you need them, or browse the full
 			<a class="text-link font-semibold" href="/addons">addons page</a>:
 		</p>
 		<ul class="mb-6 ml-6 list-disc space-y-2">

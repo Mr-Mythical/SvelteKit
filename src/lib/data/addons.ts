@@ -60,7 +60,7 @@ export const ADDONS: AddonProduct[] = [
 		blurb:
 			'Toggle every line: rewards, crests, score gains, timers, personal bests. Keep tooltips lean day to day, or hold a modifier for the full picture. Dashboard for planning when you want more.',
 		description:
-			'Mr. Mythical is a World of Warcraft Mythic+ addon built around customizable keystone tooltips and a planning dashboard. Pick which details appear—reward item levels, crest amounts, score gains, personal best, timer lines—and whether they show always or only while you hold a modifier. Same controls apply to keystone chat links. When you want to dig in, the dashboard covers rewards, score calc, dungeon timers, season stats, and a log of recent runs.',
+			'Mr. Mythical is a World of Warcraft Mythic+ addon built around customizable keystone tooltips and a planning dashboard. Pick which details appear (reward item levels, crest amounts, score gains, personal best, timer lines) and whether they show always or only while you hold a modifier. Same controls apply to keystone chat links. When you want to dig in, the dashboard covers rewards, score calc, dungeon timers, season stats, and a log of recent runs.',
 		features: [
 			'Fully customizable Mythic+ keystone tooltips',
 			'Show or hide rewards, crests, score gains, timers, and personal best',
@@ -76,7 +76,7 @@ export const ADDONS: AddonProduct[] = [
 		},
 		seoTitle: 'Mythic+ Dashboard & Tooltips WoW Addon | Mr. Mythical',
 		seoDescription:
-			'Download Mr. Mythical for WoW Mythic+. Customizable keystone tooltips—toggle rewards, crests, score gains, and timers—plus a planning dashboard.',
+			'Download Mr. Mythical for WoW Mythic+. Customizable keystone tooltips for rewards, crests, score, and timers, plus a planning dashboard.',
 		seoKeywords:
 			'Mythic+ addon, WoW addon, customizable keystone tooltips, Mythic+ score, crest rewards, Mr Mythical, CurseForge',
 		ctaLabel: 'View Mythic+ Dashboard'
@@ -86,20 +86,20 @@ export const ADDONS: AddonProduct[] = [
 		name: 'DPS Predictor & Gearing Dashboard',
 		title: 'Mr. Mythical: DPS Predictor & Gearing Dashboard',
 		tagline:
-			'Gearing dashboard for your best loadout from your bags or the season, optimal crest upgrades, and Great Vault advice - powered by a neural-net DPS prediction model.',
-		headline: 'Build your best loadout in game.',
+			'Gearing dashboard for bag loadouts, season loot, crest upgrades, and Great Vault advice. Typical scans finish immediately.',
+		headline: 'Build your best loadout in game, instantly.',
 		blurb:
-			'Use the dashboard to find your best loadout from bags or the entire season, optimize crest upgrades, pick Great Vault rewards, and see DPS on tooltips.',
+			'Open /mrdps to rank bag loadouts, season loot, crests, and Great Vault picks. Typical scans finish immediately, with no SimulationCraft wait.',
 		description:
-			'Mr. Mythical DPS Predictor is a World of Warcraft gearing addon. The main UI is the /mrdps dashboard: find your best loadout from bags, scan current raid and Mythic+ journal loot, rank crest upgrades by DPS per crest, and compare Great Vault options before you lock in. Item tooltips also show DPS vs what you wear. Validation vs fresh SimC sims is published on this page.',
+			'Mr. Mythical DPS Predictor is a World of Warcraft gearing addon. The main UI is the /mrdps dashboard: find your best loadout from bags, scan current raid and Mythic+ journal loot, rank crest upgrades by DPS per crest, and compare Great Vault options before you lock in. Typical scans finish immediately. Item tooltips also show DPS vs what you wear. Validation vs fresh SimC sims is published on this page.',
 		features: [
 			'Gearing dashboard via /mrdps',
+			'Typical farm scans and tooltip DPS finish immediately',
 			'Find Loadout searches full gear sets from your bags',
 			'Scan current raid and Mythic+ journal loot',
 			'Crest upgrades ranked by DPS per crest',
 			'Great Vault picks ranked by DPS',
 			'Preview drops at Champion, Hero, and Myth tracks',
-			'DPS vs equipped on item tooltips',
 			'DPS estimates checked against SimulationCraft, per spec and hero talent'
 		],
 		limitations: [
@@ -144,7 +144,7 @@ export const ADDONS: AddonProduct[] = [
 		hasValidation: true,
 		seoTitle: 'DPS Gearing Dashboard WoW Addon | Mr. Mythical',
 		seoDescription:
-			'Download Mr. Mythical gearing dashboard for WoW. Bag loadouts, season scans, crest plans, and Great Vault picks with SimulationCraft-trained DPS.',
+			'In-game /mrdps gearing for WoW. Typical scans finish immediately. Bags, season loot, crests, and Great Vault with SimC-trained DPS.',
 		seoKeywords:
 			'WoW gearing addon, DPS dashboard, SimulationCraft, SimC, Great Vault, crest upgrades, bag loadout, Mr Mythical',
 		ctaLabel: 'View Gearing Dashboard'

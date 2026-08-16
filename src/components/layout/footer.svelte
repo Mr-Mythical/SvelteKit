@@ -5,6 +5,7 @@
 
 	const product = [
 		{ href: '/rating-calculator', label: 'Calculator' },
+		{ href: '/gearing', label: 'Farm priority' },
 		{ href: '/raid', label: 'Open a log' },
 		{ href: '/raid/boss', label: 'Boss profiles' },
 		{ href: '/addons', label: 'Addons' }

@@ -105,7 +105,7 @@
 						Support on Patreon
 					</p>
 					<p class="text-xs leading-tight text-gray-700 dark:text-gray-200">
-						Support MrMythical.com on Patreon to help keep these free, open-source WoW utilities
+						Support Mr. Mythical on Patreon to help keep these free, open-source WoW utilities
 						accurate and up-to-date.
 					</p>
 				</div>

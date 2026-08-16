@@ -4,14 +4,14 @@
 	import ScreenshotCarousel from '../../components/addons/screenshotCarousel.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { DISCORD_URL } from '$lib/data/addons';
+	import { PAGE_SEO } from '$lib/data/seoCopy';
 
 	let { data } = $props();
 </script>
 
 <SEO
-	title="WoW Addons for Mythic+ & Gearing | Mr. Mythical"
-	description="Download Mr. Mythical WoW addons. Mythic+ keystone tooltips, SimulationCraft gearing dashboard, Raider.IO leaderboards, gear checks, and more on CurseForge and Wago."
-	image="https://mrmythical.com/Logo.png"
+	title={PAGE_SEO.addons.title}
+	description={PAGE_SEO.addons.description}
 	keywords="WoW addons, Mythic+ addon, DPS gearing dashboard, SimulationCraft, keystone tooltips, CurseForge, Mr Mythical"
 />
 
@@ -20,9 +20,9 @@
 		<p class="page-eyebrow">World of Warcraft</p>
 		<h1 class="page-title">Mr. Mythical WoW addons</h1>
 		<p class="page-lede">
-			Free World of Warcraft addons for Mythic+ and gearing. Keystone tooltips, a neural net powered
-			gearing dashboard, Raider.IO leaderboards, gear checks, and a unicorn that talks too much.
-			Grab them on CurseForge or Wago.
+			Free World of Warcraft addons for Mythic+ and gearing. Keystone tooltips, a gearing dashboard
+			that ranks loot immediately, Raider.IO leaderboards, gear checks, and a unicorn that talks too
+			much. Grab them on CurseForge or Wago.
 		</p>
 	</header>
 

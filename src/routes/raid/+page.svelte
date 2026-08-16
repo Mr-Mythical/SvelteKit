@@ -11,6 +11,7 @@
 	import { goto } from '$app/navigation';
 	import { reveal } from '$lib/actions/reveal';
 	import { extractWarcraftLogsReportCode } from '$lib/data/warcraftlogs';
+	import { PAGE_SEO } from '$lib/data/seoCopy';
 	import type { BrowsedLog } from '$lib/types/apiTypes';
 
 	let reportURL: string = $state('');
@@ -119,9 +120,8 @@
 </script>
 
 <SEO
-	title="WoW Raid Log Visualizer & WarcraftLogs Analysis | Mr. Mythical"
-	description="Visualize WarcraftLogs reports second-by-second, study aggregate boss damage profiles from Mythic progression kills, and browse public logs by encounter and healer comp."
-	image="https://mrmythical.com/Logo.png"
+	title={PAGE_SEO.raid.title}
+	description={PAGE_SEO.raid.description}
 	keywords="WoW raid log visualizer, WarcraftLogs analysis, Mythic raid damage timeline, healer cooldown planning, raid log browser, boss damage profiles, WoW raid tools"
 />
 

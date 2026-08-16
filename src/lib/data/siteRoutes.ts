@@ -1,7 +1,15 @@
 import { ADDONS } from '$lib/data/addons';
+import {
+	bossSeoDescription,
+	bossSeoTitle,
+	PAGE_SEO,
+	SCORE_LANDINGS,
+	scoreLandingSeo
+} from '$lib/data/seoCopy';
+import { SITE_ORIGIN } from '$lib/seo';
 import { bosses } from '$lib/types/bossData';
 
-export const SITE_ORIGIN = 'https://mrmythical.com';
+export { SITE_ORIGIN };
 
 export type SiteRoute = {
 	path: string;
@@ -23,112 +31,71 @@ export type SiteRoute = {
 export const SITE_ROUTES: SiteRoute[] = [
 	{
 		path: '/',
-		lastmod: '2026-07-21',
+		lastmod: '2026-08-16',
 		changefreq: 'weekly',
 		priority: 1,
-		title: 'Mr. Mythical | Mythic+ & Raid Tools',
-		description: 'Mythic+ score calculator, raid log visualizer, boss profiles, and WoW addons.',
+		...PAGE_SEO.home,
 		inFeed: true
 	},
 	{
 		path: '/rating-calculator',
-		lastmod: '2026-07-17',
+		lastmod: '2026-08-16',
 		changefreq: 'weekly',
 		priority: 0.9,
-		title: 'Mythic+ Score Calculator',
-		description: 'Set a target rating and see which keystones get you there.',
+		...PAGE_SEO.calculator,
 		inFeed: true
 	},
-	{
-		path: '/rating-calculator?score=1500',
-		lastmod: '2026-07-17',
-		changefreq: 'monthly',
+	...SCORE_LANDINGS.map((score) => ({
+		path: `/rating-calculator?score=${score}`,
+		lastmod: '2026-08-16',
+		changefreq: 'monthly' as const,
 		priority: 0.5,
-		title: 'Mythic+ Score Calculator (1500)',
-		description: 'Plan a 1500 Mythic+ rating.'
-	},
-	{
-		path: '/rating-calculator?score=2000',
-		lastmod: '2026-07-17',
-		changefreq: 'monthly',
-		priority: 0.5,
-		title: 'Mythic+ Score Calculator (2000)',
-		description: 'Plan a 2000 Mythic+ rating.'
-	},
-	{
-		path: '/rating-calculator?score=2500',
-		lastmod: '2026-07-17',
-		changefreq: 'monthly',
-		priority: 0.5,
-		title: 'Mythic+ Score Calculator (2500)',
-		description: 'Plan a 2500 Mythic+ rating.'
-	},
-	{
-		path: '/rating-calculator?score=3000',
-		lastmod: '2026-07-17',
-		changefreq: 'monthly',
-		priority: 0.5,
-		title: 'Mythic+ Score Calculator (3000)',
-		description: 'Plan a 3000 Mythic+ rating.'
-	},
-	{
-		path: '/rating-calculator?score=3400',
-		lastmod: '2026-07-17',
-		changefreq: 'monthly',
-		priority: 0.5,
-		title: 'Mythic+ Score Calculator (3400)',
-		description: 'Plan a 3400 Mythic+ rating.'
-	},
+		...scoreLandingSeo(score)
+	})),
 	{
 		path: '/raid',
-		lastmod: '2026-07-17',
+		lastmod: '2026-08-16',
 		changefreq: 'weekly',
 		priority: 0.9,
-		title: 'Raid Log Visualizer',
-		description: 'Open a Warcraft Logs report and view damage and healing over time.',
+		...PAGE_SEO.raid,
 		inFeed: true
 	},
 	{
 		path: '/raid/boss',
-		lastmod: '2026-07-17',
+		lastmod: '2026-08-16',
 		changefreq: 'weekly',
 		priority: 0.85,
-		title: 'Boss Damage & Death Profiles',
-		description: 'Averaged damage taken and death hotspots from public Mythic kills.',
+		...PAGE_SEO.raidBoss,
 		inFeed: true
 	},
 	...bosses.map((boss) => ({
 		path: `/raid/boss/${boss.slug}`,
-		lastmod: '2026-07-17',
+		lastmod: '2026-08-16',
 		changefreq: 'weekly' as const,
 		priority: 0.7,
-		title: `${boss.name} Boss Profile`,
-		description: `Damage taken and death hotspots for ${boss.name}.`,
+		title: bossSeoTitle(boss.name),
+		description: bossSeoDescription(boss.name),
 		inFeed: false
 	})),
 	{
 		path: '/gearing',
-		lastmod: '2026-08-13',
+		lastmod: '2026-08-16',
 		changefreq: 'weekly',
 		priority: 0.9,
-		title: 'Gearing Dashboard',
-		description:
-			'Load equipped gear from Battle.net and scan season dungeon and raid loot in the browser with the same SimC-trained DPS estimator as the Mr. Mythical addon.',
+		...PAGE_SEO.gearing,
 		inFeed: true
 	},
 	{
 		path: '/addons',
-		lastmod: '2026-07-21',
+		lastmod: '2026-08-16',
 		changefreq: 'weekly',
 		priority: 0.9,
-		title: 'WoW Addons for Mythic+ & Gearing',
-		description:
-			'Mr. Mythical World of Warcraft addons for Mythic+ tooltips, gearing dashboard, and more.',
+		...PAGE_SEO.addons,
 		inFeed: true
 	},
 	...ADDONS.map((addon) => ({
 		path: `/addons/${addon.id}`,
-		lastmod: '2026-07-21',
+		lastmod: '2026-08-16',
 		changefreq: 'weekly' as const,
 		priority: 0.8,
 		title: addon.seoTitle,
@@ -137,28 +104,25 @@ export const SITE_ROUTES: SiteRoute[] = [
 	})),
 	{
 		path: '/about',
-		lastmod: '2026-07-17',
+		lastmod: '2026-08-16',
 		changefreq: 'monthly',
 		priority: 0.6,
-		title: 'About Mr. Mythical',
-		description: 'Who builds Mr. Mythical and what the tools are for.',
+		...PAGE_SEO.about,
 		inFeed: true
 	},
 	{
 		path: '/privacy',
-		lastmod: '2025-06-01',
+		lastmod: '2026-08-16',
 		changefreq: 'yearly',
 		priority: 0.3,
-		title: 'Privacy Policy',
-		description: 'How Mr. Mythical handles data.'
+		...PAGE_SEO.privacy
 	},
 	{
 		path: '/cookie',
-		lastmod: '2025-06-01',
+		lastmod: '2026-08-16',
 		changefreq: 'yearly',
 		priority: 0.3,
-		title: 'Cookie Policy',
-		description: 'Cookie use on mrmythical.com.'
+		...PAGE_SEO.cookie
 	}
 ];
 

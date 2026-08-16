@@ -8,6 +8,8 @@
 
 	import type { PageData } from './$types';
 	import type { Session } from '@auth/core/types';
+	import SEO from '../../components/seo.svelte';
+	import { PAGE_SEO } from '$lib/data/seoCopy';
 
 	type AppSession = Session & {
 		accessToken?: string;
@@ -25,9 +27,7 @@
 	let accessToken = $derived(session?.accessToken ?? null);
 </script>
 
-<svelte:head>
-	<title>Profile | Mr. Mythical</title>
-</svelte:head>
+<SEO title={PAGE_SEO.profile.title} description={PAGE_SEO.profile.description} robots="noindex" />
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<div class="mb-8">
