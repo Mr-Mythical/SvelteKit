@@ -1,6 +1,6 @@
 /**
  * Build Wowhead item URLs / data-wowhead attrs for GearPiece previews.
- * Works with the global tooltips.js loaded in app.html.
+ * Works with the global tooltips.js loaded by WowheadScripts.
  */
 
 import type { GearPiece } from './types';
@@ -135,19 +135,21 @@ export async function resolveWowheadIconName(itemId: number): Promise<string | n
 	return resolveItemIconName(itemId);
 }
 
-export function refreshWowheadLinks(): void {
+export function refreshWowheadLinks(tooltipOptions?: Record<string, unknown>): void {
 	if (typeof window === 'undefined') return;
 	const w = window as Window & {
 		$WowheadPower?: { refreshLinks?: () => void };
 		WH?: { refreshLinks?: () => void };
 		whTooltips?: Record<string, unknown>;
 	};
-	if (w.whTooltips) {
-		w.whTooltips = { ...w.whTooltips, iconizeLinks: false };
-	}
+	w.whTooltips = {
+		...(w.whTooltips ?? {}),
+		iconizeLinks: false,
+		...tooltipOptions
+	};
 	try {
-		w.$WowheadPower?.refreshLinks?.();
-		w.WH?.refreshLinks?.();
+		if (w.$WowheadPower?.refreshLinks) w.$WowheadPower.refreshLinks();
+		else w.WH?.refreshLinks?.();
 	} catch {
 		/* ignore */
 	}

@@ -14,7 +14,8 @@ const SEGMENT_LABELS: Record<string, string> = {
 	about: 'About',
 	privacy: 'Privacy',
 	cookie: 'Cookies',
-	profile: 'Profile'
+	mythic: 'Mythic',
+	heroic: 'Heroic'
 };
 
 export type BreadcrumbItem = {
@@ -106,6 +107,42 @@ export function breadcrumbListJsonLd(pathname: string): Record<string, unknown> 
 			position: index + 1,
 			name: item.name,
 			item: item.url
+		}))
+	};
+}
+
+export function faqPageJsonLd(
+	faqs: { question: string; answer: string }[]
+): Record<string, unknown> | null {
+	if (faqs.length === 0) return null;
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'FAQPage',
+		mainEntity: faqs.map((faq) => ({
+			'@type': 'Question',
+			name: faq.question,
+			acceptedAnswer: {
+				'@type': 'Answer',
+				text: faq.answer
+			}
+		}))
+	};
+}
+
+export function howToJsonLd(
+	name: string,
+	steps: { name: string; text: string }[]
+): Record<string, unknown> | null {
+	if (steps.length === 0) return null;
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'HowTo',
+		name,
+		step: steps.map((step, index) => ({
+			'@type': 'HowToStep',
+			position: index + 1,
+			name: step.name,
+			text: step.text
 		}))
 	};
 }

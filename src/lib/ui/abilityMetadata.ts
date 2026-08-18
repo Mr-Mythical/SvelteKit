@@ -176,6 +176,85 @@ const defaultVisibleAbilityNamesByEncounter: Record<number, string[]> = {
 		'Dark Constellation',
 		'Light Siphon',
 		'Stellar Implosion'
+	],
+	2888: [
+		'Soulcoil Rite',
+		'Soulcoil Well',
+		'Soulcoil Ignition',
+		'Uncoiled Rage',
+		'Essence Rend',
+		'Possession Barrage',
+		'Hollowing Strikes',
+		'Gravebound Advance',
+		'Hungering Pyre',
+		'Uncoiling',
+		'Invoke'
+	],
+	2874: [
+		"Ula'tek's Dominance",
+		'Vitriolic Stasis',
+		'Helical Toxins',
+		'Unstable Miasma',
+		'Empowering Slam',
+		'Bloodvenom Injection',
+		'Toxic Droplets',
+		'Venom Coagulation'
+	],
+	2894: [
+		'Final Ascension',
+		'Dark Whispers',
+		'Mighty Thud',
+		'Blink Nova',
+		'Frostfire Volley',
+		'Aura of Unity',
+		'Disgusting Fish'
+	],
+	2882: [
+		'Imbibe',
+		'Malignant Burst',
+		'Toxic Vapor',
+		'Dripping Fangs',
+		'Plague Froth',
+		'Adaptive Infection'
+	],
+	2871: [
+		'Howling Maelstrom',
+		'Venomous Surge',
+		'Apex Predator',
+		'Raging Crosswinds',
+		'Corroding Venom',
+		"Ula'tek's Presence",
+		'Dig In'
+	],
+	2887: [
+		'Ravenous Feast',
+		'Eternal Venom',
+		'Caustic Deluge',
+		'Venomous Emergence',
+		'Stone Breaker',
+		'Vile Flood',
+		'Sanguine Storm',
+		'Uncoiled Wrath'
+	],
+	2883: [
+		'Ritual of the Fang',
+		'Eternal Nightfall',
+		'Dreadmarch',
+		'Soul Sever',
+		'Soulbinding',
+		'Twilight Veil',
+		'Axegrinder',
+		'Chop Down'
+	],
+	2895: [
+		'Caustic Waves',
+		'Rage of the Shackled',
+		'Spectral Coils',
+		'Circling Prey',
+		"Mother's Wrath",
+		'Putrid Membrane',
+		'Call of the Serpent',
+		'Venomous Heart'
 	]
 };
 

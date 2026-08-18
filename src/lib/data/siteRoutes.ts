@@ -7,7 +7,7 @@ import {
 	scoreLandingSeo
 } from '$lib/data/seoCopy';
 import { SITE_ORIGIN } from '$lib/seo';
-import { bosses } from '$lib/types/bossData';
+import { bossGuidePath, bosses, hasSplitGuides, type GuideDifficulty } from '$lib/types/bossData';
 
 export { SITE_ORIGIN };
 
@@ -54,7 +54,7 @@ export const SITE_ROUTES: SiteRoute[] = [
 	})),
 	{
 		path: '/raid',
-		lastmod: '2026-08-16',
+		lastmod: '2026-08-18',
 		changefreq: 'weekly',
 		priority: 0.9,
 		...PAGE_SEO.raid,
@@ -62,21 +62,28 @@ export const SITE_ROUTES: SiteRoute[] = [
 	},
 	{
 		path: '/raid/boss',
-		lastmod: '2026-08-16',
+		lastmod: '2026-08-18',
 		changefreq: 'weekly',
 		priority: 0.85,
 		...PAGE_SEO.raidBoss,
 		inFeed: true
 	},
-	...bosses.map((boss) => ({
-		path: `/raid/boss/${boss.slug}`,
-		lastmod: '2026-08-16',
-		changefreq: 'weekly' as const,
-		priority: 0.7,
-		title: bossSeoTitle(boss.name),
-		description: bossSeoDescription(boss.name),
-		inFeed: false
-	})),
+	...bosses.flatMap((boss) => {
+		const split = hasSplitGuides(boss);
+		const difficulties: GuideDifficulty[] = split ? ['heroic', 'mythic'] : ['mythic'];
+		return difficulties.map((difficulty) => {
+			const guide = split ? boss.guides[difficulty] : boss.guide;
+			return {
+				path: bossGuidePath(boss.slug, split ? difficulty : 'heroic'),
+				lastmod: split ? '2026-08-18' : '2026-08-16',
+				changefreq: 'weekly' as const,
+				priority: boss.raidId === 'venomous-abyss' ? (difficulty === 'heroic' ? 0.8 : 0.75) : 0.7,
+				title: bossSeoTitle(boss.name, difficulty),
+				description: bossSeoDescription(boss.name, guide?.teaser ?? boss.teaser, difficulty),
+				inFeed: !split || difficulty === 'heroic'
+			};
+		});
+	}),
 	{
 		path: '/gearing',
 		lastmod: '2026-08-16',

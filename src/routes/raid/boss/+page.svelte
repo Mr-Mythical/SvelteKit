@@ -15,35 +15,44 @@
 <SEO
 	title={PAGE_SEO.raidBoss.title}
 	description={PAGE_SEO.raidBoss.description}
-	keywords="Midnight raid, mythic raid, boss damage charts, raid death timings, Voidspire, Dreamrift, Quel'Danas"
+	keywords="Venomous Abyss, Midnight Season 2, Heroic raid guide, Mythic raid guide, Nek'zali, Ula'tek, Twin Fangs, raid death timings"
 />
 
 <main class="container mx-auto px-4 py-8">
 	<header class="page-header">
 		<p class="page-eyebrow">Raid encounters</p>
-		<h1 class="page-title">Boss damage and death profile.</h1>
+		<h1 class="page-title">Boss quick guides and damage profiles.</h1>
 		<p class="page-lede">
-			Per-second damage curves and death clusters for every Midnight mythic raid boss. Aggregated
-			from public progression logs to surface the moments that decide pulls.
+			Heroic and Mythic plans for Midnight raid bosses, with per-second damage curves and death
+			clusters from public Mythic logs as soon as those kills exist. Ula'tek was not on the PTR;
+			that page will be updated as soon as it is tested.
 		</p>
 	</header>
 
-	<ul class="boss-list">
-		{#each data.bosses as boss (boss.id)}
-			<li class="boss-row">
-				<a class="boss-link" href={`/raid/boss/${boss.slug}`}>
-					<div class="preview" aria-hidden="true">
-						<BossPreviewChart bossId={boss.id} />
-					</div>
-					<div class="copy">
-						<h2 class="boss-name">{boss.name}</h2>
-						<p class="boss-teaser">{boss.teaser}</p>
-					</div>
-					<span class="open-cta" aria-hidden="true">Open profile →</span>
-				</a>
-			</li>
-		{/each}
-	</ul>
+	{#each data.raids as raid (raid.raidId)}
+		<section class="raid-block" aria-labelledby={`raid-${raid.raidId}`}>
+			<header class="raid-head">
+				<h2 id={`raid-${raid.raidId}`} class="raid-name">{raid.name}</h2>
+				<p class="raid-meta">Midnight Season {raid.season}</p>
+			</header>
+			<ul class="boss-list">
+				{#each raid.bosses as boss (boss.id)}
+					<li class="boss-row">
+						<a class="boss-link" href={`/raid/boss/${boss.slug}`}>
+							<div class="preview" aria-hidden="true">
+								<BossPreviewChart bossId={boss.id} />
+							</div>
+							<div class="copy">
+								<h3 class="boss-name">{boss.name}</h3>
+								<p class="boss-teaser">{boss.teaser}</p>
+							</div>
+							<span class="open-cta" aria-hidden="true">Open guide →</span>
+						</a>
+					</li>
+				{/each}
+			</ul>
+		</section>
+	{/each}
 </main>
 <Footer />
 
@@ -80,6 +89,33 @@
 		font-family: var(--font-body);
 		font-size: 0.9375rem;
 		line-height: 1.45;
+		color: hsl(var(--muted-foreground));
+		margin: 0;
+	}
+
+	.raid-block {
+		margin-bottom: clamp(28px, 4vw, 44px);
+	}
+
+	.raid-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 8px 14px;
+		padding-bottom: 8px;
+	}
+
+	.raid-name {
+		font-family: var(--font-heading);
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin: 0;
+		color: hsl(var(--foreground));
+	}
+
+	.raid-meta {
+		font-family: var(--font-body);
+		font-size: 0.8125rem;
 		color: hsl(var(--muted-foreground));
 		margin: 0;
 	}

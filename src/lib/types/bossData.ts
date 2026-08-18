@@ -1,3 +1,5 @@
+import { venomousAbyssBosses } from '$lib/data/venomousAbyss';
+
 export interface Ability {
 	name: string;
 	id: number;
@@ -9,26 +11,88 @@ export interface BossResources {
 	icyVeins?: string;
 }
 
+export interface BossQuickGuide {
+	tanks: string;
+	healers: string;
+	dps: string;
+}
+
+export interface BossFaq {
+	question: string;
+	answer: string;
+}
+
+export type GuideDifficulty = 'heroic' | 'mythic';
+
+export interface BossPhase {
+	title: string;
+	body: string[];
+}
+
 export interface BossGuide {
+	/** Unique lede for this difficulty's page and meta description. */
+	teaser?: string;
 	intro: string;
 	kills: string;
+	/** Longer encounter framing. Season 2 guides lead with this instead of log charts. */
+	overview?: string[];
+	/** Mythic-only bullets: what the fight adds over Heroic. */
+	changes?: string[];
+	phases?: BossPhase[];
+	quick?: BossQuickGuide;
+	faqs?: BossFaq[];
 }
+
+export const RAIDS = {
+	'venomous-abyss': {
+		name: 'The Venomous Abyss',
+		season: 2,
+		current: true
+	},
+	voidspire: {
+		name: 'The Voidspire',
+		season: 1,
+		current: false
+	},
+	dreamrift: {
+		name: 'The Dreamrift',
+		season: 1,
+		current: false
+	},
+	'quel-danas': {
+		name: "March on Quel'Danas",
+		season: 1,
+		current: false
+	}
+} as const;
+
+export type RaidId = keyof typeof RAIDS;
+
+export const RAID_ORDER: RaidId[] = ['venomous-abyss', 'voidspire', 'dreamrift', 'quel-danas'];
 
 export interface Boss {
 	id: number;
 	name: string;
 	slug: string;
+	raidId: RaidId;
 	teaser: string;
-	guide: BossGuide;
-	resources: BossResources;
+	/** Season 1 chart pages. Season 2 uses `guides` instead. */
+	guide?: BossGuide;
+	guides?: {
+		heroic: BossGuide;
+		mythic: BossGuide;
+	};
+	resources?: BossResources;
 	abilities: Ability[];
 }
 
 export const bosses: Boss[] = [
+	...venomousAbyssBosses,
 	{
 		id: 3176,
 		name: 'Imperator Averzian',
 		slug: 'imperator-averzian',
+		raidId: 'voidspire',
 		teaser: 'Three-by-three portal grid where row alignments turn into raid wipes.',
 		guide: {
 			intro:
@@ -53,6 +117,7 @@ export const bosses: Boss[] = [
 		id: 3177,
 		name: 'Vorasius',
 		slug: 'vorasius',
+		raidId: 'voidspire',
 		teaser: 'Crystal walls split the arena while fixated adds carve safe lanes.',
 		guide: {
 			intro:
@@ -77,6 +142,7 @@ export const bosses: Boss[] = [
 		id: 3179,
 		name: 'Fallen-King Salhadaar',
 		slug: 'fallenking-salhadaar',
+		raidId: 'voidspire',
 		teaser: 'Stop void orbs from reaching the king, survive the rotating beam phase.',
 		guide: {
 			intro:
@@ -101,6 +167,7 @@ export const bosses: Boss[] = [
 		id: 3178,
 		name: 'Vaelgor & Ezzorak',
 		slug: 'vaelgor-ezzorak',
+		raidId: 'voidspire',
 		teaser: 'Two dragons share a damage budget, an empowerment buff if you fall behind.',
 		guide: {
 			intro:
@@ -125,6 +192,7 @@ export const bosses: Boss[] = [
 		id: 3180,
 		name: 'Lightblinded Vanguard',
 		slug: 'lightblinded-vanguard',
+		raidId: 'voidspire',
 		teaser: 'Three paladins, three auras, separation is mandatory at every 100 energy.',
 		guide: {
 			intro:
@@ -149,6 +217,7 @@ export const bosses: Boss[] = [
 		id: 3181,
 		name: 'Crown of the Cosmos',
 		slug: 'crown-of-the-cosmos',
+		raidId: 'voidspire',
 		teaser: 'Three phases through demibosses, a void-clone Alleria, and the real Alleria.',
 		guide: {
 			intro:
@@ -173,6 +242,7 @@ export const bosses: Boss[] = [
 		id: 3306,
 		name: 'Chimaerus the Undreamt God',
 		slug: 'chimaerus-the-undreamt-god',
+		raidId: 'dreamrift',
 		teaser: 'Permanent vertical raid split, adds downstairs while the boss tanks upstairs.',
 		guide: {
 			intro:
@@ -194,6 +264,7 @@ export const bosses: Boss[] = [
 		id: 3182,
 		name: "Belo'ren, Child of Al'ar",
 		slug: 'beloren-child-of-alar',
+		raidId: 'quel-danas',
 		teaser: 'Phoenix encounter at the Sunwell. Mechanic-by-mechanic coverage pending.',
 		guide: {
 			intro:
@@ -208,6 +279,7 @@ export const bosses: Boss[] = [
 		id: 3183,
 		name: 'Midnight Falls',
 		slug: 'midnight-falls',
+		raidId: 'quel-danas',
 		teaser: "Also known as L'ura. Memory puzzle plus void cores in a three-phase Sunwell finale.",
 		guide: {
 			intro:
@@ -228,3 +300,53 @@ export const bosses: Boss[] = [
 		]
 	}
 ];
+
+export function bossesForRaid(raidId: RaidId): Boss[] {
+	return bosses.filter((boss) => boss.raidId === raidId);
+}
+
+export function groupedBosses(): {
+	raidId: RaidId;
+	name: string;
+	season: number;
+	bosses: Boss[];
+}[] {
+	return RAID_ORDER.map((raidId) => ({
+		raidId,
+		name: RAIDS[raidId].name,
+		season: RAIDS[raidId].season,
+		bosses: bossesForRaid(raidId)
+	})).filter((group) => group.bosses.length > 0);
+}
+
+export function currentSeasonBosses(): Boss[] {
+	return bosses.filter((boss) => RAIDS[boss.raidId].current);
+}
+
+export function hasSplitGuides(
+	boss: Boss
+): boss is Boss & { guides: { heroic: BossGuide; mythic: BossGuide } } {
+	return Boolean(boss.guides?.heroic && boss.guides?.mythic);
+}
+
+export function resolveBossGuide(boss: Boss, difficulty: GuideDifficulty = 'heroic'): BossGuide {
+	if (boss.guides) return boss.guides[difficulty];
+	if (!boss.guide) {
+		throw new Error(`Boss ${boss.slug} is missing guide copy`);
+	}
+	return boss.guide;
+}
+
+export function bossGuidePath(slug: string, difficulty: GuideDifficulty = 'heroic'): string {
+	return difficulty === 'mythic' ? `/raid/boss/${slug}/mythic` : `/raid/boss/${slug}`;
+}
+
+export function listedBossGuides(boss: Boss): { difficulty: GuideDifficulty; guide: BossGuide }[] {
+	if (hasSplitGuides(boss)) {
+		return [
+			{ difficulty: 'heroic', guide: boss.guides.heroic },
+			{ difficulty: 'mythic', guide: boss.guides.mythic }
+		];
+	}
+	return boss.guide ? [{ difficulty: 'mythic', guide: boss.guide }] : [];
+}

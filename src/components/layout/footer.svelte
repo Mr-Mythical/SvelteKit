@@ -7,7 +7,7 @@
 		{ href: '/rating-calculator', label: 'Calculator' },
 		{ href: '/gearing', label: 'Farm priority' },
 		{ href: '/raid', label: 'Open a log' },
-		{ href: '/raid/boss', label: 'Boss profiles' },
+		{ href: '/raid/boss', label: 'Boss guides' },
 		{ href: '/addons', label: 'Addons' }
 	];
 
