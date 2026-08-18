@@ -78,7 +78,13 @@ export function isWowheadTrigger(target: EventTarget | null): boolean {
 	if (!anchor) return false;
 	if (anchor.hasAttribute('data-wowhead')) return true;
 	const href = anchor.getAttribute('href') ?? '';
-	return href.includes('wowhead.com');
+	try {
+		const parsedUrl = new URL(href, window.location.href);
+		const hostname = parsedUrl.hostname.toLowerCase();
+		return hostname === 'wowhead.com' || hostname.endsWith('.wowhead.com');
+	} catch {
+		return false;
+	}
 }
 
 function isInlineTooltip(element: HTMLElement): boolean {
