@@ -27,9 +27,9 @@ export const PAGE_SEO = {
 			'Paste a Warcraft Logs report for per-second damage and healing. Browse public Mythic logs and boss damage profiles.'
 	},
 	raidBoss: {
-		title: 'Boss Damage Profiles | Mr. Mythical',
+		title: 'Venomous Abyss Boss Guides | Mr. Mythical',
 		description:
-			'Per-second damage and death timing for every Midnight mythic raid boss, from public progression logs.'
+			"Heroic and Mythic Venomous Abyss guides plus damage curves. Ula'tek was not on PTR and will be updated as soon as it is tested."
 	},
 	raidLog: {
 		title: 'Raid Log | Mr. Mythical',
@@ -71,10 +71,22 @@ export function scoreLandingSeo(score: number): { title: string; description: st
 	};
 }
 
-export function bossSeoTitle(name: string): string {
-	return `Mythic ${name} | Mr. Mythical`;
+export type BossSeoDifficulty = 'heroic' | 'mythic';
+
+export function bossSeoTitle(name: string, difficulty: BossSeoDifficulty = 'mythic'): string {
+	const label = difficulty === 'heroic' ? 'Heroic' : 'Mythic';
+	return `${label} ${name} | Mr. Mythical`;
 }
 
-export function bossSeoDescription(name: string): string {
-	return `Mythic ${name} damage curve and death timing from public progression logs.`;
+export function bossSeoDescription(
+	name: string,
+	teaser?: string,
+	difficulty: BossSeoDifficulty = 'mythic'
+): string {
+	const label = difficulty === 'heroic' ? 'Heroic' : 'Mythic';
+	if (teaser) {
+		const withTeaser = `${label} ${name} guide: ${teaser}`;
+		if (withTeaser.length <= 160) return withTeaser;
+	}
+	return `${label} ${name} guide plus damage and death timing from public logs.`;
 }

@@ -45,3 +45,6 @@ User-agent: cohere-ai
 Allow: /
 
 Sitemap: https://mrmythical.com/sitemap.xml
+
+# AI-oriented site summary
+# https://mrmythical.com/llms.txt

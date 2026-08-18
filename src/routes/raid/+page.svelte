@@ -3,7 +3,7 @@
 	import Footer from '../../components/layout/footer.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { bosses } from '$lib/types/bossData';
+	import { currentSeasonBosses } from '$lib/types/bossData';
 	import YourReports from '../../components/raid/yourReports.svelte';
 	import LogBrowserFilters from '../../components/raid/logBrowser.svelte';
 	import LogBrowserResults from '../../components/raid/logBrowserResult.svelte';
@@ -13,6 +13,8 @@
 	import { extractWarcraftLogsReportCode } from '$lib/data/warcraftlogs';
 	import { PAGE_SEO } from '$lib/data/seoCopy';
 	import type { BrowsedLog } from '$lib/types/apiTypes';
+
+	const seasonBosses = currentSeasonBosses();
 
 	let reportURL: string = $state('');
 	let loadingFights = $state(false);
@@ -195,11 +197,14 @@
 
 		<aside class="raid-col-side reveal-block" use:reveal={{ delay: 0 }}>
 			<header class="section-head">
-				<h2 class="section-label">Boss damage profiles</h2>
-				<span class="section-hint">Averaged damage timelines with five-second death windows</span>
+				<h2 class="section-label">Venomous Abyss guides</h2>
+				<span class="section-hint">
+					Midnight Season 2 Heroic guides. Ula'tek was not on PTR.
+					<a href="/raid/boss">All raids</a>
+				</span>
 			</header>
 			<div class="boss-grid reveal-surface" use:reveal={{ delay: 40 }}>
-				{#each bosses as boss (boss.id)}
+				{#each seasonBosses as boss (boss.id)}
 					<a href={`/raid/boss/${boss.slug}`} class="boss-tile">
 						<div class="boss-thumb">
 							<BossPreviewChart bossId={boss.id} />
@@ -368,6 +373,15 @@
 		color: hsl(var(--muted-foreground));
 		text-align: right;
 		max-width: 36ch;
+	}
+
+	.section-hint a {
+		color: hsl(var(--link));
+		text-decoration: none;
+	}
+
+	.section-hint a:hover {
+		text-decoration: underline;
 	}
 
 	.raid-grid {

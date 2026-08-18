@@ -7,24 +7,26 @@
 	import { Input } from '$lib/components/ui/input';
 	import BossPreviewChart from '../components/charts/bossPreviewChart.svelte';
 	import ScorePlanner from '../components/calculator/scorePlanner.svelte';
-	import { bosses } from '$lib/types/bossData';
+	import { currentSeasonBosses } from '$lib/types/bossData';
 	import { extractWarcraftLogsReportCode } from '$lib/data/warcraftlogs';
 	import { ADDONS, DISCORD_URL } from '$lib/data/addons';
 	import { PAGE_SEO } from '$lib/data/seoCopy';
 
 	let { data = { session: null, validation: null } } = $props();
 
+	const seasonBosses = currentSeasonBosses();
+
 	// Rotate through the current raid's bosses in the encounter preview.
 	let bossIndex = $state(0);
-	const previewBoss = $derived(bosses[bossIndex] ?? bosses[0]);
+	const previewBoss = $derived(seasonBosses[bossIndex] ?? seasonBosses[0]);
 
 	onMount(() => {
 		const reduced =
 			typeof window !== 'undefined' &&
 			window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-		if (reduced || bosses.length <= 1) return;
+		if (reduced || seasonBosses.length <= 1) return;
 		const id = window.setInterval(() => {
-			bossIndex = (bossIndex + 1) % bosses.length;
+			bossIndex = (bossIndex + 1) % seasonBosses.length;
 		}, 15000);
 		return () => window.clearInterval(id);
 	});

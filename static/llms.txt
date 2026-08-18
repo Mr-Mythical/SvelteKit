@@ -10,7 +10,23 @@ Mr. Mythical helps players plan Mythic+ keys, read Warcraft Logs, check boss dam
 - [Mythic+ Score Calculator](https://mrmythical.com/rating-calculator): Set a target rating and see which keystones get you there
 - [Farm Priority](https://mrmythical.com/gearing): Load a character from Battle.net and rank Midnight Season 2 dungeon and raid loot immediately in the browser. Same SimC-trained DPS estimator as the addon, not a full sim
 - [Raid Log Visualizer](https://mrmythical.com/raid): Paste a Warcraft Logs report for per-second damage and healing
-- [Boss Damage & Death Profiles](https://mrmythical.com/raid/boss): Averaged Mythic kill damage and death hotspots
+- [Boss Damage & Death Profiles](https://mrmythical.com/raid/boss): Heroic and Mythic Venomous Abyss guides plus averaged Mythic damage curves. Ula'tek was not on PTR
+- [Nek'zali the Soulcoiler](https://mrmythical.com/raid/boss/nekzali-the-soulcoiler): Heroic Venomous Abyss opener
+- [Nek'zali the Soulcoiler (Mythic)](https://mrmythical.com/raid/boss/nekzali-the-soulcoiler/mythic): Mythic well teams and Uncoiled Rage
+- [Entombed Sentinels](https://mrmythical.com/raid/boss/entombed-sentinels): Heroic split-golem Stasis plan
+- [Entombed Sentinels (Mythic)](https://mrmythical.com/raid/boss/entombed-sentinels/mythic): Mythic Protovenom pairing
+- [The Lost Explorers](https://mrmythical.com/raid/boss/the-lost-explorers): Heroic Disgusting Fish feeds
+- [The Lost Explorers (Mythic)](https://mrmythical.com/raid/boss/the-lost-explorers/mythic): Mythic Relic Rupture crate stomps
+- [Vashnik the Malignant](https://mrmythical.com/raid/boss/vashnik-the-malignant): Heroic fountain Imbibe
+- [Vashnik the Malignant (Mythic)](https://mrmythical.com/raid/boss/vashnik-the-malignant/mythic): Mythic tumors and Plague Wave
+- [Sszorak](https://mrmythical.com/raid/boss/sszorak): Heroic wind knockbacks and Dig In
+- [Sszorak (Mythic)](https://mrmythical.com/raid/boss/sszorak/mythic): Mythic Serpent's Fury soak
+- [The Twin Fangs](https://mrmythical.com/raid/boss/the-twin-fangs): Heroic Eternal Venom and Feast
+- [The Twin Fangs (Mythic)](https://mrmythical.com/raid/boss/the-twin-fangs/mythic): Mythic Tainted Blood soaks
+- [The Coiled Altar](https://mrmythical.com/raid/boss/the-coiled-altar): Heroic Zul'jan into Malacrass
+- [The Coiled Altar (Mythic)](https://mrmythical.com/raid/boss/the-coiled-altar/mythic): Mythic Virulent Mutation and Soulbinding
+- [Ula'tek](https://mrmythical.com/raid/boss/ulatek): Not on PTR, guide coming as soon as the fight is tested
+- [Ula'tek (Mythic)](https://mrmythical.com/raid/boss/ulatek/mythic): Not on PTR, Mythic guide coming as soon as the fight is tested
 - [About](https://mrmythical.com/about): Project background and contact
 
 ## WoW addons
