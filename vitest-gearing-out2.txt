@@ -1,0 +1,24 @@
+﻿node.exe : npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm 
+help npmrc` for supported config options.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm warn Unknow...config options.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ DEPRECATED  `test.poolOptions` was removed in Vitest 4. All previous `poolOptions` are now top-level options. Please, 
+refer to the migration guide: https://vitest.dev/guide/migration#pool-rework
+
+ RUN  v4.1.5 C:/Users/mathi/Desktop/Mythical/SvelteKit
+
+ Γ£ô src/lib/gearing/__tests__/loadout.test.ts > searchBestBagLoadout > picks the higher-stat helm from bags 11ms
+ Γ£ô src/lib/gearing/__tests__/loadout.test.ts > searchBestBagLoadout > combo estimate matches plan total and is not below checked leaves 6ms
+ Γ£ô src/lib/gearing/__tests__/loadout.test.ts > searchBestBagLoadout > search plan stays structured-cloneable when equipped stats are Proxies 4ms
+ Γ£ô src/lib/gearing/__tests__/loadout.test.ts > rankVaultOptions > ranks vault helm and skips trinkets 4ms
+ Γ£ô src/lib/gearing/__tests__/loadout.test.ts > rankVaultOptions > returns empty reason when vault missing 3ms
+ Γ£ô src/lib/gearing/__tests__/weaponRank.test.ts > computeWeaponLoadoutStatDelta > drops the old off-hand when swapping a 1H+OH set for a 2H 3ms
+ Γ£ô src/lib/gearing/__tests__/weaponRank.test.ts > computeWeaponLoadoutStatDelta > returns null when loadout keys are unchanged 0ms
+ Γ£ô src/lib/gearing/__tests__/weaponRank.test.ts > applyPairedWeaponCandidateScoring > scores MH against equipped OH only (does not inherit BiS loot OH) 7ms
+ Γ£ô src/lib/gearing/__tests__/weaponRank.test.ts > 2H candidates in combo count with equipped OH > includes staffs in the estimate so deselecting one changes the total 6ms
+ Γ£ô src/lib/gearing/__tests__/season.test.ts > season loot snapshot > loads published season-loot-v1 with Champion/Hero/Myth tracks 4ms
+ Γ£ô src/lib/gearing/__tests__/season.test.ts > season loot snapshot > resolves candidates at Hero track via Item DB 12ms

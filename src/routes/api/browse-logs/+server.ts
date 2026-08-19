@@ -1,21 +1,24 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { healerCompositions, encounters } from '$lib/db/schema';
-import { eq, gte, lte, desc, and, type SQL } from 'drizzle-orm';
+import { eq, gte, lte, desc, and, inArray, type SQL } from 'drizzle-orm';
 import type { BrowseLogsParams, BrowsedLog, BrowseLogsResponse } from '$lib/types/apiTypes';
-import { bosses as bossList } from '$lib/types/bossData';
+import { bosses as bossList, currentSeasonBosses } from '$lib/types/bossData';
 import { apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const params: BrowseLogsParams = await request.json();
+		const currentEncounterIds = currentSeasonBosses().map((boss) => boss.id);
 
 		// Build the where conditions
 		const whereConditions: SQL[] = [];
 
 		if (params.bossId) {
 			whereConditions.push(eq(healerCompositions.encounterId, params.bossId));
+		} else {
+			whereConditions.push(inArray(healerCompositions.encounterId, currentEncounterIds));
 		}
 		if (params.minDuration) {
 			whereConditions.push(gte(healerCompositions.fightDuration, params.minDuration));

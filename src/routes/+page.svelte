@@ -222,11 +222,11 @@
 			<figure class="tool-preview">
 				<div class="tool-preview-frame">
 					{#key previewBoss.id}
-						<BossPreviewChart bossId={previewBoss.id} />
+						<BossPreviewChart bossId={previewBoss.id} difficulty="heroic" />
 					{/key}
 				</div>
 				<figcaption class="tool-preview-caption">
-					Mythic {previewBoss.name}
+					Heroic {previewBoss.name}
 				</figcaption>
 			</figure>
 			<div class="tool-copy">

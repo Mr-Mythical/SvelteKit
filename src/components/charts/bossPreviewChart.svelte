@@ -11,12 +11,17 @@
 	} from 'chart.js';
 	import type { ChartData, ChartOptions } from 'chart.js';
 	import { logClientError } from '$lib/clientLog';
+	import { raidChartQuery, wclDifficultyId, type ChartDifficulty } from '$lib/raidDifficulty';
 
 	interface Props {
 		bossId: number;
+		difficulty?: ChartDifficulty | number;
 	}
 
-	let { bossId }: Props = $props();
+	let { bossId, difficulty = 'mythic' }: Props = $props();
+	let difficultyId = $derived(
+		typeof difficulty === 'number' ? difficulty : wclDifficultyId(difficulty)
+	);
 
 	// Simple localStorage cache helpers with TTL
 	function getCache<T>(key: string): T | null {
@@ -94,24 +99,24 @@
 		}
 	};
 
-	async function loadChart(id: number) {
+	async function loadChart(id: number, diff: number) {
 		loading = true;
 		chartData = null;
 		try {
-			const cacheKey = `damage-average:${id}`;
+			const cacheKey = `damage-average:${id}:${diff}`;
 			const cached = getCache<AverageRecord[]>(cacheKey);
 			let data: AverageRecord[] | null = cached;
 
 			if (!data) {
-				const response = await fetch(`/api/damage-average?bossId=${id}`);
+				const response = await fetch(`/api/damage-average?${raidChartQuery(id, diff)}`);
 				if (!response.ok) throw new Error('Failed to fetch data');
 				data = await response.json();
 				// Cache for 7 days
 				setCache(cacheKey, data, 7 * 24 * 60 * 60 * 1000);
 			}
 
-			// Bail if bossId changed while we were fetching
-			if (id !== bossId) return;
+			// Bail if bossId/difficulty changed while we were fetching
+			if (id !== bossId || diff !== difficultyId) return;
 
 			chartData = {
 				labels: (data ?? []).map((d) => d.time_seconds.toString()),
@@ -129,13 +134,12 @@
 		} catch (err) {
 			logClientError('bossPreviewChart', 'failed to load preview chart', err);
 		} finally {
-			if (id === bossId) loading = false;
+			if (id === bossId && diff === difficultyId) loading = false;
 		}
 	}
 
 	$effect(() => {
-		// Re-fetch whenever bossId changes (covers initial mount too).
-		void loadChart(bossId);
+		void loadChart(bossId, difficultyId);
 	});
 </script>
 

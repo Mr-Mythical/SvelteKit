@@ -147,7 +147,7 @@ const virulentMutation = s(1310544, 'Virulent Mutation');
 
 export const venomousAbyssBosses: Boss[] = [
 	{
-		id: 2888,
+		id: 3470,
 		name: "Nek'zali the Soulcoiler",
 		slug: 'nekzali-the-soulcoiler',
 		raidId: 'venomous-abyss',
@@ -284,7 +284,7 @@ export const venomousAbyssBosses: Boss[] = [
 		]
 	},
 	{
-		id: 2874,
+		id: 3445,
 		name: 'Entombed Sentinels',
 		slug: 'entombed-sentinels',
 		raidId: 'venomous-abyss',
@@ -415,7 +415,7 @@ export const venomousAbyssBosses: Boss[] = [
 		]
 	},
 	{
-		id: 2894,
+		id: 3497,
 		name: 'The Lost Explorers',
 		slug: 'the-lost-explorers',
 		raidId: 'venomous-abyss',
@@ -560,7 +560,7 @@ export const venomousAbyssBosses: Boss[] = [
 		]
 	},
 	{
-		id: 2882,
+		id: 3455,
 		name: 'Vashnik the Malignant',
 		slug: 'vashnik-the-malignant',
 		raidId: 'venomous-abyss',
@@ -682,7 +682,7 @@ export const venomousAbyssBosses: Boss[] = [
 		]
 	},
 	{
-		id: 2871,
+		id: 3420,
 		name: 'Sszorak',
 		slug: 'sszorak',
 		raidId: 'venomous-abyss',
@@ -796,7 +796,7 @@ export const venomousAbyssBosses: Boss[] = [
 		]
 	},
 	{
-		id: 2887,
+		id: 3421,
 		name: 'The Twin Fangs',
 		slug: 'the-twin-fangs',
 		raidId: 'venomous-abyss',
@@ -922,7 +922,7 @@ export const venomousAbyssBosses: Boss[] = [
 		]
 	},
 	{
-		id: 2883,
+		id: 3429,
 		name: 'The Coiled Altar',
 		slug: 'the-coiled-altar',
 		raidId: 'venomous-abyss',
@@ -1068,7 +1068,7 @@ export const venomousAbyssBosses: Boss[] = [
 		]
 	},
 	{
-		id: 2895,
+		id: 3492,
 		name: "Ula'tek",
 		slug: 'ulatek',
 		raidId: 'venomous-abyss',

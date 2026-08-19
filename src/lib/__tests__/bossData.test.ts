@@ -9,6 +9,7 @@ import {
 	groupedBosses,
 	hasSplitGuides,
 	listedBossGuides,
+	defaultChartDifficulty,
 	type BossGuide
 } from '$lib/types/bossData';
 
@@ -55,6 +56,7 @@ describe('raid boss catalog', () => {
 		const seasonBosses = currentSeasonBosses();
 		expect(seasonBosses.map((boss) => boss.slug)).toEqual([...VENOMOUS_ABYSS_SLUGS]);
 		expect(seasonBosses.every((boss) => hasSplitGuides(boss))).toBe(true);
+		expect(seasonBosses.every((boss) => defaultChartDifficulty(boss) === 'heroic')).toBe(true);
 	});
 
 	it('writes Season 2 Heroic and Mythic guides as phase walkthroughs with inline spells', () => {

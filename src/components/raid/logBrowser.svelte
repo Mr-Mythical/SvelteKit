@@ -10,7 +10,7 @@
 		CardTitle,
 		CardDescription
 	} from '$lib/components/ui/card';
-	import { bosses as bossList } from '$lib/types/bossData';
+	import { currentSeasonBosses } from '$lib/types/bossData';
 	import { classSpecAbilities } from '$lib/types/classData';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Separator } from '$lib/components/ui/separator';
@@ -40,6 +40,7 @@
 		onsearch
 	}: Props = $props();
 
+	const bossList = currentSeasonBosses();
 	let selectedBossId: number | undefined = $state();
 	let selectedBossLabel = $derived(
 		selectedBossId ? (bossList.find((b) => b.id === selectedBossId)?.name ?? '') : ''
@@ -86,10 +87,13 @@
 		if (nextKey === lastInitialSearchKey) return;
 
 		lastInitialSearchKey = nextKey;
-		selectedBossId = initialBossId;
+		selectedBossId =
+			initialBossId != null && bossList.some((boss) => boss.id === initialBossId)
+				? initialBossId
+				: undefined;
 		selectedHealerSpecs = [...sortedSpecs];
 
-		if (initialBossId || sortedSpecs.length > 0) {
+		if (selectedBossId || sortedSpecs.length > 0) {
 			handleSearch();
 		}
 	});

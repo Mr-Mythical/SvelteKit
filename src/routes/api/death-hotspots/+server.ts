@@ -1,9 +1,10 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { deathHotspots } from '$lib/db/schema';
-import { eq, asc } from 'drizzle-orm';
+import { and, eq, asc } from 'drizzle-orm';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
+import { parseWclDifficultyParam } from '$lib/raidDifficulty';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -12,6 +13,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			return apiError('No bossId provided', 400);
 		}
 
+		const difficulty = parseWclDifficultyParam(url.searchParams.get('difficulty'));
 		const data = await getRaidDb()
 			.select({
 				time_seconds: deathHotspots.timeSeconds,
@@ -19,7 +21,12 @@ export const GET: RequestHandler = async ({ url }) => {
 				sample_count: deathHotspots.sampleCount
 			})
 			.from(deathHotspots)
-			.where(eq(deathHotspots.encounterId, parseInt(bossId)))
+			.where(
+				and(
+					eq(deathHotspots.encounterId, parseInt(bossId)),
+					eq(deathHotspots.difficulty, difficulty)
+				)
+			)
 			.orderBy(asc(deathHotspots.timeSeconds));
 
 		return apiOk(data);

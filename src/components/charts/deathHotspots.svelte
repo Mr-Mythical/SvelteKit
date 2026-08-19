@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { raidChartQuery, wclDifficultyId, type ChartDifficulty } from '$lib/raidDifficulty';
+
 	interface HotspotRow {
 		time_seconds: number;
 		death_count: number;
@@ -14,26 +16,30 @@
 
 	interface Props {
 		bossId: number;
+		difficulty?: ChartDifficulty | number;
 	}
 
-	let { bossId }: Props = $props();
+	let { bossId, difficulty = 'mythic' }: Props = $props();
+	let difficultyId = $derived(
+		typeof difficulty === 'number' ? difficulty : wclDifficultyId(difficulty)
+	);
 
 	let rows: HotspotRow[] = $state([]);
 	let loading = $state(true);
 	let error: string | null = $state(null);
-	let lastFetchedBossId: number | null = $state(null);
+	let lastFetchedKey: string | null = $state(null);
 
 	const WINDOW_SECONDS = 5;
 
 	let activeFetchId = 0;
 
-	async function fetchHotspots(id: number) {
+	async function fetchHotspots(id: number, diff: number) {
 		const fetchId = ++activeFetchId;
 		loading = true;
 		error = null;
 		rows = [];
 		try {
-			const response = await fetch(`/api/death-hotspots?bossId=${id}`);
+			const response = await fetch(`/api/death-hotspots?${raidChartQuery(id, diff)}`);
 			if (!response.ok) {
 				error = 'Failed to load death hotspots.';
 				return;
@@ -52,9 +58,10 @@
 	}
 
 	$effect(() => {
-		if (bossId !== lastFetchedBossId) {
-			lastFetchedBossId = bossId;
-			void fetchHotspots(bossId);
+		const key = `${bossId}:${difficultyId}`;
+		if (key !== lastFetchedKey) {
+			lastFetchedKey = key;
+			void fetchHotspots(bossId, difficultyId);
 		}
 	});
 

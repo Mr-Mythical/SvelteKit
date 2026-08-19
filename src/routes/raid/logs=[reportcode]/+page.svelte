@@ -529,10 +529,13 @@
 	async function fetchAverageDamageSummary(fight: Fight, seriesData: Series[]) {
 		loadingAverageSummary = true;
 		try {
-			const cacheKey = `damage-average:${fight.encounterID}`;
+			const cacheKey = `damage-average:${fight.encounterID}:${fight.difficulty ?? 5}`;
 			let records = getCache<AverageRecord[]>(cacheKey);
 			if (!records) {
-				const response = await fetch(`/api/damage-average?bossId=${fight.encounterID}`);
+				const difficulty = fight.difficulty ?? 5;
+				const response = await fetch(
+					`/api/damage-average?bossId=${fight.encounterID}&difficulty=${difficulty}`
+				);
 				const apiData = await response.json();
 				if (!Array.isArray(apiData)) {
 					averageDamageSummary = null;

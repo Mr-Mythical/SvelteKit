@@ -350,3 +350,7 @@ export function listedBossGuides(boss: Boss): { difficulty: GuideDifficulty; gui
 	}
 	return boss.guide ? [{ difficulty: 'mythic', guide: boss.guide }] : [];
 }
+
+export function defaultChartDifficulty(boss: Boss): GuideDifficulty {
+	return hasSplitGuides(boss) ? 'heroic' : 'mythic';
+}

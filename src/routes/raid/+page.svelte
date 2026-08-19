@@ -207,7 +207,7 @@
 				{#each seasonBosses as boss (boss.id)}
 					<a href={`/raid/boss/${boss.slug}`} class="boss-tile">
 						<div class="boss-thumb">
-							<BossPreviewChart bossId={boss.id} />
+							<BossPreviewChart bossId={boss.id} difficulty="heroic" />
 						</div>
 						<div class="boss-meta">
 							<span class="boss-name">{boss.name}</span>

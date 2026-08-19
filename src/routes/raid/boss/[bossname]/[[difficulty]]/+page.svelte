@@ -395,11 +395,12 @@
 		<AverageChart
 			encounterId={currentBoss.id}
 			encounterName={`${difficultyLabel} ${currentBoss.name}`}
+			{difficulty}
 		/>
 	</section>
 
 	<section class="hotspots-section" aria-label="Death hotspots">
-		<DeathHotspots bossId={currentBoss.id} />
+		<DeathHotspots bossId={currentBoss.id} {difficulty} />
 	</section>
 {/snippet}
 

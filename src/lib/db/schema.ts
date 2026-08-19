@@ -123,10 +123,16 @@ export const deathHotspots = pgTable(
 			.references(() => encounters.encounterId),
 		timeSeconds: integer('time_seconds').notNull(),
 		deathCount: integer('death_count').notNull(),
-		sampleCount: integer('sample_count').notNull()
+		sampleCount: integer('sample_count').notNull(),
+		difficulty: integer('difficulty').notNull().default(5)
 	},
 	(table) => ({
-		encounterIdx: index('idx_death_hotspots_encounter').on(table.encounterId)
+		encounterIdx: index('idx_death_hotspots_encounter').on(table.encounterId),
+		encounterDiffTime: uniqueIndex('death_hotspots_encounter_diff_time_uidx').on(
+			table.encounterId,
+			table.difficulty,
+			table.timeSeconds
+		)
 	})
 );
 
@@ -176,18 +182,29 @@ export const damageData = pgTable(
 // DAMAGE_AVERAGES TABLE
 // =============================================================================
 // Stores calculated damage averages and statistics per encounter
-export const damageAverages = pgTable('damage_averages', {
-	id: serial('id').primaryKey(),
-	encounterId: integer('encounter_id')
-		.notNull()
-		.references(() => encounters.encounterId),
-	timeSeconds: integer('time_seconds').notNull(),
-	avgDamage: integer('avg_damage'),
-	stdDev: integer('std_dev'),
-	count: integer('count'),
-	confidenceInterval: integer('confidence_interval'),
-	createdAt: timestamp('created_at').defaultNow()
-});
+export const damageAverages = pgTable(
+	'damage_averages',
+	{
+		id: serial('id').primaryKey(),
+		encounterId: integer('encounter_id')
+			.notNull()
+			.references(() => encounters.encounterId),
+		difficulty: integer('difficulty').notNull().default(5),
+		timeSeconds: integer('time_seconds').notNull(),
+		avgDamage: integer('avg_damage'),
+		stdDev: integer('std_dev'),
+		count: integer('count'),
+		confidenceInterval: integer('confidence_interval'),
+		createdAt: timestamp('created_at').defaultNow()
+	},
+	(table) => ({
+		encounterDiffTime: uniqueIndex('damage_averages_encounter_diff_time_uidx').on(
+			table.encounterId,
+			table.difficulty,
+			table.timeSeconds
+		)
+	})
+);
 
 // =============================================================================
 // COLLECTION_PROGRESS TABLE

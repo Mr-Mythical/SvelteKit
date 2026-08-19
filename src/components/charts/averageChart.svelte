@@ -18,6 +18,7 @@
 	import type { Chart as ChartInstance, ChartData, ChartOptions } from 'chart.js';
 	import { backgroundColorPlugin } from '$lib/ui/chartCanvasPlugin';
 	import { logClientError } from '$lib/clientLog';
+	import { raidChartQuery, wclDifficultyId, type ChartDifficulty } from '$lib/raidDifficulty';
 
 	let zoomPluginLoaded = $state(false);
 
@@ -32,9 +33,13 @@
 	interface Props {
 		encounterId: number;
 		encounterName?: string;
+		difficulty?: ChartDifficulty | number;
 	}
 
-	let { encounterId, encounterName = 'Unknown Encounter' }: Props = $props();
+	let { encounterId, encounterName = 'Unknown Encounter', difficulty = 'mythic' }: Props = $props();
+	let difficultyId = $derived(
+		typeof difficulty === 'number' ? difficulty : wclDifficultyId(difficulty)
+	);
 	// Simple localStorage cache helpers with TTL
 	function getCache<T>(key: string): T | null {
 		try {
@@ -379,11 +384,11 @@
 	}
 
 	async function fetchDeathRate(): Promise<DeathRateRecord[]> {
-		const cacheKey = `death-hotspots:${encounterId}`;
+		const cacheKey = `death-hotspots:${encounterId}:${difficultyId}`;
 		const cached = getCache<DeathRateRecord[]>(cacheKey);
 		if (cached) return cached;
 		try {
-			const response = await fetch(`/api/death-hotspots?bossId=${encounterId}`);
+			const response = await fetch(`/api/death-hotspots?${raidChartQuery(encounterId, difficultyId)}`);
 			const apiData = await response.json();
 			if (!Array.isArray(apiData)) return [];
 			const records = apiData as DeathRateRecord[];
@@ -398,10 +403,10 @@
 	async function fetchData() {
 		try {
 			loading = true;
-			const cacheKey = `damage-average:${encounterId}`;
+			const cacheKey = `damage-average:${encounterId}:${difficultyId}`;
 			let data = getCache<AverageRecord[]>(cacheKey);
 			if (!data) {
-				const response = await fetch(`/api/damage-average?bossId=${encounterId}`);
+				const response = await fetch(`/api/damage-average?${raidChartQuery(encounterId, difficultyId)}`);
 				const apiData = await response.json();
 				if ('error' in apiData) {
 					throw new Error(apiData.error);
@@ -513,7 +518,8 @@
 
 	$effect(() => {
 		if (encounterId) {
-			fetchData();
+			void difficultyId;
+			void fetchData();
 		}
 	});
 </script>

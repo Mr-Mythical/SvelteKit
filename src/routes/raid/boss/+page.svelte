@@ -4,6 +4,7 @@
 	import BossPreviewChart from '../../../components/charts/bossPreviewChart.svelte';
 	import type { PageData } from './$types';
 	import { PAGE_SEO } from '$lib/data/seoCopy';
+	import { defaultChartDifficulty } from '$lib/types/bossData';
 
 	interface Props {
 		data: PageData;
@@ -40,7 +41,7 @@
 					<li class="boss-row">
 						<a class="boss-link" href={`/raid/boss/${boss.slug}`}>
 							<div class="preview" aria-hidden="true">
-								<BossPreviewChart bossId={boss.id} />
+								<BossPreviewChart bossId={boss.id} difficulty={defaultChartDifficulty(boss)} />
 							</div>
 							<div class="copy">
 								<h3 class="boss-name">{boss.name}</h3>

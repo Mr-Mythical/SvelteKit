@@ -177,7 +177,7 @@ const defaultVisibleAbilityNamesByEncounter: Record<number, string[]> = {
 		'Light Siphon',
 		'Stellar Implosion'
 	],
-	2888: [
+	3470: [
 		'Soulcoil Rite',
 		'Soulcoil Well',
 		'Soulcoil Ignition',
@@ -190,7 +190,7 @@ const defaultVisibleAbilityNamesByEncounter: Record<number, string[]> = {
 		'Uncoiling',
 		'Invoke'
 	],
-	2874: [
+	3445: [
 		"Ula'tek's Dominance",
 		'Vitriolic Stasis',
 		'Helical Toxins',
@@ -200,7 +200,7 @@ const defaultVisibleAbilityNamesByEncounter: Record<number, string[]> = {
 		'Toxic Droplets',
 		'Venom Coagulation'
 	],
-	2894: [
+	3497: [
 		'Final Ascension',
 		'Dark Whispers',
 		'Mighty Thud',
@@ -209,7 +209,7 @@ const defaultVisibleAbilityNamesByEncounter: Record<number, string[]> = {
 		'Aura of Unity',
 		'Disgusting Fish'
 	],
-	2882: [
+	3455: [
 		'Imbibe',
 		'Malignant Burst',
 		'Toxic Vapor',
@@ -217,7 +217,7 @@ const defaultVisibleAbilityNamesByEncounter: Record<number, string[]> = {
 		'Plague Froth',
 		'Adaptive Infection'
 	],
-	2871: [
+	3420: [
 		'Howling Maelstrom',
 		'Venomous Surge',
 		'Apex Predator',
@@ -226,7 +226,7 @@ const defaultVisibleAbilityNamesByEncounter: Record<number, string[]> = {
 		"Ula'tek's Presence",
 		'Dig In'
 	],
-	2887: [
+	3421: [
 		'Ravenous Feast',
 		'Eternal Venom',
 		'Caustic Deluge',
@@ -236,7 +236,7 @@ const defaultVisibleAbilityNamesByEncounter: Record<number, string[]> = {
 		'Sanguine Storm',
 		'Uncoiled Wrath'
 	],
-	2883: [
+	3429: [
 		'Ritual of the Fang',
 		'Eternal Nightfall',
 		'Dreadmarch',
@@ -246,7 +246,7 @@ const defaultVisibleAbilityNamesByEncounter: Record<number, string[]> = {
 		'Axegrinder',
 		'Chop Down'
 	],
-	2895: [
+	3492: [
 		'Caustic Waves',
 		'Rage of the Shackled',
 		'Spectral Coils',

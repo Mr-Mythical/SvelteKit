@@ -1,9 +1,10 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { getRaidDb } from '$lib/db';
 import { damageAverages } from '$lib/db/schema';
-import { eq, asc } from 'drizzle-orm';
+import { and, eq, asc } from 'drizzle-orm';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
+import { parseWclDifficultyParam } from '$lib/raidDifficulty';
 
 const minimumSampleCount = 5;
 
@@ -15,6 +16,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			return apiError('No bossId provided', 400);
 		}
 
+		const difficulty = parseWclDifficultyParam(url.searchParams.get('difficulty'));
 		const database = getRaidDb();
 
 		const data = await database
@@ -26,7 +28,12 @@ export const GET: RequestHandler = async ({ url }) => {
 				encounter_id: damageAverages.encounterId
 			})
 			.from(damageAverages)
-			.where(eq(damageAverages.encounterId, parseInt(bossId)))
+			.where(
+				and(
+					eq(damageAverages.encounterId, parseInt(bossId)),
+					eq(damageAverages.difficulty, difficulty)
+				)
+			)
 			.orderBy(asc(damageAverages.timeSeconds));
 
 		const processedData = data.map((row) => ({
