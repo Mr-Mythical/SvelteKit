@@ -18,7 +18,7 @@
 	import type { Chart as ChartInstance, ChartData, ChartOptions } from 'chart.js';
 	import { backgroundColorPlugin } from '$lib/ui/chartCanvasPlugin';
 	import { logClientError } from '$lib/clientLog';
-	import { raidChartQuery, wclDifficultyId, type ChartDifficulty } from '$lib/raidDifficulty';
+	import { RaidDifficulty, type ChartDifficulty } from '$lib/raidDifficulty';
 
 	let zoomPluginLoaded = $state(false);
 
@@ -36,10 +36,8 @@
 		difficulty?: ChartDifficulty | number;
 	}
 
-	let { encounterId, encounterName = 'Unknown Encounter', difficulty = 'mythic' }: Props = $props();
-	let difficultyId = $derived(
-		typeof difficulty === 'number' ? difficulty : wclDifficultyId(difficulty)
-	);
+	let { encounterId, encounterName = 'Unknown Encounter', difficulty = 'heroic' }: Props = $props();
+	let difficultyId = $derived(RaidDifficulty.resolve(difficulty).id);
 	// Simple localStorage cache helpers with TTL
 	function getCache<T>(key: string): T | null {
 		try {
@@ -215,7 +213,7 @@
 		plugins: {
 			title: {
 				display: true,
-				text: encounterName,
+				text: '',
 				color: '#FFF9F5',
 				font: { size: 18 }
 			},
@@ -388,7 +386,9 @@
 		const cached = getCache<DeathRateRecord[]>(cacheKey);
 		if (cached) return cached;
 		try {
-			const response = await fetch(`/api/death-hotspots?${raidChartQuery(encounterId, difficultyId)}`);
+			const response = await fetch(
+				`/api/death-hotspots?${RaidDifficulty.query(encounterId, difficultyId)}`
+			);
 			const apiData = await response.json();
 			if (!Array.isArray(apiData)) return [];
 			const records = apiData as DeathRateRecord[];
@@ -406,7 +406,9 @@
 			const cacheKey = `damage-average:${encounterId}:${difficultyId}`;
 			let data = getCache<AverageRecord[]>(cacheKey);
 			if (!data) {
-				const response = await fetch(`/api/damage-average?${raidChartQuery(encounterId, difficultyId)}`);
+				const response = await fetch(
+					`/api/damage-average?${RaidDifficulty.query(encounterId, difficultyId)}`
+				);
 				const apiData = await response.json();
 				if ('error' in apiData) {
 					throw new Error(apiData.error);
@@ -515,6 +517,12 @@
 			loading = false;
 		}
 	}
+
+	$effect(() => {
+		if (options.plugins?.title) {
+			options.plugins.title.text = encounterName;
+		}
+	});
 
 	$effect(() => {
 		if (encounterId) {

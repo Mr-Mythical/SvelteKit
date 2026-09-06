@@ -226,15 +226,15 @@
 					{/key}
 				</div>
 				<figcaption class="tool-preview-caption">
-					Heroic {previewBoss.name}
+					Heroic and Mythic {previewBoss.name}
 				</figcaption>
 			</figure>
 			<div class="tool-copy">
 				<p class="tool-eyebrow">Boss Damage & Death overview</p>
 				<h2 class="tool-title">Read the spikes that decide pulls.</h2>
 				<p class="tool-body">
-					Averaged damage taken and death hotspots from public Mythic kills, with the spikes that
-					decide pulls.
+					Averaged damage taken and death hotspots from public Heroic and Mythic kills, with the
+					spikes that decide pulls.
 				</p>
 				<a href="/raid/boss" class="tool-link">
 					Browse encounters

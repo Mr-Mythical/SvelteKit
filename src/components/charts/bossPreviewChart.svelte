@@ -11,19 +11,17 @@
 	} from 'chart.js';
 	import type { ChartData, ChartOptions } from 'chart.js';
 	import { logClientError } from '$lib/clientLog';
-	import { raidChartQuery, wclDifficultyId, type ChartDifficulty } from '$lib/raidDifficulty';
+	import { RaidDifficulty, type AveragePoint, type ChartDifficulty } from '$lib/raidDifficulty';
 
 	interface Props {
 		bossId: number;
+		/** Highlight this difficulty; both Heroic and Mythic series still load. */
 		difficulty?: ChartDifficulty | number;
 	}
 
-	let { bossId, difficulty = 'mythic' }: Props = $props();
-	let difficultyId = $derived(
-		typeof difficulty === 'number' ? difficulty : wclDifficultyId(difficulty)
-	);
+	let { bossId, difficulty = 'heroic' }: Props = $props();
+	let emphasized = $derived(RaidDifficulty.resolve(difficulty).name);
 
-	// Simple localStorage cache helpers with TTL
 	function getCache<T>(key: string): T | null {
 		try {
 			const raw = localStorage.getItem(key);
@@ -51,9 +49,7 @@
 		}
 	}
 
-	interface AverageRecord {
-		time_seconds: number;
-		avg: number;
+	interface AverageRecord extends AveragePoint {
 		std: number;
 		n: number;
 		ci: number;
@@ -99,47 +95,65 @@
 		}
 	};
 
-	async function loadChart(id: number, diff: number) {
+	async function loadSeries(id: number, diff: ChartDifficulty): Promise<AverageRecord[]> {
+		const diffId = RaidDifficulty.id(diff);
+		const cacheKey = `damage-average:${id}:${diffId}`;
+		const cached = getCache<AverageRecord[]>(cacheKey);
+		if (cached) return cached;
+		const response = await fetch(`/api/damage-average?${RaidDifficulty.query(id, diff)}`);
+		if (!response?.ok) throw new Error('Failed to fetch data');
+		const data = (await response.json()) as AverageRecord[];
+		if (!Array.isArray(data)) return [];
+		setCache(cacheKey, data, 7 * 24 * 60 * 60 * 1000);
+		return data;
+	}
+
+	async function loadChart(id: number, primary: ChartDifficulty) {
 		loading = true;
 		chartData = null;
 		try {
-			const cacheKey = `damage-average:${id}:${diff}`;
-			const cached = getCache<AverageRecord[]>(cacheKey);
-			let data: AverageRecord[] | null = cached;
+			const loaded = await Promise.all(
+				RaidDifficulty.covered.map(async (diff) => {
+					try {
+						return [diff, await loadSeries(id, diff)] as const;
+					} catch (err) {
+						logClientError('bossPreviewChart', `failed to load ${diff} preview series`, err);
+						return [diff, [] as AverageRecord[]] as const;
+					}
+				})
+			);
 
-			if (!data) {
-				const response = await fetch(`/api/damage-average?${raidChartQuery(id, diff)}`);
-				if (!response.ok) throw new Error('Failed to fetch data');
-				data = await response.json();
-				// Cache for 7 days
-				setCache(cacheKey, data, 7 * 24 * 60 * 60 * 1000);
-			}
+			if (id !== bossId || primary !== emphasized) return;
 
-			// Bail if bossId/difficulty changed while we were fetching
-			if (id !== bossId || diff !== difficultyId) return;
+			const series = Object.fromEntries(loaded) as Record<ChartDifficulty, AverageRecord[]>;
+			const aligned = RaidDifficulty.alignAverages(series);
+			if (aligned.labels.length === 0) return;
 
 			chartData = {
-				labels: (data ?? []).map((d) => d.time_seconds.toString()),
-				datasets: [
-					{
-						label: 'Average Damage',
-						data: (data ?? []).map((d) => d.avg),
-						borderColor: 'hsl(348, 80%, 35%)',
-						backgroundColor: 'hsla(348, 75%, 81%, 0.22)',
-						borderWidth: 2,
-						fill: true
-					}
-				]
+				labels: aligned.labels,
+				datasets: RaidDifficulty.covered.map((diff) => {
+					const style = RaidDifficulty.seriesStyle(diff);
+					return {
+						label: RaidDifficulty.label(diff),
+						data: aligned.values[diff],
+						borderColor: style.borderColor,
+						backgroundColor: style.backgroundColor,
+						borderDash: style.borderDash,
+						borderWidth: diff === primary ? 2 : 1.5,
+						fill: false,
+						spanGaps: true
+					};
+				})
 			};
 		} catch (err) {
 			logClientError('bossPreviewChart', 'failed to load preview chart', err);
 		} finally {
-			if (id === bossId && diff === difficultyId) loading = false;
+			if (id === bossId && primary === emphasized) loading = false;
 		}
 	}
 
 	$effect(() => {
-		void loadChart(bossId, difficultyId);
+		void loadChart(bossId, emphasized);
 	});
 </script>
 
@@ -151,6 +165,7 @@
 	</div>
 {:else if chartData}
 	<div class="h-full w-full">
+		<p class="sr-only">Heroic (solid) and Mythic (dashed) average damage taken</p>
 		<Chart type="line" data={chartData} {options} />
 	</div>
 {/if}

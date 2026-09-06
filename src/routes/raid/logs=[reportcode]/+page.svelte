@@ -32,6 +32,7 @@
 	import { onMount } from 'svelte';
 	import EncounterSkeleton from '../../../components/skeletons/encounterSkeleton.svelte';
 	import { logClientError } from '$lib/clientLog';
+	import { RaidDifficulty } from '$lib/raidDifficulty';
 	import { bosses } from '$lib/types/bossData';
 	import { getClassColor } from '$lib/ui/classColors';
 	import { PAGE_SEO } from '$lib/data/seoCopy';
@@ -532,9 +533,9 @@
 			const cacheKey = `damage-average:${fight.encounterID}:${fight.difficulty ?? 5}`;
 			let records = getCache<AverageRecord[]>(cacheKey);
 			if (!records) {
-				const difficulty = fight.difficulty ?? 5;
+				const difficulty = fight.difficulty ?? RaidDifficulty.ids.mythic;
 				const response = await fetch(
-					`/api/damage-average?bossId=${fight.encounterID}&difficulty=${difficulty}`
+					`/api/damage-average?${RaidDifficulty.query(fight.encounterID, difficulty)}`
 				);
 				const apiData = await response.json();
 				if (!Array.isArray(apiData)) {
@@ -820,6 +821,7 @@
 						{...damageChartExtraProps}
 						{allHealers}
 						encounterId={selectedFight.encounterID}
+						difficulty={selectedFight.difficulty ?? 'heroic'}
 						showDeathsSection={false}
 					/>
 
