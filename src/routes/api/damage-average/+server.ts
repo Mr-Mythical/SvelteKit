@@ -4,7 +4,7 @@ import { damageAverages } from '$lib/db/schema';
 import { and, eq, asc } from 'drizzle-orm';
 import { apiError, apiOk } from '$lib/server/apiResponses';
 import { handleApiError } from '$lib/server/logger';
-import { parseWclDifficultyParam } from '$lib/raidDifficulty';
+import { RaidDifficulty } from '$lib/raidDifficulty';
 
 const minimumSampleCount = 5;
 
@@ -16,7 +16,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			return apiError('No bossId provided', 400);
 		}
 
-		const difficulty = parseWclDifficultyParam(url.searchParams.get('difficulty'));
+		const difficulty = RaidDifficulty.parse(url.searchParams.get('difficulty'));
 		const database = getRaidDb();
 
 		const data = await database

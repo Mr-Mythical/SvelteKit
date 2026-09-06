@@ -225,9 +225,9 @@
 			<p class="raid-lede">
 				WarcraftLogs analysis for raid leaders, healer cores, and officers who would rather read a
 				chart than scroll a damage-taken table. Paste a report to watch a fight unfold
-				second-by-second, open a boss damage profile to see aggregate pressure from real Mythic
-				kills, or browse public logs filtered by comp when your own pulls stop teaching you anything
-				new.
+				second-by-second, open a boss damage profile to see aggregate pressure from real Heroic and
+				Mythic kills, or browse public logs filtered by comp when your own pulls stop teaching you
+				anything new.
 			</p>
 			<dl class="feature-list">
 				<div class="feature-row">

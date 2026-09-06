@@ -36,6 +36,7 @@
 	} from '$lib/components/ui/table';
 	import { classSpecAbilities } from '$lib/types/classData';
 	import { bosses } from '$lib/types/bossData';
+	import { RaidDifficulty, type AveragePoint, type ChartDifficulty } from '$lib/raidDifficulty';
 
 	interface Props {
 		damageEvents?: Series[];
@@ -44,7 +45,8 @@
 		bossEvents?: CastEvent[];
 		deathEvents?: DeathEvent[];
 		bossAbilities?: BossAbility[];
-		averageDamageLine?: { time_seconds: number; avg: number }[];
+		averageDamageLine?: AveragePoint[];
+		difficulty?: ChartDifficulty | number;
 		encounterId: number;
 		allHealers?: Player[];
 		showDeathsSection?: boolean;
@@ -58,6 +60,7 @@
 		deathEvents = [],
 		bossAbilities = [],
 		averageDamageLine = [],
+		difficulty = 'heroic',
 		encounterId,
 		allHealers = [],
 		showDeathsSection = true
@@ -305,12 +308,46 @@
 		[...deathEvents].sort((left, right) => left.timestamp - right.timestamp)
 	);
 
-	let averageDamageBySecond = $derived.by(() => {
-		const mapped = new Map<number, number>();
+	let fightDifficulty = $derived(RaidDifficulty.resolve(difficulty).name);
+	let comparisonAverageLine = $state<AveragePoint[]>([]);
+
+	let averageDamageByDifficulty = $derived.by(() => {
+		const mapped: Record<ChartDifficulty, Map<number, number>> = {
+			heroic: new Map(),
+			mythic: new Map()
+		};
 		for (const point of averageDamageLine) {
-			mapped.set(point.time_seconds, point.avg);
+			mapped[fightDifficulty].set(point.time_seconds, point.avg);
+		}
+		for (const point of comparisonAverageLine) {
+			mapped[RaidDifficulty.other(fightDifficulty)].set(point.time_seconds, point.avg);
 		}
 		return mapped;
+	});
+
+	async function loadComparisonAverage(id: number, diff: ChartDifficulty) {
+		try {
+			const response = await fetch(`/api/damage-average?${RaidDifficulty.query(id, diff)}`);
+			if (!response.ok) {
+				comparisonAverageLine = [];
+				return;
+			}
+			const apiData = await response.json();
+			if (!Array.isArray(apiData)) {
+				comparisonAverageLine = [];
+				return;
+			}
+			comparisonAverageLine = (apiData as AveragePoint[]).map((point) => ({
+				time_seconds: point.time_seconds,
+				avg: point.avg
+			}));
+		} catch {
+			comparisonAverageLine = [];
+		}
+	}
+
+	$effect(() => {
+		void loadComparisonAverage(encounterId, RaidDifficulty.other(fightDifficulty));
 	});
 
 	$effect(() => {
@@ -613,10 +650,15 @@
 		return {
 			labels: damageData.timestamps.map((ts) => ts.toFixed(1)),
 			damagetakenData: damageData.values,
-			averageDamageData: damageData.timestamps.map((ts) => {
-				const roundedSecond = Math.round(ts);
-				return averageDamageBySecond.get(roundedSecond) ?? Number.NaN;
-			}),
+			averageDamageByDifficulty: Object.fromEntries(
+				RaidDifficulty.covered.map((diff) => [
+					diff,
+					damageData.timestamps.map((ts) => {
+						const roundedSecond = Math.round(ts);
+						return averageDamageByDifficulty[diff].get(roundedSecond) ?? Number.NaN;
+					})
+				])
+			) as Record<ChartDifficulty, number[]>,
 			effectiveHealingData,
 			healingSeries: healingSeriesData
 		};
@@ -625,7 +667,7 @@
 	function updateChartData(processedData: {
 		labels: string[];
 		damagetakenData: number[];
-		averageDamageData: number[];
+		averageDamageByDifficulty: Record<ChartDifficulty, number[]>;
 		effectiveHealingData: number[];
 		healingSeries: { name: string; guid?: number; values: number[] }[];
 	}) {
@@ -639,19 +681,22 @@
 				pointRadius: 0,
 				tension: 0.2
 			},
-			{
-				label: 'World Average Damage Taken',
-				data: processedData.averageDamageData,
-				backgroundColor: 'transparent',
-				borderColor: 'hsl(348 75% 81%)',
-				fill: false,
-				pointRadius: 0,
-				pointHoverRadius: 0,
-				borderWidth: 2,
-				borderDash: [5, 3],
-				tension: 0.2,
-				spanGaps: true
-			},
+			...RaidDifficulty.covered.map((diff) => {
+				const style = RaidDifficulty.seriesStyle(diff);
+				return {
+					label: `${RaidDifficulty.label(diff)} world average`,
+					data: processedData.averageDamageByDifficulty[diff],
+					backgroundColor: 'transparent',
+					borderColor: style.borderColor,
+					fill: false,
+					pointRadius: 0,
+					pointHoverRadius: 0,
+					borderWidth: diff === fightDifficulty ? 2 : 1.5,
+					borderDash: style.borderDash,
+					tension: 0.2,
+					spanGaps: true
+				};
+			}),
 			{
 				label: 'Effective Healing',
 				data: processedData.effectiveHealingData,

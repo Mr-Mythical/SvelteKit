@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { raidChartQuery, wclDifficultyId, type ChartDifficulty } from '$lib/raidDifficulty';
+	import { RaidDifficulty, type ChartDifficulty } from '$lib/raidDifficulty';
 
 	interface HotspotRow {
 		time_seconds: number;
@@ -19,10 +19,8 @@
 		difficulty?: ChartDifficulty | number;
 	}
 
-	let { bossId, difficulty = 'mythic' }: Props = $props();
-	let difficultyId = $derived(
-		typeof difficulty === 'number' ? difficulty : wclDifficultyId(difficulty)
-	);
+	let { bossId, difficulty = 'heroic' }: Props = $props();
+	let difficultyId = $derived(RaidDifficulty.resolve(difficulty).id);
 
 	let rows: HotspotRow[] = $state([]);
 	let loading = $state(true);
@@ -39,7 +37,7 @@
 		error = null;
 		rows = [];
 		try {
-			const response = await fetch(`/api/death-hotspots?${raidChartQuery(id, diff)}`);
+			const response = await fetch(`/api/death-hotspots?${RaidDifficulty.query(id, diff)}`);
 			if (!response.ok) {
 				error = 'Failed to load death hotspots.';
 				return;

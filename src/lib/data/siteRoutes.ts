@@ -31,7 +31,7 @@ export type SiteRoute = {
 export const SITE_ROUTES: SiteRoute[] = [
 	{
 		path: '/',
-		lastmod: '2026-08-16',
+		lastmod: '2026-09-06',
 		changefreq: 'weekly',
 		priority: 1,
 		...PAGE_SEO.home,
@@ -54,7 +54,7 @@ export const SITE_ROUTES: SiteRoute[] = [
 	})),
 	{
 		path: '/raid',
-		lastmod: '2026-08-18',
+		lastmod: '2026-09-06',
 		changefreq: 'weekly',
 		priority: 0.9,
 		...PAGE_SEO.raid,
