@@ -1,10 +1,10 @@
 {
 	"model_version": "v6",
-	"source": "addon_runtime.exported_forward vs model-v6.json",
+	"source": "shipped model-v6.json MID2 forward pass (Season 2 artifact)",
 	"cases": [
 		{
 			"name": "frost_mid",
-			"spec_key": "MID1_Mage_Frost",
+			"spec_key": "MID2_Mage_Frost",
 			"stats": {
 				"primary_stat": 1800,
 				"crit": 700,
@@ -12,11 +12,11 @@
 				"mastery": 800,
 				"versatility": 400
 			},
-			"expected_dps": 120416.12902460028
+			"expected_dps": 135840.3372001056
 		},
 		{
 			"name": "frost_high",
-			"spec_key": "MID1_Mage_Frost",
+			"spec_key": "MID2_Mage_Frost",
 			"stats": {
 				"primary_stat": 2200,
 				"crit": 900,
@@ -24,11 +24,11 @@
 				"mastery": 1000,
 				"versatility": 500
 			},
-			"expected_dps": 152203.6751470835
+			"expected_dps": 166551.062592837
 		},
 		{
 			"name": "unholy_san",
-			"spec_key": "MID1_Death_Knight_Unholy_San'layn",
+			"spec_key": "MID2_Death_Knight_Unholy_San'layn",
 			"stats": {
 				"primary_stat": 1900,
 				"crit": 600,
@@ -36,11 +36,11 @@
 				"mastery": 700,
 				"versatility": 450
 			},
-			"expected_dps": 143592.65559517877
+			"expected_dps": 188473.7305476135
 		},
 		{
 			"name": "enh_storm",
-			"spec_key": "MID1_Shaman_Enhancement_Stormbringer",
+			"spec_key": "MID2_Shaman_Enhancement_Totemic",
 			"stats": {
 				"primary_stat": 1750,
 				"crit": 750,
@@ -48,11 +48,11 @@
 				"mastery": 650,
 				"versatility": 380
 			},
-			"expected_dps": 129754.42477759632
+			"expected_dps": 176403.71647757897
 		},
 		{
 			"name": "zeroish",
-			"spec_key": "MID1_Warrior_Arms",
+			"spec_key": "MID2_Hunter_Beast_Mastery",
 			"stats": {
 				"primary_stat": 1000,
 				"crit": 100,
@@ -60,11 +60,11 @@
 				"mastery": 100,
 				"versatility": 100
 			},
-			"expected_dps": 69532.20143596196
+			"expected_dps": 132152.73988639098
 		},
 		{
 			"name": "first_spec_default",
-			"spec_key": "MID1_Death_Knight_Blood",
+			"spec_key": "MID2_Death_Knight_Blood",
 			"stats": {
 				"primary_stat": 1500,
 				"crit": 600,
@@ -72,7 +72,7 @@
 				"mastery": 600,
 				"versatility": 600
 			},
-			"expected_dps": 69793.61890357322
+			"expected_dps": 94092.04757266841
 		}
 	]
 }

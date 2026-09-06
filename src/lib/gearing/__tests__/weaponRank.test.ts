@@ -90,8 +90,8 @@ describe('computeWeaponLoadoutStatDelta', () => {
 describe('applyPairedWeaponCandidateScoring', () => {
 	it('when already MH+OH, scores single-slot swaps (not best opposite-hand pair)', () => {
 		const model = loadModel();
-		const profileKey = model.specKeys.includes('MID1_Mage_Frost')
-			? 'MID1_Mage_Frost'
+		const profileKey = model.specKeys.includes('MID2_Mage_Frost')
+			? 'MID2_Mage_Frost'
 			: model.specKeys[0]!;
 
 		const eqMh = piece({
@@ -176,8 +176,8 @@ describe('applyPairedWeaponCandidateScoring', () => {
 
 	it('does not treat OH as a free upgrade when a 2H staff is equipped', () => {
 		const model = loadModel();
-		const profileKey = model.specKeys.includes('MID1_Mage_Frost')
-			? 'MID1_Mage_Frost'
+		const profileKey = model.specKeys.includes('MID2_Mage_Frost')
+			? 'MID2_Mage_Frost'
 			: model.specKeys[0]!;
 
 		const eqStaff = piece({
@@ -268,8 +268,8 @@ describe('applyPairedWeaponCandidateScoring', () => {
 describe('2H candidates in combo count with equipped OH', () => {
 	it('includes staffs in the estimate so deselecting one changes the total', () => {
 		const model = loadModel();
-		const profileKey = model.specKeys.includes('MID1_Mage_Frost')
-			? 'MID1_Mage_Frost'
+		const profileKey = model.specKeys.includes('MID2_Mage_Frost')
+			? 'MID2_Mage_Frost'
 			: model.specKeys[0]!;
 
 		const eqMh = piece({
