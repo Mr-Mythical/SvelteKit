@@ -41,7 +41,7 @@ const VENOMOUS_ABYSS_SLUGS = [
 ] as const;
 
 function walkthroughBosses() {
-	return currentSeasonBosses().filter((boss) => boss.slug !== 'ulatek');
+	return currentSeasonBosses();
 }
 
 describe('raid boss catalog', () => {
@@ -119,24 +119,25 @@ describe('raid boss catalog', () => {
 		}
 	});
 
-	it("holds a PTR stub for Ula'tek until the fight is tested", () => {
+	it("publishes a live Ula'tek walkthrough instead of the PTR stub", () => {
 		const boss = currentSeasonBosses().find((entry) => entry.slug === 'ulatek');
 		expect(boss).toBeDefined();
 		expect(hasSplitGuides(boss!), 'ulatek').toBe(true);
+		expect(boss?.resources?.wowhead).toContain('ulatek');
+		expect(boss?.resources?.icyVeins).toContain('ulatek');
+		expect(boss?.resources?.method).toContain('ulatek');
 		for (const { difficulty, guide } of listedBossGuides(boss!)) {
-			expect(guide.phases, `ulatek ${difficulty}`).toBeUndefined();
-			expect(guide.quick, `ulatek ${difficulty}`).toBeUndefined();
-			expect(guide.faqs?.length, `ulatek ${difficulty}`).toBeGreaterThan(0);
-			expect(guide.intro, `ulatek ${difficulty}`).toMatch(/not on the PTR/i);
-			expect(guide.overview?.join(' '), `ulatek ${difficulty}`).toMatch(/Check back here for the/);
-			expect(JSON.stringify(guide.faqs), `ulatek ${difficulty}`).toMatch(/PTR/);
-			expect(JSON.stringify(guide), `ulatek ${difficulty}`).not.toContain('—');
+			const label = `ulatek ${difficulty}`;
+			expect(guide.phases?.length, label).toBeGreaterThanOrEqual(4);
+			expect(guide.quick, label).toBeDefined();
+			expect(guide.intro, label).not.toMatch(/not on the PTR/i);
+			expect(JSON.stringify(guide), label).not.toMatch(/PTR/);
 			expect(
 				bossSeoDescription(boss!.name, guide.teaser ?? boss!.teaser, difficulty),
-				`ulatek ${difficulty} meta`
-			).toMatch(/PTR/);
+				`${label} meta`
+			).not.toMatch(/PTR/);
 		}
-		expect(boss?.guides?.mythic.changes).toBeUndefined();
+		expect(boss?.guides?.mythic.changes?.length).toBeGreaterThanOrEqual(2);
 	});
 
 	it('groups raids with the current season first', () => {
@@ -178,9 +179,11 @@ describe('raid boss catalog', () => {
 		expect(mythic?.inFeed).toBe(false);
 		const ulatekHeroic = SITE_ROUTES.find((route) => route.path === '/raid/boss/ulatek');
 		const ulatekMythic = SITE_ROUTES.find((route) => route.path === '/raid/boss/ulatek/mythic');
-		expect(ulatekHeroic?.lastmod).toBe('2026-08-18');
-		expect(ulatekMythic?.lastmod).toBe('2026-08-18');
-		expect(ulatekHeroic?.description).toMatch(/PTR/);
-		expect(ulatekMythic?.description).toMatch(/PTR/);
+		expect(ulatekHeroic?.lastmod).toBe('2026-09-06');
+		expect(ulatekMythic?.lastmod).toBe('2026-09-06');
+		expect(ulatekHeroic?.description).toMatch(/Venomous Heart/);
+		expect(ulatekMythic?.description).toMatch(/Hardened/);
+		expect(ulatekHeroic?.description).not.toMatch(/PTR/);
+		expect(ulatekMythic?.description).not.toMatch(/PTR/);
 	});
 });

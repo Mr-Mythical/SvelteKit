@@ -25,8 +25,8 @@
 		<h1 class="page-title">Boss quick guides and damage profiles.</h1>
 		<p class="page-lede">
 			Heroic and Mythic plans for Midnight raid bosses, with per-second damage curves and death
-			clusters from public Mythic logs as soon as those kills exist. Ula'tek was not on the PTR;
-			that page will be updated as soon as it is tested.
+			clusters from public Mythic logs as soon as those kills exist. Ula'tek now has the same phase
+			walkthrough as the rest of the Venomous Abyss.
 		</p>
 	</header>
 

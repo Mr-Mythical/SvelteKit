@@ -29,7 +29,7 @@ export const PAGE_SEO = {
 	raidBoss: {
 		title: 'Venomous Abyss Boss Guides | Mr. Mythical',
 		description:
-			"Heroic and Mythic Venomous Abyss guides plus damage curves. Ula'tek was not on PTR and will be updated as soon as it is tested."
+			"Heroic and Mythic Venomous Abyss guides plus damage curves, including the live Ula'tek walkthrough."
 	},
 	raidLog: {
 		title: 'Raid Log | Mr. Mythical',
