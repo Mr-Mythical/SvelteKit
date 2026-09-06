@@ -199,7 +199,7 @@
 			<header class="section-head">
 				<h2 class="section-label">Venomous Abyss guides</h2>
 				<span class="section-hint">
-					Midnight Season 2 Heroic guides. Ula'tek was not on PTR.
+					Midnight Season 2 Heroic and Mythic guides, including Ula'tek.
 					<a href="/raid/boss">All raids</a>
 				</span>
 			</header>

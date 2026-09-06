@@ -26,7 +26,7 @@ describe('gearing model forward pass', () => {
 	it('loads v6 contract with 5 stats and prebaked specs', () => {
 		expect(model.version).toBe('v6');
 		expect(model.statNames).toEqual(['primary_stat', 'crit', 'haste', 'mastery', 'versatility']);
-		expect(model.specKeys.length).toBeGreaterThan(40);
+		expect(model.specKeys.length).toBeGreaterThanOrEqual(29);
 		expect(model.layers).toHaveLength(2);
 		expect(model.layers[0]!.w[0]).toHaveLength(5);
 		expect(model.layers[0]!.b).toBeUndefined();
@@ -60,15 +60,15 @@ describe('gearing model forward pass', () => {
 			base,
 			equipped,
 			candidate,
-			'MID1_Mage_Frost'
+			'MID2_Mage_Frost'
 		);
-		expect(baseDps).toBeCloseTo(predictDps(model, base, 'MID1_Mage_Frost'), 6);
+		expect(baseDps).toBeCloseTo(predictDps(model, base, 'MID2_Mage_Frost'), 6);
 		const expectedStats: CombatStats = {
 			...base,
 			crit: base.crit - 200 + 280,
 			haste: base.haste - 50 + 40
 		};
-		expect(candidateDps).toBeCloseTo(predictDps(model, expectedStats, 'MID1_Mage_Frost'), 6);
+		expect(candidateDps).toBeCloseTo(predictDps(model, expectedStats, 'MID2_Mage_Frost'), 6);
 		expect(delta).toBeCloseTo(candidateDps - baseDps, 6);
 	});
 

@@ -78,8 +78,8 @@ describe('gearStats paper doll', () => {
 describe('estimateSeasonPieceDelta with unknown equipped stats', () => {
 	it('does not treat a worn item with zero stats as an empty slot', () => {
 		const model = loadModel();
-		const profileKey = model.specKeys.includes('MID1_Mage_Frost')
-			? 'MID1_Mage_Frost'
+		const profileKey = model.specKeys.includes('MID2_Mage_Frost')
+			? 'MID2_Mage_Frost'
 			: model.specKeys[0]!;
 		const state: CharacterState = {
 			profileKey,
@@ -124,8 +124,8 @@ describe('estimateSeasonPieceDelta with unknown equipped stats', () => {
 
 	it('ranks a real upgrade positive and a downgrade negative when stats are known', () => {
 		const model = loadModel();
-		const profileKey = model.specKeys.includes('MID1_Mage_Frost')
-			? 'MID1_Mage_Frost'
+		const profileKey = model.specKeys.includes('MID2_Mage_Frost')
+			? 'MID2_Mage_Frost'
 			: model.specKeys[0]!;
 		const eqHead = piece({
 			key: 'eq:head',

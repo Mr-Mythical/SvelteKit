@@ -254,7 +254,11 @@ const defaultVisibleAbilityNamesByEncounter: Record<number, string[]> = {
 		"Mother's Wrath",
 		'Putrid Membrane',
 		'Call of the Serpent',
-		'Venomous Heart'
+		'Venomous Heart',
+		"Serpent's Bite",
+		'Volatile Purge',
+		'Grasping Fangs',
+		'Soul Constrictor'
 	]
 };
 

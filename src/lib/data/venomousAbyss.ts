@@ -145,6 +145,21 @@ const chopDown = s(1301350, 'Chop Down');
 const manifestationOfDread = s(1285844, 'Manifestation of Dread');
 const virulentMutation = s(1310544, 'Virulent Mutation');
 
+const causticWaves = s(1292403, 'Caustic Waves');
+const rageOfTheShackled = s(1286860, 'Rage of the Shackled');
+const spectralCoils = s(1287265, 'Spectral Coils');
+const circlingPrey = s(1301510, 'Circling Prey');
+const mothersWrath = s(1298367, "Mother's Wrath");
+const putridMembrane = s(1301268, 'Putrid Membrane');
+const venomousHeart = s(1299526, 'Venomous Heart');
+const callOfTheSerpent = s(1304012, 'Call of the Serpent');
+const serpentsBite = s(1295905, "Serpent's Bite");
+const volatilePurge = s(1306086, 'Volatile Purge');
+const graspingFangs = s(1301117, 'Grasping Fangs');
+const blightVein = s(1311600, 'Blight Vein');
+const blightVeinMythic = s(1311609, 'Blight Vein');
+const soulConstrictor = s(1300685, 'Soul Constrictor');
+
 export const venomousAbyssBosses: Boss[] = [
 	{
 		id: 3470,
@@ -1072,45 +1087,151 @@ export const venomousAbyssBosses: Boss[] = [
 		name: "Ula'tek",
 		slug: 'ulatek',
 		raidId: 'venomous-abyss',
-		teaser: 'This fight was not on the PTR. The guide will be updated as soon as it is tested.',
+		teaser: 'Carry eggs into Spectral Coils, then lust the first Venomous Heart.',
 		guides: {
 			heroic: {
-				teaser: 'This fight was not on the PTR. The guide will be updated as soon as it is tested.',
-				intro: `Ula'tek is the Season 2 finale. This encounter was not on the PTR, so there is no tested walkthrough yet. We will update this page as soon as possible.`,
+				teaser: 'Carry eggs into Spectral Coils, then lust the first Venomous Heart.',
+				intro: `Ula'tek is an egg-control finale. A clean break in ${spectralCoils} hatches a Rawling you can ignore. ${causticWaves} or the venom around the platform hatches a Viper that sprays ${putridMembrane}. Lust the first ${rageOfTheShackled} and finish her before the last platform falls.`,
 				overview: [
-					`PTR testing never opened Ula'tek. Check back here for the Heroic plan once we have logs and a repeatable strategy.`
+					`Split into two equal groups before the pull. They soak ${spectralCoils} and take opposite Phase 2 sides. Eggs need no dedicated handlers. Walk over them, keep the carrier out of green, and break them on the next Coil soak.`,
+					`Phase 1 is two egg-and-wave cycles into a ${venomousHeart} burn. Phase 2 is a split Warden and cauldron delivery. The intermission is Coil soaks on a rotating tail. Phase 3 shrinks the floor with ${circlingPrey} while three ${serpentsBite} groups soak.`
 				],
-				kills: '',
-				faqs: [
+				phases: [
 					{
-						question: "Was Ula'tek on the PTR?",
-						answer: `No. This encounter was not on the PTR, so there is no tested walkthrough yet. We will update this page as soon as possible.`
+						title: 'Phase 1',
+						body: [
+							`Three eggs sit mid. Touching them pulls. Assign three players to grab them on the pull. One tank holds Ula'tek, one holds the tail. Empty melee is raid ${mothersWrath}. Empty tail is a Rattler Slam. Swap during ${causticWaves}, never on an open GCD.`,
+							`${spectralCoils} slams both sides of the tail. Split the two groups, one soak each. ${soulConstrictor} blocks the next soak, so do not stack both groups on one slam. The soak breaks carried eggs into Rawlings. Drag them onto the boss.`,
+							`She pulls one wing back, then that side's ${causticWaves} fire first. Run opposite the pulled wing. The tail adds waves of its own. A wave that hits a carrier hatches a Viper. After two egg-and-wave cycles she casts ${rageOfTheShackled}. The ${venomousHeart} takes double damage for 20 seconds. Bloodlust about five seconds early, dodge Falling Debris, and burn. She submerges when it ends.`
+						]
 					},
 					{
-						question: "Is there a Heroic Ula'tek strategy yet?",
-						answer: `Not yet. Check back here for the Heroic plan once we have logs and a repeatable strategy.`
+						title: 'Phase 2',
+						body: [
+							`The two groups cross to opposite corridors. Grip and rescue out, save a Warlock gate for the return. Kill the Doomscale Warden first. ${graspingFangs} tethers three players per side. Breaking a tether applies ${blightVein} to the whole raid, including the other corridor. Snap two at a time, wait for the DoT to drop, then snap the next pair.`,
+							`After the Warden dies, pick up leftover eggs, then the big Doomscale Egg last. Walk them into the Doomscale Cauldron, small first. Interrupt the Weakened Doomscale's Anguished Cry, point the frontal away, then gate back and stack for the second ${rageOfTheShackled}.`
+						]
+					},
+					{
+						title: 'Intermission',
+						body: [
+							`Eggs fall mid. Pick them up. Tails rise around the room. Group 1 soaks casts 1, 3, and 5. Group 2 soaks 2, 4, and 6. ${soulConstrictor} is why you alternate. When the floor glows, stand at the edge. The middle shatters into four platforms.`
+						]
+					},
+					{
+						title: 'Phase 3',
+						body: [
+							`She surfaces at the bubbles. Tanks and melee play on her platform. Ranged and healers start one platform counter-clockwise. ${callOfTheSerpent} drops a clutch on each platform. Stay out of the spawn circles, then kill the eggs before they hit venom.`,
+							`${serpentsBite} marks one melee, one healer, and one ranged. Assign three soak groups. Stay in the circle until the debuff clears, then spread for ${volatilePurge}. A missed soak becomes a Calcified Corpse and wipes the pull. Weave ${causticWaves} through the gaps. Leave the melee platform before ${circlingPrey} breaks it.`,
+							`Broken platforms hatch Shriekers. Taunt them to the boss, interrupt Vicious Echoes, and kill them before the raid DoT stacks. The second platform break is the hardest overlap. On the last floor, soak one more Bite, dodge the wave, then burn the last ${venomousHeart}. If she is at 1 or 2 percent when the floor goes, jump off behind her and finish.`
+						]
+					}
+				],
+				kills: `Vipers from ${causticWaves} on carriers stack ${putridMembrane} until healers cannot cover it. Empty melee or tail turns ${mothersWrath} or Rattler Slam into a raid hit. Simultaneous ${graspingFangs} breaks stack ${blightVein} on both sides. A missed ${serpentsBite} is a Calcified Corpse. Late ${circlingPrey} leaves people on a dying platform.`,
+				quick: {
+					tanks: `Hold Ula'tek and the tail. Swap during ${causticWaves}. Stay in melee for ${mothersWrath} and run back into the red pool. In Phase 2, stack the Warden on glowing eggs. In Phase 3, taunt Shriekers onto the boss.`,
+					healers: `${putridMembrane} is the tax for every Viper. Ramp ${spectralCoils} and the ${venomousHeart} windows. Cover ${blightVein} when tethers snap. Assign extra soakers to the healer ${serpentsBite}, then spread for ${volatilePurge}.`,
+					dps: `Carry eggs, stay out of green, and soak your ${spectralCoils}. Interrupt Malice and Anguished Cry. Snap ${graspingFangs} in pairs. Kill clutch eggs and Shriekers. Lust the first ${rageOfTheShackled}.`
+				},
+				faqs: [
+					{
+						question: 'What hatches a Viper instead of a Rawling?',
+						answer: `An egg or carrier that touches ${causticWaves} or the venom around the platform. A ${spectralCoils} soak hatches a Rawling instead. Every Viper sprays ${putridMembrane}.`
+					},
+					{
+						question: 'Where do you Bloodlust?',
+						answer: `The first ${rageOfTheShackled} in Phase 1. The ${venomousHeart} takes double damage for 20 seconds.`
+					},
+					{
+						question: 'How do you soak Spectral Coils?',
+						answer: `Two groups, one slam each. ${soulConstrictor} blocks the next soak. In the intermission, Group 1 takes 1, 3, and 5. Group 2 takes 2, 4, and 6.`
+					},
+					{
+						question: "How do you handle Serpent's Bite?",
+						answer: `Three groups stay in the circle until it clears, then spread for ${volatilePurge}. A missed soak becomes a Calcified Corpse.`
 					}
 				]
 			},
 			mythic: {
-				teaser:
-					'PTR never opened this encounter. The Mythic guide will be updated as soon as it is tested.',
-				intro: `Ula'tek is the Season 2 finale. This encounter was not on the PTR, so there is no tested walkthrough yet. We will update this page as soon as possible.`,
-				overview: [
-					`PTR testing never opened Ula'tek, and no Mythic journal notes survived. Check back here for the Mythic plan once we have logs and a repeatable strategy.`
+				teaser: 'Break Hardened eggs, rotate carriers, and intercept Toxic Incubation.',
+				changes: [
+					`Eggs are Hardened until the absorb breaks. Carriers take Noxious Shell. Two carriers inside 3 yards hatch instantly. Dropping the egg applies Rancid Yolk.`,
+					`Toxic Incubation beams a Wretch. Intercept it or the add gains Mother's Boon and later Fester Burst.`,
+					`Weakened Doomscales cast Revenge when the other side's add dies, so kill them together.`,
+					`Expired ${volatilePurge} also fires ${causticWaves} from that player.`
 				],
-				kills: '',
-				faqs: [
+				intro: `Ula'tek is an egg-control finale. A clean break in ${spectralCoils} hatches a Rawling you can ignore. ${causticWaves} or the venom around the platform hatches a Viper that sprays ${putridMembrane}. Hardened eggs and Toxic Incubation are the extra jobs. Lust the first ${rageOfTheShackled} and finish her before the last platform falls.`,
+				overview: [
+					`Split into two equal groups before the pull. They soak ${spectralCoils} and take opposite Phase 2 sides. Assign rotating egg carriers and four Toxic Incubation interceptors. Break Hardened absorbs before anyone tries to move an egg.`,
+					`Phase 1 is two egg-and-wave cycles into a ${venomousHeart} burn. Phase 2 is a split Warden and cauldron delivery, with synchronized Weakened Doomscale kills. The intermission is Coil soaks on a rotating tail. Phase 3 shrinks the floor with ${circlingPrey} while three ${serpentsBite} groups soak, then spread so ${volatilePurge} waves miss the raid.`
+				],
+				phases: [
 					{
-						question: "Was Ula'tek on the PTR?",
-						answer: `No. PTR testing never opened this encounter, and no Mythic journal notes survived. We will update this page as soon as possible.`
+						title: 'Phase 1',
+						body: [
+							`Three eggs sit mid. Touching them pulls, but Hardened eggs cannot move until the absorb dies. Assign three carriers and keep them 3 yards apart so Noxious Shell does not splash. One tank holds Ula'tek, one holds the tail. Empty melee is raid ${mothersWrath}. Empty tail is a Rattler Slam. Swap during ${causticWaves}.`,
+							`${spectralCoils} slams both sides of the tail. Split the two groups, one soak each. ${soulConstrictor} blocks the next soak, so do not stack both groups on one slam. The soak breaks carried eggs into Rawlings. Kill Rawlings before Boiling Venom at 25 seconds.`,
+							`A spectral Ula'tek beams Toxic Incubation at the Wretch from Toxic Womb. Intercept the beam or the add stacks Mother's Boon. Each intercept also erupts ${causticWaves} from that player, so aim it into empty space.`,
+							`She pulls one wing back, then that side's ${causticWaves} fire first. Run opposite the pulled wing. A wave that hits a carrier hatches a Viper. After two egg-and-wave cycles she casts ${rageOfTheShackled}. The ${venomousHeart} takes double damage for 20 seconds. Bloodlust about five seconds early, dodge Falling Debris, and burn.`
+						]
 					},
 					{
-						question: "Is there a Mythic Ula'tek strategy yet?",
-						answer: `Not yet. Check back here for the Mythic plan once we have logs and a repeatable strategy.`
+						title: 'Phase 2',
+						body: [
+							`The two groups cross to opposite corridors. Grip and rescue out, save a Warlock gate for the return. Kill the Doomscale Warden first. ${graspingFangs} tethers three players per side. Breaking a tether applies stacking ${blightVeinMythic} to the whole raid for six seconds. Snap two at a time, wait for the DoT to drop, then snap the next pair.`,
+							`After the Warden dies, pick up leftover eggs, then the big Doomscale Egg last. Walk them into the Doomscale Cauldron, small first. Interrupt the Weakened Doomscale's Anguished Cry. Both sides must kill their Weakened Doomscale together or the survivor casts Revenge. Then gate back and stack for the second ${rageOfTheShackled}.`
+						]
+					},
+					{
+						title: 'Intermission',
+						body: [
+							`Eggs fall mid. Break Hardened, then pick them up with rotated carriers. Tails rise around the room. Group 1 soaks casts 1, 3, and 5. Group 2 soaks 2, 4, and 6. ${soulConstrictor} is why you alternate. When the floor glows, stand at the edge. The middle shatters into four platforms.`
+						]
+					},
+					{
+						title: 'Phase 3',
+						body: [
+							`She surfaces at the bubbles. Tanks and melee play on her platform. Ranged and healers start one platform counter-clockwise. ${callOfTheSerpent} drops a clutch on each platform. Stay out of the spawn circles, then kill the eggs before they hit venom. Intercept any Toxic Incubation that targets a Wretch.`,
+							`${serpentsBite} marks one melee, one healer, and one ranged. Assign three soak groups. Stay in the circle until the debuff clears, then spread so expired ${volatilePurge} does not fire ${causticWaves} through the raid. A missed soak becomes a Calcified Corpse. Weave leftover waves through the gaps. Leave the melee platform before ${circlingPrey} breaks it.`,
+							`Broken platforms hatch Shriekers. Taunt them to the boss, interrupt Vicious Echoes, and kill them before Boiling Venom. The second platform break is the hardest overlap. On the last floor, soak one more Bite, dodge the wave, then burn the last ${venomousHeart}. If she is at 1 or 2 percent when the floor goes, jump off behind her and finish.`
+						]
+					}
+				],
+				kills: `Vipers from ${causticWaves} on carriers stack ${putridMembrane} until healers cannot cover it. Two Noxious Shell carriers that touch hatch instantly. An unsoaked Toxic Incubation Wretch Fester Bursts. Simultaneous ${graspingFangs} breaks stack ${blightVeinMythic} on both sides. A missed ${serpentsBite} is a Calcified Corpse, and a clumped ${volatilePurge} launches more waves. Late ${circlingPrey} leaves people on a dying platform.`,
+				quick: {
+					tanks: `Hold Ula'tek and the tail. Swap during ${causticWaves}. Stay in melee for ${mothersWrath} and run back into the red pool. In Phase 2, stack the Warden on glowing eggs and call the paired Weakened Doomscale kill. In Phase 3, taunt Shriekers onto the boss.`,
+					healers: `${putridMembrane} is the tax for every Viper. Ramp ${spectralCoils} and the ${venomousHeart} windows. Cover stacked ${blightVeinMythic} when tethers snap. Assign extra soakers to the healer ${serpentsBite}, then spread so ${volatilePurge} waves miss the group.`,
+					dps: `Break Hardened, rotate carriers, and keep 3 yards between Noxious Shells. Intercept Toxic Incubation. Soak your ${spectralCoils}. Interrupt Malice and Anguished Cry. Snap ${graspingFangs} in pairs. Kill clutch eggs and Shriekers before they boil. Lust the first ${rageOfTheShackled}.`
+				},
+				faqs: [
+					{
+						question: 'What hatches a Viper instead of a Rawling?',
+						answer: `An egg or carrier that touches ${causticWaves} or the venom around the platform. Two Noxious Shell carriers inside 3 yards hatch instantly. A ${spectralCoils} soak hatches a Rawling instead. Every Viper sprays ${putridMembrane}.`
+					},
+					{
+						question: 'Where do you Bloodlust?',
+						answer: `The first ${rageOfTheShackled} in Phase 1. The ${venomousHeart} takes double damage for 20 seconds.`
+					},
+					{
+						question: 'How do you handle Hardened eggs?',
+						answer: `Break the absorb first. Then one player picks it up. Keep carriers 3 yards apart. After the drop, Rancid Yolk increases the next Noxious Shell, so rotate carriers.`
+					},
+					{
+						question: 'How do you handle Toxic Incubation?',
+						answer: `Assign interceptors. Eat the beam before it hits the Wretch. Each intercept erupts ${causticWaves} from that player, so aim it into empty space. A Wretch that soaks the beam gains Mother's Boon and later Fester Burst.`
+					},
+					{
+						question: "How do you handle Serpent's Bite?",
+						answer: `Three groups stay in the circle until it clears, then spread for ${volatilePurge}. The expire also fires ${causticWaves}, so helpers aim outgoing waves into empty space. A missed soak becomes a Calcified Corpse.`
 					}
 				]
 			}
+		},
+		resources: {
+			wowhead:
+				'https://www.wowhead.com/guide/midnight/raids/venomous-abyss-ulatek-boss-strategy-abilities',
+			icyVeins: 'https://www.icy-veins.com/wow/ulatek-raid-guide',
+			method: 'https://www.method.gg/guides/the-venomous-abyss/ulatek-heroic'
 		},
 		abilities: [
 			{ name: 'Caustic Waves', id: 1292403 },
@@ -1119,7 +1240,12 @@ export const venomousAbyssBosses: Boss[] = [
 			{ name: 'Circling Prey', id: 1301510 },
 			{ name: "Mother's Wrath", id: 1298367 },
 			{ name: 'Putrid Membrane', id: 1301268 },
-			{ name: 'Venomous Heart', id: 1299526 }
+			{ name: 'Venomous Heart', id: 1299526 },
+			{ name: 'Call of the Serpent', id: 1304012 },
+			{ name: "Serpent's Bite", id: 1295905 },
+			{ name: 'Volatile Purge', id: 1306086 },
+			{ name: 'Grasping Fangs', id: 1301117 },
+			{ name: 'Soul Constrictor', id: 1300685 }
 		]
 	}
 ];

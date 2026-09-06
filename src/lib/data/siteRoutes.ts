@@ -62,7 +62,7 @@ export const SITE_ROUTES: SiteRoute[] = [
 	},
 	{
 		path: '/raid/boss',
-		lastmod: '2026-08-18',
+		lastmod: '2026-09-06',
 		changefreq: 'weekly',
 		priority: 0.85,
 		...PAGE_SEO.raidBoss,
@@ -75,7 +75,7 @@ export const SITE_ROUTES: SiteRoute[] = [
 			const guide = split ? boss.guides[difficulty] : boss.guide;
 			return {
 				path: bossGuidePath(boss.slug, split ? difficulty : 'heroic'),
-				lastmod: split ? '2026-08-18' : '2026-08-16',
+				lastmod: boss.slug === 'ulatek' ? '2026-09-06' : split ? '2026-08-18' : '2026-08-16',
 				changefreq: 'weekly' as const,
 				priority: boss.raidId === 'venomous-abyss' ? (difficulty === 'heroic' ? 0.8 : 0.75) : 0.7,
 				title: bossSeoTitle(boss.name, difficulty),

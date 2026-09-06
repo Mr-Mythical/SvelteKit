@@ -69,7 +69,7 @@ describe('SEO copy bounds', () => {
 		expect(bossSeoTitle("Nek'zali the Soulcoiler", 'heroic').length).toBeLessThanOrEqual(60);
 		expect(bossSeoDescription('Lightblinded Vanguard').length).toBeLessThanOrEqual(160);
 		expect(PAGE_SEO.raidBoss.description).toMatch(/Ula'tek/);
-		expect(PAGE_SEO.raidBoss.description).toMatch(/PTR/);
+		expect(PAGE_SEO.raidBoss.description).not.toMatch(/PTR/);
 		expect(
 			bossSeoDescription(
 				"Nek'zali the Soulcoiler",
