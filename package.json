@@ -19,11 +19,9 @@
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:push": "drizzle-kit push",
-		"db:user:generate": "drizzle-kit generate --config=drizzle.user.config.ts",
-		"db:user:migrate": "drizzle-kit migrate --config=drizzle.user.config.ts",
-		"db:user:push": "drizzle-kit push --config=drizzle.user.config.ts",
-		"db:user:drop": "drizzle-kit drop --config=drizzle.user.config.ts",
-		"cleanup:under90-recents": "node scripts/cleanup-under90-recents.mjs"
+		"db:drop": "drizzle-kit drop",
+		"cleanup:under90-recents": "node scripts/cleanup-under90-recents.mjs",
+		"db:copy-raid-to-user": "node scripts/copy-raid-to-user-db.mjs"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20250109.0",

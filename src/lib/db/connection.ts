@@ -1,42 +1,30 @@
 /**
  * Shared Postgres + Drizzle connection factory.
  *
- * Both databases (raid analytics + user/auth) connect with identical client
- * settings — fresh client per request, no pooling, short timeouts. This
- * module owns those settings so the two `getXxxDb()` wrappers in
- * `index.ts` and `userDb.ts` differ only by the env var they read and the
- * scope tag used for logging.
- *
- * The aggressive "no reuse, no pooling" client config is intentional: it
- * sidesteps a connection-state bug we've hit before that caused "every other
- * request" failures behind Cloudflare Workers. Don't pool here without a
- * test that proves the underlying issue is gone.
+ * Raid analytics and user/auth share one Postgres instance (`DATABASE_USER_URL`).
+ * Fresh client per request, no pooling, short timeouts — intentional for
+ * Cloudflare Workers (avoids a prior "every other request" connection-state
+ * bug). Don't pool here without a test that proves the underlying issue is gone.
  */
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { building } from '$app/environment';
+import { env } from '$env/dynamic/private';
 import { logServerError } from '../server/logger';
 
 interface CreateDbOptions {
 	/** e.g. 'raid' or 'user' — used in error messages and log scope. */
 	label: string;
-	/** Connection string. The caller resolves env vars. */
-	connectionString: string | undefined;
-	/** Friendly description of the env var(s) checked, for the error message. */
-	connectionStringSource: string;
 }
 
-export function createDrizzlePostgres({
-	label,
-	connectionString,
-	connectionStringSource
-}: CreateDbOptions) {
+export function createDrizzlePostgres({ label }: CreateDbOptions) {
 	if (building) {
 		throw new Error(`${label} database not available during build time`);
 	}
 
+	const connectionString = env.DATABASE_USER_URL;
 	if (!connectionString) {
-		throw new Error(`${connectionStringSource} is not defined in environment variables.`);
+		throw new Error('DATABASE_USER_URL is not defined in environment variables.');
 	}
 
 	try {

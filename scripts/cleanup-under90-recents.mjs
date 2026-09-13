@@ -75,9 +75,9 @@ async function fetchCharacterLevel(token, region, realm, characterName) {
 async function run() {
 	loadDotEnv();
 
-	const databaseUrl = process.env.DATABASE_USER_URL || process.env.DATABASE_URL;
+	const databaseUrl = process.env.DATABASE_USER_URL;
 	if (!databaseUrl) {
-		throw new Error('Missing DATABASE_USER_URL (or DATABASE_URL)');
+		throw new Error('Missing DATABASE_USER_URL');
 	}
 
 	const sql = postgres(databaseUrl, { max: 1 });

@@ -19,16 +19,16 @@ See `PRODUCT.md` for the product brief and `DESIGN.md` (and `DESIGN.json`) for t
 - Cloudflare Pages / Workers via `wrangler`
 - Vitest
 
-## Two databases
+## Database
 
-The app talks to **two** Postgres databases:
+One Postgres database (`DATABASE_USER_URL`) holds both domains:
 
-| Database           | Purpose                                               | Env var                                            | Schema                     | Accessor                            |
-| ------------------ | ----------------------------------------------------- | -------------------------------------------------- | -------------------------- | ----------------------------------- |
-| **Raid analytics** | Public spec/healer/composition aggregates, encounters | `DATABASE_URL`                                     | `src/lib/db/schema.ts`     | `getRaidDb()` from `$lib/db`        |
-| **User**           | Auth.js accounts/sessions, recents, linked characters | `DATABASE_USER_URL` (falls back to `DATABASE_URL`) | `src/lib/db/userSchema.ts` | `getUserDb()` from `$lib/db/userDb` |
+| Domain             | Purpose                                               | Schema                     | Accessor                            |
+| ------------------ | ----------------------------------------------------- | -------------------------- | ----------------------------------- |
+| **Raid analytics** | Public spec/healer/composition aggregates, encounters | `src/lib/db/schema.ts`     | `getRaidDb()` from `$lib/db`        |
+| **User / auth**    | Auth.js accounts/sessions, recents, linked characters | `src/lib/db/userSchema.ts` | `getUserDb()` from `$lib/db/userDb` |
 
-Both go through the shared `createDrizzlePostgres` factory in `src/lib/db/connection.ts`. Drizzle config files are split: `drizzle.config.ts` (raid) and `drizzle.user.config.ts` (user). Migrations live in `drizzle/` and `drizzle/user/` respectively.
+Both accessors use the shared `createDrizzlePostgres` factory in `src/lib/db/connection.ts`. Drizzle kit config is [`drizzle.config.ts`](drizzle.config.ts) (both schemas); migrations live under `drizzle/user/`.
 
 ## Layout conventions
 
@@ -50,7 +50,7 @@ npm run test         # vitest
 npm run build        # production build
 ```
 
-Set `DATABASE_URL`, `DATABASE_USER_URL`, `AUTH_BATTLENET_ID`, `AUTH_BATTLENET_SECRET`, and `AUTH_SECRET` in `.env` for local dev.
+Set `DATABASE_USER_URL`, `AUTH_BATTLENET_ID`, `AUTH_BATTLENET_SECRET`, and `AUTH_SECRET` in `.env` for local dev.
 
 ## Deployment
 

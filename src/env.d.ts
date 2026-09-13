@@ -4,9 +4,7 @@ declare module '$env/static/private' {
 	export const AUTH_SECRET: string;
 	export const WCL_CLIENT_ID: string;
 	export const WCL_CLIENT_SECRET: string;
-	export const SUPABASE_HEALER_URL: string;
-	export const SUPABASE_HEALER_KEY: string;
-	export const SUPABASE_KEY: string;
+	export const DATABASE_USER_URL: string;
 }
 
 declare module '$env/dynamic/private' {
@@ -16,9 +14,7 @@ declare module '$env/dynamic/private' {
 		AUTH_SECRET: string;
 		WCL_CLIENT_ID: string;
 		WCL_CLIENT_SECRET: string;
-		SUPABASE_HEALER_URL: string;
-		SUPABASE_HEALER_KEY: string;
-		SUPABASE_KEY: string;
+		DATABASE_USER_URL: string;
 		[key: string]: string | undefined;
 	};
 }

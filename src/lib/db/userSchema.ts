@@ -1,17 +1,14 @@
 /**
- * Drizzle schema for the **user / auth** database.
+ * Drizzle schema for **user / auth** tables on the unified Postgres database.
  *
- * This is one of two intentionally separate databases. The split is by
- * deployment — they are different Postgres instances behind different
- * connection strings:
+ * All app data (raid aggregates + user/auth) lives in one database behind
+ * `DATABASE_USER_URL`. Domain modules stay split for clarity:
  *
- * - This file (`userSchema.ts`) → `DATABASE_USER_URL` (user/auth, read-write).
- *   Drizzle config: `drizzle.user.config.ts` → migrations under `drizzle/user/`.
- * - `schema.ts` → `DATABASE_URL` (read-only raid analytics).
- *   Drizzle config: `drizzle.config.ts` → migrations under `drizzle/`.
+ * - This file → Auth.js accounts/sessions, profiles, recents, characters.
+ * - `schema.ts` → raid aggregates.
  *
- * Connection factories: `getUserDb()` (this schema) and `getRaidDb()`
- * (`schema.ts`) — see `connection.ts`.
+ * Connection factories: `getUserDb()` / `getRaidDb()` both use `DATABASE_USER_URL`
+ * (see `connection.ts`).
  */
 import {
 	pgTable,

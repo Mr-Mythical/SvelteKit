@@ -1,27 +1,30 @@
-# `drizzle/` — generated migration artifacts
+# `drizzle/` — migration artifacts
 
-This directory contains **drizzle-kit output only**, not source of truth.
+This directory contains **drizzle-kit output** and hand-written SQL, not the
+TypeScript source of truth. Canonical schemas live in `src/lib/db/`.
 
-## Canonical schema locations
+## Unified database
 
-| Database       | Schema (TypeScript)        | drizzle-kit config       | Migration output |
-| -------------- | -------------------------- | ------------------------ | ---------------- |
-| Raid analytics | `src/lib/db/schema.ts`     | `drizzle.config.ts`      | `drizzle/*.sql`  |
-| User / auth    | `src/lib/db/userSchema.ts` | `drizzle.user.config.ts` | `drizzle/user/`  |
+Raid analytics and user/auth share one Postgres instance (`DATABASE_USER_URL`).
 
-Application code imports schemas only from `src/lib/db/`. Nothing outside
-this folder should import from `drizzle/`.
+| Domain         | Schema (TypeScript)           | drizzle-kit config  | Migration output |
+| -------------- | ----------------------------- | ------------------- | ---------------- |
+| Unified (both) | `schema.ts` + `userSchema.ts` | `drizzle.config.ts` | `drizzle/user/`  |
+
+Application code imports schemas only from `src/lib/db/`.
 
 ## What lives here
 
-- `drizzle/*.sql` and `drizzle/meta/` — generated migrations for the raid DB.
-- `drizzle/user/` — generated migrations for the user DB.
-- `drizzle/migrations/` — hand-written migrations executed by deploy scripts.
+- `drizzle/user/` — active migration history for the unified DB (started as the
+  user/auth track; raid aggregate tables were added in `0005_add_raid_analytics_tables.sql`).
+- `drizzle/*.sql` + `drizzle/meta/` — **historical** raid-only migrations from
+  before the merge. Do not apply these to the unified DB.
+- `drizzle/migrations/` — hand-written one-offs executed by deploy scripts.
 
 ## What used to live here
 
 `drizzle/schema.ts` and `drizzle/relations.ts` — stale `drizzle-kit pull`
 introspection snapshots — were deleted because they confused readers about
 which schema was canonical. If you need to re-introspect the live DB, run
-`drizzle-kit pull` to a temp directory, diff against `src/lib/db/schema.ts`,
+`drizzle-kit pull` to a temp directory, diff against `src/lib/db/*.ts`,
 then discard.
